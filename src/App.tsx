@@ -30,6 +30,7 @@ const Dashboard = lazy(() => import('@/pages/Dashboard'));
 
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -63,9 +64,16 @@ function App() {
           </Routes>
         </Suspense>
       </main>
-      <Footer />
+      <Footer
+        onOpenAccessibility={() => setIsAccessibilityOpen(true)}
+        onOpenChat={() => setIsChatOpen(true)}
+      />
       <BottomNavigation />
-      <AccessibilityWidget onOpenChat={() => setIsChatOpen(true)} />
+      <AccessibilityWidget
+        open={isAccessibilityOpen}
+        onOpenChange={setIsAccessibilityOpen}
+        onOpenChat={() => setIsChatOpen(true)}
+      />
       <ChatWidget isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
     </div>
   );

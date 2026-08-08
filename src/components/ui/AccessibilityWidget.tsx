@@ -40,11 +40,17 @@ const INITIAL_STATE: AccessibilityState = {
 };
 
 export function AccessibilityWidget({
+  open: externalOpen,
+  onOpenChange,
   onOpenChat,
 }: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onOpenChat?: () => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
   const [state, setState] = useState<AccessibilityState>(INITIAL_STATE);
   const [tts, setTts] = useState({ speaking: false, paused: false });
   const panelRef = useRef<HTMLDivElement>(null);
@@ -75,7 +81,7 @@ export function AccessibilityWidget({
   }, [state]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (open) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -83,20 +89,20 @@ export function AccessibilityWidget({
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen]);
+  }, [open]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
+      if (e.key === 'Escape' && open) {
+        setOpen(false);
       }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  }, [open]);
 
   useEffect(() => {
-    if (!isOpen || !panelRef.current) return;
+    if (!open || !panelRef.current) return;
 
     const focusableElements = panelRef.current.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -126,7 +132,7 @@ export function AccessibilityWidget({
     firstElement?.focus();
 
     return () => document.removeEventListener('keydown', handleTab);
-  }, [isOpen]);
+  }, [open]);
 
   const resetAll = useCallback(() => {
     setState(INITIAL_STATE);
@@ -189,14 +195,14 @@ export function AccessibilityWidget({
 
   const handleBackdropClick = useCallback((e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      setIsOpen(false);
+      setOpen(false);
     }
   }, []);
 
   return (
     <div className="fixed bottom-[calc(8rem+env(safe-area-inset-bottom))] left-4 z-50 sm:bottom-[calc(9rem+env(safe-area-inset-bottom))]">
       <AnimatePresence>
-        {isOpen && (
+        {open && (
           <>
             <motion.div
               initial={{ opacity: 0 }}
@@ -229,7 +235,7 @@ export function AccessibilityWidget({
                     </h3>
                   </div>
                   <button
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => setOpen(false)}
                     className="text-muted-foreground hover:text-foreground focus-visible:ring-primary focus-visible:ring-2 focus-visible:outline-none"
                     aria-label="Fechar acessibilidade"
                   >
@@ -408,7 +414,7 @@ export function AccessibilityWidget({
                       </a>
                       <button
                         onClick={() => {
-                          setIsOpen(false);
+                          setOpen(false);
                           onOpenChat?.();
                         }}
                         className="bg-primary/10 hover:bg-primary/20 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 transition-colors"
@@ -447,12 +453,12 @@ export function AccessibilityWidget({
         variant="primary"
         size="icon"
         className="shadow-glow-lg h-12 w-12 rounded-full"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? 'Fechar acessibilidade' : 'Abrir acessibilidade'}
-        aria-expanded={isOpen}
+        onClick={() => setOpen(!open)}
+        aria-label={open ? 'Fechar acessibilidade' : 'Abrir acessibilidade'}
+        aria-expanded={open}
         aria-controls="accessibility-panel"
       >
-        {isOpen ? (
+        {open ? (
           <X className="h-5 w-5" />
         ) : (
           <Accessibility className="h-5 w-5" />

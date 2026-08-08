@@ -14,9 +14,12 @@ import {
   Globe,
   LogIn,
   ChevronDown,
+  Accessibility,
+  MessageCircle,
 } from 'lucide-react';
 import { COMPANY, SOCIAL_LINKS } from '@/config';
 import { IMAGES } from '@/config/images';
+import { Button } from '@/components/ui/Button';
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -190,7 +193,12 @@ function MobileAccordion({
   );
 }
 
-export function Footer() {
+type FooterProps = {
+  onOpenAccessibility?: () => void;
+  onOpenChat?: () => void;
+};
+
+export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -460,6 +468,29 @@ export function Footer() {
                       </span>
                     </div>
                   </div>
+                </div>
+
+                <div className="mt-4 flex items-center gap-3">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="flex-1"
+                    onClick={onOpenAccessibility}
+                    leftIcon={<Accessibility className="h-4 w-4" />}
+                  >
+                    Acessibilidade
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="flex-1"
+                    onClick={onOpenChat}
+                    leftIcon={<MessageCircle className="h-4 w-4" />}
+                  >
+                    Precisa de ajuda?
+                  </Button>
                 </div>
               </div>
             </div>
