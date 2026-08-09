@@ -60,6 +60,15 @@ export function AccessibilityWidget({
   }, [settings]);
 
   useEffect(() => {
+    if (!open) {
+      const trigger = document.querySelector(
+        '[aria-controls="accessibility-panel"]',
+      ) as HTMLButtonElement | null;
+      trigger?.focus();
+    }
+  }, [open]);
+
+  useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
     } else {
