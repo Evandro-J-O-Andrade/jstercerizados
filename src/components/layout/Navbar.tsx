@@ -263,7 +263,7 @@ export function Navbar() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="bg-card fixed top-0 right-0 z-50 h-full w-[85%] max-w-md shadow-2xl lg:hidden"
+              className="bg-background border-border fixed top-0 right-0 z-50 h-full w-[85%] max-w-md shadow-2xl lg:hidden"
               style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
               <div className="flex items-center justify-between p-4">
