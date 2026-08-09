@@ -232,7 +232,7 @@ export default function TrabalheConosco() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                   onSubmit={handleSubmit(onSubmit)}
-                  className="bg-card shadow-premium rounded-2xl p-8"
+                  className="bg-card border-border shadow-premium rounded-2xl border p-8"
                 >
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div className="md:col-span-2">
@@ -389,7 +389,7 @@ export default function TrabalheConosco() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-card shadow-premium rounded-2xl p-8 text-center"
+                  className="bg-card border-border shadow-premium rounded-2xl border p-8 text-center"
                 >
                   <Briefcase className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                   <p className="text-muted-foreground">

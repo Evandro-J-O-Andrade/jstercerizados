@@ -344,6 +344,84 @@
     background-color: hsl(var(--surface-alt));
   }
 
+  .card-base {
+    border-radius: 0.75rem;
+    border-width: 1px;
+    background-color: hsl(var(--card));
+    box-shadow:
+      0 1px 2px hsla(215, 35%, 10%, 0.06),
+      0 4px 16px hsla(215, 35%, 10%, 0.08);
+  }
+
+  .card-hover {
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .card-hover:hover {
+    border-color: hsl(var(--border));
+    box-shadow:
+      0 1px 2px hsla(215, 35%, 10%, 0.08),
+      0 8px 24px hsla(215, 35%, 10%, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .section-heading {
+    color: hsl(var(--foreground));
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .section-subheading {
+    color: hsl(var(--muted-foreground));
+    font-weight: 400;
+  }
+
+  .btn-primary {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.05);
+  }
+
+  .input-base {
+    border-radius: 0.5rem;
+    border-width: 1px;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  .input-base:focus {
+    border-color: hsl(var(--primary));
+    outline: none;
+    box-shadow: 0 0 0 2px hsla(var(--primary) / 0.15);
+  }
+
+  .label-base {
+    color: hsl(var(--foreground));
+    font-weight: 500;
+  }
+
+  .overlay-backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+  }
+
+  .overlay-panel {
+    background-color: hsl(var(--background));
+    border-width: 1px;
+    border-color: hsl(var(--border));
+    box-shadow: 0 20px 60px hsla(215, 35%, 10%, 0.2);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
   .border-border\/50 {
     border-color: hsl(var(--border) / 0.5);
   }
@@ -445,5 +523,29 @@
     filter: blur(0);
     outline: 3px solid hsl(var(--primary)) !important;
     outline-offset: 2px !important;
+  }
+
+  .overlay-backdrop {
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+  }
+
+  .overlay-panel {
+    background-color: hsl(var(--background));
+    border-width: 1px;
+    border-color: hsl(var(--border));
+    box-shadow: 0 20px 60px hsla(215, 35%, 10%, 0.25);
+  }
+
+  html {
+    scrollbar-width: none;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
   }
 }

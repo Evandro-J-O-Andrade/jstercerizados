@@ -10,6 +10,7 @@ import {
   FileText,
   Settings,
   Building2,
+  LogIn,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,6 +28,7 @@ const publicNavItems: NavItem[] = [
   { label: 'Serviços', href: '/servicos', icon: Shield },
   { label: 'Empresas', href: '/empresas', icon: Building2 },
   { label: 'Candidatos', href: '/candidatos', icon: Users },
+  { label: 'Login', href: '/login', icon: LogIn },
 ];
 
 const partnerNavItems: NavItem[] = [

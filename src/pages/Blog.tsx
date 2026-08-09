@@ -45,7 +45,7 @@ export default function Blog() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="bg-muted/50 mt-12 rounded-3xl border border-dashed border-white/10 p-12 text-center"
+            className="bg-card border-border mt-12 rounded-3xl border border-dashed p-12 text-center"
           >
             <p className="text-muted-foreground text-sm">
               Área do blog em desenvolvimento — Em breve artigos sobre

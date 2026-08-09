@@ -53,34 +53,42 @@ export const COMPANY_TIMELINE = [
     event: 'Fundação da J&S Terceirizados LTDA',
     description:
       'Início das operações como uma agência focada em recrutamento e seleção de profissionais qualificados.',
+    image: null,
   },
   {
     year: '2015',
     event: 'Expansão para Facilities',
     description:
       'Iniciamos os serviços complementares de zeladoria, limpeza e segurança.',
+    image: null,
   },
   {
     year: '2018',
     event: 'Tecnologia de Ponta',
     description:
       'Implementamos sistemas de monitoramento e controle de acesso.',
+    image: null,
   },
   {
     year: '2020',
     event: '200 Clientes',
     description:
       'Atingimos a marca de 200 clientes empresariais satisfeitos com nossas soluções de RH.',
+    image: null,
   },
   {
     year: '2022',
     event: 'Plataforma Digital J&S',
     description:
       'Lançamento da plataforma digital para otimizar a gestão de vagas, candidatos e processos seletivos.',
+    image: null,
   },
   {
     year: '2024',
     event: '50 Cidades',
     description: 'Expandimos nossa cobertura para 50 cidades do Brasil.',
+    image: null,
   },
 ] as const;
+
+export type TimelineItem = (typeof COMPANY_TIMELINE)[number];

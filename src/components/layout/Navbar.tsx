@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import {
   Menu,
   X,
@@ -30,13 +31,12 @@ import {
 const companiesSubmenu = [
   { label: 'Empresas', href: '/empresas' },
   { label: 'Divulgar Vaga', href: '/clientes' },
-  { label: 'Solicitar Orçamento', href: '/clientes' },
   { label: 'Parceiros', href: '/parceiros' },
 ];
 
 const candidatesSubmenu = [
   { label: 'Candidatos', href: '/candidatos' },
-  { label: 'Cadastrar Currículo', href: '/trabalhe-conosco' },
+  { label: 'Trabalhe Conosco', href: '/trabalhe-conosco' },
   { label: 'Processo Seletivo', href: '/processo-seletivo' },
   { label: 'FAQ', href: '/faq' },
 ];
@@ -72,6 +72,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLButtonElement | null>(null);
+  const drawerFocusRef = useFocusTrap(isOpen);
   const { resolvedTheme, toggleTheme } = useTheme();
   const { isAuthenticated } = useAuth();
   const location = useLocation();
@@ -350,18 +351,21 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+              className="overlay-backdrop fixed inset-0 z-40 lg:hidden"
               onClick={() => setIsOpen(false)}
             />
             <motion.div
               key="mobile-drawer"
-              ref={drawerRef}
+              ref={(el) => {
+                drawerRef.current = el;
+                drawerFocusRef.current = el;
+              }}
               onKeyDown={handleDrawerKeyDown}
               variants={drawerVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="bg-background border-border fixed top-0 right-0 z-50 h-full w-[85%] max-w-md shadow-2xl lg:hidden"
+              className="overlay-panel fixed top-0 right-0 z-50 h-full w-[85%] max-w-md lg:hidden"
               style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
               <div className="flex items-center justify-between p-4">
@@ -379,53 +383,74 @@ export function Navbar() {
                 </Button>
               </div>
 
-              <nav className="flex flex-col gap-1 px-4 py-2">
-                {topNavLinks.map((link) => (
-                  <motion.div key={link.href} variants={itemVariants}>
+              <nav className="flex flex-col gap-4 px-4 py-2">
+                <div className="space-y-1">
+                  <p className="text-primary mb-2 text-xs font-bold tracking-wider uppercase">
+                    Navegação
+                  </p>
+                  {topNavLinks.map((link) => (
+                    <motion.div key={link.href} variants={itemVariants}>
+                      <Link
+                        to={link.href}
+                        onClick={() => setIsOpen(false)}
+                        className={cn(
+                          'block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200',
+                          location.pathname === link.href
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                        )}
+                      >
+                        {link.label}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-primary mb-2 text-xs font-bold tracking-wider uppercase">
+                    Empresas
+                  </p>
+                  <MobileMenuGroup
+                    title=""
+                    links={companiesSubmenu}
+                    onClose={() => setIsOpen(false)}
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-primary mb-2 text-xs font-bold tracking-wider uppercase">
+                    Candidatos
+                  </p>
+                  <MobileMenuGroup
+                    title=""
+                    links={candidatesSubmenu}
+                    onClose={() => setIsOpen(false)}
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-primary mb-2 text-xs font-bold tracking-wider uppercase">
+                    Ações
+                  </p>
+                  <motion.div variants={itemVariants}>
                     <Link
-                      to={link.href}
+                      to="/trabalhe-conosco"
                       onClick={() => setIsOpen(false)}
-                      className={cn(
-                        'block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200',
-                        location.pathname === link.href
-                          ? 'bg-primary/10 text-primary'
-                          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                      )}
+                      className="bg-primary text-primary-foreground block rounded-lg px-4 py-3 text-center text-base font-medium"
                     >
-                      {link.label}
+                      Cadastrar Currículo
                     </Link>
                   </motion.div>
-                ))}
-
-                <MobileMenuGroup
-                  title="Empresas"
-                  links={companiesSubmenu}
-                  onClose={() => setIsOpen(false)}
-                />
-                <MobileMenuGroup
-                  title="Candidatos"
-                  links={candidatesSubmenu}
-                  onClose={() => setIsOpen(false)}
-                />
-
-                <motion.div variants={itemVariants}>
-                  <Link
-                    to="/trabalhe-conosco"
-                    onClick={() => setIsOpen(false)}
-                    className="bg-primary text-primary-foreground rounded-lg px-4 py-3 text-center text-base font-medium"
-                  >
-                    Cadastrar Currículo
-                  </Link>
-                </motion.div>
-                <motion.div variants={itemVariants}>
-                  <Link
-                    to={isAuthenticated ? '/dashboard' : '/clientes'}
-                    onClick={() => setIsOpen(false)}
-                    className="text-muted-foreground hover:bg-muted hover:text-foreground block rounded-lg px-4 py-3 text-base font-medium transition-colors"
-                  >
-                    {isAuthenticated ? 'Painel' : 'Divulgar Vaga'}
-                  </Link>
-                </motion.div>
+                  <motion.div variants={itemVariants}>
+                    <Link
+                      to={isAuthenticated ? '/dashboard' : '/clientes'}
+                      onClick={() => setIsOpen(false)}
+                      className="text-muted-foreground hover:bg-muted hover:text-foreground block rounded-lg px-4 py-3 text-base font-medium transition-colors"
+                    >
+                      {isAuthenticated ? 'Painel' : 'Divulgar Vaga'}
+                    </Link>
+                  </motion.div>
+                </div>
               </nav>
 
               <div className="border-border mt-4 border-t px-4 py-6">
@@ -445,6 +470,7 @@ export function Navbar() {
                     aria-label="WhatsApp"
                   >
                     <Phone className="h-5 w-5" />
+                    <span className="sr-only">WhatsApp</span>
                   </motion.a>
                   <motion.a
                     href={SOCIAL_LINKS.instagram}
@@ -455,6 +481,7 @@ export function Navbar() {
                     aria-label="Instagram"
                   >
                     <Instagram className="h-5 w-5" />
+                    <span className="sr-only">Instagram</span>
                   </motion.a>
                   <motion.a
                     href={SOCIAL_LINKS.facebook}
@@ -465,6 +492,7 @@ export function Navbar() {
                     aria-label="Facebook"
                   >
                     <Facebook className="h-5 w-5" />
+                    <span className="sr-only">Facebook</span>
                   </motion.a>
                   <motion.a
                     href={SOCIAL_LINKS.linkedin}
@@ -475,6 +503,7 @@ export function Navbar() {
                     aria-label="LinkedIn"
                   >
                     <Linkedin className="h-5 w-5" />
+                    <span className="sr-only">LinkedIn</span>
                   </motion.a>
                   <motion.a
                     href={SOCIAL_LINKS.youtube}
@@ -485,6 +514,7 @@ export function Navbar() {
                     aria-label="YouTube"
                   >
                     <Youtube className="h-5 w-5" />
+                    <span className="sr-only">YouTube</span>
                   </motion.a>
                   <motion.a
                     href={SOCIAL_LINKS.tiktok}
@@ -495,6 +525,7 @@ export function Navbar() {
                     aria-label="TikTok"
                   >
                     <TikTokIcon className="h-5 w-5" />
+                    <span className="sr-only">TikTok</span>
                   </motion.a>
                 </div>
               </div>

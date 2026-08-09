@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/Footer';
 import { BottomNavigation } from '@/components/layout/BottomNavigation';
 import { AccessibilityWidget } from '@/components/ui/AccessibilityWidget';
 import { ChatWidget } from '@/components/ui/ChatWidget';
+import { HumanChatWidget } from '@/components/ui/HumanChatWidget';
 import { PageLoader } from '@/components/ui/PageLoader';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
@@ -82,6 +83,7 @@ function App() {
         }}
       />
       <ChatWidget isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
+      <HumanChatWidget isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
     </div>
   );
 }

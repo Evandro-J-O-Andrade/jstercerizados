@@ -139,7 +139,7 @@ export default function Parceiros() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 onSubmit={handleSubmit(onSubmit)}
-                className="bg-card shadow-premium rounded-2xl p-8"
+                className="bg-card border-border shadow-premium rounded-2xl border p-8"
               >
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="md:col-span-2">

@@ -1,15 +1,16 @@
-import { motion } from 'framer-motion';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { Shield, Award, Users, Target } from 'lucide-react';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { COMPANY_TIMELINE } from '@/mock/company';
+import { COMPANY_TIMELINE, type TimelineItem } from '@/mock/company';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config';
 import { HERO_ASSETS } from '@/content/assets';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
+import { useRef } from 'react';
 
 const valores = [
   {
@@ -37,6 +38,72 @@ const valores = [
     icon: Users,
   },
 ];
+
+function TimelineItemComponent({
+  item,
+  index,
+}: {
+  item: TimelineItem;
+  index: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const shouldReduceMotion = useReducedMotion();
+  const isEven = index % 2 === 0;
+
+  const hidden = shouldReduceMotion
+    ? { opacity: 1, x: 0, scale: 1 }
+    : {
+        opacity: 0,
+        x: isEven ? -60 : 60,
+        scale: 0.96,
+      };
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={hidden}
+      animate={isInView ? { opacity: 1, x: 0, scale: 1 } : hidden}
+      transition={
+        shouldReduceMotion
+          ? { duration: 0 }
+          : { duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }
+      }
+      className={`relative flex flex-col gap-4 sm:flex-row sm:items-center ${
+        isEven ? 'sm:flex-row' : 'sm:flex-row-reverse'
+      }`}
+    >
+      <div className={`flex-1 ${isEven ? 'sm:text-right' : 'sm:text-left'}`}>
+        <div className="bg-card border-border rounded-2xl border p-5 shadow-sm">
+          <span className="text-primary text-sm font-semibold">
+            {item.year}
+          </span>
+          <h3 className="text-foreground mt-1 text-lg font-semibold">
+            {item.event}
+          </h3>
+          <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
+            {item.description}
+          </p>
+          {item.image ? (
+            <div className="mt-4 overflow-hidden rounded-xl">
+              <SafeImage
+                src={item.image}
+                alt={item.event}
+                className="h-48 w-full object-cover"
+              />
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="bg-primary text-primary-foreground absolute left-4 flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shadow-md sm:left-1/2 sm:-translate-x-1/2">
+        {item.year.slice(-2)}
+      </div>
+
+      <div className="hidden flex-1 sm:block" />
+    </motion.div>
+  );
+}
 
 export default function Sobre() {
   return (
@@ -143,7 +210,7 @@ export default function Sobre() {
                   key={valor.title}
                   variants={staggerItem('up')}
                   whileHover={{ scale: 1.03, y: -4 }}
-                  className="bg-card shadow-premium rounded-2xl p-6 text-center transition-all"
+                  className="bg-card border-border shadow-premium rounded-2xl border p-6 text-center transition-all"
                 >
                   <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
                     <valor.icon className="h-6 w-6" />
@@ -168,43 +235,19 @@ export default function Sobre() {
           >
             <motion.h2
               variants={revealUp}
-              className="text-foreground mb-8 text-center text-3xl font-bold"
+              className="text-foreground mb-12 text-center text-3xl font-bold"
             >
               Nossa Trajetória
             </motion.h2>
             <div className="relative">
               <div className="bg-border absolute top-0 left-4 h-full w-0.5 sm:left-1/2" />
-              <div className="space-y-8">
+              <div className="space-y-12">
                 {COMPANY_TIMELINE.map((item, index) => (
-                  <motion.div
+                  <TimelineItemComponent
                     key={item.year}
-                    variants={staggerItem('up')}
-                    className={`relative flex items-center gap-6 sm:gap-0 ${
-                      index % 2 === 0 ? 'sm:flex-row' : 'sm:flex-row-reverse'
-                    }`}
-                  >
-                    <div
-                      className={`flex-1 sm:text-right ${
-                        index % 2 === 0 ? 'sm:text-right' : 'sm:text-left'
-                      }`}
-                    >
-                      <div className="bg-card border-border rounded-2xl border p-4 sm:rounded-none sm:border-t-0 sm:border-r-0 sm:border-b sm:border-l-0">
-                        <span className="text-primary text-sm font-semibold">
-                          {item.year}
-                        </span>
-                        <h3 className="text-foreground mt-1 text-lg font-semibold">
-                          {item.event}
-                        </h3>
-                        <p className="text-muted-foreground mt-1 text-sm">
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="bg-primary text-primary-foreground absolute left-4 flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold sm:left-1/2 sm:-translate-x-1/2">
-                      {item.year.slice(-2)}
-                    </div>
-                    <div className="hidden flex-1 sm:block" />
-                  </motion.div>
+                    item={item}
+                    index={index}
+                  />
                 ))}
               </div>
             </div>

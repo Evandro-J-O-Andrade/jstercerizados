@@ -171,7 +171,7 @@ export default function Vagas() {
                   key={vaga.id}
                   variants={staggerItem('up')}
                   whileHover={{ y: -4 }}
-                  className="bg-card shadow-premium group relative flex flex-col rounded-2xl p-6 transition-all duration-300"
+                  className="bg-card border-border shadow-premium group relative flex flex-col rounded-2xl border p-6 transition-all duration-300"
                 >
                   <div className="mb-4 flex items-start justify-between">
                     <div>

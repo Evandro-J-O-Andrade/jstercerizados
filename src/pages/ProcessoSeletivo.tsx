@@ -216,7 +216,7 @@ export default function ProcessoSeletivo() {
                   visible: { opacity: 1, y: 0 },
                 }}
                 whileHover={{ y: -4, scale: 1.02 }}
-                className="bg-card shadow-premium group relative overflow-hidden rounded-2xl p-6 transition-all duration-300"
+                className="bg-card border-border shadow-premium group relative overflow-hidden rounded-2xl border p-6 transition-all duration-300"
               >
                 <div className="bg-primary/5 group-hover:bg-primary/10 absolute -top-10 -right-10 h-20 w-20 rounded-full transition-colors" />
                 <h3 className="text-foreground group-hover:text-primary mb-2 text-lg font-semibold transition-colors">
@@ -244,7 +244,7 @@ export default function ProcessoSeletivo() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-card shadow-premium rounded-3xl p-8 text-center sm:p-12"
+            className="bg-card border-border shadow-premium rounded-3xl border p-8 text-center sm:p-12"
           >
             <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
               Ainda tem dúvidas?

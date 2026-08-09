@@ -152,7 +152,7 @@ export default function Contato() {
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="bg-card shadow-premium rounded-2xl p-6"
+                className="bg-card border-border shadow-premium rounded-2xl border p-6"
               >
                 <h3 className="text-foreground mb-4 text-lg font-semibold">
                   Informações de Contato
@@ -220,7 +220,7 @@ export default function Contato() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 onSubmit={handleSubmit(onSubmit)}
-                className="bg-card shadow-premium rounded-2xl p-8"
+                className="bg-card border-border shadow-premium rounded-2xl border p-8"
               >
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="md:col-span-2">

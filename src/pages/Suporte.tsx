@@ -30,6 +30,7 @@ import { Container } from '@/components/common/Container';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
+import { sendToN8n } from '@/lib/n8n';
 
 const SUPPORT_CARDS = [
   {
@@ -155,11 +156,19 @@ export default function Suporte() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const now = new Date();
     const proto = `SUP-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
     setProtocol(proto);
+
+    const payload = {
+      protocol: proto,
+      ...formData,
+      submittedAt: now.toISOString(),
+    };
+
+    await sendToN8n(payload);
     setSubmitted(true);
   };
 
@@ -574,11 +583,28 @@ export default function Suporte() {
                   Como deseja continuar?
                 </h4>
                 <p className="text-muted-foreground mt-2 text-sm">
-                  Nosso atendimento é auxiliado por Inteligência Artificial para
-                  agilizar seu atendimento. Caso necessário, um especialista
-                  continuará o atendimento.
+                  Escolha entre atendimento rápido com IA ou fale diretamente
+                  com nossa equipe humana.
                 </p>
                 <div className="mt-4 space-y-3">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      alert('Em breve: Assistente J&S disponível aqui.')
+                    }
+                    className="bg-primary/10 text-primary hover:bg-primary/20 flex items-center gap-3 rounded-xl p-4 transition-colors"
+                  >
+                    <Sparkles className="h-5 w-5" />
+                    <div className="text-left">
+                      <span className="text-sm font-semibold">
+                        Assistente J&S
+                      </span>
+                      <p className="text-muted-foreground text-xs">
+                        IA para dúvidas rápidas e suporte inicial
+                      </p>
+                    </div>
+                    <ArrowRight className="ml-auto h-4 w-4" />
+                  </button>
                   <a
                     href={getWhatsAppUrl(
                       COMPANY.whatsapp,
@@ -586,10 +612,17 @@ export default function Suporte() {
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-primary/10 text-primary hover:bg-primary/20 flex items-center gap-3 rounded-xl p-4 transition-colors"
+                    className="bg-muted text-foreground hover:bg-muted/80 flex items-center gap-3 rounded-xl p-4 transition-colors"
                   >
                     <Phone className="h-5 w-5" />
-                    <span className="text-sm font-semibold">WhatsApp</span>
+                    <div className="text-left">
+                      <span className="text-sm font-semibold">
+                        Falar com atendente
+                      </span>
+                      <p className="text-muted-foreground text-xs">
+                        Atendimento humano em tempo real
+                      </p>
+                    </div>
                     <ArrowRight className="ml-auto h-4 w-4" />
                   </a>
                   <a
@@ -597,7 +630,12 @@ export default function Suporte() {
                     className="bg-muted text-foreground hover:bg-muted/80 flex items-center gap-3 rounded-xl p-4 transition-colors"
                   >
                     <Mail className="h-5 w-5" />
-                    <span className="text-sm font-semibold">E-mail</span>
+                    <div className="text-left">
+                      <span className="text-sm font-semibold">E-mail</span>
+                      <p className="text-muted-foreground text-xs">
+                        Atendimento por e-mail
+                      </p>
+                    </div>
                     <ArrowRight className="ml-auto h-4 w-4" />
                   </a>
                 </div>

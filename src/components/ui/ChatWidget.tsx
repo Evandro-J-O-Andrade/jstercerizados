@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import {
   MessageCircle,
   X,
@@ -12,7 +13,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils';
 
-type ChatRole = 'user' | 'assistant' | 'system';
+type ChatRole = 'user' | 'assistant' | 'system' | 'agent';
 
 interface Message {
   id: string;
@@ -20,14 +21,17 @@ interface Message {
   content: string;
   timestamp: Date;
   options?: { label: string; value: string }[];
+  agentName?: string;
 }
+
+type ChatMode = 'ai' | 'human';
 
 const initialOptions = [
   { label: 'Sou candidato', value: 'candidate' },
   { label: 'Sou empresa', value: 'company' },
   { label: 'Quero saber sobre uma vaga', value: 'job_info' },
   { label: 'Quero contratar profissionais', value: 'hire' },
-  { label: 'Falar com atendimento', value: 'support' },
+  { label: 'Falar com atendimento humano', value: 'human_support' },
 ];
 
 const candidateOptions = [
@@ -80,6 +84,7 @@ export function ChatWidget({
   const [internalOpen, setInternalOpen] = useState(false);
   const open = isOpen ?? internalOpen;
   const setOpen = onOpenChange ?? setInternalOpen;
+  const [mode, setMode] = useState<ChatMode>('ai');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -101,6 +106,20 @@ export function ChatWidget({
     scrollToBottom();
   }, [messages, isTyping]);
 
+  const startHumanChat = () => {
+    setMode('human');
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        role: 'system',
+        content:
+          'Você foi conectado com um atendente. Em breve alguém irá responder.',
+        timestamp: new Date(),
+      },
+    ]);
+  };
+
   const handleOptionClick = (value: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -113,7 +132,7 @@ export function ChatWidget({
     setIsTyping(true);
 
     setTimeout(() => {
-      let responseContent =
+      const responseContent =
         faqResponses[value] || 'Em breve um atendente irá te responder.';
       let nextOptions: Message['options'] | undefined;
 
@@ -122,8 +141,9 @@ export function ChatWidget({
       } else if (value === 'company') {
         nextOptions = companyOptions;
       } else if (value === 'support' || value === 'human_support') {
-        responseContent =
-          'Vou encaminhar você para nossa equipe. Um atendente entrará em contato em instantes.';
+        startHumanChat();
+        setIsTyping(false);
+        return;
       }
 
       const assistantMessage: Message = {
@@ -154,16 +174,27 @@ export function ChatWidget({
     setIsTyping(true);
 
     setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content:
-          'Obrigado pela sua mensagem! Em breve um atendente irá te responder. Enquanto isso, você pode escolher uma das opções abaixo:',
-        timestamp: new Date(),
-        options: initialOptions,
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
+      if (mode === 'human') {
+        const agentMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'agent',
+          content:
+            'Obrigado pelo contato. Um atendente já foi notificado e responderá em instantes.',
+          timestamp: new Date(),
+          agentName: 'Atendente',
+        };
+        setMessages((prev) => [...prev, agentMessage]);
+      } else {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content:
+            'Obrigado pela sua mensagem! Em breve um atendente irá te responder. Enquanto isso, você pode escolher uma das opções abaixo:',
+          timestamp: new Date(),
+          options: initialOptions,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+      }
       setIsTyping(false);
     }, 1000);
   };
@@ -174,6 +205,8 @@ export function ChatWidget({
         return <User className="h-4 w-4" />;
       case 'assistant':
         return <Bot className="h-4 w-4" />;
+      case 'agent':
+        return <Headphones className="h-4 w-4" />;
       default:
         return null;
     }
@@ -189,8 +222,10 @@ export function ChatWidget({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open]);
 
+  const chatPanelRef = useFocusTrap(open);
+
   return (
-    <div className="fixed right-4 bottom-[calc(8rem+env(safe-area-inset-bottom))] z-40 sm:right-6 sm:bottom-8">
+    <div className="fixed right-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-50 sm:right-6 sm:bottom-8">
       <AnimatePresence>
         {open && (
           <>
@@ -199,12 +234,13 @@ export function ChatWidget({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+              className="overlay-backdrop fixed inset-0 z-40"
               onClick={() => setOpen(false)}
               aria-hidden="true"
             />
             <motion.div
               id="chat-panel"
+              ref={chatPanelRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="chat-title"
@@ -212,7 +248,7 @@ export function ChatWidget({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="relative z-50 mb-3 flex w-[calc(100vw-2rem)] max-w-[360px] flex-col sm:mb-3"
+              className="overlay-panel relative z-50 mb-3 flex w-[calc(100vw-2rem)] max-w-[360px] flex-col sm:mb-3"
             >
               <div className="bg-background border-border flex h-[60vh] max-h-[500px] flex-col overflow-hidden rounded-2xl border shadow-2xl">
                 <div className="bg-primary/10 border-border/50 flex items-center justify-between border-b px-4 py-3">
@@ -225,10 +261,14 @@ export function ChatWidget({
                         id="chat-title"
                         className="text-foreground text-sm font-semibold"
                       >
-                        Chat Online
+                        {mode === 'ai'
+                          ? 'Assistente J&S'
+                          : 'Atendimento Humano'}
                       </h3>
                       <p className="text-muted-foreground text-xs">
-                        Assistente IA • Online
+                        {mode === 'ai'
+                          ? 'Assistente IA • Online'
+                          : 'Atendente online'}
                       </p>
                     </div>
                   </div>
@@ -287,7 +327,11 @@ export function ChatWidget({
                   {isTyping && (
                     <div className="flex items-center gap-2">
                       <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
-                        <Bot className="h-4 w-4" />
+                        {mode === 'human' ? (
+                          <Headphones className="h-4 w-4" />
+                        ) : (
+                          <Bot className="h-4 w-4" />
+                        )}
                       </div>
                       <div className="bg-muted rounded-2xl px-4 py-2">
                         <div className="flex gap-1">
@@ -302,13 +346,26 @@ export function ChatWidget({
                 </div>
 
                 <div className="border-border/50 border-t p-3">
+                  {mode === 'ai' ? (
+                    <button
+                      type="button"
+                      onClick={startHumanChat}
+                      className="text-primary mb-2 text-xs font-semibold"
+                    >
+                      Falar com atendente humano
+                    </button>
+                  ) : null}
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                      placeholder="Digite sua mensagem..."
+                      placeholder={
+                        mode === 'ai'
+                          ? 'Digite sua mensagem...'
+                          : 'Mensagem para atendente...'
+                      }
                       className="bg-background border-border focus:border-primary flex-1 rounded-lg border px-3 py-2 text-sm outline-none"
                     />
                     <Button
@@ -345,7 +402,9 @@ export function ChatWidget({
         ) : (
           <>
             <Headphones className="h-5 w-5" />
-            <span className="text-sm font-medium">Precisa de ajuda?</span>
+            <span className="hidden text-sm font-medium sm:inline">
+              Fale com atendente
+            </span>
           </>
         )}
       </motion.button>

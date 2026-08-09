@@ -390,7 +390,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-card shadow-premium rounded-xl p-6"
+              className="bg-card border-border shadow-premium rounded-xl border p-6"
             >
               <div
                 className={cn(
@@ -452,7 +452,7 @@ export default function Dashboard() {
         </div>
 
         {/* Content */}
-        <div className="bg-card shadow-premium overflow-hidden rounded-2xl">
+        <div className="bg-card border-border shadow-premium overflow-hidden rounded-2xl border">
           {activeTab === 'dashboard' ? (
             <div className="p-8 text-center">
               <TrendingUp className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
