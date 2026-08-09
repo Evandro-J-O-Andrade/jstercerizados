@@ -179,6 +179,16 @@ export function ChatWidget({
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && open) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open]);
+
   return (
     <div className="fixed right-4 bottom-[calc(8rem+env(safe-area-inset-bottom))] z-50 sm:right-6 sm:bottom-[calc(9rem+env(safe-area-inset-bottom))]">
       <AnimatePresence>
