@@ -221,6 +221,12 @@ const candidateBenefits = [
     description: 'Conte com suporte para melhorar sua empregabilidade.',
     icon: MessageSquare,
   },
+  {
+    title: 'Atualização de Currículo',
+    description:
+      'Mantenha seu currículo sempre atualizado para novas oportunidades.',
+    icon: FileText,
+  },
 ];
 
 export default function Home() {
@@ -795,9 +801,9 @@ export default function Home() {
                 Encontre sua próxima oportunidade ou encontre os profissionais
                 certos para sua empresa.
               </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Link to="/vagas">
-                  <Button variant="secondary" size="lg">
+                  <Button variant="secondary" size="lg" className="w-full">
                     Está procurando uma nova oportunidade?
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
@@ -806,7 +812,7 @@ export default function Home() {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="border-border/30 text-foreground hover:bg-muted"
+                    className="border-border/30 text-foreground hover:bg-muted w-full"
                   >
                     Precisa de profissionais para sua empresa?
                     <ArrowRight className="ml-2 h-5 w-5" />
