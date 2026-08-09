@@ -1,5 +1,5 @@
 ﻿import { motion } from 'framer-motion';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Shield,
@@ -194,30 +194,6 @@ export default function Home() {
     }
     setShowcaseFinished(true);
   }, []);
-
-  useEffect(() => {
-    if (showcaseFinished) return;
-    if (typeof window === 'undefined') return;
-
-    const resetDismiss = () => {
-      sessionStorage.removeItem(SHOWCASE_KEY);
-      setShowcaseFinished(false);
-    };
-
-    window.addEventListener('pointermove', resetDismiss);
-    window.addEventListener('pointerdown', resetDismiss);
-    window.addEventListener('keydown', resetDismiss);
-    window.addEventListener('scroll', resetDismiss);
-    window.addEventListener('touchstart', resetDismiss);
-
-    return () => {
-      window.removeEventListener('pointermove', resetDismiss);
-      window.removeEventListener('pointerdown', resetDismiss);
-      window.removeEventListener('keydown', resetDismiss);
-      window.removeEventListener('scroll', resetDismiss);
-      window.removeEventListener('touchstart', resetDismiss);
-    };
-  }, [showcaseFinished]);
 
   const destaques = mockGetVagas().slice(0, 4);
 

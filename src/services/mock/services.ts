@@ -170,27 +170,130 @@ export const mockServices: Service[] = [
     category: 'facilities',
   },
 
-  // ── Terceirização (mantida) ─────────────────────────────
   {
-    id: '5',
-    slug: 'seguranca-patrimonial',
-    title: 'Controle de Acesso e Portaria',
+    id: '6',
+    slug: 'jardinagem',
+    title: 'Jardinagem',
     shortDescription:
-      'Segurança patrimonial com monitoramento e controle de acesso inteligente.',
+      'Manutenção e conservação de áreas verdes com qualidade e profissionalismo.',
     description:
-      'Serviço especializado de segurança patrimonial com profissionais treinados, monitoramento 24h e tecnologia de ponta para proteger seu patrimônio com excelência.',
+      'Serviço completo de jardinagem e paisagismo para manter suas áreas verdes sempre cuidadas, com projetos personalizados e manutenção periódica.',
     benefits: [
-      'Monitoramento 24 horas',
-      'Rondas programadas e aleatórias',
-      'Controle de acesso inteligente',
-      'Equipe uniformizada e treinada',
-      'Comunicação integrada',
-      'Relatórios detalhados',
+      'Projetos paisagísticos',
+      'Manutenção de jardins',
+      'Cuidados com plantas e grama',
+      'Sistemas de irrigação',
+      'Limpeza de áreas verdes',
+      'Equipe especializada',
+    ],
+    image: SERVICE_IMAGES.jardinagemReal ?? '/images/services/jardinagem.svg',
+    icon: 'leaf',
+    category: 'facilities',
+  },
+  {
+    id: '7',
+    slug: 'limpeza-de-fachada',
+    title: 'Limpeza de Fachada',
+    shortDescription:
+      'Limpeza especializada de fachadas e vidros com segurança e qualidade.',
+    description:
+      'Serviço especializado de limpeza de fachadas e vidros com técnicas seguras, produtos ecológicos e equipe treinada para alturas.',
+    benefits: [
+      'Equipe treinada para altura',
+      'Produtos ecológicos',
+      'Equipamentos de segurança',
+      'Acabamento impecável',
+      'Agendamento flexível',
+      'Garantia de qualidade',
     ],
     image:
-      SERVICE_IMAGES.segurancaPatrimonial ??
-      '/images/services/controle-acesso.jfif',
-    icon: 'shield',
+      SERVICE_IMAGES.limpezaFachadaReal ??
+      '/images/services/limpeza-fachada.svg',
+    icon: 'sparkles',
+    category: 'facilities',
+  },
+  {
+    id: '8',
+    slug: 'limpeza-de-vidros',
+    title: 'Limpeza de Vidros',
+    shortDescription:
+      'Limpeza profissional de vidros e espelhos sem marcas e sem riscos.',
+    description:
+      'Serviço especializado de limpeza de vidros e espelhos com produtos e técnicas que garantem acabamento sem marcas, sem riscos e sem resíduos.',
+    benefits: [
+      'Produtos específicos para vidro',
+      'Sem marcas ou riscos',
+      'Equipe treinada',
+      'Atendimento residencial e comercial',
+      'Agendamento rápido',
+      'Garantia de satisfação',
+    ],
+    image:
+      SERVICE_IMAGES.limpezaVidrosReal ?? '/images/services/limpeza-vidros.svg',
+    icon: 'sparkles',
+    category: 'facilities',
+  },
+  {
+    id: '9',
+    slug: 'faxina',
+    title: 'Faxina',
+    shortDescription:
+      'Serviço de faxina residencial e comercial com limpeza profunda e organização.',
+    description:
+      'Serviço de faxina residencial e comercial com limpeza profunda, organização de ambientes e atenção aos detalhes para deixar tudo impecável.',
+    benefits: [
+      'Limpeza profunda',
+      'Organização de ambientes',
+      'Produtos ecológicos',
+      'Profissionais treinados',
+      'Atendimento personalizado',
+      'Flexibilidade de horário',
+    ],
+    image: SERVICE_IMAGES.faxinaReal ?? '/images/services/faxina.svg',
+    icon: 'sparkles',
+    category: 'facilities',
+  },
+  {
+    id: '10',
+    slug: 'limpeza-pos-obra',
+    title: 'Limpeza Pós-Obra',
+    shortDescription:
+      'Limpeza pós-obra para deixar imóveis novos ou reformados prontos para uso.',
+    description:
+      'Serviço especializado de limpeza pós-obra para remover resíduos de construção, poeira e sujeira pesada, deixando o imóvel pronto para uso.',
+    benefits: [
+      'Remoção de resíduos',
+      'Limpeza profunda',
+      'Produtos específicos',
+      'Equipe equipada',
+      'Atendimento rápido',
+      'Garantia de resultado',
+    ],
+    image:
+      SERVICE_IMAGES.limpezaPosObraReal ??
+      '/images/services/limpeza-pos-obra.svg',
+    icon: 'sparkles',
+    category: 'facilities',
+  },
+  {
+    id: '11',
+    slug: 'terceirizacao',
+    title: 'Terceirização',
+    shortDescription:
+      'Terceirização de serviços operacionais e equipes especializadas para sua empresa.',
+    description:
+      'Terceirização de serviços operacionais e equipes especializadas para reduzir custos, aumentar a eficiência e garantir conformidade trabalhista.',
+    benefits: [
+      'Redução de custos',
+      'Equipes qualificadas',
+      'Gestão de pessoas',
+      'Conformidade trabalhista',
+      'Escalabilidade',
+      'Foco no core business',
+    ],
+    image:
+      SERVICE_IMAGES.terceirizacaoReal ?? '/images/services/terceirizacao.svg',
+    icon: 'building',
     category: 'terceirizacao',
   },
   {

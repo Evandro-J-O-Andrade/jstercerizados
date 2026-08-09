@@ -4,6 +4,8 @@ import { SafeImage } from '@/components/ui/SafeImage';
 
 const SHOWCASE_KEY = 'js-showcase-dismissed';
 const IDLE_TIMEOUT = 10 * 60 * 1000;
+const SLIDE_DURATION = 1400;
+const SLIDE_TRANSITION = 500;
 
 import { HERO_ASSETS } from '@/content/assets';
 
@@ -14,16 +16,22 @@ const slides = [
 ];
 
 const slideVariants = {
-  hidden: { opacity: 0, scale: 1.04 },
+  hidden: { opacity: 0, scale: 1.05 },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.9, ease: [0.25, 0.4, 0.25, 1] as const },
+    transition: {
+      duration: SLIDE_TRANSITION / 1000,
+      ease: [0.25, 0.4, 0.25, 1] as const,
+    },
   },
   exit: {
     opacity: 0,
-    scale: 1.01,
-    transition: { duration: 0.6, ease: [0.25, 0.4, 0.25, 1] as const },
+    scale: 1.02,
+    transition: {
+      duration: SLIDE_TRANSITION / 1000,
+      ease: [0.25, 0.4, 0.25, 1] as const,
+    },
   },
 } as const;
 
@@ -34,18 +42,13 @@ const reducedMotionSlideVariants = {
 } as const;
 
 function getBreakpointObjectPosition(width: number): string {
-  if (width >= 1024) {
-    return 'center 35%';
-  }
-  if (width >= 640) {
-    return 'center 40%';
-  }
+  if (width >= 1024) return 'center 35%';
+  if (width >= 640) return 'center 40%';
   return '60% center';
 }
 
 export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
   const shouldReduceMotion = useReducedMotion();
-  const [active, setActive] = useState(false);
   const [current, setCurrent] = useState(0);
   const [phase, setPhase] = useState<'idle' | 'playing' | 'closing'>('idle');
   const [objectPosition, setObjectPosition] = useState(() =>
@@ -60,7 +63,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       () => {
         onFinish();
       },
-      shouldReduceMotion ? 150 : 600,
+      shouldReduceMotion ? 150 : SLIDE_TRANSITION,
     );
   }, [onFinish, shouldReduceMotion]);
 
@@ -68,17 +71,17 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     if (typeof window === 'undefined') return;
     if (sessionStorage.getItem(SHOWCASE_KEY)) return;
 
-    let idleTimer: ReturnType<typeof setTimeout>;
+    let idleTimer: ReturnType<typeof setTimeout> | undefined;
+
     const resetIdle = () => {
       clearTimeout(idleTimer);
       if (phase === 'playing') return;
       idleTimer = setTimeout(() => {
-        setActive(true);
         setPhase('playing');
       }, IDLE_TIMEOUT);
     };
 
-    const events = [
+    const events: (keyof WindowEventMap)[] = [
       'pointermove',
       'pointerdown',
       'keydown',
@@ -111,7 +114,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           return prev + 1;
         });
       },
-      shouldReduceMotion ? 400 : 2200,
+      shouldReduceMotion ? 400 : SLIDE_DURATION,
     );
 
     return () => clearInterval(slideTimer);
@@ -139,7 +142,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  if (!active && phase === 'idle') return null;
+  if (phase === 'idle') return null;
 
   return (
     <div className="fixed inset-0 z-[70]">
