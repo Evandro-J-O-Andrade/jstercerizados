@@ -221,13 +221,22 @@ export function AccessibilityWidget({
   };
 
   return (
-    <div className="fixed top-1/2 right-4 z-40 -translate-y-1/2 sm:right-6 md:right-6">
+    <div className="fixed top-1/2 right-4 z-50 -translate-y-1/2 sm:right-6 md:right-6">
       {isOpen && (
-        <div className="bg-card border-border shadow-premium mb-3 max-h-[calc(100vh-2rem)] w-80 overflow-y-auto rounded-2xl border p-5 sm:w-96">
+        <div
+          id="accessibility-panel"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="accessibility-title"
+          className="bg-card border-border shadow-premium mb-3 max-h-[calc(100vh-2rem)] w-80 overflow-y-auto rounded-2xl border p-5 sm:w-96"
+        >
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Accessibility className="text-primary h-5 w-5" />
-              <h3 className="text-foreground text-lg font-semibold">
+              <h3
+                id="accessibility-title"
+                className="text-foreground text-lg font-semibold"
+              >
                 Acessibilidade
               </h3>
             </div>
@@ -543,6 +552,7 @@ export function AccessibilityWidget({
         className="shadow-glow-lg h-12 w-12 rounded-full sm:h-14 sm:w-14"
         aria-label="Abrir painel de acessibilidade"
         aria-expanded={isOpen}
+        aria-controls="accessibility-panel"
       >
         <Accessibility className="h-5 w-5 sm:h-6 sm:w-6" />
       </Button>

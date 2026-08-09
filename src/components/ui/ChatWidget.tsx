@@ -190,7 +190,7 @@ export function ChatWidget({
   }, [open]);
 
   return (
-    <div className="fixed right-4 bottom-[calc(10.5rem+env(safe-area-inset-bottom))] z-50 sm:right-6 sm:bottom-[calc(11.5rem+env(safe-area-inset-bottom))]">
+    <div className="fixed right-4 bottom-[calc(8rem+env(safe-area-inset-bottom))] z-40 sm:right-6 sm:bottom-8">
       <AnimatePresence>
         {open && (
           <>
@@ -204,11 +204,15 @@ export function ChatWidget({
               aria-hidden="true"
             />
             <motion.div
+              id="chat-panel"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="chat-title"
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="mb-3 flex w-[calc(100vw-2rem)] max-w-[360px] flex-col sm:mb-3"
+              className="relative z-50 mb-3 flex w-[calc(100vw-2rem)] max-w-[360px] flex-col sm:mb-3"
             >
               <div className="bg-background border-border flex h-[60vh] max-h-[500px] flex-col overflow-hidden rounded-2xl border shadow-2xl">
                 <div className="bg-primary/10 border-border/50 flex items-center justify-between border-b px-4 py-3">
@@ -217,7 +221,10 @@ export function ChatWidget({
                       <MessageCircle className="h-4 w-4" />
                     </div>
                     <div>
-                      <h3 className="text-foreground text-sm font-semibold">
+                      <h3
+                        id="chat-title"
+                        className="text-foreground text-sm font-semibold"
+                      >
                         Chat Online
                       </h3>
                       <p className="text-muted-foreground text-xs">
@@ -331,6 +338,7 @@ export function ChatWidget({
         whileTap={{ scale: 0.95 }}
         aria-label={open ? 'Fechar chat' : 'Abrir chat online'}
         aria-expanded={open}
+        aria-controls="chat-panel"
       >
         {open ? (
           <X className="h-5 w-5" />

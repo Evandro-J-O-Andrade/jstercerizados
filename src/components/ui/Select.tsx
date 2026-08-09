@@ -34,7 +34,7 @@ export function Select({
         id={selectId}
         className={twMerge(
           clsx(
-            'border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full rounded-lg border px-4 py-2.5 transition-colors focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+            'border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 read-only:bg-muted/30 read-only:text-muted-foreground w-full rounded-lg border px-4 py-2.5 transition-colors focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
             error &&
               'border-destructive focus:border-destructive focus:ring-destructive/20',
           ),
