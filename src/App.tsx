@@ -25,6 +25,8 @@ const TrabalheConosco = lazy(() => import('@/pages/TrabalheConosco'));
 const Suporte = lazy(() => import('@/pages/Suporte'));
 const FAQ = lazy(() => import('@/pages/FAQ'));
 const Contato = lazy(() => import('@/pages/Contato'));
+const Privacidade = lazy(() => import('@/pages/Privacidade'));
+const Termos = lazy(() => import('@/pages/Termos'));
 const Login = lazy(() => import('@/pages/Login'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 
@@ -57,6 +59,8 @@ function App() {
             <Route path="/suporte" element={<Suporte />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/contato" element={<Contato />} />
+            <Route path="/privacidade" element={<Privacidade />} />
+            <Route path="/termos" element={<Termos />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/*" element={<Dashboard />} />

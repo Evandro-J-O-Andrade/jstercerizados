@@ -40,6 +40,8 @@ const footerLinks = {
     { label: 'Parceiros', href: '/parceiros' },
     { label: 'Fornecedores', href: '/fornecedores' },
     { label: 'Blog', href: '/blog' },
+    { label: 'Política de Privacidade', href: '/privacidade' },
+    { label: 'Termos de Uso', href: '/termos' },
   ],
   servicos: [
     { label: 'Todos os Serviços', href: '/servicos' },
