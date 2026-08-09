@@ -55,6 +55,18 @@ const footerLinks = {
     { label: 'Jardinagem', href: '/servicos/jardinagem' },
     { label: 'Terceirização', href: '/servicos/terceirizacao' },
   ],
+  candidatos: [
+    { label: 'Vagas', href: '/vagas' },
+    { label: 'Cadastrar Currículo', href: '/trabalhe-conosco' },
+    { label: 'Processo Seletivo', href: '/processo-seletivo' },
+    { label: 'Trabalhe Conosco', href: '/trabalhe-conosco' },
+    { label: 'FAQ', href: '/faq' },
+  ],
+  empresas: [
+    { label: 'Empresas', href: '/empresas' },
+    { label: 'Divulgar Vaga', href: '/clientes' },
+    { label: 'Solicitar Contratação', href: '/clientes' },
+  ],
   atendimento: [
     { label: 'Suporte', href: '/suporte' },
     { label: 'FAQ', href: '/faq' },
@@ -264,7 +276,7 @@ export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
 
           {/* ─── Grupos desktop / accordions mobile ─ */}
           <div className="lg:col-span-9">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5">
               {/* Empresa */}
               <div className="hidden lg:block">
                 <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
@@ -291,6 +303,44 @@ export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
                 </h4>
                 <div className="space-y-3">
                   {footerLinks.servicos.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
+                    >
+                      <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Candidatos */}
+              <div className="hidden lg:block">
+                <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
+                  Para Candidatos
+                </h4>
+                <div className="space-y-3">
+                  {footerLinks.candidatos.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
+                    >
+                      <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Empresas */}
+              <div className="hidden lg:block">
+                <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
+                  Para Empresas
+                </h4>
+                <div className="space-y-3">
+                  {footerLinks.empresas.map((link) => (
                     <Link
                       key={link.href}
                       to={link.href}
@@ -401,6 +451,11 @@ export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
                 defaultOpen
               />
               <MobileAccordion title="Serviços" links={footerLinks.servicos} />
+              <MobileAccordion
+                title="Candidatos"
+                links={footerLinks.candidatos}
+              />
+              <MobileAccordion title="Empresas" links={footerLinks.empresas} />
               <MobileAccordion
                 title="Atendimento"
                 links={footerLinks.atendimento}
