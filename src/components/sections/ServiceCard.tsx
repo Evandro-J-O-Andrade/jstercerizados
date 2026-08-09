@@ -31,6 +31,12 @@ const SERVICE_IMAGE_FALLBACK: Record<string, string> = {
   'seguranca-patrimonial': SERVICE_IMAGES.terceirizacao,
   'limpeza-conservacao': SERVICE_IMAGES.limpeza,
   'zeladoria-manutencao': SERVICE_IMAGES.facilities,
+  jardinagem: SERVICE_IMAGES.jardinagem,
+  'limpeza-de-fachada': SERVICE_IMAGES.limpezaFachadaReal,
+  'limpeza-de-vidros': SERVICE_IMAGES.limpezaVidrosReal,
+  faxina: SERVICE_IMAGES.faxinaReal,
+  'limpeza-pos-obra': SERVICE_IMAGES.limpezaPosObraReal,
+  terceirizacao: SERVICE_IMAGES.terceirizacaoReal,
 };
 
 export function ServiceCard({ service, index }: ServiceCardProps) {
