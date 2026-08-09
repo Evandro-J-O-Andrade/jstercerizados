@@ -83,6 +83,14 @@ Corrigir consistência visual, overlays, responsividade, acessibilidade, UTF-8 e
 - Toggle knobs da acessibilidade alterados para `bg-background`
 - Estilos do Blog corrigidos
 
+### 10. Correções pós-checkpoint (commit c15d95f)
+
+- Removidos botões **Acessibilidade** e **Precisa de ajuda?** do footer mobile, pois já existem ícones flutuantes para essas ações
+- Removidas props `onOpenAccessibility` e `onOpenChat` do componente `Footer`
+- `BottomNavigation` agora usa `z-50` para garantir que fique sempre acima de todo o conteúdo
+- Bottom Bar do footer (`© ...` / `Desenvolvido por ...`) agora fica abaixo da barra de navegação inferior, sem `backdrop-blur` no mobile
+- Corrigida sintaxe do `Footer.tsx` após remoção das props
+
 ## Arquivos modificados
 
 - `src/styles/index.css`
@@ -92,6 +100,7 @@ Corrigir consistência visual, overlays, responsividade, acessibilidade, UTF-8 e
 - `src/components/layout/Navbar.tsx`
 - `src/components/layout/Footer.tsx`
 - `src/components/layout/BottomNavigation.tsx`
+- `src/App.tsx`
 
 ## Build e validação
 
