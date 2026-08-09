@@ -3,12 +3,17 @@ import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Shield,
+  Search,
   Users,
+  Building2,
+  Target,
+  FileText,
   Briefcase,
+  Zap,
+  CheckCircle2,
+  Heart,
   ArrowRight,
   MapPin,
-  FileText,
-  Search,
   Bell,
   MessageSquare,
   Phone,
@@ -45,7 +50,7 @@ const heroSlides = [
       </>
     ),
     subtitle:
-      'Mais eficiência em Recursos Humanos, mais agilidade para sua empresa. Encontramos o profissional certo para sua empresa e ajudamos candidatos a conquistar novas oportunidades de trabalho.',
+      'Mais eficiência em Recursos Humanos, mais agilidade para sua empresa. Conectamos empresas aos profissionais certos e ajudamos candidatos a conquistar novas oportunidades.',
     cta: (
       <>
         <Link to="/empresas">
@@ -69,70 +74,6 @@ const heroSlides = [
           </Button>
         </Link>
       </>
-    ),
-  },
-  {
-    id: 'facilities',
-    image: '/images/services/facilities-jardinagem.webp',
-    alt: 'Facilities e soluções operacionais',
-    eyebrow: (
-      <span className="flex items-center gap-2">
-        <Briefcase className="h-4 w-4" />
-        Facilities
-      </span>
-    ),
-    title: (
-      <>
-        Ambientes mais eficientes,
-        <br />
-        equipes mais preparadas.
-      </>
-    ),
-    subtitle:
-      'Limpeza, conservação, jardinagem e portaria para sua operação funcionar com excelência.',
-    cta: (
-      <Link to="/servicos">
-        <Button
-          variant="secondary"
-          size="xl"
-          className="shadow-glow-lg h-14 rounded-[18px] px-8 py-4 text-base"
-        >
-          Nossos Serviços
-          <ArrowRight className="ml-2 h-5 w-5" />
-        </Button>
-      </Link>
-    ),
-  },
-  {
-    id: 'mao-de-obra',
-    image: '/images/services/mao-de-obra.webp',
-    alt: 'Mão de obra temporária e efetiva',
-    eyebrow: (
-      <span className="flex items-center gap-2">
-        <Users className="h-4 w-4" />
-        Mão de Obra
-      </span>
-    ),
-    title: (
-      <>
-        Profissionais preparados
-        <br />
-        para sua necessidade.
-      </>
-    ),
-    subtitle:
-      'Mão de obra temporária e efetiva com seleção rigorosa e gestão especializada.',
-    cta: (
-      <Link to="/servicos/mao-de-obra-temporaria">
-        <Button
-          variant="secondary"
-          size="xl"
-          className="shadow-glow-lg h-14 rounded-[18px] px-8 py-4 text-base"
-        >
-          Solicitar Profissionais
-          <ArrowRight className="ml-2 h-5 w-5" />
-        </Button>
-      </Link>
     ),
   },
 ];
@@ -184,27 +125,33 @@ const differentials = [
     title: 'Banco de talentos atualizado',
     description:
       'Base de currículos qualificados pronta para atender sua vaga com agilidade.',
+    icon: Briefcase,
   },
   {
     title: 'Atendimento rápido',
     description: 'Respostas ágeis para candidatos e empresas, sem burocracia.',
+    icon: Zap,
   },
   {
     title: 'Empresas parceiras',
     description: 'Rede de empresas confiantes que contratam pela J&S.',
+    icon: Building2,
   },
   {
     title: 'Equipe especializada em RH',
     description: 'Profissionais com experiência em recrutamento e seleção.',
+    icon: Users,
   },
   {
     title: 'Processos seletivos eficientes',
     description:
       'Metodologia rápida e humanizada para reduzir o tempo de contratação.',
+    icon: CheckCircle2,
   },
   {
     title: 'Atendimento humanizado',
     description: 'Acompanhamento próximo para candidatos e empresas.',
+    icon: Heart,
   },
 ];
 
@@ -214,35 +161,41 @@ const empresaSolutions = [
     description:
       'Encontramos o profissional certo para sua empresa com agilidade e assertividade.',
     href: '/servicos/recrutamento-selecao',
+    icon: Search,
   },
   {
     title: 'Mão de Obra Temporária',
     description:
       'Profissionais qualificados para demandas sazonais ou projetos específicos.',
     href: '/servicos/mao-de-obra-temporaria',
+    icon: Users,
   },
   {
     title: 'Terceirização de Serviços',
     description:
       'Reduza custos e aumente a eficiência com serviços terceirizados especializados.',
     href: '/servicos/terceirizacao',
+    icon: Building2,
   },
   {
     title: 'Hunting de Executivos',
     description:
       'Identificação e atração de lideranças para posições estratégicas.',
     href: '/servicos/hunting',
+    icon: Target,
   },
   {
     title: 'Avaliação de Perfil',
     description:
       'Análise comportamental e técnica para garantir a melhor escolha.',
     href: '/servicos/avaliacao-perfil',
+    icon: FileText,
   },
   {
     title: 'Banco de Talentos',
     description: 'Acesso a uma base atualizada de candidatos pré-qualificados.',
     href: '/servicos/banco-de-talentos',
+    icon: Briefcase,
   },
 ];
 
@@ -355,6 +308,9 @@ export default function Home() {
                 variants={staggerItem('up')}
                 className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300"
               >
+                <div className="bg-primary/10 text-primary mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                  <solution.icon className="h-6 w-6" />
+                </div>
                 <h3 className="text-foreground mb-2 text-lg font-semibold">
                   {solution.title}
                 </h3>
@@ -658,6 +614,9 @@ export default function Home() {
                 variants={staggerItem('up')}
                 className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300"
               >
+                <div className="bg-primary/10 text-primary mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                  <item.icon className="h-6 w-6" />
+                </div>
                 <h3 className="text-foreground mb-2 text-lg font-semibold">
                   {item.title}
                 </h3>
