@@ -76,6 +76,10 @@ function App() {
       <AccessibilityWidget
         open={isAccessibilityOpen}
         onOpenChange={setIsAccessibilityOpen}
+        onOpenChat={() => {
+          setIsAccessibilityOpen(false);
+          setIsChatOpen(true);
+        }}
       />
       <ChatWidget isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
     </div>
