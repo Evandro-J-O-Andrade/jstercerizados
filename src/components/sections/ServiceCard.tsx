@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import type { Service } from '@/types/common';
 import { SERVICE_ICONS } from '@/constants/icons';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { SERVICE_IMAGES } from '@/content/assets';
+import { SERVICE_IMAGES, FALLBACK_IMAGES } from '@/content/assets';
 
 interface ServiceCardProps {
   service: Service;
@@ -40,6 +40,11 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
   const fallbackImage =
     SERVICE_IMAGE_FALLBACK[service.slug] || SERVICE_IMAGES.facilitiesFallback;
 
+  const resolvedImage =
+    service.image && service.image !== FALLBACK_IMAGES.servicos
+      ? service.image
+      : fallbackImage;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -62,7 +67,7 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
         {/* Image area */}
         <div className="relative h-52 overflow-hidden sm:h-56">
           <SafeImage
-            src={service.image}
+            src={resolvedImage}
             alt={service.title}
             loading="lazy"
             decoding="async"
