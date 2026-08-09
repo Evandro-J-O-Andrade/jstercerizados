@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/utils';
 import {
@@ -16,28 +16,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { COMPANY, getWhatsAppUrl, WHATSAPP_MESSAGES } from '@/config';
-
-const FONT_SIZES = [100, 110, 120, 130, 140];
-
-type AccessibilityState = {
-  fontSizeIndex: number;
-  highContrast: boolean;
-  highlightLinks: boolean;
-  increasedSpacing: boolean;
-  reduceAnimations: boolean;
-  focusMode: boolean;
-  grayscale: boolean;
-};
-
-const INITIAL_STATE: AccessibilityState = {
-  fontSizeIndex: 1,
-  highContrast: false,
-  highlightLinks: false,
-  increasedSpacing: false,
-  reduceAnimations: false,
-  focusMode: false,
-  grayscale: false,
-};
+import { useAccessibility } from '@/hooks/useAccessibility';
 
 export function AccessibilityWidget({
   open: externalOpen,
@@ -51,34 +30,34 @@ export function AccessibilityWidget({
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
   const setOpen = onOpenChange ?? setInternalOpen;
-  const [state, setState] = useState<AccessibilityState>(INITIAL_STATE);
   const [tts, setTts] = useState({ speaking: false, paused: false });
   const panelRef = useRef<HTMLDivElement>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
+  const {
+    settings,
+    increaseFontSize,
+    decreaseFontSize,
+    resetSettings,
+    updateSetting,
+  } = useAccessibility();
+
   useEffect(() => {
     const root = document.documentElement;
-    root.style.fontSize = `${FONT_SIZES[state.fontSizeIndex]}%`;
-
-    root.classList.toggle('high-contrast', state.highContrast);
-    root.classList.toggle('highlight-links', state.highlightLinks);
-    root.classList.toggle('increased-spacing', state.increasedSpacing);
-    root.classList.toggle('reduce-animations', state.reduceAnimations);
-    root.classList.toggle('focus-mode', state.focusMode);
-    root.classList.toggle('grayscale', state.grayscale);
+    root.classList.toggle('high-contrast', settings.contrast);
+    root.classList.toggle('highlight-links', settings.highlightLinks);
+    root.classList.toggle('grayscale', settings.grayscale);
+    root.classList.toggle('reduce-animations', settings.reducedMotion);
 
     return () => {
-      root.style.fontSize = '';
       root.classList.remove(
         'high-contrast',
         'highlight-links',
-        'increased-spacing',
-        'reduce-animations',
-        'focus-mode',
         'grayscale',
+        'reduce-animations',
       );
     };
-  }, [state]);
+  }, [settings]);
 
   useEffect(() => {
     if (open) {
@@ -135,9 +114,9 @@ export function AccessibilityWidget({
   }, [open]);
 
   const resetAll = useCallback(() => {
-    setState(INITIAL_STATE);
+    resetSettings();
     stopTts();
-  }, []);
+  }, [resetSettings]);
 
   const stopTts = useCallback(() => {
     window.speechSynthesis.cancel();
@@ -257,39 +236,21 @@ export function AccessibilityWidget({
                           variant="ghost"
                           size="icon"
                           className="h-7 w-7"
-                          onClick={() =>
-                            setState((prev) => ({
-                              ...prev,
-                              fontSizeIndex: Math.max(
-                                prev.fontSizeIndex - 1,
-                                0,
-                              ),
-                            }))
-                          }
-                          disabled={state.fontSizeIndex === 0}
+                          onClick={decreaseFontSize}
+                          disabled={settings.fontSize <= 80}
                           aria-label="Diminuir fonte"
                         >
                           <Minus className="h-3.5 w-3.5" />
                         </Button>
                         <span className="text-foreground w-10 text-center text-xs font-medium">
-                          {FONT_SIZES[state.fontSizeIndex]}%
+                          {settings.fontSize}%
                         </span>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-7 w-7"
-                          onClick={() =>
-                            setState((prev) => ({
-                              ...prev,
-                              fontSizeIndex: Math.min(
-                                prev.fontSizeIndex + 1,
-                                FONT_SIZES.length - 1,
-                              ),
-                            }))
-                          }
-                          disabled={
-                            state.fontSizeIndex === FONT_SIZES.length - 1
-                          }
+                          onClick={increaseFontSize}
+                          disabled={settings.fontSize >= 150}
                           aria-label="Aumentar fonte"
                         >
                           <Plus className="h-3.5 w-3.5" />
@@ -299,53 +260,42 @@ export function AccessibilityWidget({
 
                     <ToggleRow
                       label="Alto contraste"
-                      checked={state.highContrast}
-                      onChange={(checked) =>
-                        setState((prev) => ({ ...prev, highContrast: checked }))
-                      }
+                      checked={settings.contrast}
+                      onChange={(checked) => updateSetting('contrast', checked)}
                     />
                     <ToggleRow
                       label="Destacar links"
-                      checked={state.highlightLinks}
+                      checked={settings.highlightLinks}
                       onChange={(checked) =>
-                        setState((prev) => ({
-                          ...prev,
-                          highlightLinks: checked,
-                        }))
+                        updateSetting('highlightLinks', checked)
                       }
                     />
                     <ToggleRow
                       label="Espaçamento aumentado"
-                      checked={state.increasedSpacing}
+                      checked={settings.increasedSpacing}
                       onChange={(checked) =>
-                        setState((prev) => ({
-                          ...prev,
-                          increasedSpacing: checked,
-                        }))
+                        updateSetting('increasedSpacing', checked)
                       }
                     />
                     <ToggleRow
                       label="Reduzir animações"
-                      checked={state.reduceAnimations}
+                      checked={settings.reducedMotion}
                       onChange={(checked) =>
-                        setState((prev) => ({
-                          ...prev,
-                          reduceAnimations: checked,
-                        }))
+                        updateSetting('reducedMotion', checked)
                       }
                     />
                     <ToggleRow
                       label="Modo foco"
-                      checked={state.focusMode}
+                      checked={settings.focusMode}
                       onChange={(checked) =>
-                        setState((prev) => ({ ...prev, focusMode: checked }))
+                        updateSetting('focusMode', checked)
                       }
                     />
                     <ToggleRow
                       label="Escala de cinza"
-                      checked={state.grayscale}
+                      checked={settings.grayscale}
                       onChange={(checked) =>
-                        setState((prev) => ({ ...prev, grayscale: checked }))
+                        updateSetting('grayscale', checked)
                       }
                     />
                   </div>
