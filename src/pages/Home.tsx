@@ -40,12 +40,13 @@ const heroSlides = [
     ),
     title: (
       <>
-        <span className="text-primary">Mais eficiência</span> em Recursos
-        Humanos, mais agilidade para sua empresa.
+        <span className="text-primary">Mais eficiência</span> em RH.
+        <br />
+        Mais resultados para sua empresa.
       </>
     ),
     subtitle:
-      'Simplifique processos, reduza o tempo gasto com tarefas operacionais e foque no que realmente importa: o crescimento do seu negócio.',
+      'Conectamos empresas a profissionais qualificados. Encontramos o profissional certo para sua empresa e ajudamos candidatos a conquistar novas oportunidades.',
     cta: (
       <>
         <Link to="/empresas">
@@ -176,6 +177,35 @@ const blogPosts = [
   {
     title: 'Dicas para conquistar seu primeiro emprego',
     href: '/blog',
+  },
+];
+
+const differentials = [
+  {
+    title: 'Banco de talentos atualizado',
+    description:
+      'Base de currículos qualificados pronta para atender sua vaga com agilidade.',
+  },
+  {
+    title: 'Atendimento rápido',
+    description: 'Respostas ágeis para candidatos e empresas, sem burocracia.',
+  },
+  {
+    title: 'Empresas parceiras',
+    description: 'Rede de empresas confiantes que contratam pela J&S.',
+  },
+  {
+    title: 'Equipe especializada em RH',
+    description: 'Profissionais com experiência em recrutamento e seleção.',
+  },
+  {
+    title: 'Processos seletivos eficientes',
+    description:
+      'Metodologia rápida e humanizada para reduzir o tempo de contratação.',
+  },
+  {
+    title: 'Atendimento humanizado',
+    description: 'Acompanhamento próximo para candidatos e empresas.',
   },
 ];
 
@@ -582,6 +612,56 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
+        </Container>
+      </Section>
+
+      {/* Diferenciais */}
+      <Section>
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Nossos diferenciais
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Atendimento especializado em RH com foco em resultados para
+              empresas e candidatos.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {differentials.map((item) => (
+              <motion.div
+                key={item.title}
+                variants={staggerItem('up')}
+                className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300"
+              >
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  {item.title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
         </Container>
       </Section>
 
