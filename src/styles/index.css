@@ -398,6 +398,21 @@
     background-color: hsl(var(--primary) / 0.1) !important;
   }
 
+  .contrast-mode {
+    filter: contrast(140%) saturate(0%);
+  }
+
+  .grayscale-mode {
+    filter: grayscale(100%);
+  }
+
+  .reduced-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
   .increased-spacing {
     line-height: 2 !important;
     letter-spacing: 0.05em !important;
@@ -406,13 +421,6 @@
   .increased-spacing * {
     margin-bottom: 1.5em !important;
     padding-bottom: 1.5em !important;
-  }
-
-  .reduce-animations * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 
   .focus-mode *:not(:focus) {
