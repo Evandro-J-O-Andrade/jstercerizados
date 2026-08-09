@@ -200,7 +200,7 @@ export function AccessibilityWidget({
   }, []);
 
   return (
-    <div className="fixed bottom-[calc(8rem+env(safe-area-inset-bottom))] left-4 z-50 sm:bottom-[calc(9rem+env(safe-area-inset-bottom))]">
+    <div className="fixed bottom-[calc(7.5rem+env(safe-area-inset-bottom))] left-4 z-50 sm:bottom-[calc(8.5rem+env(safe-area-inset-bottom))]">
       <AnimatePresence>
         {open && (
           <>

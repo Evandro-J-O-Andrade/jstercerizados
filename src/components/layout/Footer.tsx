@@ -202,7 +202,7 @@ export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-border/50 bg-surface relative z-10 border-t">
+    <footer className="border-border/50 bg-surface relative z-40 border-t">
       <div className="via-primary/40 absolute -top-px right-0 left-0 h-px bg-gradient-to-r from-transparent to-transparent" />
 
       <div className="mx-auto max-w-[1600px] px-4 py-16 pb-28 sm:px-6 lg:px-8">
