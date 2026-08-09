@@ -388,8 +388,20 @@
     filter: contrast(1.5);
   }
 
+  .high-contrast {
+    background-color: #000 !important;
+    color: #fff !important;
+  }
+
   .high-contrast * {
-    border-color: hsl(0 0% 100%) !important;
+    border-color: #fff !important;
+    color: #fff !important;
+    background-color: #000 !important;
+  }
+
+  .high-contrast .text-primary,
+  .high-contrast [class*='text-primary'] {
+    color: #ffd700 !important;
   }
 
   .highlight-links a {
@@ -406,7 +418,7 @@
     filter: grayscale(100%);
   }
 
-  .reduced-motion * {
+  .reduce-motion * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
