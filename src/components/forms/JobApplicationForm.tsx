@@ -10,6 +10,7 @@ import { Mail, MapPin, Clock, CheckCircle2, Upload } from 'lucide-react';
 type JobApplicationFormProps = {
   jobTitle?: string;
   jobSlug?: string;
+  vagaId?: string;
 };
 
 const contractOptions = [
@@ -22,7 +23,11 @@ const contractOptions = [
   { value: 'CD', label: 'C/D' },
 ];
 
-export function JobApplicationForm({ jobTitle }: JobApplicationFormProps) {
+export function JobApplicationForm({
+  jobTitle,
+  jobSlug,
+  vagaId,
+}: JobApplicationFormProps) {
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -54,6 +59,8 @@ export function JobApplicationForm({ jobTitle }: JobApplicationFormProps) {
     const message = encodeURIComponent(
       `*Nova candidatura*\n\n` +
         `*Vaga:* ${jobTitle || 'Não informada'}\n` +
+        `*ID da vaga:* ${vagaId || '-'}\n` +
+        `*Slug:* ${jobSlug || '-'}\n` +
         `*Nome:* ${form.name}\n` +
         `*E-mail:* ${form.email}\n` +
         `*Telefone:* ${form.phone}\n` +

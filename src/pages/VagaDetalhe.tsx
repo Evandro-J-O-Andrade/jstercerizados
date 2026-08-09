@@ -203,7 +203,11 @@ export default function VagaDetalhe() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              <JobApplicationForm jobTitle={vaga.titulo} />
+              <JobApplicationForm
+                jobTitle={vaga.titulo}
+                jobSlug={vaga.slug}
+                vagaId={vaga.id}
+              />
             </motion.div>
           </motion.div>
         </Container>
