@@ -6,7 +6,7 @@ export const COMPANY_DEMO = {
   mission:
     'Conectar empresas aos profissionais certos e ajudar candidatos a conquistarem novas oportunidades, por meio de recrutamento, seleção e um banco de talentos sempre atualizado.',
   vision:
-    'Ser a referência em agência de empregos e assessoria de RH, reconhecida pela excelência no recrutamento e pela conexão humanizada entre empresas e talentos.',
+    'Ser referência em assessoria em RH, recrutamento, mão de obra, terceirização e facilities, reconhecida pela excelência e pela conexão humanizada entre empresas e talentos.',
   values: [
     'Compromisso',
     'Excelência',

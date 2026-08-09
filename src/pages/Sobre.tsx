@@ -116,9 +116,10 @@ export default function Sobre() {
                 Nossa Visão
               </h3>
               <p className="text-muted-foreground leading-relaxed">
-                Ser a referência em agência de empregos e assessoria de RH,
-                reconhecida pela excelência no recrutamento e pela conexão
-                humanizada entre empresas e talentos.
+                Ser referência em assessoria em RH, recrutamento, mão de obra,
+                terceirização e facilities, reconhecida pela excelência no
+                recrutamento e pela conexão humanizada entre empresas e
+                talentos.
               </p>
             </motion.div>
           </motion.div>

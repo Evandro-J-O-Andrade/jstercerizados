@@ -52,8 +52,9 @@ export default function Empresas() {
               Encontre profissionais qualificados para sua equipe
             </h1>
             <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
-              Nossa agência de empregos conecta empresas aos melhores talentos
-              do mercado através de recrutamento, seleção e banco de candidatos.
+              Nossa assessoria em RH e soluções de terceirização conectam
+              empresas aos melhores talentos do mercado através de recrutamento,
+              seleção e banco de candidatos.
             </p>
           </motion.div>
 

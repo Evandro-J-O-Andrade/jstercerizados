@@ -9,11 +9,11 @@ export interface PageSEO {
 
 export const SEO_PAGES: Record<string, PageSEO> = {
   '/': {
-    title: `${COMPANY.name} — Agência de Empregos e Assessoria em RH`,
+    title: `${COMPANY.name} — Assessoria em RH, Facilities e Terceirização`,
     description:
-      'Mais eficiência em RH. Mais resultados para sua empresa. Conectamos talentos às melhores oportunidades. Encontre vagas de emprego ou profissionais qualificados.',
+      'Assessoria em RH, recrutamento, mão de obra temporária e efetiva, terceirização e facilities. Mais eficiência para sua empresa.',
     keywords: [
-      'agência de empregos',
+      'assessoria em RH',
       'recrutamento',
       'seleção de pessoas',
       'mão de obra',
@@ -23,6 +23,7 @@ export const SEO_PAGES: Record<string, PageSEO> = {
       'RH',
       'banco de talentos',
       'facilities',
+      'terceirização',
     ],
     path: '/',
   },
@@ -104,10 +105,17 @@ export const SEO_PAGES: Record<string, PageSEO> = {
     path: '/processo-seletivo',
   },
   '/sobre': {
-    title: `Sobre Nós — ${COMPANY.name} | Agência de Empregos e RH`,
+    title: `Sobre Nós — ${COMPANY.name} | Assessoria em RH e Terceirização`,
     description:
-      'Conheça nossa história e nossa missão de conectar talentos às melhores oportunidades através de recrutamento, seleção e mão de obra.',
-    keywords: ['sobre nós', 'história', 'missão', 'agência de empregos', 'RH'],
+      'Conheça a J&S Terceirizados: assessoria em RH, recrutamento, mão de obra temporária e efetiva, terceirização e facilities.',
+    keywords: [
+      'sobre nós',
+      'história',
+      'missão',
+      'assessoria em RH',
+      'terceirização',
+      'facilities',
+    ],
     path: '/sobre',
   },
   '/clientes': {
