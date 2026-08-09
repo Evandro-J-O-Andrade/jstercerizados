@@ -105,18 +105,26 @@ const blogPosts = [
   {
     title: 'Como fazer um currículo vencedor',
     href: '/blog',
+    category: 'Carreira',
+    date: '2026-07-15',
   },
   {
     title: 'Como se preparar para entrevistas',
     href: '/blog',
+    category: 'Entrevista',
+    date: '2026-07-10',
   },
   {
     title: 'Tendências do mercado de trabalho',
     href: '/blog',
+    category: 'Mercado',
+    date: '2026-07-05',
   },
   {
     title: 'Dicas para conquistar seu primeiro emprego',
     href: '/blog',
+    category: 'Carreira',
+    date: '2026-06-28',
   },
 ];
 
@@ -350,7 +358,7 @@ export default function Home() {
       </Section>
 
       {/* 3. PARA CANDIDATOS */}
-      <Section>
+      <Section className="bg-surface-alt">
         <Container>
           <motion.div
             initial="hidden"
@@ -733,7 +741,7 @@ export default function Home() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
           >
             {blogPosts.map((post) => (
               <motion.div
@@ -741,8 +749,9 @@ export default function Home() {
                 variants={staggerItem('up')}
                 className="bg-card shadow-premium rounded-2xl p-6 transition-all duration-300"
               >
-                <div className="bg-primary/10 text-primary mb-4 flex h-10 w-10 items-center justify-center rounded-xl">
-                  <FileText className="h-5 w-5" />
+                <div className="text-primary mb-4 flex items-center justify-between text-xs font-medium">
+                  <span>{post.category}</span>
+                  <span>{post.date}</span>
                 </div>
                 <h3 className="text-foreground mb-2 text-base font-semibold">
                   {post.title}
