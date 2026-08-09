@@ -12,10 +12,8 @@ import {
   Bell,
   MessageSquare,
   Phone,
-  Star,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { SafeImage } from '@/components/ui/SafeImage';
 import { Section } from '@/components/sections/Section';
 import { HeroSplit } from '@/components/sections/HeroSplit';
 import { CinematicShowcase } from '@/components/sections/CinematicIntro';
@@ -24,8 +22,6 @@ import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { mockGetVagas } from '@/services/mock/vagas';
-import { PARTNERS_LOGOS } from '@/mock/partners';
-import { TESTIMONIALS_DEMO } from '@/mock/testimonials';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 
 const SHOWCASE_KEY = 'js-showcase-dismissed';
@@ -530,17 +526,6 @@ export default function Home() {
                       {vaga.cidade}, {vaga.estado}
                     </span>
                   </div>
-                  {vaga.salarioMin && (
-                    <div className="flex items-center gap-2">
-                      <span>R$</span>
-                      <span>
-                        {vaga.salarioMin.toLocaleString('pt-BR')}
-                        {vaga.salarioMax
-                          ? ' – ' + vaga.salarioMax.toLocaleString('pt-BR')
-                          : ' a combinar'}
-                      </span>
-                    </div>
-                  )}
                   <span className="inline-block text-xs">
                     {vaga.modalidade === 'PRESENCIAL'
                       ? 'Presencial'
@@ -550,33 +535,10 @@ export default function Home() {
                   </span>
                 </div>
 
-                {vaga.beneficios && vaga.beneficios.length > 0 && (
-                  <div className="mb-4">
-                    <p className="text-muted-foreground mb-2 text-xs font-medium">
-                      Benefícios
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {vaga.beneficios.slice(0, 3).map((beneficio) => (
-                        <span
-                          key={beneficio}
-                          className="bg-muted rounded-full px-2 py-0.5 text-xs"
-                        >
-                          {beneficio}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 <div className="mt-auto flex gap-2">
                   <Link to={`/vagas/${vaga.slug}`} className="flex-1">
                     <Button variant="primary" size="sm" className="w-full">
                       Ver vaga
-                    </Button>
-                  </Link>
-                  <Link to="/trabalhe-conosco" className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full">
-                      Candidatar-se
                     </Button>
                   </Link>
                 </div>
@@ -772,124 +734,6 @@ export default function Home() {
                 </a>
               </div>
             </div>
-          </motion.div>
-        </Container>
-      </Section>
-
-      {/* 8. CLIENTES E PARCEIROS */}
-      <Section className="bg-surface-alt">
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
-            className="mb-12 text-center"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Empresas e parceiros que fazem parte da nossa atuação
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Material demonstrativo de referências comerciais.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
-            variants={staggerReveal(0.1)}
-          >
-            {PARTNERS_LOGOS.map((partner) => (
-              <motion.div
-                key={partner.name}
-                variants={staggerItem('up')}
-                whileHover={{ y: -6, scale: 1.03 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-                className="group bg-muted/50 relative overflow-hidden rounded-2xl border border-white/5"
-              >
-                <div className="relative aspect-[4/3] w-full overflow-hidden">
-                  <SafeImage
-                    src={partner.photo}
-                    fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' fill='%23111'%3E%3Crect width='400' height='300' fill='%232a2a2a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='16'%3EEmpresa%3C/text%3E%3C/svg%3E"
-                    alt={partner.name}
-                    className="h-full w-full object-cover contrast-125 grayscale-[40%] transition-all duration-500 group-hover:contrast-100 group-hover:grayscale-0"
-                  />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_40%,rgba(5,9,20,0.6)_100%)]" />
-                </div>
-                <div className="p-3 text-center">
-                  <span className="text-foreground group-hover:text-primary text-xs font-semibold transition-colors">
-                    {partner.name}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </Container>
-      </Section>
-
-      {/* 9. CREDIBILIDADE */}
-      <Section>
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
-            className="mb-12 text-center"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              O que dizem sobre nós
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Conteúdo demonstrativo de depoimentos.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
-          >
-            {TESTIMONIALS_DEMO.map((item) => (
-              <motion.div
-                key={item.id}
-                variants={staggerItem('up')}
-                className="bg-card border-border rounded-2xl border p-6 transition-all duration-300"
-              >
-                <div className="text-primary mb-4 flex items-center gap-1">
-                  {Array.from({ length: item.rating }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-current" />
-                  ))}
-                </div>
-                <p className="text-foreground mb-4 text-sm leading-relaxed">
-                  “{item.quote}”
-                </p>
-                <div>
-                  <p className="text-foreground text-sm font-semibold">
-                    {item.name}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {item.role} — {item.company}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
           </motion.div>
         </Container>
       </Section>
