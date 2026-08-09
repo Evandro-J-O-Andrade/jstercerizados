@@ -23,7 +23,6 @@ import { mockServices } from '@/services/mock/services';
 import { mockGetVagas } from '@/services/mock/vagas';
 import { PARTNERS_LOGOS } from '@/mock/partners';
 import { COMPANY } from '@/config';
-import { IMAGES } from '@/config/images';
 import type { Service } from '@/types/common';
 
 const SHOWCASE_KEY = 'js-showcase-dismissed';
@@ -31,7 +30,7 @@ const SHOWCASE_KEY = 'js-showcase-dismissed';
 const heroSlides = [
   {
     id: 'assessoria-rh',
-    image: IMAGES.hero.home.slides[0],
+    image: '/images/services/assessoria-rh.png',
     alt: 'Assessoria em Recursos Humanos',
     eyebrow: (
       <span className="flex items-center gap-2">
@@ -74,7 +73,7 @@ const heroSlides = [
   },
   {
     id: 'facilities',
-    image: IMAGES.hero.home.slides[1],
+    image: '/images/services/facilities-jardinagem.webp',
     alt: 'Facilities e soluções operacionais',
     eyebrow: (
       <span className="flex items-center gap-2">
@@ -106,7 +105,7 @@ const heroSlides = [
   },
   {
     id: 'mao-de-obra',
-    image: IMAGES.hero.home.slides[2],
+    image: '/images/services/mao-de-obra.webp',
     alt: 'Mão de obra temporária e efetiva',
     eyebrow: (
       <span className="flex items-center gap-2">
@@ -118,13 +117,13 @@ const heroSlides = [
       <>
         Profissionais preparados
         <br />
-        para atender sua necessidade.
+        para sua necessidade.
       </>
     ),
     subtitle:
-      'Mão de obra temporária e efetiva com agilidade, segurança e gestão especializada.',
+      'Mão de obra temporária e efetiva com seleção rigorosa e gestão especializada.',
     cta: (
-      <Link to="/servicos">
+      <Link to="/servicos/mao-de-obra-temporaria">
         <Button
           variant="secondary"
           size="xl"
