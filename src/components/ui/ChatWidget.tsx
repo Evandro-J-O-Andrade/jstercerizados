@@ -200,7 +200,7 @@ export function ChatWidget({
               transition={{ duration: 0.2 }}
               className="mb-3 flex w-[calc(100vw-2rem)] max-w-[360px] flex-col sm:mb-3"
             >
-              <div className="bg-card border-border flex h-[60vh] max-h-[500px] flex-col overflow-hidden rounded-2xl border shadow-2xl">
+              <div className="bg-background border-border flex h-[60vh] max-h-[500px] flex-col overflow-hidden rounded-2xl border shadow-2xl">
                 <div className="bg-primary/10 border-border/50 flex items-center justify-between border-b px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full">

@@ -222,7 +222,7 @@ export function AccessibilityWidget({
             >
               <div
                 ref={panelRef}
-                className="bg-card border-border flex max-h-[70vh] w-80 flex-col overflow-hidden rounded-2xl border shadow-2xl"
+                className="bg-background border-border flex max-h-[70vh] w-80 flex-col overflow-hidden rounded-2xl border shadow-2xl"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Painel de acessibilidade"
