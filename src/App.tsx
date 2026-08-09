@@ -69,10 +69,7 @@ function App() {
           </Routes>
         </Suspense>
       </main>
-      <Footer
-        onOpenAccessibility={() => setIsAccessibilityOpen(true)}
-        onOpenChat={() => setIsChatOpen(true)}
-      />
+      <Footer />
       <BottomNavigation />
       <AccessibilityWidget
         open={isAccessibilityOpen}

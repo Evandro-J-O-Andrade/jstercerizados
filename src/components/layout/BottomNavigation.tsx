@@ -56,7 +56,7 @@ export function BottomNavigation() {
     : publicNavItems;
 
   return (
-    <nav className="bg-card/95 border-border fixed right-0 bottom-0 left-0 z-30 border-t backdrop-blur-xl lg:hidden">
+    <nav className="bg-card/95 border-border fixed right-0 bottom-0 left-0 z-50 border-t backdrop-blur-xl lg:hidden">
       <div className="mx-auto flex max-w-lg items-center justify-around px-2 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
         {navItems.map((item) => {
           const Icon = item.icon;

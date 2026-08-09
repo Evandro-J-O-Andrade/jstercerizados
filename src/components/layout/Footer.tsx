@@ -13,12 +13,9 @@ import {
   Heart,
   Globe,
   ChevronDown,
-  Accessibility,
-  MessageCircle,
 } from 'lucide-react';
 import { COMPANY, SOCIAL_LINKS } from '@/config';
 import { IMAGES } from '@/config/images';
-import { Button } from '@/components/ui/Button';
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -213,14 +210,9 @@ function MobileAccordion({
   );
 }
 
-type FooterProps = {
-  onOpenAccessibility?: () => void;
-  onOpenChat?: () => void;
-};
+const currentYear = new Date().getFullYear();
 
-export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
-  const currentYear = new Date().getFullYear();
-
+export function Footer() {
   return (
     <footer className="border-border/50 bg-surface relative z-40 border-t">
       <div className="via-primary/40 absolute -top-px right-0 left-0 h-px bg-gradient-to-r from-transparent to-transparent" />
@@ -488,36 +480,12 @@ export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
               </div>
             </div>
 
-            <div className="mt-5 flex items-center gap-3">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="flex-1"
-                onClick={onOpenAccessibility}
-                leftIcon={<Accessibility className="h-4 w-4" />}
-              >
-                Acessibilidade
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="flex-1"
-                onClick={onOpenChat}
-                leftIcon={<MessageCircle className="h-4 w-4" />}
-              >
-                Precisa de ajuda?
-              </Button>
-            </div>
-
             <div className="mt-6" />
           </div>
         </div>
       </div>
-
       {/* ─── Bottom Bar ──────────────────────── */}
-      <div className="border-border bg-background/95 mt-20 flex flex-col items-center justify-between gap-6 border-t pt-10 backdrop-blur-xl supports-[backdrop-filter]:backdrop-blur sm:flex-row lg:bg-transparent lg:backdrop-blur-none">
+      <div className="border-border mt-20 flex flex-col items-center justify-between gap-6 border-t pt-10 sm:flex-row">
         <div className="text-muted-foreground flex items-center gap-2 text-xs">
           <Heart className="text-primary h-3.5 w-3.5" />
           <span>
