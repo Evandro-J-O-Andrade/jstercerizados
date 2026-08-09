@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Clock, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -63,6 +63,12 @@ export function ServiceRequestForm({
     ) => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
     };
+
+  useEffect(() => {
+    if (serviceSlug) {
+      setForm((prev) => ({ ...prev, service: serviceSlug }));
+    }
+  }, [serviceSlug]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
