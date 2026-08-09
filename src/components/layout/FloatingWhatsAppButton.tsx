@@ -15,15 +15,15 @@ export function FloatingWhatsAppButton() {
       href={getWhatsAppUrl(COMPANY.whatsapp, message)}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed right-6 bottom-6 z-50"
+      className="fixed right-4 bottom-20 z-40 sm:right-6 sm:bottom-6 md:bottom-6"
     >
       <Button
         variant="primary"
         size="icon"
-        className="shadow-glow-lg h-14 w-14 rounded-full"
+        className="shadow-glow-lg h-12 w-12 rounded-full sm:h-14 sm:w-14"
         aria-label="WhatsApp"
       >
-        <Phone className="h-6 w-6" />
+        <Phone className="h-5 w-5 sm:h-6 sm:w-6" />
       </Button>
     </a>
   );
