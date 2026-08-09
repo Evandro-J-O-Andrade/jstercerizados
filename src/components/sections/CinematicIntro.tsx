@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { SafeImage } from '@/components/ui/SafeImage';
 
 const SHOWCASE_KEY = 'js-showcase-dismissed';
@@ -27,6 +27,12 @@ const slideVariants = {
   },
 } as const;
 
+const reducedMotionSlideVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.15 } },
+  exit: { opacity: 0, transition: { duration: 0.15 } },
+} as const;
+
 function getBreakpointObjectPosition(width: number): string {
   if (width >= 1024) {
     return 'center 35%';
@@ -38,6 +44,7 @@ function getBreakpointObjectPosition(width: number): string {
 }
 
 export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
+  const shouldReduceMotion = useReducedMotion();
   const [active, setActive] = useState(false);
   const [current, setCurrent] = useState(0);
   const [phase, setPhase] = useState<'idle' | 'playing' | 'closing'>('idle');
@@ -49,10 +56,13 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
   const finish = useCallback(() => {
     setPhase('closing');
-    setTimeout(() => {
-      onFinish();
-    }, 600);
-  }, [onFinish]);
+    setTimeout(
+      () => {
+        onFinish();
+      },
+      shouldReduceMotion ? 150 : 600,
+    );
+  }, [onFinish, shouldReduceMotion]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -91,18 +101,21 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       return;
     }
 
-    const slideTimer = setInterval(() => {
-      setCurrent((prev) => {
-        if (prev + 1 >= slides.length) {
-          finish();
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 2200);
+    const slideTimer = setInterval(
+      () => {
+        setCurrent((prev) => {
+          if (prev + 1 >= slides.length) {
+            finish();
+            return prev;
+          }
+          return prev + 1;
+        });
+      },
+      shouldReduceMotion ? 400 : 2200,
+    );
 
     return () => clearInterval(slideTimer);
-  }, [phase, finish]);
+  }, [phase, finish, shouldReduceMotion]);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -134,7 +147,9 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         {(phase === 'playing' || phase === 'closing') && (
           <motion.div
             key="showcase"
-            variants={slideVariants}
+            variants={
+              shouldReduceMotion ? reducedMotionSlideVariants : slideVariants
+            }
             initial="hidden"
             animate={phase === 'closing' ? 'exit' : 'visible'}
             className="absolute inset-0"
