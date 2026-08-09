@@ -176,6 +176,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       >
         Pular
       </button>
+      <span className="sr-only">Apresentação cinematográfica</span>
     </div>
   );
 }
