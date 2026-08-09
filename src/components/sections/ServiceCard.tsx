@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import type { Service } from '@/types/common';
 import { SERVICE_ICONS } from '@/constants/icons';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { SERVICE_IMAGES, FALLBACK_IMAGES } from '@/content/assets';
+import { SERVICE_IMAGES } from '@/content/assets';
 
 interface ServiceCardProps {
   service: Service;
@@ -47,7 +47,9 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
     SERVICE_IMAGE_FALLBACK[service.slug] || SERVICE_IMAGES.facilitiesFallback;
 
   const resolvedImage =
-    service.image && service.image !== FALLBACK_IMAGES.servicos
+    service.image &&
+    !service.image.includes('fallbacks') &&
+    !service.image.includes('svg')
       ? service.image
       : fallbackImage;
 
