@@ -217,7 +217,7 @@ export function Footer() {
     <footer className="border-border/50 bg-surface relative z-40 border-t">
       <div className="via-primary/40 absolute -top-px right-0 left-0 h-px bg-gradient-to-r from-transparent to-transparent" />
 
-      <div className="mx-auto max-w-[1600px] px-6 py-20 pb-56 sm:px-8 lg:px-12 lg:pb-20">
+      <div className="mx-auto max-w-[1600px] px-6 py-20 pb-80 sm:px-8 lg:px-12 lg:pb-20">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
           {/* ─── Identidade J&S ──────────────────── */}
           <div className="space-y-8 lg:col-span-4">
@@ -485,7 +485,7 @@ export function Footer() {
         </div>
       </div>
       {/* ─── Bottom Bar ──────────────────────── */}
-      <div className="border-border mt-20 flex flex-col items-center justify-between gap-6 border-t pt-10 sm:flex-row">
+      <div className="border-border mt-20 flex flex-col items-center justify-between gap-6 border-t pt-10 pb-8 sm:flex-row">
         <div className="text-muted-foreground flex items-center gap-2 text-xs">
           <Heart className="text-primary h-3.5 w-3.5" />
           <span>
