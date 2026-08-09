@@ -63,6 +63,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
+        <div className="h-28 lg:hidden" aria-hidden="true" />
       </main>
       <Footer
         onOpenAccessibility={() => setIsAccessibilityOpen(true)}
