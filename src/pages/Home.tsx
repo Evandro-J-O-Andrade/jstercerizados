@@ -44,13 +44,13 @@ const heroSlides = [
     ),
     title: (
       <>
-        <span className="text-primary">Mais eficiência</span> em RH.
+        Mais eficiência em Recursos Humanos,
         <br />
-        Mais resultados para sua empresa.
+        mais agilidade para sua empresa.
       </>
     ),
     subtitle:
-      'Mais eficiência em Recursos Humanos, mais agilidade para sua empresa. Conectamos empresas aos profissionais certos e ajudamos candidatos a conquistar novas oportunidades.',
+      'Simplifique processos, reduza o tempo gasto com tarefas operacionais e foque no que realmente importa: o crescimento do seu negócio.',
     cta: (
       <>
         <Link to="/empresas">
@@ -70,6 +70,59 @@ const heroSlides = [
             className="border-border/30 text-foreground hover:bg-muted h-14 rounded-[18px] px-8 py-4 text-base backdrop-blur"
           >
             Quero uma Vaga
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </Link>
+        <Link to="/servicos">
+          <Button
+            variant="ghost"
+            size="xl"
+            className="h-14 rounded-[18px] px-8 py-4 text-base"
+          >
+            Conheça nossos Serviços
+          </Button>
+        </Link>
+      </>
+    ),
+  },
+  {
+    id: 'conectando-talentos',
+    image: '/images/services/assessoria-rh.png',
+    alt: 'Conectando talentos às melhores oportunidades',
+    eyebrow: (
+      <span className="flex items-center gap-2">
+        <Users className="h-4 w-4" />
+        Para Candidatos
+      </span>
+    ),
+    title: (
+      <>
+        Conectando talentos às
+        <br />
+        melhores oportunidades.
+      </>
+    ),
+    subtitle:
+      'Encontramos o profissional certo para sua empresa e ajudamos candidatos a conquistar novas oportunidades de trabalho.',
+    cta: (
+      <>
+        <Link to="/trabalhe-conosco">
+          <Button
+            variant="secondary"
+            size="xl"
+            className="shadow-glow-lg h-14 rounded-[18px] px-8 py-4 text-base"
+          >
+            Cadastrar Currículo
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </Link>
+        <Link to="/vagas">
+          <Button
+            variant="outline"
+            size="xl"
+            className="border-border/30 text-foreground hover:bg-muted h-14 rounded-[18px] px-8 py-4 text-base backdrop-blur"
+          >
+            Ver Vagas
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </Link>
