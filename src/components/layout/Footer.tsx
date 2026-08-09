@@ -12,7 +12,6 @@ import {
   Youtube,
   Heart,
   Globe,
-  LogIn,
   ChevronDown,
   Accessibility,
   MessageCircle,
@@ -34,14 +33,18 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 const footerLinks = {
-  empresa: [
-    { label: 'Sobre Nós', href: '/sobre' },
-    { label: 'Clientes', href: '/clientes' },
+  empresas: [
+    { label: 'Empresas', href: '/empresas' },
+    { label: 'Divulgar Vaga', href: '/clientes' },
+    { label: 'Solicitar Orçamento', href: '/clientes' },
     { label: 'Parceiros', href: '/parceiros' },
-    { label: 'Fornecedores', href: '/fornecedores' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Política de Privacidade', href: '/privacidade' },
-    { label: 'Termos de Uso', href: '/termos' },
+  ],
+  candidatos: [
+    { label: 'Candidatos', href: '/candidatos' },
+    { label: 'Cadastrar Currículo', href: '/trabalhe-conosco' },
+    { label: 'Trabalhe Conosco', href: '/trabalhe-conosco' },
+    { label: 'Processo Seletivo', href: '/processo-seletivo' },
+    { label: 'FAQ', href: '/faq' },
   ],
   servicos: [
     { label: 'Todos os Serviços', href: '/servicos' },
@@ -57,23 +60,16 @@ const footerLinks = {
     { label: 'Jardinagem', href: '/servicos/jardinagem' },
     { label: 'Terceirização', href: '/servicos/terceirizacao' },
   ],
-  candidatos: [
-    { label: 'Vagas', href: '/vagas' },
-    { label: 'Cadastrar Currículo', href: '/trabalhe-conosco' },
-    { label: 'Processo Seletivo', href: '/processo-seletivo' },
-    { label: 'Trabalhe Conosco', href: '/trabalhe-conosco' },
-    { label: 'FAQ', href: '/faq' },
-  ],
-  empresas: [
-    { label: 'Empresas', href: '/empresas' },
-    { label: 'Divulgar Vaga', href: '/clientes' },
-    { label: 'Solicitar Contratação', href: '/clientes' },
-  ],
   atendimento: [
     { label: 'Suporte', href: '/suporte' },
     { label: 'FAQ', href: '/faq' },
-    { label: 'Ajuda', href: '/suporte' },
-    { label: 'Login', href: '/login', icon: LogIn },
+    { label: 'Contato', href: '/contato' },
+  ],
+  institucional: [
+    { label: 'Sobre Nós', href: '/sobre' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'Política de Privacidade', href: '/privacidade' },
+    { label: 'Termos de Uso', href: '/termos' },
   ],
 };
 
@@ -279,25 +275,6 @@ export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
           {/* ─── Grupos desktop / accordions mobile ─ */}
           <div className="lg:col-span-9">
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5">
-              {/* Empresa */}
-              <div className="hidden lg:block">
-                <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
-                  Empresa
-                </h4>
-                <div className="space-y-3">
-                  {footerLinks.empresa.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
-                      className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
-                    >
-                      <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
               {/* Serviços */}
               <div className="hidden lg:block">
                 <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
@@ -336,7 +313,7 @@ export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
                 </div>
               </div>
 
-              {/* Empresas */}
+              {/* Para Empresas */}
               <div className="hidden lg:block">
                 <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
                   Para Empresas
@@ -361,20 +338,35 @@ export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
                   Atendimento
                 </h4>
                 <div className="space-y-3">
-                  {footerLinks.atendimento.map((link) => {
-                    const Icon = link.icon;
-                    return (
-                      <Link
-                        key={link.href}
-                        to={link.href}
-                        className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
-                      >
-                        {Icon && <Icon className="text-primary/70 h-4 w-4" />}
-                        <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
-                        {link.label}
-                      </Link>
-                    );
-                  })}
+                  {footerLinks.atendimento.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
+                    >
+                      <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Institucional */}
+              <div className="hidden lg:block">
+                <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
+                  Institucional
+                </h4>
+                <div className="space-y-3">
+                  {footerLinks.institucional.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
+                    >
+                      <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
+                      {link.label}
+                    </Link>
+                  ))}
                 </div>
               </div>
 
@@ -448,8 +440,8 @@ export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
             {/* ─── Mobile accordions ─ */}
             <div className="lg:hidden">
               <MobileAccordion
-                title="Empresa"
-                links={footerLinks.empresa}
+                title="Empresas"
+                links={footerLinks.empresas}
                 defaultOpen
               />
               <MobileAccordion title="Serviços" links={footerLinks.servicos} />
@@ -457,10 +449,13 @@ export function Footer({ onOpenAccessibility, onOpenChat }: FooterProps) {
                 title="Candidatos"
                 links={footerLinks.candidatos}
               />
-              <MobileAccordion title="Empresas" links={footerLinks.empresas} />
               <MobileAccordion
                 title="Atendimento"
                 links={footerLinks.atendimento}
+              />
+              <MobileAccordion
+                title="Institucional"
+                links={footerLinks.institucional}
               />
 
               <div className="border-border/50 border-b py-4">

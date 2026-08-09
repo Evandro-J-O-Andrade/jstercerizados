@@ -11,12 +11,14 @@ import {
   Facebook,
   Linkedin,
   Youtube,
+  Building2,
+  Users,
+  ChevronDown,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { NAVIGATION_LINKS } from '@/config/navigation';
 import { IMAGES } from '@/config/images';
 import {
   COMPANY,
@@ -24,6 +26,34 @@ import {
   WHATSAPP_MESSAGES,
   getWhatsAppUrl,
 } from '@/config';
+
+const companiesSubmenu = [
+  { label: 'Empresas', href: '/empresas' },
+  { label: 'Divulgar Vaga', href: '/clientes' },
+  { label: 'Solicitar Orçamento', href: '/clientes' },
+  { label: 'Parceiros', href: '/parceiros' },
+];
+
+const candidatesSubmenu = [
+  { label: 'Candidatos', href: '/candidatos' },
+  { label: 'Cadastrar Currículo', href: '/trabalhe-conosco' },
+  { label: 'Processo Seletivo', href: '/processo-seletivo' },
+  { label: 'FAQ', href: '/faq' },
+];
+
+const topNavLinks = [
+  { label: 'Início', href: '/' },
+  { label: 'Vagas', href: '/vagas' },
+  { label: 'Serviços', href: '/servicos' },
+  { label: 'Sobre Nós', href: '/sobre' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Contato', href: '/contato' },
+];
+
+const itemVariants = {
+  hidden: { opacity: 0, x: 20 },
+  visible: { opacity: 1, x: 0 },
+};
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -134,10 +164,71 @@ export function Navbar() {
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, x: 20 },
-    visible: { opacity: 1, x: 0 },
-  };
+  function Dropdown({
+    label,
+    icon: Icon,
+    items,
+  }: {
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    items: Array<{ label: string; href: string }>;
+  }) {
+    const [open, setOpen] = useState(false);
+    return (
+      <div
+        className="relative"
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+      >
+        <button
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+          className={cn(
+            'text-sm font-medium transition-colors duration-200',
+            items.some((item) => location.pathname === item.href)
+              ? 'text-primary'
+              : 'text-muted-foreground hover:text-primary',
+          )}
+          aria-expanded={open}
+          aria-haspopup="true"
+        >
+          <span className="flex items-center gap-1">
+            {Icon && <Icon className="h-4 w-4" />}
+            {label}
+            <ChevronDown className="h-3.5 w-3.5" />
+          </span>
+        </button>
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.2 }}
+              className="border-border bg-background/95 absolute top-full left-0 z-50 mt-2 min-w-[220px] rounded-xl border p-1 shadow-xl backdrop-blur-xl"
+            >
+              {items.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors duration-200',
+                    location.pathname === item.href
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  )}
+                >
+                  <span className="bg-primary/40 h-1 w-1 rounded-full" />
+                  {item.label}
+                </Link>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
 
   return (
     <motion.header
@@ -164,7 +255,7 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
-          {NAVIGATION_LINKS.map((link) => (
+          {topNavLinks.map((link) => (
             <Link
               key={link.href}
               to={link.href}
@@ -178,6 +269,14 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+
+          <Dropdown
+            label="Empresas"
+            icon={Building2}
+            items={companiesSubmenu}
+          />
+          <Dropdown label="Candidatos" icon={Users} items={candidatesSubmenu} />
+
           <Button
             variant="ghost"
             size="icon"
@@ -281,7 +380,7 @@ export function Navbar() {
               </div>
 
               <nav className="flex flex-col gap-1 px-4 py-2">
-                {NAVIGATION_LINKS.map((link) => (
+                {topNavLinks.map((link) => (
                   <motion.div key={link.href} variants={itemVariants}>
                     <Link
                       to={link.href}
@@ -297,6 +396,17 @@ export function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
+
+                <MobileMenuGroup
+                  title="Empresas"
+                  links={companiesSubmenu}
+                  onClose={() => setIsOpen(false)}
+                />
+                <MobileMenuGroup
+                  title="Candidatos"
+                  links={candidatesSubmenu}
+                  onClose={() => setIsOpen(false)}
+                />
 
                 <motion.div variants={itemVariants}>
                   <Link
@@ -393,5 +503,43 @@ export function Navbar() {
         )}
       </AnimatePresence>
     </motion.header>
+  );
+}
+
+function MobileMenuGroup({
+  title,
+  links,
+  onClose,
+}: {
+  title: string;
+  links: Array<{ label: string; href: string }>;
+  onClose: () => void;
+}) {
+  return (
+    <motion.div
+      variants={itemVariants}
+      className="border-border/60 rounded-lg border p-2"
+    >
+      <p className="text-muted-foreground mb-2 px-2 text-xs font-semibold tracking-wider uppercase">
+        {title}
+      </p>
+      <div className="flex flex-col gap-1">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            to={link.href}
+            onClick={onClose}
+            className={cn(
+              'rounded-md px-4 py-2.5 text-sm transition-colors duration-200',
+              location.pathname === link.href
+                ? 'bg-primary/10 text-primary'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+            )}
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    </motion.div>
   );
 }

@@ -15,7 +15,7 @@ export function FloatingWhatsAppButton() {
       href={getWhatsAppUrl(COMPANY.whatsapp, message)}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed right-4 bottom-20 z-40 sm:right-6 sm:bottom-6 md:bottom-6"
+      className="fixed right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-40 sm:right-6 sm:bottom-[calc(5.5rem+env(safe-area-inset-bottom))] md:bottom-24"
     >
       <Button
         variant="primary"

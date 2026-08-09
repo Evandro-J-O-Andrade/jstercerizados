@@ -6,10 +6,10 @@ import {
   Shield,
   Briefcase,
   Users,
-  LogIn,
   LayoutDashboard,
   FileText,
   Settings,
+  Building2,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,10 +23,10 @@ interface NavItem {
 
 const publicNavItems: NavItem[] = [
   { label: 'Início', href: '/', icon: Home },
+  { label: 'Vagas', href: '/vagas', icon: Briefcase },
   { label: 'Serviços', href: '/servicos', icon: Shield },
-  { label: 'Trabalhe Conosco', href: '/trabalhe-conosco', icon: Briefcase },
-  { label: 'Parceiros', href: '/parceiros', icon: Users },
-  { label: 'Login', href: '/login', icon: LogIn },
+  { label: 'Empresas', href: '/empresas', icon: Building2 },
+  { label: 'Candidatos', href: '/candidatos', icon: Users },
 ];
 
 const partnerNavItems: NavItem[] = [

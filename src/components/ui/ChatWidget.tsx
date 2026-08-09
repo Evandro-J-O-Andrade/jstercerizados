@@ -190,7 +190,7 @@ export function ChatWidget({
   }, [open]);
 
   return (
-    <div className="fixed right-4 bottom-[calc(7.5rem+env(safe-area-inset-bottom))] z-50 sm:right-6 sm:bottom-[calc(8.5rem+env(safe-area-inset-bottom))]">
+    <div className="fixed right-4 bottom-[calc(10.5rem+env(safe-area-inset-bottom))] z-50 sm:right-6 sm:bottom-[calc(11.5rem+env(safe-area-inset-bottom))]">
       <AnimatePresence>
         {open && (
           <>
