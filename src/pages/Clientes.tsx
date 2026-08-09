@@ -99,13 +99,13 @@ export default function Clientes() {
   return (
     <div>
       <SEO
-        title="Clientes — J&S Terceirizados"
+        title={`Clientes — ${COMPANY.name}`}
         description="Solicite orçamento de serviços de RH, recrutamento, terceirização e facilities. Atendimento personalizado para sua empresa."
         keywords={[
           'clientes',
           'orçamento',
           'serviços',
-          'J&S Terceirizados',
+          COMPANY.name,
           'RH',
           'recrutamento',
           'terceirização',

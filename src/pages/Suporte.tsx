@@ -166,15 +166,15 @@ export default function Suporte() {
   return (
     <div>
       <SEO
-        title="Suporte — J&S Terceirizados"
-        description="Central de atendimento da J&S Terceirizados: WhatsApp, chat online, FAQ e suporte ao cliente."
+        title={`Suporte — ${COMPANY.name}`}
+        description={`Central de atendimento da ${COMPANY.name}: WhatsApp, chat online, FAQ e suporte ao cliente.`}
         keywords={[
           'suporte',
           'atendimento',
           'FAQ',
           'WhatsApp',
           'chat',
-          'J&S Terceirizados',
+          COMPANY.name,
           'RH',
           'terceirização',
           'facilities',

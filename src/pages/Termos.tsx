@@ -1,14 +1,15 @@
 import { Section } from '@/components/sections/Section';
 import { Container } from '@/components/common/Container';
 import { SEO } from '@/components/ui/SEO';
+import { COMPANY } from '@/config';
 
 export default function Termos() {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Termos de Uso — J&S Terceirizados"
-        description="Termos de uso do site e serviços da J&S Terceirizados."
-        keywords={['termos de uso', 'termos', 'J&S Terceirizados', 'serviços']}
+        title={`Termos de Uso — ${COMPANY.name}`}
+        description={`Termos de uso do site e serviços da ${COMPANY.name}.`}
+        keywords={['termos de uso', 'termos', COMPANY.name, 'serviços']}
         type="WebSite"
       />
       <Section className="pt-24 md:pt-32">

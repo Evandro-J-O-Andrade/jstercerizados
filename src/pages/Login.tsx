@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { SEO } from '@/components/ui/SEO';
 import { useAuth } from '@/contexts/AuthContext';
+import { COMPANY } from '@/config';
 import { IMAGES } from '@/config/images';
 import { cn } from '@/utils';
 
@@ -99,13 +100,13 @@ export default function Login() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <SEO
-        title="Login — J&S Terceirizados"
-        description="Acesse sua conta na J&S Terceirizados. Área do candidato, empresa ou administrador."
+        title={`Login — ${COMPANY.name}`}
+        description={`Acesse sua conta na ${COMPANY.name}. Área do candidato, empresa ou administrador.`}
         keywords={[
           'login',
           'acesso',
           'conta',
-          'J&S Terceirizados',
+          COMPANY.name,
           'candidato',
           'empresa',
           'administrador',

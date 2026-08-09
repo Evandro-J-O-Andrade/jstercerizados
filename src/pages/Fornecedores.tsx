@@ -94,11 +94,11 @@ export default function Fornecedores() {
   return (
     <div>
       <SEO
-        title="Fornecedores — J&S Terceirizados"
-        description="Cadastro de fornecedores da J&S Terceirizados. Torne-se um parceiro fornecedor de serviços de RH, facilities e terceirização."
+        title={`Fornecedores — ${COMPANY.name}`}
+        description={`Cadastro de fornecedores da ${COMPANY.name}. Torne-se um parceiro fornecedor de serviços de RH, facilities e terceirização.`}
         keywords={[
           'fornecedores',
-          'J&S Terceirizados',
+          COMPANY.name,
           'cadastro',
           'parceria',
           'fornecimento',

@@ -5,6 +5,7 @@ import { ServiceCard } from '@/components/sections/ServiceCard';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { mockServices } from '@/services/mock/services';
+import { COMPANY } from '@/config';
 
 export default function Servicos() {
   const rhServices = mockServices.filter((s) => {
@@ -27,7 +28,7 @@ export default function Servicos() {
   return (
     <div className="pt-16 lg:pt-20">
       <SEO
-        title="Serviços — J&S Terceirizados"
+        title={`Serviços — ${COMPANY.name}`}
         description="Assessoria em RH, recrutamento, mão de obra temporária e efetiva, terceirização, facilities, limpeza, jardinagem e portaria."
         keywords={[
           'serviços',

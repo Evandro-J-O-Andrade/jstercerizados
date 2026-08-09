@@ -15,7 +15,7 @@ export default function Empresas() {
   return (
     <div className="min-h-screen pt-16 lg:pt-20">
       <SEO
-        title="Para Empresas — J&S Terceirizados"
+        title={`Para Empresas — ${COMPANY.name}`}
         description="Soluções em recrutamento, seleção, mão de obra temporária e efetiva, terceirização e facilities para empresas."
         keywords={[
           'empresas',

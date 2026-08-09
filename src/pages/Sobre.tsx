@@ -5,6 +5,7 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY_TIMELINE } from '@/mock/company';
+import { COMPANY } from '@/config';
 import { IMAGES } from '@/config';
 import { HERO_ASSETS } from '@/content/assets';
 import { staggerReveal, revealUp } from '@/animations/scroll';
@@ -41,11 +42,11 @@ export default function Sobre() {
   return (
     <div className="pt-20">
       <SEO
-        title="Sobre — J&S Terceirizados"
-        description="Conheça a J&S Terceirizados: assessoria em RH, recrutamento, mão de obra e facilities com excelência."
+        title={`Sobre — ${COMPANY.name}`}
+        description={`Conheça a ${COMPANY.name}: assessoria em RH, recrutamento, mão de obra e facilities com excelência.`}
         keywords={[
           'sobre',
-          'J&S Terceirizados',
+          COMPANY.name,
           'RH',
           'recrutamento',
           'seleção',
@@ -70,7 +71,7 @@ export default function Sobre() {
               variants={revealUp}
               className="text-foreground text-4xl font-bold sm:text-5xl"
             >
-              Sobre a J&S Terceirizados LTDA
+              Sobre a {COMPANY.tradingName}
             </motion.h1>
             <motion.p
               variants={revealUp}
@@ -94,7 +95,7 @@ export default function Sobre() {
                 <SafeImage
                   src={HERO_ASSETS.bannerjs}
                   fallbackSrc={IMAGES.hero.sobre.fallback}
-                  alt="Equipe J&S Terceirizados LTDA"
+                  alt={`Equipe ${COMPANY.tradingName}`}
                   className="h-full w-full object-cover opacity-80"
                 />
                 <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
@@ -221,7 +222,7 @@ export default function Sobre() {
                 <SafeImage
                   src={HERO_ASSETS.bannerjs}
                   fallbackSrc={IMAGES.hero.sobre.fallback}
-                  alt="Missão J&S Terceirizados LTDA"
+                  alt={`Missão ${COMPANY.tradingName}`}
                   className="h-full w-full object-cover opacity-80"
                 />
                 <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />

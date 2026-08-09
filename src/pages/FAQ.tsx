@@ -85,9 +85,8 @@ const FAQ_CATEGORIES = [
     icon: '🏢',
     items: [
       {
-        question: 'Quem é a J&S Terceirizados LTDA?',
-        answer:
-          'Somos uma empresa de assessoria em Recursos Humanos com experiência em recrutamento, seleção, mão de obra, terceirização e facilities.',
+        question: `Quem é a ${COMPANY.name}?`,
+        answer: `Somos uma empresa de assessoria em Recursos Humanos com experiência em recrutamento, seleção, mão de obra, terceirização e facilities.`,
       },
       {
         question: 'Quantos profissionais vocês possuem?',
@@ -119,13 +118,13 @@ export default function FAQ() {
   return (
     <div>
       <SEO
-        title="FAQ — J&S Terceirizados"
-        description="Perguntas frequentes sobre serviços de RH, recrutamento, terceirização, facilities e processos da J&S Terceirizados."
+        title={`FAQ — ${COMPANY.name}`}
+        description={`Perguntas frequentes sobre serviços de RH, recrutamento, terceirização, facilities e processos da ${COMPANY.name}.`}
         keywords={[
           'FAQ',
           'perguntas frequentes',
           'suporte',
-          'J&S Terceirizados',
+          COMPANY.name,
           'RH',
           'recrutamento',
           'terceirização',

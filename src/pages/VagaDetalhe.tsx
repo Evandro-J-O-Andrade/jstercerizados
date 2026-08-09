@@ -6,6 +6,7 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { JobApplicationForm } from '@/components/forms/JobApplicationForm';
 import { mockGetVagaBySlug } from '@/services/mock/vagas';
+import { COMPANY } from '@/config';
 import { ArrowLeft, MapPin, Clock, DollarSign, Briefcase } from 'lucide-react';
 import type { Vaga } from '@/types/common';
 
@@ -66,18 +67,19 @@ export default function VagaDetalhe() {
   return (
     <div className="min-h-screen pt-16 lg:pt-20">
       <SEO
-        title={`${vaga.titulo} — J&S Terceirizados`}
+        title={`${vaga.titulo} — ${COMPANY.name}`}
         description={vaga.descricao}
         keywords={[
           vaga.titulo,
           'vaga',
           'emprego',
           'trabalho',
-          'J&S Terceirizados',
+          COMPANY.name,
           'RH',
           'recrutamento',
+          'seleção',
         ]}
-        type="Service"
+        type="WebSite"
       />
       <Section className="pt-20 md:pt-32">
         <Container>

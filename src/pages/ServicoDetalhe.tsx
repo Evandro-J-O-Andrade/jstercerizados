@@ -82,12 +82,12 @@ export default function ServicoDetalhe() {
   return (
     <div>
       <SEO
-        title={`${service.title} — J&S Terceirizados`}
+        title={`${service.title} — ${COMPANY.name}`}
         description={service.shortDescription}
         keywords={[
           service.title,
           'serviços',
-          'J&S Terceirizados',
+          COMPANY.name,
           'RH',
           'terceirização',
           'facilities',

@@ -4,13 +4,14 @@ import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
+import { COMPANY } from '@/config';
 
 export default function Candidatos() {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Área do Candidato — J&S Terceirizados"
-        description="Cadastre seu currículo, candidate-se às vagas e acompanhe seus processos seletivos na J&S Terceirizados."
+        title={`Área do Candidato — ${COMPANY.name}`}
+        description={`Cadastre seu currículo, candidate-se às vagas e acompanhe seus processos seletivos na ${COMPANY.name}.`}
         keywords={[
           'candidato',
           'currículo',

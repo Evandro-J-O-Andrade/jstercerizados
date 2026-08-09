@@ -105,15 +105,15 @@ export default function Contato() {
   return (
     <div>
       <SEO
-        title="Contato — J&S Terceirizados"
-        description="Entre em contato com a J&S Terceirizados. Telefone, WhatsApp, e-mail e endereço."
+        title={`Contato — ${COMPANY.name}`}
+        description={`Entre em contato com a ${COMPANY.name}. Telefone, WhatsApp, e-mail e endereço.`}
         keywords={[
           'contato',
           'telefone',
           'whatsapp',
           'e-mail',
           'endereço',
-          'J&S Terceirizados',
+          COMPANY.name,
           'RH',
           'terceirização',
           'facilities',
@@ -142,7 +142,7 @@ export default function Contato() {
                 <SafeImage
                   src={IMAGES.hero.contato.src}
                   fallbackSrc={IMAGES.hero.contato.fallback}
-                  alt="Contato J&S Terceirizados LTDA"
+                  alt={`Contato ${COMPANY.tradingName}`}
                   className="h-full w-full object-cover opacity-70"
                 />
                 <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />

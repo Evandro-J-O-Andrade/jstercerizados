@@ -154,15 +154,15 @@ export default function TrabalheConosco() {
   return (
     <div>
       <SEO
-        title="Trabalhe Conosco — J&S Terceirizados"
-        description="Cadastre seu currículo na J&S Terceirizados e candidate-se às nossas oportunidades de trabalho."
+        title={`Trabalhe Conosco — ${COMPANY.name}`}
+        description={`Cadastre seu currículo na ${COMPANY.name} e candidate-se às nossas oportunidades de trabalho.`}
         keywords={[
           'trabalhe conosco',
           'currículo',
           'candidatura',
           'emprego',
           'trabalho',
-          'J&S Terceirizados',
+          COMPANY.name,
           'RH',
           'recrutamento',
         ]}

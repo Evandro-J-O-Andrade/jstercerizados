@@ -106,8 +106,7 @@ export const SEO_PAGES: Record<string, PageSEO> = {
   },
   '/sobre': {
     title: `Sobre Nós — ${COMPANY.name} | Assessoria em RH e Terceirização`,
-    description:
-      'Conheça a J&S Terceirizados: assessoria em RH, recrutamento, mão de obra temporária e efetiva, terceirização e facilities.',
+    description: `Conheça a ${COMPANY.name}: assessoria em RH, recrutamento, mão de obra temporária e efetiva, terceirização e facilities.`,
     keywords: [
       'sobre nós',
       'história',

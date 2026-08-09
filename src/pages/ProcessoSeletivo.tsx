@@ -41,7 +41,7 @@ const steps = [
     step: '04',
     title: 'Contratação',
     description:
-      'Receba a proposta e inicie sua nova oportunidade profissional com a J&S Terceirizados LTDA.',
+      'Receba a proposta e inicie sua nova oportunidade profissional com a ${COMPANY.tradingName}.',
     icon: CheckCircle2,
   },
 ];
@@ -50,14 +50,14 @@ export default function ProcessoSeletivo() {
   return (
     <div>
       <SEO
-        title="Processo Seletivo — J&S Terceirizados"
+        title={`Processo Seletivo — ${COMPANY.name}`}
         description="Conheça as etapas do nosso processo seletivo: cadastro, candidatura, entrevista e contratação."
         keywords={[
           'processo seletivo',
           'seleção',
           'entrevista',
           'candidatura',
-          'J&S Terceirizados',
+          COMPANY.name,
           'RH',
           'emprego',
           'trabalho',

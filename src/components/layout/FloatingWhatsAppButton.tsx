@@ -6,7 +6,7 @@ import { COMPANY, getWhatsAppUrl } from '@/config';
 export function FloatingWhatsAppButton() {
   const message = useMemo(
     () =>
-      'Olá! Visitei o site da J&S Terceirizados e gostaria de mais informações sobre os serviços.',
+      `Olá! Visitei o site da ${COMPANY.tradingName} e gostaria de mais informações sobre os serviços.`,
     [],
   );
 

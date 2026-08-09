@@ -1,18 +1,19 @@
 import { Section } from '@/components/sections/Section';
 import { Container } from '@/components/common/Container';
 import { SEO } from '@/components/ui/SEO';
+import { COMPANY } from '@/config';
 
 export default function Privacidade() {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Política de Privacidade — J&S Terceirizados"
-        description="Política de privacidade e tratamento de dados pessoais da J&S Terceirizados."
+        title={`Política de Privacidade — ${COMPANY.name}`}
+        description={`Política de privacidade e tratamento de dados pessoais da ${COMPANY.name}.`}
         keywords={[
           'política de privacidade',
           'LGPD',
           'dados pessoais',
-          'J&S Terceirizados',
+          COMPANY.name,
         ]}
         type="WebSite"
       />

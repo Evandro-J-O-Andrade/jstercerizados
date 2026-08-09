@@ -9,6 +9,7 @@ import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { mockGetVagas } from '@/services/mock/vagas';
+import { COMPANY } from '@/config';
 
 const CONTRATO_LABELS: Record<string, string> = {
   CLT: 'CLT',
@@ -35,8 +36,8 @@ export default function Vagas() {
   return (
     <div className="min-h-screen pt-16 lg:pt-20">
       <SEO
-        title="Vagas — J&S Terceirizados"
-        description="Oportunidades de trabalho e vagas disponíveis na J&S Terceirizados. Encontre sua próxima oportunidade profissional."
+        title={`Vagas — ${COMPANY.name}`}
+        description={`Oportunidades de trabalho e vagas disponíveis na ${COMPANY.name}. Encontre sua próxima oportunidade profissional.`}
         keywords={[
           'vagas',
           'emprego',

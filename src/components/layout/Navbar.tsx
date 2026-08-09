@@ -159,8 +159,7 @@ export function Navbar() {
             loading="eager"
           />
           <h1 className="text-3xl font-extrabold tracking-tight">
-            <span className="text-primary drop-shadow-glow">J&amp;S</span>{' '}
-            <span className="text-foreground">Terceirizados</span>
+            {COMPANY.brand}
           </h1>
         </Link>
 

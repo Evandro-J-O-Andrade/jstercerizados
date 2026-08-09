@@ -96,11 +96,11 @@ export default function Parceiros() {
   return (
     <div>
       <SEO
-        title="Parceiros — J&S Terceirizados"
-        description="Seja um parceiro estratégico da J&S Terceirizados. Amplie sua rede de negócios e cresça junto conosco."
+        title={`Parceiros — ${COMPANY.name}`}
+        description={`Seja um parceiro estratégico da ${COMPANY.name}. Amplie sua rede de negócios e cresça junto conosco.`}
         keywords={[
           'parceiros',
-          'J&S Terceirizados',
+          COMPANY.name,
           'parceria',
           'negócios',
           'RH',
