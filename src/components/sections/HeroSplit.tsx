@@ -25,15 +25,15 @@ export interface HeroSplitProps {
 }
 
 const slideTextVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, x: -24 },
   visible: {
     opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.4, 0.25, 1] },
+    x: 0,
+    transition: { duration: 0.7, ease: [0.25, 0.4, 0.25, 1] },
   },
   exit: {
     opacity: 0,
-    y: -20,
+    x: 24,
     transition: { duration: 0.4, ease: [0.25, 0.4, 0.25, 1] },
   },
 };
@@ -133,10 +133,10 @@ export function HeroSplit({
           <AnimatePresence mode="wait">
             <motion.div
               key={slide.id}
-              initial={{ opacity: 0, y: 20, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.98 }}
-              transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
+              initial={{ opacity: 0, x: 24, scale: 0.98 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -24, scale: 0.98 }}
+              transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
             >
               <HeroImageFallback
                 src={slide.image}
