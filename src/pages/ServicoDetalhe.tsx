@@ -73,6 +73,12 @@ export default function ServicoDetalhe() {
     );
   }
 
+  const heroImage =
+    service.image && !service.image.includes('fallbacks')
+      ? service.image
+      : (SERVICE_IMAGES[service.slug as keyof typeof SERVICE_IMAGES] ??
+        SERVICE_IMAGES.facilitiesFallback);
+
   return (
     <div>
       <SEO
@@ -102,10 +108,9 @@ export default function ServicoDetalhe() {
           className="absolute inset-0"
         >
           <SafeImage
-            src={service.image}
+            src={heroImage}
             alt={service.title}
             className="h-full w-full object-cover"
-            fallbackSrc={SERVICE_IMAGES.facilitiesFallback}
             loading="eager"
             decoding="async"
           />
