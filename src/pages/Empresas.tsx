@@ -134,46 +134,6 @@ export default function Empresas() {
             ))}
           </motion.div>
 
-          {/* Estatísticas */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
-            className="mt-16 grid grid-cols-2 gap-6 text-center md:grid-cols-4"
-          >
-            <motion.div variants={staggerItem('up')}>
-              <div className="text-foreground text-3xl font-bold">
-                +{COMPANY.professionals.toLocaleString('pt-BR')}
-              </div>
-              <p className="text-muted-foreground text-sm">
-                Profissionais no banco
-              </p>
-            </motion.div>
-            <motion.div variants={staggerItem('up')}>
-              <div className="text-foreground text-3xl font-bold">
-                +{COMPANY.clientsServed.toLocaleString('pt-BR')}
-              </div>
-              <p className="text-muted-foreground text-sm">
-                Empresas atendidas
-              </p>
-            </motion.div>
-            <motion.div variants={staggerItem('up')}>
-              <div className="text-foreground text-3xl font-bold">
-                +{COMPANY.citiesCovered}
-              </div>
-              <p className="text-muted-foreground text-sm">Cidades atendidas</p>
-            </motion.div>
-            <motion.div variants={staggerItem('up')}>
-              <div className="text-foreground text-3xl font-bold">
-                +{COMPANY.yearsOfExperience}
-              </div>
-              <p className="text-muted-foreground text-sm">
-                Anos de experiência
-              </p>
-            </motion.div>
-          </motion.div>
-
           {/* Empresas parceiras */}
           <motion.div
             initial="hidden"

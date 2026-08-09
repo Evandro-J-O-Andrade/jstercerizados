@@ -214,8 +214,8 @@ export default function Suporte() {
             {[
               {
                 icon: Globe,
-                value: `+${COMPANY.clientsServed}`,
-                label: 'Empresas atendidas',
+                value: 'Nacional',
+                label: 'Atendimento em múltiplas cidades',
               },
               {
                 icon: Clock,

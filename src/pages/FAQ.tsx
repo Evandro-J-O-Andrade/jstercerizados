@@ -87,11 +87,12 @@ const FAQ_CATEGORIES = [
       {
         question: 'Quem é a J&S Terceirizados LTDA?',
         answer:
-          'Somos uma empresa de assessoria em Recursos Humanos com mais de 15 anos de experiência, conectando empresas aos profissionais certos.',
+          'Somos uma empresa de assessoria em Recursos Humanos com experiência em recrutamento, seleção, mão de obra, terceirização e facilities.',
       },
       {
         question: 'Quantos profissionais vocês possuem?',
-        answer: `Atualmente contamos com mais de ${COMPANY.professionals} profissionais ativos em mais de ${COMPANY.citiesCovered} cidades.`,
+        answer:
+          'Contamos com uma equipe qualificada e em constante crescimento, pronta para atender demandas em diversos segmentos.',
       },
       {
         question: 'Como enviar currículo?',

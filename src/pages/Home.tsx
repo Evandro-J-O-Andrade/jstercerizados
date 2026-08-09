@@ -7,14 +7,12 @@ import {
   Briefcase,
   ArrowRight,
   MapPin,
-  Award,
   FileText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { Section } from '@/components/sections/Section';
 import { ServiceCard } from '@/components/sections/ServiceCard';
-import { NumberCounter } from '@/components/sections/NumberCounter';
 import { HeroSplit } from '@/components/sections/HeroSplit';
 import { CinematicShowcase } from '@/components/sections/CinematicIntro';
 import { SEO } from '@/components/ui/SEO';
@@ -632,8 +630,8 @@ export default function Home() {
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Mais de {COMPANY.clientsServed} empresas utilizam nossos serviços
-              de RH.
+              Empresas de diversos segmentos confiam em nossas soluções de RH e
+              facilities.
             </motion.p>
           </motion.div>
 
@@ -673,36 +671,6 @@ export default function Home() {
                     {partner.name}
                   </span>
                 </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </Container>
-      </Section>
-
-      {/* Números da Empresa */}
-      <Section>
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
-            className="grid grid-cols-2 gap-6 md:grid-cols-4"
-          >
-            {[
-              {
-                label: 'Empresas Parceiras',
-                value: COMPANY.clientsServed,
-                suffix: '+',
-              },
-            ].map((stat) => (
-              <motion.div key={stat.label} variants={staggerItem('up')}>
-                <NumberCounter
-                  value={stat.value}
-                  label={stat.label}
-                  suffix={stat.suffix}
-                  icon={Award}
-                />
               </motion.div>
             ))}
           </motion.div>

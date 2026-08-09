@@ -4,9 +4,9 @@ import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { COMPANY, IMAGES } from '@/config';
-import { HERO_ASSETS } from '@/content/assets';
 import { COMPANY_TIMELINE } from '@/mock/company';
+import { IMAGES } from '@/config';
+import { HERO_ASSETS } from '@/content/assets';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 
@@ -76,10 +76,9 @@ export default function Sobre() {
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-3xl text-lg"
             >
-              Há mais de {COMPANY.yearsOfExperience} anos, conectamos empresas
-              aos melhores profissionais do mercado. Somos uma agência de
-              empregos e assessoria em Recursos Humanos que transforma talentos
-              em oportunidades.
+              Somos uma empresa de assessoria em RH, recrutamento, mão de obra,
+              terceirização e facilities que transforma talentos em
+              oportunidades.
             </motion.p>
           </motion.div>
 
@@ -214,54 +213,6 @@ export default function Sobre() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mt-16 text-center"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground mb-4 text-2xl font-bold"
-            >
-              Estatísticas
-            </motion.h2>
-            <motion.div
-              variants={staggerReveal(0.15)}
-              className="flex flex-wrap justify-center gap-8 text-center"
-            >
-              <motion.div variants={staggerItem('up')}>
-                <p className="text-primary text-3xl font-bold">
-                  +{COMPANY.professionals.toLocaleString('pt-BR')}
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  Profissionais ativos
-                </p>
-              </motion.div>
-              <motion.div variants={staggerItem('up')}>
-                <p className="text-primary text-3xl font-bold">
-                  +{COMPANY.yearsOfExperience}
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  Anos de experiência
-                </p>
-              </motion.div>
-              <motion.div variants={staggerItem('up')}>
-                <p className="text-primary text-3xl font-bold">
-                  +{COMPANY.clientsServed}
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  Clientes atendidos
-                </p>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </Container>
-      </Section>
-
-      <Section className="bg-surface-alt">
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
             variants={staggerReveal(0.15)}
             className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2"
           >
@@ -282,9 +233,9 @@ export default function Sobre() {
                 Cobertura Regional
               </h2>
               <p className="text-muted-foreground mb-4 leading-relaxed">
-                Atendemos empresas e candidatos em mais de{' '}
-                {COMPANY.citiesCovered} cidades, com cobertura completa para
-                garantir agilidade e presença onde você precisa.
+                Atendemos empresas e candidatos em múltiplas cidades, com
+                cobertura completa para garantir agilidade e presença onde você
+                precisa.
               </p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">

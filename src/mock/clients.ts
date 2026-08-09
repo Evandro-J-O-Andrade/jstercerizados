@@ -69,9 +69,3 @@ export const CLIENT_TESTIMONIALS = [
     rating: 5,
   },
 ] as const;
-
-export const CLIENT_STATS = [
-  { label: 'Clientes Premium', value: 200 },
-  { label: 'Taxa de Retenção', value: '95%' },
-  { label: 'Projetos Concluídos', value: 500 },
-] as const;
