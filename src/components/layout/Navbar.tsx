@@ -385,7 +385,7 @@ export function Navbar() {
                 </Button>
               </div>
 
-              <nav className="flex flex-col gap-4 px-4 py-2">
+              <nav className="flex flex-col gap-2 px-3 py-1">
                 <div className="space-y-1">
                   <p className="text-primary mb-2 text-xs font-bold tracking-wider uppercase">
                     Navegação
@@ -396,7 +396,7 @@ export function Navbar() {
                         to={link.href}
                         onClick={() => setIsOpen(false)}
                         className={cn(
-                          'block rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200',
+                          'block rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200',
                           location.pathname === link.href
                             ? 'bg-primary/10 text-primary'
                             : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -440,7 +440,7 @@ export function Navbar() {
                     <Link
                       to="/trabalhe-conosco"
                       onClick={() => setIsOpen(false)}
-                      className="bg-primary text-primary-foreground block rounded-lg px-4 py-3 text-center text-base font-medium"
+                      className="bg-primary text-primary-foreground block rounded-lg px-3 py-2 text-center text-sm font-medium"
                     >
                       Cadastrar Currículo
                     </Link>
@@ -449,7 +449,7 @@ export function Navbar() {
                     <Link
                       to={isAuthenticated ? '/dashboard' : '/clientes'}
                       onClick={() => setIsOpen(false)}
-                      className="text-muted-foreground hover:bg-muted hover:text-foreground block rounded-lg px-4 py-3 text-base font-medium transition-colors"
+                      className="text-muted-foreground hover:bg-muted hover:text-foreground block rounded-lg px-3 py-2 text-sm font-medium transition-colors"
                     >
                       {isAuthenticated ? 'Painel' : 'Divulgar Vaga'}
                     </Link>
@@ -562,7 +562,7 @@ function MobileAccordion({
       <button
         type="button"
         onClick={onToggle}
-        className="text-foreground hover:text-primary flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors duration-200"
+        className="text-foreground hover:text-primary flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors duration-200"
         aria-expanded={isOpen}
         aria-controls={`accordion-${title}`}
       >
@@ -591,14 +591,14 @@ function MobileAccordion({
             transition={{ duration: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
             className="overflow-hidden"
           >
-            <div className="flex flex-col gap-1 px-2 pt-1 pb-2">
+            <div className="flex flex-col gap-0.5 px-2 pt-1 pb-1.5">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
                   onClick={onClose}
                   className={cn(
-                    'rounded-md px-4 py-2.5 text-sm transition-colors duration-200',
+                    'rounded-md px-3 py-2 text-sm transition-colors duration-200',
                     location.pathname === link.href
                       ? 'bg-primary/10 text-primary'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',

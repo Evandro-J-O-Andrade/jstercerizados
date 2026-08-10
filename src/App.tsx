@@ -69,7 +69,7 @@ function App() {
           </Routes>
         </Suspense>
       </main>
-      <div className="pb-[117px] lg:pb-0">
+      <div className="pb-[127px] lg:pb-0">
         <Footer />
       </div>
       <BottomNavigation />
