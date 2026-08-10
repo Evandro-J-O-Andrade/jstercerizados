@@ -417,12 +417,12 @@ export function Footer({
 
             {/* Fale Conosco */}
             <div className="mt-8 w-full">
-              <div className="mx-auto max-w-4xl">
+              <div className="mx-auto max-w-7xl">
                 <h4 className="text-primary mb-4 text-center text-xs font-bold tracking-wider uppercase">
                   Fale Conosco
                 </h4>
-                <div className="border-border/50 bg-primary/5 rounded-xl border p-5">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="border-border/50 bg-primary/5 rounded-xl border p-8">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {contactItems.map((item) => (
                       <a
                         key={item.type}
@@ -433,26 +433,26 @@ export function Footer({
                             ? 'noopener noreferrer'
                             : undefined
                         }
-                        className="border-border/50 hover:border-primary/30 group flex items-center gap-3 rounded-xl border p-4 transition-all duration-300"
+                        className="border-border/50 hover:border-primary/30 group flex items-center gap-3 rounded-xl border p-5 transition-all duration-300"
                       >
-                        <div className="text-primary bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-                          <item.icon className="h-5 w-5" />
+                        <div className="text-primary bg-primary/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+                          <item.icon className="h-6 w-6" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-foreground text-sm font-semibold">
+                          <p className="text-foreground text-base font-semibold">
                             {item.label}
                           </p>
-                          <p className="text-muted-foreground truncate text-xs">
+                          <p className="text-muted-foreground truncate text-sm">
                             {item.value}
                           </p>
                           {item.subvalue && (
-                            <p className="text-muted-foreground text-xs">
+                            <p className="text-muted-foreground text-sm">
                               {item.subvalue}
                             </p>
                           )}
                         </div>
                         {item.type === 'map' && (
-                          <Globe className="text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
+                          <Globe className="text-primary h-5 w-5 transition-transform group-hover:translate-x-1" />
                         )}
                       </a>
                     ))}
