@@ -262,6 +262,11 @@ export function Navbar() {
             <Link
               key={link.href}
               to={link.href}
+              onClick={
+                link.href === '/'
+                  ? () => window.scrollTo({ top: 0, behavior: 'smooth' })
+                  : undefined
+              }
               className={cn(
                 'text-sm font-medium transition-colors duration-200',
                 location.pathname === link.href
@@ -354,7 +359,10 @@ export function Navbar() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="overlay-backdrop fixed inset-0 z-40 lg:hidden"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsOpen(false);
+                setOpenAccordion(null);
+              }}
             />
             <motion.div
               key="mobile-drawer"
@@ -378,7 +386,10 @@ export function Navbar() {
                   id="mobile-drawer-close"
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    setOpenAccordion(null);
+                  }}
                   aria-label="Fechar menu"
                 >
                   <X className="h-5 w-5" />
@@ -394,7 +405,12 @@ export function Navbar() {
                     <motion.div key={link.href} variants={itemVariants}>
                       <Link
                         to={link.href}
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => {
+                          if (link.href === '/') {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }
+                          setIsOpen(false);
+                        }}
                         className={cn(
                           'block rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200',
                           location.pathname === link.href
@@ -457,7 +473,7 @@ export function Navbar() {
                 </div>
               </nav>
 
-              <div className="border-border mt-4 border-t px-4 py-6">
+              <div className="border-border mt-3.5 -translate-y-0.5 border-t px-4 py-6">
                 <p className="text-muted-foreground mb-4 text-xs font-semibold tracking-wider uppercase">
                   Redes Sociais
                 </p>

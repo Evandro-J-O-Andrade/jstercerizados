@@ -65,6 +65,11 @@ export function BottomNavigation() {
             <Link
               key={item.href}
               to={item.href}
+              onClick={
+                item.href === '/'
+                  ? () => window.scrollTo({ top: 0, behavior: 'smooth' })
+                  : undefined
+              }
               className={cn(
                 'text-muted-foreground hover:bg-muted/50 hover:text-foreground relative flex flex-col items-center gap-1.5 rounded-xl px-3 py-2 transition-all duration-200',
                 isActive && 'text-primary',
