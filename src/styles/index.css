@@ -643,10 +643,4 @@
   ::-webkit-scrollbar {
     display: none;
   }
-
-  @media (max-width: 1023.98px) {
-    footer .mt-4.flex.items-center.gap-3 {
-      transform: translateY(-10px);
-    }
-  }
 }
