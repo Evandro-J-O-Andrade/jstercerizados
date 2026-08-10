@@ -21,7 +21,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { HeroSplit } from '@/components/sections/HeroSplit';
-import { CinematicShowcase } from '@/components/sections/CinematicIntro';
+import { CinematicIntro } from '@/components/sections/CinematicIntro';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
@@ -292,12 +292,14 @@ export default function Home() {
         ]}
         type="WebSite"
       />
-      {!showcaseFinished && (
-        <CinematicShowcase onFinish={handleShowcaseFinish} />
-      )}
+      {!showcaseFinished && <CinematicIntro onFinish={handleShowcaseFinish} />}
 
       {/* 1. HERO */}
-      <HeroSplit slides={heroSlides} autoPlay interval={6000} />
+      <HeroSplit
+        slides={heroSlides}
+        autoPlay={showcaseFinished}
+        interval={6000}
+      />
 
       {/* 2. PARA EMPRESAS */}
       <Section className="bg-surface-alt">
