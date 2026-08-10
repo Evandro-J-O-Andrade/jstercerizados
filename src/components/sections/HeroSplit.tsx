@@ -77,6 +77,24 @@ export function HeroSplit({
 
   return (
     <section className="relative overflow-hidden">
+      {slides.length > 1 && (
+        <div className="mb-6 flex items-center gap-3 px-4 sm:px-6 lg:px-8">
+          <span className="text-primary text-sm font-medium tabular-nums">
+            {String(current + 1).padStart(2, '0')}
+          </span>
+          <div className="bg-border relative h-1 flex-1 overflow-hidden rounded-full">
+            <motion.div
+              className="bg-primary h-full w-1/2 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${((current + 1) / slides.length) * 100}%` }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+            />
+          </div>
+          <span className="text-muted-foreground text-sm font-medium tabular-nums">
+            / {String(slides.length).padStart(2, '0')}
+          </span>
+        </div>
+      )}
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
         <div className="flex flex-col justify-center">
           {slideEyebrow && (
@@ -146,31 +164,33 @@ export function HeroSplit({
             </motion.div>
           </AnimatePresence>
           {slides.length > 1 && (
-            <div className="absolute -bottom-8 left-1/2 flex -translate-x-1/2 gap-2">
-              {slides.map((slide, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrent(index)}
-                  className="relative h-2 w-10 cursor-pointer rounded-full bg-white/10 transition-all duration-300 hover:bg-white/20"
-                  aria-label={`Ir para imagem ${index + 1} de ${slides.length}: ${slide.alt}`}
-                  aria-pressed={current === index}
-                >
-                  <div
-                    className={`absolute inset-0.5 rounded-full transition-all duration-300 ${
-                      current === index ? 'bg-primary w-2' : 'w-0.5 bg-white/40'
-                    }`}
-                  />
-                  {current === index && (
+            <nav
+              className="absolute -bottom-10 left-1/2 flex -translate-x-1/2 gap-2"
+              aria-label="Slides do hero"
+            >
+              {slides.map((s, index) => {
+                const isActive = current === index;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setCurrent(index)}
+                    className="relative h-2 w-10 cursor-pointer rounded-full bg-white/10 transition-all duration-300 hover:bg-white/20"
+                    aria-label={`Ir para ${s.alt || `slide ${index + 1}`}`}
+                    aria-pressed={isActive}
+                  >
                     <motion.div
                       className="bg-primary absolute inset-0.5 rounded-full"
-                      initial={{ width: '2px' }}
-                      animate={{ width: '32px' }}
+                      initial={{ scaleX: 0, transformOrigin: 'left' }}
+                      animate={{
+                        scaleX: isActive ? 1 : 0.1,
+                        opacity: isActive ? 1 : 0.3,
+                      }}
                       transition={{ duration: 0.5, ease: 'easeOut' }}
                     />
-                  )}
-                </button>
-              ))}
-            </div>
+                  </button>
+                );
+              })}
+            </nav>
           )}
         </div>
       </div>

@@ -30,65 +30,56 @@ import { mockGetVagas } from '@/services/mock/vagas';
 import { PARTNERS_LOGOS } from '@/mock/partners';
 import { CLIENT_TESTIMONIALS } from '@/mock/clients';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
+import { HERO_SLIDES } from '@/content/homeHero';
 
 const SHOWCASE_KEY = 'js-showcase-dismissed';
 
-const heroSlides = [
-  {
-    id: 'assessoria-rh',
-    image: '/images/services/assessoria-rh.png',
-    alt: 'Equipe colaborando em reunião corporativa',
-    eyebrow: (
-      <span className="flex items-center gap-2">
-        <Shield className="h-4 w-4" />
-        ASSESSORIA EM RECURSOS HUMANOS
-      </span>
-    ),
-    title: (
-      <>
-        Mais eficiência em{' '}
-        <span className="text-primary">Recursos Humanos</span>,
-        <br />
-        mais agilidade para sua empresa.
-      </>
-    ),
-    subtitle:
-      'Simplifique processos, reduza o tempo gasto com tarefas operacionais e foque no que realmente importa: o crescimento do seu negócio.',
-    cta: (
-      <>
-        <Link to="/empresas">
-          <Button
-            variant="secondary"
-            size="xl"
-            className="shadow-glow-lg h-14 rounded-[18px] px-8 py-4 text-base motion-safe:duration-300"
-          >
-            Contrair Profissionais
-            <ArrowRight className="ml-2 h-5 w-5" />
+const heroSlides = HERO_SLIDES.map((slide) => ({
+  id: slide.id,
+  image: slide.image,
+  alt: slide.imageAlt,
+  eyebrow: (
+    <span className="flex items-center gap-2">
+      <slide.eyebrowIcon className="h-4 w-4" />
+      {slide.eyebrow}
+    </span>
+  ),
+  title: slide.title,
+  description: slide.description,
+  cta: (
+    <>
+      <Link to={slide.primaryCta.href}>
+        <Button
+          variant="secondary"
+          size="xl"
+          className="shadow-glow-lg h-14 rounded-[18px] px-8 py-4 text-base motion-safe:duration-300"
+        >
+          {slide.primaryCta.label}
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+      </Link>
+      <Link to={slide.secondaryCta.href}>
+        <Button
+          variant="outline"
+          size="xl"
+          className="border-border/30 text-foreground hover:bg-muted h-14 rounded-[18px] px-8 py-4 text-base backdrop-blur motion-safe:duration-300"
+        >
+          {slide.secondaryCta.label}
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+      </Link>
+      <div className="text-muted-foreground mt-6 flex flex-col gap-3 text-sm">
+        <span>Está procurando uma oportunidade?</span>
+        <Link to={slide.candidateCta.href}>
+          <Button variant="ghost" size="sm">
+            {slide.candidateCta.label}
+            <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
         </Link>
-        <Link to="/servicos">
-          <Button
-            variant="outline"
-            size="xl"
-            className="border-border/30 text-foreground hover:bg-muted h-14 rounded-[18px] px-8 py-4 text-base backdrop-blur motion-safe:duration-300"
-          >
-            Conhecer soluções
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </Link>
-        <div className="text-muted-foreground mt-6 flex flex-col gap-3 text-sm">
-          <span>Está procurando uma oportunidade?</span>
-          <Link to="/vagas">
-            <Button variant="ghost" size="sm">
-              Ver vagas
-              <ArrowRight className="ml-1 h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
-      </>
-    ),
-  },
-];
+      </div>
+    </>
+  ),
+}));
 
 const steps = [
   {
@@ -306,7 +297,7 @@ export default function Home() {
       )}
 
       {/* 1. HERO */}
-      <HeroSplit slides={heroSlides} />
+      <HeroSplit slides={heroSlides} autoPlay interval={6000} />
 
       {/* 2. PARA EMPRESAS */}
       <Section className="bg-surface-alt">
