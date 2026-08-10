@@ -125,13 +125,12 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
       <motion.div
         variants={imageVariants}
-        className="absolute inset-0 h-full w-full"
+        className="cinematic-hero-image absolute inset-0 h-full w-full"
       >
         <SafeImage
           src={HERO_ASSETS.cardheros}
           alt="J&amp;S Empregos LTDA"
           className="h-full w-full object-cover"
-          style={{ objectPosition: 'center 30%' }}
           loading="eager"
           decoding="async"
           skeleton={false}

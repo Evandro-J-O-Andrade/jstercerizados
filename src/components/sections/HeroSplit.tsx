@@ -77,24 +77,6 @@ export function HeroSplit({
 
   return (
     <section className="relative overflow-hidden">
-      {slides.length > 1 && (
-        <div className="mb-6 flex items-center gap-3 px-4 sm:px-6 lg:px-8">
-          <span className="text-primary text-sm font-medium tabular-nums">
-            {String(current + 1).padStart(2, '0')}
-          </span>
-          <div className="bg-border relative h-1 flex-1 overflow-hidden rounded-full">
-            <motion.div
-              className="bg-primary h-full w-1/2 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${((current + 1) / slides.length) * 100}%` }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-            />
-          </div>
-          <span className="text-muted-foreground text-sm font-medium tabular-nums">
-            / {String(slides.length).padStart(2, '0')}
-          </span>
-        </div>
-      )}
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
         <div className="flex flex-col justify-center">
           {slideEyebrow && (
