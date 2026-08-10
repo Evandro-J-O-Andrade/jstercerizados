@@ -61,7 +61,7 @@ export const CLIENT_TESTIMONIALS = [
   {
     id: 'testimonial-03',
     name: 'Marcos Lima',
-    role: 'Sindico',
+    role: 'Síndico',
     company: 'Conjunto Zeta',
     image: '/images/team/marcos-lima.svg',
     quote:

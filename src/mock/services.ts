@@ -54,7 +54,7 @@ export const SERVICES_DEMO = [
     features: [
       'Limpeza profunda',
       'Produtos de limpeza ecológicos',
-      'Equipe multiativada',
+      'Equipe multidisciplinar',
       'Certificação Qualidade',
     ],
     image: '/images/services/limpeza.svg',

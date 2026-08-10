@@ -40,8 +40,7 @@ const steps = [
   {
     step: '04',
     title: 'Contratação',
-    description:
-      'Receba a proposta e inicie sua nova oportunidade profissional com a ${COMPANY.tradingName}.',
+    description: `Receba a proposta e inicie sua nova oportunidade profissional com a ${COMPANY.tradingName}.`,
     icon: CheckCircle2,
   },
 ];

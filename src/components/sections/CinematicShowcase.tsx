@@ -130,7 +130,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         <SafeImage
           src={HERO_ASSETS.cardheros}
           alt="J&amp;S Empregos LTDA"
-          className="max-h-[80vh] max-w-[90vw] object-contain"
+          className="h-full w-full object-cover sm:max-h-[80vh] sm:max-w-[90vw]"
           loading="eager"
           decoding="async"
           skeleton={false}

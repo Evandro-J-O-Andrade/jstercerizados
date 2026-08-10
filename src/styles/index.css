@@ -634,7 +634,7 @@
 
   /* Cinematic Showcase — object-position responsivo */
   .cinematic-hero-image img {
-    object-position: center 40%;
+    object-position: 60% center;
   }
   @media (min-width: 640px) {
     .cinematic-hero-image img {

@@ -44,7 +44,7 @@ export const WHATSAPP_MESSAGES = {
   faq: `Olá! Tenho algumas dúvidas sobre a ${COMPANY.tradingName} e gostaria de obter mais informações.`,
   contact: `Olá! Entrei em contato pelo site da ${COMPANY.tradingName} e gostaria de receber mais informações.`,
   contactForm: `Olá! Preenchi o formulário de contato no site da ${COMPANY.tradingName} e gostaria de ser atendido.`,
-  whatsappButton: `Olá! Vi o botão de WhatsApp no site da ${COMPANY.tradingName} e gostaria de conversar sobre recrutamento ou oportidades.`,
+  whatsappButton: `Olá! Vi o botão de WhatsApp no site da ${COMPANY.tradingName} e gostaria de conversar sobre recrutamento ou oportunidades.`,
   budgetForm:
     'Olá! Preenchi o formulário no site e gostaria de solicitar profissionais para minha empresa.',
   candidateForm: `Olá! Acabei de enviar meu currículo pelo site da ${COMPANY.tradingName}. Gostaria de saber mais sobre o processo de recrutamento.`,

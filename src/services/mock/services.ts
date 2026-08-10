@@ -16,7 +16,7 @@ export const mockServices: Service[] = [
       'Acesso a currículos qualificados',
       'Triagem inicial qualificada',
       'Avaliação de competências técnicas',
-      'Processo seletivo agile',
+      'Processo seletivo ágil',
       'Garantia de contratação',
       'Suporte até a contratação',
     ],
@@ -282,10 +282,10 @@ export const mockServices: Service[] = [
     shortDescription:
       'Limpeza profunda e organização do imóvel após a mudança para deixar tudo impecável.',
     description:
-      'Serviço de limpeza pós-mudança para deixar seu imóvel impecável após a mudança. Removemos poeira de alagamingação, organizamos e higienizamos todos os ambientes.',
+      'Serviço de limpeza pós-mudança para deixar seu imóvel impecável após a mudança. Removemos poeira da mudança, organizamos e higienizamos todos os ambientes.',
     benefits: [
       'Limpeza profunda pós-mudança',
-      'Remoção de poeira de alagamingação',
+      'Remoção de poeira da mudança',
       'Higienização completa',
       'Organização de ambientes',
       'Equipe especializada',
