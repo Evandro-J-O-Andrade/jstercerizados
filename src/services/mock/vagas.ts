@@ -129,6 +129,8 @@ export function mockGetVagas(filtro?: {
   estado?: string;
   tipoContrato?: string;
   search?: string;
+  salarioMin?: number;
+  dataDias?: number;
 }): Vaga[] {
   let result = mockVagas.filter((v) => v.status === 'ATIVA');
 
@@ -142,6 +144,17 @@ export function mockGetVagas(filtro?: {
   }
   if (filtro?.tipoContrato) {
     result = result.filter((v) => v.tipoContrato === filtro.tipoContrato);
+  }
+  if (filtro?.salarioMin) {
+    result = result.filter(
+      (v) => v.salarioMin && v.salarioMin >= filtro.salarioMin!,
+    );
+  }
+  if (filtro?.dataDias) {
+    const cutoff = Date.now() - filtro.dataDias * 24 * 60 * 60 * 1000;
+    result = result.filter(
+      (v) => new Date(v.dataPublicacao).getTime() >= cutoff,
+    );
   }
   if (filtro?.search) {
     const term = filtro.search.toLowerCase();

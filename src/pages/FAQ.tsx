@@ -40,7 +40,7 @@ const FAQ_CATEGORIES = [
       {
         question: 'Quais serviços vocês oferecem?',
         answer:
-          'Somos uma empresa de assessoria em RH especializada em recrutamento e seleção, banco de talentos, mão de obra temporária, terceirização, hunting de executivos e avaliação de perfil. Como solução complementar, oferecemos também facilities como limpeza, segurança, portaria e zeladoria.',
+          'Somos uma empresa de assessoria em RH especializada em recrutamento e seleção, mão de obra temporária, terceirização e facilities. Como solução complementar, oferecemos também limpeza, segurança, portaria, jardinagem e zeladoria.',
       },
       {
         question: 'Como solicitar um orçamento?',

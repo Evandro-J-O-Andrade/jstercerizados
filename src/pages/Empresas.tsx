@@ -9,7 +9,14 @@ import { staggerItem } from '@/animations/fade';
 import { PARTNERS_LOGOS } from '@/mock/partners';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
-import { Phone, Building2, Users, MapPin, CheckCircle2 } from 'lucide-react';
+import {
+  Phone,
+  Building2,
+  Users,
+  MapPin,
+  CheckCircle2,
+  Shield,
+} from 'lucide-react';
 
 export default function Empresas() {
   return (
@@ -53,8 +60,7 @@ export default function Empresas() {
             </h1>
             <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
               Nossa assessoria em RH e soluções de terceirização conectam
-              empresas aos melhores talentos do mercado através de recrutamento,
-              seleção e banco de candidatos.
+              empresas aos melhores profissionais do mercado.
             </p>
           </motion.div>
 
@@ -98,11 +104,6 @@ export default function Empresas() {
           >
             {[
               {
-                title: 'Banco de Talentos',
-                desc: 'Acesso a milhares de profissionais pré-qualificados.',
-                icon: Users,
-              },
-              {
                 title: 'Recrutamento Ágil',
                 desc: 'Encontramos os profissionais certos em até 7 dias.',
                 icon: MapPin,
@@ -116,6 +117,11 @@ export default function Empresas() {
                 title: 'Garantia de Qualidade',
                 desc: 'Satisfação garantida ou substituímos o profissional.',
                 icon: CheckCircle2,
+              },
+              {
+                title: 'Preços transparentes',
+                desc: 'Orçamento sem custo e sem compromisso.',
+                icon: Shield,
               },
             ].map((item) => (
               <motion.div

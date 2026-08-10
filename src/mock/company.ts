@@ -4,7 +4,7 @@ export const COMPANY_DEMO = {
   description:
     'Mais eficiência em RH. Mais resultados para sua empresa. Conectamos empresas aos melhores profissionais através de recrutamento, seleção, mão de obra temporária, efetiva e assessoria completa em RH.',
   mission:
-    'Conectar empresas aos profissionais certos e ajudar candidatos a conquistarem novas oportunidades, por meio de recrutamento, seleção e um banco de talentos sempre atualizado.',
+    'Conectar empresas aos profissionais certos e ajudar candidatos a conquistarem novas oportunidades, por meio de recrutamento, seleção, mão de obra temporária e efetiva e assessoria completa em RH.',
   vision:
     'Ser referência em assessoria em RH, recrutamento, mão de obra, terceirização e facilities, reconhecida pela excelência e pela conexão humanizada entre empresas e talentos.',
   values: [

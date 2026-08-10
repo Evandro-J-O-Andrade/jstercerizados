@@ -245,7 +245,7 @@ export default function Clientes() {
                       <option value="recrutamento">
                         Recrutamento e Seleção
                       </option>
-                      <option value="banco-talentos">Banco de Talentos</option>
+                      <option value="terceirizacao">Terceirização</option>
                       <option value="hunting">Hunting de Executivos</option>
                     </Select>
                   </div>

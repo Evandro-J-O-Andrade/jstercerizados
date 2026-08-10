@@ -91,7 +91,7 @@ export default function Login() {
     },
     empresa: {
       title: 'Área da Empresa',
-      subtitle: 'Publique vagas e acesse seu banco de talentos.',
+      subtitle: 'Publique vagas e acesse sua área de recrutamento.',
       icon: <Building2 className="h-8 w-8" />,
       placeholderEmail: 'empresa@exemplo.com',
     },
@@ -119,7 +119,7 @@ export default function Login() {
         fallbackSrc={IMAGES.hero.login.fallback}
         className="absolute inset-0 h-full w-full"
       />
-      <div className="absolute inset-0 bg-[hsl(215,35%,8%)]/85 backdrop-blur-sm" />
+      <div className="bg-background/85 absolute inset-0 backdrop-blur-sm" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

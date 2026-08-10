@@ -1,14 +1,14 @@
-# J&S Empregos LTDA.
+# J&S EMPREGOS LTDA.
 
 # MASTER PRODUCT & WEBSITE ARCHITECTURE
 
 ## Documento Mestre de Arquitetura, Conteúdo, UX/UI, SaaS e Implementação
 
-**Versão:** 1.0
+**Versão:** 1.1
 **Data:** 08/08/2026
 **Status:** Documento Mestre de Projeto
-**Produto:** Plataforma Web / SaaS Institucional + Captação + Recrutamento + Serviços B2B
-**Empresa:** J&S Empregos Ltda.
+**Produto:** Plataforma Web / SaaS Institucional + Captação + Recrutamento + Terceirização + Facilities + B2B
+**Empresa:** J&S Empregos LTDA.
 
 ---
 
@@ -80,7 +80,7 @@ CRIAR OUTRO SITE
 
 ## Nome oficial
 
-**J&S Empregos Ltda.**
+**J&S Empregos LTDA.**
 
 Toda a aplicação deverá utilizar a identidade oficial centralizada em:
 
@@ -98,6 +98,7 @@ Não utilizar como identidade principal:
 - JR RH;
 - JS Empregos;
 - JS Empregos RH;
+- J&S Empregos;
 - qualquer outra variação não autorizada.
 
 Caso apareça uma referência antiga, deve ser identificada durante auditoria.
@@ -1819,7 +1820,7 @@ Footer deve possuir boa hierarquia e não parecer um bloco de texto.
 
 Utilizar dados oficiais:
 
-**J&S Empregos Ltda.**
+**J&S Empregos LTDA.**
 
 Informações fornecidas pelo cliente:
 
@@ -1837,10 +1838,10 @@ Telefone/WhatsApp:
 (11) 96838-0592
 
 E-mail:
-comercial@jsEmpregos.com.br
+comercial@jsterceirizados.com.br
 
 Domínio:
-www.jsEmpregos.com.br
+www.jsterceirizados.com.br
 ```
 
 Essas informações devem ficar centralizadas na configuração da empresa.
@@ -1852,7 +1853,7 @@ Essas informações devem ficar centralizadas na configuração da empresa.
 O domínio oficial informado pelo cliente é:
 
 ```text
-jsEmpregos.com.br
+jsEmpregos.com.br → jsterceirizados.com.br (domínio antigo — atualizar)
 ```
 
 Não utilizar domínio de teste como identidade oficial.
@@ -2120,7 +2121,7 @@ Antes de qualquer implementação, utilizar esta instrução:
 
 > Leia integralmente o documento `J&S-MASTER-ARCHITECTURE.md`.
 >
-> Você está trabalhando em um projeto existente da J&S Empregos Ltda.
+> Você está trabalhando em um projeto existente da J&S Empregos LTDA.
 >
 > Não trate o projeto como uma aplicação nova.
 >
@@ -2128,7 +2129,7 @@ Antes de qualquer implementação, utilizar esta instrução:
 >
 > Antes de alterar código, faça uma auditoria da página solicitada e identifique o que pode ser reutilizado.
 >
-> A implementação deve respeitar a identidade oficial J&S Empregos Ltda., o posicionamento de Assessoria em Recursos Humanos como carro-chefe comercial e a operação existente de terceirização, facilities e mão de obra.
+> A implementação deve respeitar a identidade oficial J&S Empregos LTDA., o posicionamento de Assessoria em Recursos Humanos como carro-chefe comercial e a operação existente de terceirização, facilities e mão de obra.
 >
 > Não invente conteúdo, números, clientes, parceiros, depoimentos, certificações ou histórico.
 >

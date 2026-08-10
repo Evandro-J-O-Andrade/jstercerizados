@@ -6,8 +6,6 @@ export const SEO_CONFIG = {
   keywords: [
     'recrutamento',
     'seleção de pessoas',
-    'banco de talentos',
-    'hunting de executivos',
     'mão de obra temporária',
     'mão de obra efetiva',
     'terceirização',

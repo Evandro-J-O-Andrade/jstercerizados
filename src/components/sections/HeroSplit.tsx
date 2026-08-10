@@ -1,6 +1,6 @@
 import { type ReactNode, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { HeroImageFallback } from './HeroImageFallback';
+import { HeroImage } from './HeroImage';
 
 export interface HeroSplitSlide {
   id: string;
@@ -51,7 +51,7 @@ export function HeroSplit({
   description,
   cta,
   slides,
-  autoPlay = true,
+  autoPlay = false,
   interval = 5000,
 }: HeroSplitProps) {
   const [current, setCurrent] = useState(0);
@@ -138,7 +138,7 @@ export function HeroSplit({
               exit={{ opacity: 0, x: -24, scale: 0.98 }}
               transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
             >
-              <HeroImageFallback
+              <HeroImage
                 src={slide.image}
                 alt={slide.alt}
                 className="aspect-[4/3] w-full sm:aspect-[3/2] lg:aspect-[4/3]"

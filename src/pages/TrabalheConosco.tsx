@@ -172,11 +172,11 @@ export default function TrabalheConosco() {
         <Container>
           <div className="mb-12 text-center">
             <h1 className="text-foreground text-3xl font-bold sm:text-4xl">
-              Banco de Talentos
+              Cadastrar Currículo
             </h1>
             <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
               Cadastre seu currículo, escolha a vaga de interesse e faça parte
-              do nosso banco de talentos para futuras oportunidades.
+              das oportunidades que temos para você.
             </p>
           </div>
 
@@ -189,7 +189,7 @@ export default function TrabalheConosco() {
               >
                 <div className="bg-primary/10 text-primary mb-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
                   <Briefcase className="h-4 w-4" />
-                  Banco de Talentos
+                  Cadastrar Currículo
                 </div>
                 <p className="text-muted-foreground">
                   Selecione sua área de atuação e preencha o formulário com seus

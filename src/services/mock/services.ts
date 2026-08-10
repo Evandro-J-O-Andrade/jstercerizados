@@ -13,7 +13,7 @@ export const mockServices: Service[] = [
     description:
       'Serviço completo de recrutamento e seleção de profissionais qualificados para sua empresa. Encontramos os melhores talentos para as posições estratégicas da sua organização.',
     benefits: [
-      'Acesso ao nosso banco de talentos',
+      'Acesso a currículos qualificados',
       'Triagem inicial qualificada',
       'Avaliação de competências técnicas',
       'Processo seletivo agile',
@@ -62,28 +62,6 @@ export const mockServices: Service[] = [
     ],
     image: IMAGES.services.maoDeObraReal ?? '/images/services/efetiva.svg',
     icon: 'award',
-    category: 'rh',
-  },
-  {
-    id: '2',
-    slug: 'banco-de-talentos',
-    title: 'Banco de Talentos',
-    shortDescription:
-      'Acesso a currículos qualificados e pré-selecionados para suas vagas.',
-    description:
-      'Base de currículos qualificados disponíveis para suas vagas. Acesso a profissionais pré-selecionados e prontos para novos desafios.',
-    benefits: [
-      'Currículos pré-qualificados',
-      'Busca por competências',
-      'Filtragem avançada',
-      'Contato direto com candidatos',
-      'Agilidade no recrutamento',
-      'Redução de custos',
-    ],
-    image:
-      IMAGES.services.bancoTalentosReal ??
-      '/images/services/banco-talentos.svg',
-    icon: 'database',
     category: 'rh',
   },
   {
@@ -344,15 +322,15 @@ export const mockServices: Service[] = [
     slug: 'cadastro-curriculo',
     title: 'Cadastro de Currículo',
     shortDescription:
-      'Cadastre seu currículo gratuitamente e entre no nosso banco de talentos.',
+      'Cadastre seu currículo gratuitamente e encontre oportunidades que combinam com seu perfil.',
     description:
-      'Cadastre seu currículo gratuitamente e entre no nosso banco de talentos. Mantenha seus dados sempre atualizados.',
+      'Cadastre seu currículo gratuitamente e encontre oportunidades que combinam com seu perfil. Mantenha seus dados sempre atualizados.',
     benefits: [
       'Cadastro rápido e gratuito',
       'Currículo visível para empresas parceiras',
       'Atualização de dados',
       'Alertas de novas vagas',
-      'Acesso ao banco de talentos',
+      'Acesso a currículos qualificados',
     ],
     image:
       SERVICE_IMAGES.bancoTalentoReal ?? '/images/services/banco-talentos.svg',
@@ -428,7 +406,7 @@ export const mockServices: Service[] = [
       'Mantenha seu currículo sempre atualizado e destaque-se para nossas empresas parceiras.',
     benefits: [
       'Atualização contínua',
-      'Destaque no banco de talentos',
+      'Destaque para empresas parceiras',
       'Maior visibilidade',
       'Notificações de vagas compatíveis',
       'Suporte da equipe',
@@ -437,6 +415,50 @@ export const mockServices: Service[] = [
       SERVICE_IMAGES.bancoTalentoReal ?? '/images/services/banco-talentos.svg',
     icon: 'clipboard-check',
     category: 'candidato',
+  },
+
+  // ── Soluções em Facilities ───────────────────────────────
+  {
+    id: '15',
+    slug: 'controle-acesso',
+    title: 'Controle de Acesso',
+    shortDescription:
+      'Portaria 24h, recepção e controle de fluxo de pessoas para sua empresa ou condomínio.',
+    description:
+      'Serviço completo de controle de acesso com portaria 24h, recepção e monitoramento de fluxo de pessoas, garantindo segurança e organização.',
+    benefits: [
+      'Portaria 24h',
+      'Recepção e atendimento',
+      'Controle de fluxo de pessoas',
+      'Interfonia e catraca',
+      'Relatórios de acesso',
+      'Equipe treinada',
+    ],
+    image:
+      SERVICE_IMAGES.terceirizacaoReal ?? '/images/services/facilities.svg',
+    icon: 'shield',
+    category: 'facilities',
+  },
+  {
+    id: '16',
+    slug: 'portaria',
+    title: 'Recepção e Portaria',
+    shortDescription:
+      'Equipe qualificada para recepção, portaria e segurança do seu local.',
+    description:
+      'Serviço de recepção e portaria com equipe qualificada para atender visitantes, controlar acesso e garantir a segurança do seu estabelecimento.',
+    benefits: [
+      'Atendimento a visitantes',
+      'Controle de veículos',
+      'Portaria 24h',
+      'Equipe uniformizada',
+      'Protocolo de entregas',
+      'Horários flexíveis',
+    ],
+    image:
+      SERVICE_IMAGES.terceirizacaoReal ?? '/images/services/facilities.svg',
+    icon: 'clipboard-check',
+    category: 'facilities',
   },
 ];
 

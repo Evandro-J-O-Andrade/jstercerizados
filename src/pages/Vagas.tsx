@@ -23,15 +23,40 @@ const CONTRATO_LABELS: Record<string, string> = {
 export default function Vagas() {
   const [searchTerm, setSearchTerm] = useState('');
   const [cidadeFilter, setCidadeFilter] = useState('');
+  const [estadoFilter, setEstadoFilter] = useState('');
+  const [areaFilter, setAreaFilter] = useState('');
   const [tipoFilter, setTipoFilter] = useState('');
+  const [salarioMin, setSalarioMin] = useState('');
+  const [dataDias, setDataDias] = useState('');
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
 
   const vagas = useMemo(() => {
     return mockGetVagas({
       search: searchTerm || undefined,
       cidade: cidadeFilter || undefined,
+      estado: estadoFilter || undefined,
       tipoContrato: tipoFilter || undefined,
+      salarioMin: salarioMin ? Number(salarioMin) : undefined,
+      dataDias: dataDias ? Number(dataDias) : undefined,
     });
-  }, [searchTerm, cidadeFilter, tipoFilter]);
+  }, [
+    searchTerm,
+    cidadeFilter,
+    estadoFilter,
+    tipoFilter,
+    salarioMin,
+    dataDias,
+  ]);
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setCidadeFilter('');
+    setEstadoFilter('');
+    setAreaFilter('');
+    setTipoFilter('');
+    setSalarioMin('');
+    setDataDias('');
+  };
 
   return (
     <div className="min-h-screen pt-16 lg:pt-20">
@@ -79,9 +104,9 @@ export default function Vagas() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-4"
+            className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-5"
           >
-            <div className="relative">
+            <div className="relative md:col-span-2">
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
               <input
                 type="text"
@@ -113,21 +138,71 @@ export default function Vagas() {
               <option value="TERCEIRIZADO">Terceirizado</option>
             </select>
             <Button
-              variant="outline"
-              size="lg"
+              variant="ghost"
+              size="sm"
               className="w-full"
-              onClick={() => {
-                setSearchTerm('');
-                setCidadeFilter('');
-                setTipoFilter('');
-              }}
+              onClick={() => setShowMoreFilters(!showMoreFilters)}
             >
               <Filter className="mr-2 h-4 w-4" />
-              Limpar filtros
+              {showMoreFilters ? 'Menos filtros' : 'Mais filtros'}
             </Button>
           </motion.div>
 
-          {/* Results header */}
+          {/* Additional Filters */}
+          {showMoreFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4"
+            >
+              <select
+                value={estadoFilter}
+                onChange={(e) => setEstadoFilter(e.target.value)}
+                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
+              >
+                <option value="">Todos os estados</option>
+                <option value="SP">SP</option>
+                <option value="RJ">RJ</option>
+                <option value="MG">MG</option>
+              </select>
+              <select
+                value={areaFilter}
+                onChange={(e) => setAreaFilter(e.target.value)}
+                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
+              >
+                <option value="">Todas as áreas</option>
+                <option value="producao">Produção</option>
+                <option value="logistica">Logística</option>
+                <option value="administrativo">Administrativo</option>
+                <option value="seguranca">Segurança</option>
+                <option value="limpeza">Limpeza</option>
+              </select>
+              <select
+                value={salarioMin}
+                onChange={(e) => setSalarioMin(e.target.value)}
+                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
+              >
+                <option value="">Salário mínimo</option>
+                <option value="1500">R$ 1.500+</option>
+                <option value="2000">R$ 2.000+</option>
+                <option value="3000">R$ 3.000+</option>
+                <option value="5000">R$ 5.000+</option>
+              </select>
+              <select
+                value={dataDias}
+                onChange={(e) => setDataDias(e.target.value)}
+                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
+              >
+                <option value="">Todas as datas</option>
+                <option value="7">Últimos 7 dias</option>
+                <option value="30">Últimos 30 dias</option>
+                <option value="90">Últimos 90 dias</option>
+              </select>
+            </motion.div>
+          )}
+
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -141,11 +216,29 @@ export default function Vagas() {
               vaga{vagas.length !== 1 ? 's' : ''} encontrada
               {vagas.length !== 1 ? 's' : ''}
             </p>
-            <Link to="/trabalhe-conosco">
-              <Button variant="secondary" size="sm">
-                Cadastrar Currículo
+            <div className="flex items-center gap-3">
+              <Link to="/trabalhe-conosco">
+                <Button variant="secondary" size="sm">
+                  Cadastrar Currículo
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                disabled={
+                  !searchTerm &&
+                  !cidadeFilter &&
+                  !estadoFilter &&
+                  !areaFilter &&
+                  !tipoFilter &&
+                  !salarioMin &&
+                  !dataDias
+                }
+              >
+                Limpar filtros
               </Button>
-            </Link>
+            </div>
           </motion.div>
 
           {/* Vagas Grid */}

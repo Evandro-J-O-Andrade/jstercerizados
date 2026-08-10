@@ -2,7 +2,7 @@ import { COMPANY } from '@/config/company';
 
 export const WHATSAPP_MESSAGES = {
   home: {
-    candidate: `Olá! Visitei o site da ${COMPANY.tradingName} e gostaria de me cadastrar no banco de talentos. Pode me orientar?`,
+    candidate: `Olá! Visitei o site da ${COMPANY.tradingName} e gostaria de me cadastrar como candidato. Pode me orientar?`,
     company: `Olá! Visitei o site da ${COMPANY.tradingName} e gostaria de contratar profissionais para minha empresa. Como posso solicitar?`,
   },
   comercial:
@@ -10,8 +10,6 @@ export const WHATSAPP_MESSAGES = {
   suporte: `Olá! Preciso de atendimento da ${COMPANY.tradingName}. Já sou cliente.`,
   recrutamento:
     'Olá! Tenho interesse no serviço de Recrutamento e Seleção e gostaria de uma proposta comercial.',
-  banco:
-    'Olá! Tenho interesse no Banco de Talentos e gostaria de conhecer a solução.',
   maoObraTemporaria:
     'Olá! Tenho interesse no serviço de Mão de Obra Temporária e gostaria de uma proposta comercial.',
   terceirizacao:

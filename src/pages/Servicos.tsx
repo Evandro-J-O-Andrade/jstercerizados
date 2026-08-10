@@ -13,7 +13,7 @@ export default function Servicos() {
       'recrutamento-selecao',
       'mao-de-obra-temporaria',
       'mao-de-obra-efetiva',
-      'banco-de-talentos',
+      'terceirizacao',
       'assessoria-rh',
       'avaliacao-perfil',
       'hunting',

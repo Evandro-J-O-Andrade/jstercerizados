@@ -26,7 +26,7 @@ export const TESTIMONIALS_DEMO = [
     company: 'Grupo Alpha',
     image: '/images/team/marcos-lima.svg',
     quote:
-      'O Banco de Talentos da J&S tem profissionais pré-qualificados. Reduzimos 60% do tempo de recrutamento.',
+      'A J&S nos entregou profissionais qualificados em poucos dias. Nossa equipe cresceu 40% mais rápido.',
     rating: 5,
   },
   {

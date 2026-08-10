@@ -23,6 +23,7 @@ import {
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Nome é obrigatório'),
+  company: z.string().min(2, 'Empresa é obrigatória'),
   email: z.string().email('E-mail inválido'),
   phone: z.string().min(10, 'Telefone deve ter pelo menos 10 caracteres'),
   subject: z.string().min(2, 'Assunto é obrigatório'),
@@ -46,11 +47,11 @@ export default function Contato() {
   const onSubmit = async (data: ContactFormData): Promise<void> => {
     mockSubmitContact({
       name: data.name,
+      company: data.company,
       email: data.email,
       phone: data.phone,
       subject: data.subject,
       message: data.message,
-      company: data.name,
       city: COMPANY.address.city,
       state: COMPANY.address.state,
     });
@@ -229,6 +230,14 @@ export default function Contato() {
                       placeholder="João Silva"
                       error={errors.name?.message}
                       {...register('name')}
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      label="Empresa *"
+                      placeholder="ABC Empresas Ltda"
+                      error={errors.company?.message}
+                      {...register('company')}
                     />
                   </div>
                   <div>

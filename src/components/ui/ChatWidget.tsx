@@ -58,7 +58,7 @@ const faqResponses: Record<string, string> = {
   how_to_hire:
     'Para contratar, clique em "Divulgar Vaga" ou "Solicitar Orçamento" e nossa equipe entrará em contato em até 24h.',
   rh_services:
-    'Oferecemos recrutamento e seleção, banco de talentos, hunting de executivos, avaliação de perfil, mão de obra temporária e efetiva.',
+    'Oferecemos recrutamento e seleção, mão de obra temporária e efetiva, terceirização e facilities.',
   request_quote:
     'Ótimo! Vou encaminhar você para nossa equipe comercial. Em breve alguém entrará em contato.',
   human_support:

@@ -20,7 +20,7 @@ const steps = [
     step: '01',
     title: 'Cadastro',
     description:
-      'Preencha o formulário com seus dados e anexe seu currículo no Banco de Talentos.',
+      'Preencha seus dados e cadastre seu currículo para ser considerado nas oportunidades.',
     icon: FileText,
   },
   {

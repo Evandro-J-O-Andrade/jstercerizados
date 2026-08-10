@@ -176,7 +176,8 @@ export default function Sobre() {
               <p className="text-muted-foreground leading-relaxed">
                 Conectar empresas aos profissionais certos e ajudar candidatos a
                 conquistarem novas oportunidades, por meio de recrutamento,
-                seleção e um banco de talentos sempre atualizado.
+                seleção, mão de obra temporária e efetiva e assessoria completa
+                em RH.
               </p>
 
               <h3 className="text-foreground mt-8 mb-4 text-2xl font-bold">

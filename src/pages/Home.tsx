@@ -6,7 +6,6 @@ import {
   Search,
   Users,
   Building2,
-  Target,
   FileText,
   Briefcase,
   Zap,
@@ -14,9 +13,10 @@ import {
   Heart,
   ArrowRight,
   MapPin,
-  Bell,
   MessageSquare,
   Phone,
+  Quote,
+  Sparkle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
@@ -27,6 +27,8 @@ import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { mockGetVagas } from '@/services/mock/vagas';
+import { PARTNERS_LOGOS } from '@/mock/partners';
+import { CLIENT_TESTIMONIALS } from '@/mock/clients';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 
 const SHOWCASE_KEY = 'js-showcase-dismissed';
@@ -35,44 +37,54 @@ const heroSlides = [
   {
     id: 'assessoria-rh',
     image: '/images/services/assessoria-rh.png',
-    alt: 'Assessoria em Recursos Humanos',
+    alt: 'Equipe colaborando em reunião corporativa',
     eyebrow: (
       <span className="flex items-center gap-2">
         <Shield className="h-4 w-4" />
-        Assessoria em RH
+        ASSESSORIA EM RECURSOS HUMANOS
       </span>
     ),
     title: (
       <>
-        <span className="text-primary">Mais eficiência</span> em RH.
+        Mais eficiência em{' '}
+        <span className="text-primary">Recursos Humanos</span>,
         <br />
-        Mais resultados para sua empresa.
+        mais agilidade para sua empresa.
       </>
     ),
     subtitle:
-      'Mais eficiência em Recursos Humanos, mais agilidade para sua empresa. Conectamos empresas aos profissionais certos e ajudamos candidatos a conquistar novas oportunidades.',
+      'Simplifique processos, reduza o tempo gasto com tarefas operacionais e foque no que realmente importa: o crescimento do seu negócio.',
     cta: (
       <>
         <Link to="/empresas">
           <Button
             variant="secondary"
             size="xl"
-            className="shadow-glow-lg h-14 rounded-[18px] px-8 py-4 text-base"
+            className="shadow-glow-lg h-14 rounded-[18px] px-8 py-4 text-base motion-safe:duration-300"
           >
-            Contratar Funcionários
+            Contrair Profissionais
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </Link>
-        <Link to="/vagas">
+        <Link to="/servicos">
           <Button
             variant="outline"
             size="xl"
-            className="border-border/30 text-foreground hover:bg-muted h-14 rounded-[18px] px-8 py-4 text-base backdrop-blur"
+            className="border-border/30 text-foreground hover:bg-muted h-14 rounded-[18px] px-8 py-4 text-base backdrop-blur motion-safe:duration-300"
           >
-            Quero uma Vaga
+            Conhecer soluções
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </Link>
+        <div className="text-muted-foreground mt-6 flex flex-col gap-3 text-sm">
+          <span>Está procurando uma oportunidade?</span>
+          <Link to="/vagas">
+            <Button variant="ghost" size="sm">
+              Ver vagas
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
       </>
     ),
   },
@@ -130,12 +142,6 @@ const blogPosts = [
 
 const differentials = [
   {
-    title: 'Banco de talentos atualizado',
-    description:
-      'Base de currículos qualificados pronta para atender sua vaga com agilidade.',
-    icon: Briefcase,
-  },
-  {
     title: 'Atendimento rápido',
     description: 'Respostas ágeis para candidatos e empresas, sem burocracia.',
     icon: Zap,
@@ -161,9 +167,21 @@ const differentials = [
     description: 'Acompanhamento próximo para candidatos e empresas.',
     icon: Heart,
   },
+  {
+    title: 'Experiência em terceirização e facilities',
+    description: 'Soluções operacionais integradas com conformidade total.',
+    icon: Briefcase,
+  },
 ];
 
 const empresaSolutions = [
+  {
+    title: 'Assessoria em RH',
+    description:
+      'Profissional de RH dedicado para recrutamento, gestão e consultoria estratégica.',
+    href: '/servicos/assessoria-rh',
+    icon: Shield,
+  },
   {
     title: 'Recrutamento e Seleção',
     description:
@@ -186,24 +204,11 @@ const empresaSolutions = [
     icon: Building2,
   },
   {
-    title: 'Hunting de Executivos',
+    title: 'Facilities',
     description:
-      'Identificação e atração de lideranças para posições estratégicas.',
-    href: '/servicos/hunting',
-    icon: Target,
-  },
-  {
-    title: 'Avaliação de Perfil',
-    description:
-      'Análise comportamental e técnica para garantir a melhor escolha.',
-    href: '/servicos/avaliacao-perfil',
-    icon: FileText,
-  },
-  {
-    title: 'Banco de Talentos',
-    description: 'Acesso a uma base atualizada de candidatos pré-qualificados.',
-    href: '/servicos/banco-de-talentos',
-    icon: Briefcase,
+      'Limpeza, segurança, portaria, jardinagem e recepção para seu ambiente profissional.',
+    href: '/servicos/facilities',
+    icon: Sparkle,
   },
 ];
 
@@ -220,20 +225,41 @@ const candidateBenefits = [
     icon: Search,
   },
   {
-    title: 'Alertas de Emprego',
-    description: 'Receba notificações de novas vagas compatíveis com sua área.',
-    icon: Bell,
-  },
-  {
-    title: 'Orientação Profissional',
-    description: 'Conte com suporte para melhorar sua empregabilidade.',
+    title: 'Acompanhe seu processo',
+    description:
+      'Consulte o andamento da sua candidatura de forma simples e prática.',
     icon: MessageSquare,
   },
+];
+
+const facilitiesSolutions = [
   {
-    title: 'Atualização de Currículo',
+    title: 'Limpeza e Conservação',
     description:
-      'Mantenha seu currículo sempre atualizado para novas oportunidades.',
+      'Limpeza profissional com produtos ecológicos e equipe treinada para sua empresa.',
+    href: '/servicos/limpeza-conservacao',
     icon: FileText,
+  },
+  {
+    title: 'Controle de Acesso',
+    description:
+      'Portaria 24h e controle de fluxo de pessoas para sua empresa ou condomínio.',
+    href: '/servicos/controle-acesso',
+    icon: Shield,
+  },
+  {
+    title: 'Jardinagem e Paisagismo',
+    description:
+      'Manutenção de áreas verdes com projetos personalizados e cuidado profissional.',
+    href: '/servicos/jardinagem',
+    icon: Heart,
+  },
+  {
+    title: 'Recepção e Portaria',
+    description:
+      'Equipe qualificada para recepção, atendimento e segurança do seu local.',
+    href: '/servicos/portaria',
+    icon: Users,
   },
 ];
 
@@ -262,7 +288,6 @@ export default function Home() {
         keywords={[
           'recrutamento',
           'seleção de pessoas',
-          'banco de talentos',
           'mão de obra temporária',
           'mão de obra efetiva',
           'terceirização',
@@ -297,15 +322,14 @@ export default function Home() {
               variants={revealUp}
               className="text-foreground text-3xl font-bold sm:text-4xl"
             >
-              Soluções de RH para sua empresa
+              Soluções para sua empresa
             </motion.h2>
             <motion.p
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Conectando talentos às melhores oportunidades. Encontramos o
-              profissional certo para sua empresa e ajudamos candidatos a
-              conquistar novas oportunidades de trabalho.
+              Assessoria em RH, recrutamento, mão de obra temporária,
+              terceirização e facilities para sua empresa.
             </motion.p>
           </motion.div>
 
@@ -357,7 +381,80 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 3. PARA CANDIDATOS */}
+      {/* 3. SOLUÇÕES EM FACILITIES */}
+      <Section>
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Soluções em Facilities
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Limpeza, controle de acesso, jardinagem e recepção. Serviços
+              operacionais integrados para sua empresa.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {facilitiesSolutions.map((solution) => (
+              <motion.div
+                key={solution.title}
+                variants={staggerItem('up')}
+                className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 text-center transition-all duration-300"
+              >
+                <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                  <solution.icon className="h-6 w-6" />
+                </div>
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  {solution.title}
+                </h3>
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                  {solution.description}
+                </p>
+                <Link to={solution.href}>
+                  <Button variant="outline" size="sm" className="w-full">
+                    Saiba mais
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-10 text-center"
+          >
+            <Link to="/servicos">
+              <Button variant="secondary" size="lg">
+                Conheça nossas soluções
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 4. PARA CANDIDATOS */}
       <Section className="bg-surface-alt">
         <Container>
           <motion.div
@@ -430,7 +527,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 4. VAGAS EM DESTAQUE */}
+      {/* 5. VAGAS EM DESTAQUE */}
       <Section className="bg-surface-alt">
         <Container>
           <motion.div
@@ -643,7 +740,204 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 7. PARA EMPRESAS — seção comercial forte */}
+      {/* 8. CLIENTES E PARCEIROS */}
+      <Section className="bg-surface-alt">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Clientes e Parceiros
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Empresas que confiam nosso trabalho.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.08)}
+            className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+          >
+            {PARTNERS_LOGOS.map((partner) => (
+              <motion.div
+                key={partner.name}
+                variants={staggerItem('up')}
+                className="bg-card border-border flex h-24 items-center justify-center rounded-xl border p-4 opacity-70 grayscale grayscale-[0.8] transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+              >
+                <img
+                  src={partner.logo}
+                  alt={partner.name}
+                  className="max-h-12 max-w-full object-contain"
+                  loading="lazy"
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 9. DEPOIMENTOS */}
+      <Section>
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              O que dizem nossos clientes
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Depoimentos de empresas e candidatos que fizeram parte da J&S.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-8 lg:grid-cols-2"
+          >
+            {CLIENT_TESTIMONIALS.map((testimonial) => (
+              <motion.div
+                key={testimonial.id}
+                variants={staggerItem('up')}
+                className="bg-card border-border shadow-premium rounded-2xl border p-8"
+              >
+                <Quote className="text-primary/20 h-10 w-10" />
+                <p className="text-muted-foreground mt-4 text-sm leading-relaxed">
+                  "{testimonial.quote}"
+                </p>
+                <div className="mt-6 flex items-center gap-4">
+                  <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
+                    <span className="text-primary text-xl font-bold">
+                      {testimonial.name.charAt(0)}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-foreground font-semibold">
+                      {testimonial.name}
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      {testimonial.role} — {testimonial.company}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 10. NÚMEROS */}
+      <Section className="bg-surface-alt">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Resultados que comprovam nossa experiência
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Mais de uma década conectando empresas e profissionais.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-2 gap-6 sm:grid-cols-4"
+          >
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
+            >
+              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                <span className="text-2xl font-bold">15+</span>
+              </div>
+              <p className="text-foreground font-semibold">
+                Anos de experiência
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
+            >
+              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                <span className="text-2xl font-bold">
+                  {COMPANY.clientsServed}+
+                </span>
+              </div>
+              <p className="text-foreground font-semibold">
+                Clientes atendidos
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
+            >
+              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                <span className="text-2xl font-bold">
+                  {COMPANY.professionals}+
+                </span>
+              </div>
+              <p className="text-foreground font-semibold">
+                Profissionais colocados
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
+            >
+              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                <span className="text-2xl font-bold">
+                  {COMPANY.citiesCovered}+
+                </span>
+              </div>
+              <p className="text-foreground font-semibold">Cidades atendidas</p>
+            </motion.div>
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 11. PARA EMPRESAS — seção comercial forte */}
       <Section>
         <Container>
           <motion.div
@@ -711,7 +1005,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 10. BLOG */}
+      {/* 12. BLOG */}
       <Section className="bg-surface-alt">
         <Container>
           <motion.div
@@ -782,7 +1076,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 11. CTA FINAL */}
+      {/* 13. CTA FINAL */}
       <Section>
         <Container>
           <motion.div

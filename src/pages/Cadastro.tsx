@@ -54,7 +54,7 @@ export default function Cadastro() {
                 Sou Empresa
               </h3>
               <p className="text-muted-foreground mb-4 text-sm">
-                Publique vagas e acesse nosso banco de talentos.
+                Publique vagas e encontre os profissionais certos.
               </p>
               <Link to="/cadastro/empresa">
                 <Button variant="primary" className="w-full">

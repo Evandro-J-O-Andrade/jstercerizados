@@ -21,7 +21,6 @@ export const SEO_PAGES: Record<string, PageSEO> = {
       'efetiva',
       'vagas de emprego',
       'RH',
-      'banco de talentos',
       'facilities',
       'terceirização',
     ],
@@ -45,28 +44,22 @@ export const SEO_PAGES: Record<string, PageSEO> = {
   '/empresas': {
     title: `Recrutamento e Seleção para Empresas | Contratar Funcionários | ${COMPANY.name}`,
     description:
-      'Encontramos os profissionais certos para sua empresa. Mão de obra temporária e efetiva, recrutamento seletivo e banco de talentos.',
+      'Encontramos os profissionais certos para sua empresa. Mão de obra temporária e efetiva, recrutamento seletivo e assessoria completa em RH.',
     keywords: [
       'recrutamento para empresas',
       'contratar funcionários',
       'mão de obra temporária',
       'assessoria em rh',
       'seleção de pessoas',
-      'banco de talentos',
+      'terceirização',
     ],
     path: '/empresas',
   },
   '/candidatos': {
     title: `Encontre seu Emprego — Cadastre seu Currículo | ${COMPANY.name}`,
     description:
-      'Cadastre seu currículo no Banco de Talentos e encontre as oportunidades compatíveis com seu perfil.',
-    keywords: [
-      'empregos',
-      'currículo',
-      'banco de talentos',
-      'candidatura',
-      'vagas de emprego',
-    ],
+      'Cadastre seu currículo e encontre as oportunidades compatíveis com seu perfil.',
+    keywords: ['empregos', 'currículo', 'candidatura', 'vagas de emprego'],
     path: '/candidatos',
   },
   '/servicos': {
