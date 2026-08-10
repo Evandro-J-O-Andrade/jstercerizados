@@ -416,11 +416,11 @@ export function Footer({
             </div>
 
             {/* Fale Conosco */}
-            <div className="border-border/50 bg-primary/5 mt-8 rounded-xl border p-5">
-              <h4 className="text-primary mb-4 text-xs font-bold tracking-wider uppercase">
+            <div className="mt-8 w-full">
+              <h4 className="text-primary mb-4 text-center text-xs font-bold tracking-wider uppercase">
                 Fale Conosco
               </h4>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {contactItems.map((item) => (
                   <a
                     key={item.type}
@@ -429,10 +429,10 @@ export function Footer({
                     rel={
                       item.type === 'map' ? 'noopener noreferrer' : undefined
                     }
-                    className="border-border/50 hover:border-primary/30 group flex items-center gap-3 rounded-xl border p-3 transition-all duration-300"
+                    className="border-border/50 hover:border-primary/30 group flex items-center gap-3 rounded-xl border p-4 transition-all duration-300"
                   >
-                    <div className="text-primary bg-primary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
-                      <item.icon className="h-4 w-4" />
+                    <div className="text-primary bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+                      <item.icon className="h-5 w-5" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-foreground text-sm font-semibold">
