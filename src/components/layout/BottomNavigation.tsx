@@ -56,8 +56,8 @@ export function BottomNavigation() {
     : publicNavItems;
 
   return (
-    <nav className="bg-card/95 border-border fixed right-0 bottom-0 left-0 z-30 border-t backdrop-blur-xl lg:hidden">
-      <div className="mx-auto flex max-w-lg items-center justify-around px-2 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+    <nav className="bg-card/70 border-border fixed right-0 bottom-0 left-0 z-40 border-t backdrop-blur-xl backdrop-saturate-150 lg:hidden">
+      <div className="mx-auto flex max-w-lg items-center justify-around px-2 py-2 pt-[calc(0.375rem+env(safe-area-inset-top,0px))] pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)]">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -66,21 +66,21 @@ export function BottomNavigation() {
               key={item.href}
               to={item.href}
               className={cn(
-                'relative flex flex-col items-center gap-1 rounded-lg px-3 py-1.5 transition-colors',
-                isActive
-                  ? 'text-primary'
-                  : 'text-muted-foreground hover:text-foreground',
+                'text-muted-foreground hover:bg-muted/50 hover:text-foreground relative flex flex-col items-center gap-1.5 rounded-xl px-3 py-2 transition-all duration-200',
+                isActive && 'text-primary',
               )}
             >
               {isActive && (
                 <motion.div
                   layoutId="bottomNavIndicator"
-                  className="bg-primary/10 absolute -top-1 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full"
+                  className="bg-primary/20 absolute -top-1 left-1/2 h-0.5 w-10 -translate-x-1/2 rounded-full"
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 />
               )}
-              <Icon className="h-5 w-5" />
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <Icon className="h-6 w-6" />
+              <span className="text-[10px] font-medium tracking-tight">
+                {item.label}
+              </span>
             </Link>
           );
         })}

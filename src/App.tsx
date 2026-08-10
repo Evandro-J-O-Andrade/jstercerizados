@@ -69,7 +69,9 @@ function App() {
           </Routes>
         </Suspense>
       </main>
-      <Footer />
+      <div className="pb-20 lg:pb-0">
+        <Footer />
+      </div>
       <BottomNavigation />
       <AccessibilityWidget
         open={isAccessibilityOpen}
