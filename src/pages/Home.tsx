@@ -32,7 +32,6 @@ import { PARTNERS_LOGOS } from '@/mock/partners';
 import { CLIENT_TESTIMONIALS } from '@/mock/clients';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { HERO_SLIDES } from '@/content/homeHero';
-import { SHOWCASE_SLIDES } from '@/content/assets';
 
 const heroSlides = HERO_SLIDES.map((slide) => ({
   id: slide.id,
@@ -295,12 +294,7 @@ export default function Home() {
         type="WebSite"
       />
 
-      {!introComplete && (
-        <CinematicShowcase
-          slides={SHOWCASE_SLIDES}
-          onFinish={handleIntroFinish}
-        />
-      )}
+      {!introComplete && <CinematicShowcase onFinish={handleIntroFinish} />}
 
       <InactivityShowcase />
 

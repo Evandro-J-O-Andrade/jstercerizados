@@ -1,43 +1,20 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { Pause, Play } from 'lucide-react';
+import { HERO_ASSETS } from '@/content/assets';
 
-export interface ShowcaseSlide {
-  src: string;
-  alt: string;
-  objectPosition?: string;
-}
+const ENTER_MS = 2000;
+const HOLD_MS = 3000;
+const EXIT_MS = 1500;
+const TOTAL_MS = ENTER_MS + HOLD_MS + EXIT_MS;
 
-interface CinematicShowcaseProps {
-  slides: readonly ShowcaseSlide[];
-  onFinish: () => void;
-}
+const easing = [0.25, 0.4, 0.25, 1] as const;
 
-const SLIDE_DURATION = 1500;
-const TRANSITION_MS = 600;
-const EXIT_MS = 500;
-
-const fadeInVariants = {
-  initial: { opacity: 0, scale: 1.05 },
-  animate: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 1 },
-  transition: { duration: TRANSITION_MS / 1000, ease: [0.25, 0.4, 0.25, 1] },
-};
-
-const reducedMotionVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.1 } },
-  exit: { opacity: 0, transition: { duration: 0.1 } },
-};
-
-export function CinematicShowcase({
-  slides,
-  onFinish,
-}: CinematicShowcaseProps) {
+export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
   const shouldReduceMotion = useReducedMotion();
-  const [current, setCurrent] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [phase, setPhase] = useState<
+    'black' | 'entering' | 'holding' | 'closing'
+  >('black');
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const finish = useCallback(() => {
@@ -56,96 +33,127 @@ export function CinematicShowcase({
 
   useEffect(() => {
     if (shouldReduceMotion) {
-      const t = setTimeout(finish, 300);
+      const t = setTimeout(finish, 500);
       return () => clearTimeout(t);
     }
 
-    if (paused) return;
+    const t1 = setTimeout(() => setPhase('entering'), 200);
+    const t2 = setTimeout(() => setPhase('holding'), ENTER_MS + 200);
+    const t3 = setTimeout(() => setPhase('closing'), ENTER_MS + 200 + HOLD_MS);
+    const t4 = setTimeout(finish, TOTAL_MS + 400);
+    timers.current = [t1, t2, t3, t4];
 
-    if (current >= slides.length - 1) {
-      const t = setTimeout(() => finish(), SLIDE_DURATION);
-      timers.current = [t];
-      return () => clearTimeout(t);
-    }
-
-    const t = setTimeout(() => {
-      setCurrent((c) => c + 1);
-    }, SLIDE_DURATION);
-    timers.current = [t];
-    return () => clearTimeout(t);
-  }, [current, paused, shouldReduceMotion, finish, slides.length]);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+    };
+  }, [shouldReduceMotion, finish]);
 
   const handleSkip = useCallback(() => {
     timers.current.forEach(clearTimeout);
-    finish();
+    setPhase('closing');
+    setTimeout(finish, EXIT_MS);
   }, [finish]);
 
-  const togglePause = useCallback(() => setPaused((p) => !p), []);
+  const imageVariants: Variants = shouldReduceMotion
+    ? {
+        black: { opacity: 0 },
+        entering: { opacity: 1, transition: { duration: 0.1 } },
+        holding: { opacity: 1 },
+        closing: { opacity: 0, transition: { duration: 0.1 } },
+      }
+    : {
+        black: { opacity: 0, scale: 1.2 },
+        entering: {
+          opacity: 1,
+          scale: [1.2, 0.85, 1.05, 1],
+          y: ['10%', '0%', '-2%', '0%'],
+          rotate: [2, -1, 0.5, 0],
+          transition: {
+            duration: ENTER_MS / 1000,
+            ease: easing,
+            times: [0, 0.5, 0.8, 1],
+          },
+        },
+        holding: {
+          opacity: 1,
+          scale: [1, 1.01, 1, 1.02, 1],
+          y: [0, 1, 0, -1, 0],
+          transition: {
+            duration: HOLD_MS / 1000,
+            ease: 'easeInOut',
+            times: [0, 0.3, 0.5, 0.7, 1],
+            repeat: Infinity,
+            repeatType: 'mirror',
+          },
+        },
+        closing: {
+          opacity: 0,
+          scale: 1.1,
+          transition: {
+            duration: EXIT_MS / 1000,
+            ease: easing,
+          },
+        },
+      };
 
-  const imageVariants = shouldReduceMotion
-    ? reducedMotionVariants
-    : fadeInVariants;
+  const currentVariant = shouldReduceMotion
+    ? phase === 'black'
+      ? 'entering'
+      : phase
+    : phase;
+
+  const bgVariants: Variants = shouldReduceMotion
+    ? {}
+    : {
+        black: { opacity: 1, transition: { duration: 0.5 } },
+        entering: { opacity: 1 },
+        holding: { opacity: 1 },
+        closing: { opacity: 1 },
+      };
 
   return (
     <motion.div
       className="fixed inset-0 z-[90] flex items-center justify-center bg-black"
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: EXIT_MS / 1000 } }}
+      initial="black"
+      animate={currentVariant}
+      exit={{ opacity: 0, transition: { duration: 0.6, ease: easing } }}
     >
-      <AnimatePresence initial={false}>
+      <motion.div variants={bgVariants} className="absolute inset-0 bg-black" />
+
+      <motion.div
+        variants={imageVariants}
+        className="absolute inset-0 h-full w-full"
+      >
+        <SafeImage
+          src={HERO_ASSETS.cardheros}
+          alt="J&amp;S Empregos LTDA"
+          className="h-full w-full object-cover"
+          style={{ objectPosition: 'center 30%' }}
+          loading="eager"
+          decoding="async"
+          skeleton={false}
+        />
+      </motion.div>
+
+      {!shouldReduceMotion && phase === 'holding' && (
         <motion.div
-          key={`slide-${current}`}
-          layout={shouldReduceMotion ? false : 'position'}
-          variants={imageVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="absolute inset-0 h-full w-full"
-        >
-          <SafeImage
-            src={slides[current].src}
-            alt={slides[current].alt}
-            className="h-full w-full object-cover"
-            style={{
-              objectPosition: slides[current].objectPosition ?? 'center',
-            }}
-            loading={current === 0 ? 'eager' : 'lazy'}
-            decoding="async"
-            skeleton={false}
-          />
-        </motion.div>
-      </AnimatePresence>
-
-      <div className="absolute right-6 bottom-6 z-10 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={togglePause}
-          className="rounded-full border border-white/30 bg-black/20 p-2 text-white/70 backdrop-blur transition-colors hover:text-white"
-          aria-label={paused ? 'Retomar' : 'Pausar'}
-        >
-          {paused ? <Play size={14} /> : <Pause size={14} />}
-        </button>
-        <button
-          type="button"
-          onClick={handleSkip}
-          className="rounded-full border border-white/30 bg-black/20 px-4 py-2 text-xs font-medium text-white/70 backdrop-blur transition-colors hover:text-white"
-        >
-          Pular
-        </button>
-      </div>
-
-      {slides.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-1.5">
-          {slides.map((_, i) => (
-            <div
-              key={i}
-              className={`h-1 w-2 rounded-full transition-all ${
-                i === current ? 'w-6 bg-white' : 'bg-white/30'
-              }`}
-            />
-          ))}
-        </div>
+          className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, ease: easing }}
+        />
       )}
+
+      <button
+        type="button"
+        onClick={handleSkip}
+        className="absolute right-6 bottom-6 z-10 rounded-full border border-white/30 bg-black/20 px-4 py-2 text-xs font-medium text-white/60 backdrop-blur transition-colors hover:text-white"
+      >
+        Pular
+      </button>
 
       <span className="sr-only">
         Abertura cinematográfica J&amp;S Empregos LTDA
