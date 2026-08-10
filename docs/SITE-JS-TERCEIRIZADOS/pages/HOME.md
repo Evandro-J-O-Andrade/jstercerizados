@@ -2,7 +2,7 @@
 
 **Rota:** `/`
 **Status:** Em evolução
-**Referência:** `docs/SITE-JS-TERCEIRIZADOS/00-VISAO-GERAL.md`
+**Referência:** `docs/SITE-JS-Empregos/00-VISAO-GERAL.md`
 
 ## Objetivo
 

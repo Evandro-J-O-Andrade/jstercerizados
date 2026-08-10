@@ -1,10 +1,10 @@
-# JS Terceirizados SaaS — Database Documentation
+# JS Empregos SaaS — Database Documentation
 
 ## Overview
 
-MySQL 8.0 database for the JS Terceirizados SaaS platform.
+MySQL 8.0 database for the JS Empregos SaaS platform.
 
-- **Database name:** `js_terceirizados`
+- **Database name:** `js_Empregos`
 - **Charset:** `utf8mb4`
 - **Collation:** `utf8mb4_unicode_ci`
 - **Engine:** InnoDB
@@ -34,16 +34,16 @@ MySQL 8.0 database for the JS Terceirizados SaaS platform.
 
 ```bash
 mysql -u root -p < database/01_database.sql
-mysql -u root -p js_terceirizados < database/02_tables_core.sql
-mysql -u root -p js_terceirizados < database/02_tables_crm.sql
-mysql -u root -p js_terceirizados < database/02_tables_rh.sql
-mysql -u root -p js_terceirizados < database/02_tables_suporte.sql
-mysql -u root -p js_terceirizados < database/02_tables_integracao.sql
-mysql -u root -p js_terceirizados < database/03_relationships.sql
-mysql -u root -p js_terceirizados < database/04_indexes.sql
-mysql -u root -p js_terceirizados < database/05_views.sql
-mysql -u root -p js_terceirizados < database/06_seed.sql
-mysql -u root -p js_terceirizados < database/07_automation.sql
+mysql -u root -p js_Empregos < database/02_tables_core.sql
+mysql -u root -p js_Empregos < database/02_tables_crm.sql
+mysql -u root -p js_Empregos < database/02_tables_rh.sql
+mysql -u root -p js_Empregos < database/02_tables_suporte.sql
+mysql -u root -p js_Empregos < database/02_tables_integracao.sql
+mysql -u root -p js_Empregos < database/03_relationships.sql
+mysql -u root -p js_Empregos < database/04_indexes.sql
+mysql -u root -p js_Empregos < database/05_views.sql
+mysql -u root -p js_Empregos < database/06_seed.sql
+mysql -u root -p js_Empregos < database/07_automation.sql
 ```
 
 ---
@@ -145,7 +145,7 @@ AI chatbot conversation logs (stored for analytics and training).
 
 ## Default Credentials (Seed)
 
-- **Admin email:** `admin@jsterceirizados.com.br`
+- **Admin email:** `admin@jsEmpregos.com.br`
 - **Admin password:** `Admin@123` (bcrypt hash is a placeholder in seed)
 - **Admin perfil:** `ADMIN` (all permissions)
 

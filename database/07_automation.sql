@@ -128,6 +128,6 @@ INSERT INTO templates_whatsapp (codigo, nome, template, corpo, variaveis)
 VALUES
   ('BOAS_VINDAS',
    'Mensagem de Boas-vindas',
-   'Hello, {{1}}! Thank you for contacting JS Terceirizados. How can we help you?',
-   'Ola {{nome}}, obrigado por entrar em contato com JS Terceirizados! Como podemos ajudar?',
+   'Hello, {{1}}! Thank you for contacting JS Empregos. How can we help you?',
+   'Ola {{nome}}, obrigado por entrar em contato com JS Empregos! Como podemos ajudar?',
    '["nome"]');

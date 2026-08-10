@@ -1,8 +1,8 @@
-# Visão Geral — JSTerceirizados
+# Visão Geral — JSEmpregos
 
 ## O que é
 
-JSTerceirizados é uma plataforma SaaS Enterprise projetada para empresas de terceirização de serviços, incluindo segurança patrimonial, portaria, controle de acesso, zeladoria, limpeza e facilities.
+JSEmpregos é uma plataforma SaaS Enterprise projetada para empresas de terceirização de serviços, incluindo segurança patrimonial, portaria, controle de acesso, zeladoria, limpeza e facilities.
 
 ## Natureza do Projeto
 

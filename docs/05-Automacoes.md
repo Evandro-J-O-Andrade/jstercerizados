@@ -1,4 +1,4 @@
-# Automações — JSTerceirizados
+# Automações — JSEmpregos
 
 ## Arquitetura de Automação
 

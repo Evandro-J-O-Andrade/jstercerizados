@@ -1,6 +1,6 @@
 {
-  "name": "JSTerceirizados",
-  "short_name": "JS Terceirizados",
+  "name": "JSEmpregos",
+  "short_name": "JS Empregos",
   "description": "Plataforma SaaS para Gestão de Empresas de Terceirização",
   "start_url": "/",
   "display": "standalone",

@@ -1,4 +1,4 @@
-# Ponto de Restauração — J&S Terceirizados LTDA
+# Ponto de Restauração — J&S Empregos LTDA
 
 Data: 2026-08-09
 

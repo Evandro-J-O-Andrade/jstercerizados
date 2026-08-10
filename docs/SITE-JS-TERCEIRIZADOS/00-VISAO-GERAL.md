@@ -1,4 +1,4 @@
-# J&S TERCEIRIZADOS LTDA.
+# J&S Empregos LTDA.
 
 # MASTER PRODUCT & WEBSITE ARCHITECTURE
 
@@ -8,7 +8,7 @@
 **Data:** 08/08/2026
 **Status:** Documento Mestre de Projeto
 **Produto:** Plataforma Web / SaaS Institucional + Captação + Recrutamento + Serviços B2B
-**Empresa:** J&S Terceirizados Ltda.
+**Empresa:** J&S Empregos Ltda.
 
 ---
 
@@ -80,7 +80,7 @@ CRIAR OUTRO SITE
 
 ## Nome oficial
 
-**J&S Terceirizados Ltda.**
+**J&S Empregos Ltda.**
 
 Toda a aplicação deverá utilizar a identidade oficial centralizada em:
 
@@ -106,7 +106,7 @@ Caso apareça uma referência antiga, deve ser identificada durante auditoria.
 
 # 4. POSICIONAMENTO ESTRATÉGICO
 
-A J&S Terceirizados possui uma operação real ligada a:
+A J&S Empregos possui uma operação real ligada a:
 
 - terceirização;
 - facilities;
@@ -133,7 +133,7 @@ Porém:
 A plataforma deve comunicar a evolução:
 
 ```text
-J&S TERCEIRIZADOS
+J&S Empregos
         │
         ├── Assessoria em RH
         │
@@ -1819,7 +1819,7 @@ Footer deve possuir boa hierarquia e não parecer um bloco de texto.
 
 Utilizar dados oficiais:
 
-**J&S Terceirizados Ltda.**
+**J&S Empregos Ltda.**
 
 Informações fornecidas pelo cliente:
 
@@ -1837,10 +1837,10 @@ Telefone/WhatsApp:
 (11) 96838-0592
 
 E-mail:
-comercial@jsterceirizados.com.br
+comercial@jsEmpregos.com.br
 
 Domínio:
-www.jsterceirizados.com.br
+www.jsEmpregos.com.br
 ```
 
 Essas informações devem ficar centralizadas na configuração da empresa.
@@ -1852,7 +1852,7 @@ Essas informações devem ficar centralizadas na configuração da empresa.
 O domínio oficial informado pelo cliente é:
 
 ```text
-jsterceirizados.com.br
+jsEmpregos.com.br
 ```
 
 Não utilizar domínio de teste como identidade oficial.
@@ -2071,7 +2071,7 @@ Não deve parecer:
 A experiência deve transmitir:
 
 ```text
-J&S Terceirizados
+J&S Empregos
         ↓
 RH
         ↓
@@ -2120,7 +2120,7 @@ Antes de qualquer implementação, utilizar esta instrução:
 
 > Leia integralmente o documento `J&S-MASTER-ARCHITECTURE.md`.
 >
-> Você está trabalhando em um projeto existente da J&S Terceirizados Ltda.
+> Você está trabalhando em um projeto existente da J&S Empregos Ltda.
 >
 > Não trate o projeto como uma aplicação nova.
 >
@@ -2128,7 +2128,7 @@ Antes de qualquer implementação, utilizar esta instrução:
 >
 > Antes de alterar código, faça uma auditoria da página solicitada e identifique o que pode ser reutilizado.
 >
-> A implementação deve respeitar a identidade oficial J&S Terceirizados Ltda., o posicionamento de Assessoria em Recursos Humanos como carro-chefe comercial e a operação existente de terceirização, facilities e mão de obra.
+> A implementação deve respeitar a identidade oficial J&S Empregos Ltda., o posicionamento de Assessoria em Recursos Humanos como carro-chefe comercial e a operação existente de terceirização, facilities e mão de obra.
 >
 > Não invente conteúdo, números, clientes, parceiros, depoimentos, certificações ou histórico.
 >
@@ -2270,7 +2270,7 @@ Serviços
 # 73. VISÃO FINAL DO PRODUTO
 
 ```text
-                    J&S TERCEIRIZADOS
+                    J&S Empregos
                            │
               ┌────────────┴────────────┐
               │                         │

@@ -1,4 +1,4 @@
-# Arquitetura — JSTerceirizados
+# Arquitetura — JSEmpregos
 
 ## Princípios
 

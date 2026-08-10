@@ -6,7 +6,7 @@
 - `/vagas/:slug` — detalhe da vaga
 
 **Status:** Documentação de referência
-**Referência:** `docs/SITE-JS-TERCEIRIZADOS/00-VISAO-GERAL.md`
+**Referência:** `docs/SITE-JS-Empregos/00-VISAO-GERAL.md`
 
 ---
 
@@ -192,7 +192,7 @@ Não duplicar formulário por vaga.
 
 ## 15. SEO
 
-- title: "Vagas — J&S Terceirizados"
+- title: "Vagas — J&S Empregos"
 - description: "Encontre oportunidades de trabalho..."
 - canonical: `/vagas`
 - structured data para vagas (quando disponível)

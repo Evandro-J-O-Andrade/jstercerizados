@@ -1,4 +1,4 @@
-Ôªøimport { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Send, Phone, Shield } from 'lucide-react';
@@ -14,12 +14,12 @@ import { mockSubmitSupplier } from '@/services/mock/fornecedores';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 
 const supplierSchema = z.object({
-  company: z.string().min(2, 'Nome da empresa √© obrigat√≥rio'),
+  company: z.string().min(2, 'Nome da empresa È obrigatÛrio'),
   cnpj: z.string().min(14, 'CNPJ deve ter pelo menos 14 caracteres'),
-  products: z.string().min(2, 'Produtos s√£o obrigat√≥rios'),
-  representative: z.string().min(2, 'Nome do representante √© obrigat√≥rio'),
+  products: z.string().min(2, 'Produtos s„o obrigatÛrios'),
+  representative: z.string().min(2, 'Nome do representante È obrigatÛrio'),
   phone: z.string().min(10, 'Telefone deve ter pelo menos 10 caracteres'),
-  email: z.string().email('E-mail inv√°lido'),
+  email: z.string().email('E-mail inv·lido'),
 });
 
 type SupplierFormData = z.infer<typeof supplierSchema>;
@@ -63,7 +63,7 @@ export default function Fornecedores() {
             Cadastro Enviado!
           </h2>
           <p className="text-muted-foreground mb-8">
-            Nossa equipe de Compras analisar√° seu cadastro e entrar√° em contato
+            Nossa equipe de Compras analisar· seu cadastro e entrar· em contato
             em breve.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
@@ -82,7 +82,7 @@ export default function Fornecedores() {
             </a>
             <Link to="/">
               <Button variant="outline" size="lg">
-                Voltar ao In√≠cio
+                Voltar ao InÌcio
               </Button>
             </Link>
           </div>
@@ -94,8 +94,8 @@ export default function Fornecedores() {
   return (
     <div>
       <SEO
-        title={`Fornecedores ‚Äî ${COMPANY.name}`}
-        description={`Cadastro de fornecedores da ${COMPANY.name}. Torne-se um parceiro fornecedor de servi√ßos de RH, facilities e terceiriza√ß√£o.`}
+        title={`Fornecedores ó ${COMPANY.name}`}
+        description={`Cadastro de fornecedores da ${COMPANY.name}. Torne-se um parceiro fornecedor de serviÁos de RH, facilities e terceirizaÁ„o.`}
         keywords={[
           'fornecedores',
           COMPANY.name,
@@ -103,7 +103,7 @@ export default function Fornecedores() {
           'parceria',
           'fornecimento',
           'RH',
-          'terceiriza√ß√£o',
+          'terceirizaÁ„o',
           'facilities',
         ]}
         type="Organization"
@@ -126,7 +126,7 @@ export default function Fornecedores() {
                 </h1>
                 <p className="text-muted-foreground mt-4">
                   Cadastre sua empresa para participar do nosso processo de
-                  sele√ß√£o de fornecedores.
+                  seleÁ„o de fornecedores.
                 </p>
               </motion.div>
             </div>
@@ -158,8 +158,8 @@ export default function Fornecedores() {
                   </div>
                   <div className="md:col-span-2">
                     <Input
-                      label="Produtos / Servi√ßos *"
-                      placeholder="Ex: Equipamentos de seguran√ßa, produtos de limpeza..."
+                      label="Produtos / ServiÁos *"
+                      placeholder="Ex: Equipamentos de seguranÁa, produtos de limpeza..."
                       error={errors.products?.message}
                       {...register('products')}
                     />

@@ -1,4 +1,4 @@
-# Arquitetura do Site — J&S Terceirizados LTDA
+# Arquitetura do Site — J&S Empregos LTDA
 
 ## Agência de Empregos + Assessoria em RH
 
@@ -8,7 +8,7 @@
 
 ## Marca
 
-- **Razão Social:** J&S Terceirizados LTDA
+- **Razão Social:** J&S Empregos LTDA
 - **Posicionamento Comercial:** Agência de Empregos e Assessoria em Recursos Humanos
 - **Carro-chefe:** Assessoria em RH
 - **Destaques:** Mão de Obra Temporária + Mão de Obra Efetiva
@@ -17,7 +17,7 @@
 ## Hierarquia de comunicação
 
 ```
-J&S TERCEIRIZADOS LTDA
+J&S Empregos LTDA
         ↓
 AGÊNCIA DE EMPREGOS + ASSESSORIA EM RH
         ↓
@@ -343,7 +343,7 @@ Catálogo completo de serviços organizado por dois pilares: RH e Facilities.
 
 ### SEO
 
-- Title: Serviços de RH e Facilities | J&S Terceirizados
+- Title: Serviços de RH e Facilities | J&S Empregos
 - Description: Recrutamento, seleção, mão de obra temporária e efetiva, assessoria em RH e facilities.
 
 ---
@@ -429,7 +429,7 @@ Cada card exibe:
 
 ### SEO /vagas/:slug
 
-- Title: [Cargo] em [Cidade] | J&S Terceirizados
+- Title: [Cargo] em [Cidade] | J&S Empregos
 - Description: Confira os detalhes da vaga de [cargo] em [cidade], requisitos, benefícios e candidatura.
 - Schema: JobPosting (futuro, quando banco real)
 
@@ -503,7 +503,7 @@ Logos de empresas parceiras
 
 ### SEO
 
-- Title: Recrutamento e Seleção para Empresas | J&S Terceirizados
+- Title: Recrutamento e Seleção para Empresas | J&S Empregos
 - Description: Encontre profissionais qualificados para sua empresa. Mão de obra temporária, efetiva e assessoria em RH.
 
 ---
@@ -634,7 +634,7 @@ Captação de currículos. Página 100% focada em candidatos.
 
 ### SEO
 
-- Title: Envie seu Currículo | Cadastre-se | J&S Terceirizados
+- Title: Envie seu Currículo | Cadastre-se | J&S Empregos
 - Description: Cadastre seu currículo e candidate-se às vagas. Entre para o banco de talentos da J&S.
 
 ---
@@ -649,7 +649,7 @@ Transmitir credibilidade, história e valores da empresa.
 
 #### Hero
 
-**Título:** Sobre a J&S Terceirizados
+**Título:** Sobre a J&S Empregos
 
 **Texto:**
 
@@ -657,7 +657,7 @@ Transmitir credibilidade, história e valores da empresa.
 
 #### Bloco: Quem somos
 
-> A J&S Terceirizados LTDA é uma empresa especializada em oferecer soluções de terceirização de mão de obra temporária e efetiva, além de serviços de facilities. Nossa missão é conectar empresas aos melhores profissionais, tornando processos de contratação mais eficientes e ágeis.
+> A J&S Empregos LTDA é uma empresa especializada em oferecer soluções de terceirização de mão de obra temporária e efetiva, além de serviços de facilities. Nossa missão é conectar empresas aos melhores profissionais, tornando processos de contratação mais eficientes e ágeis.
 
 #### Bloco: Missão
 
@@ -699,8 +699,8 @@ Transmitir credibilidade, história e valores da empresa.
 
 ### SEO
 
-- Title: Sobre Nós | J&S Terceirizados LTDA
-- Description: Conheça a história, missão e valores da J&S Terceirizados. Especialistas em RH, mão de obra e facilities.
+- Title: Sobre Nós | J&S Empregos LTDA
+- Description: Conheça a história, missão e valores da J&S Empregos. Especialistas em RH, mão de obra e facilities.
 
 ---
 
@@ -741,7 +741,7 @@ Transmitir credibilidade, história e valores da empresa.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ J&S TERCEIRIZADOS LTDA                                      │
+│ J&S Empregos LTDA                                      │
 │ Agência de Empregos e Assessoria em RH                     │
 │ [Descrição curta]                                          │
 │ [Redes sociais]                                            │
@@ -754,7 +754,7 @@ Transmitir credibilidade, história e valores da empresa.
 │               │ Facilities    │              │              │
 ├──────────────┴──────────────┴──────────────┴───────────────┤
 │ Privacidade | Termos | LGPD | Cookies                      │
-│ © 2024 J&S Terceirizados LTDA. Todos os direitos reservados │
+│ © 2024 J&S Empregos LTDA. Todos os direitos reservados │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -771,7 +771,7 @@ Transmitir credibilidade, história e valores da empresa.
 
 #### `/` — Home
 
-- Title: J&S Terceirizados LTDA | Agência de Empregos e RH
+- Title: J&S Empregos LTDA | Agência de Empregos e RH
 - Description: Conectamos talentos às melhores oportunidades. Recrutamento, seleção, mão de obra temporária e efetiva.
 
 #### `/vagas`
@@ -781,7 +781,7 @@ Transmitir credibilidade, história e valores da empresa.
 
 #### `/vagas/:slug`
 
-- Title: [Cargo] em [Cidade] | J&S Terceirizados
+- Title: [Cargo] em [Cidade] | J&S Empregos
 - Description: Detalhes da vaga de [cargo]: requisitos, benefícios, salário e como se candidatar.
 
 #### `/empresas`
@@ -796,12 +796,12 @@ Transmitir credibilidade, história e valores da empresa.
 
 #### `/servicos`
 
-- Title: Serviços de RH e Facilities | J&S Terceirizados
+- Title: Serviços de RH e Facilities | J&S Empregos
 - Description: Soluções completas em RH, mão de obra temporária e efetiva, e facilities.
 
 #### `/servicos/:slug`
 
-- Title: [Serviço] | J&S Terceirizados
+- Title: [Serviço] | J&S Empregos
 - Description: Conheça nossos serviços de [serviço]: [descrição curta].
 
 #### `/trabalhe-conosco`
@@ -816,12 +816,12 @@ Transmitir credibilidade, história e valores da empresa.
 
 #### `/sobre`
 
-- Title: Sobre Nós | J&S Terceirizados LTDA
+- Title: Sobre Nós | J&S Empregos LTDA
 - Description: Conheça a história, missão e valores da J&S. Especialistas em RH e mão de obra.
 
 #### `/clientes`
 
-- Title: Clientes | J&S Terceirizados
+- Title: Clientes | J&S Empregos
 - Description: Empresas que confiam nos nossos serviços de RH e facilities.
 
 #### `/contato`

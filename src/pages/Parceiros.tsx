@@ -1,4 +1,4 @@
-Ôªøimport { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Send, Phone, Shield } from 'lucide-react';
@@ -15,15 +15,15 @@ import { mockSubmitPartner } from '@/services/mock/parceiros';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 
 const partnerSchema = z.object({
-  company: z.string().min(2, 'Nome da empresa √© obrigat√≥rio'),
+  company: z.string().min(2, 'Nome da empresa È obrigatÛrio'),
   cnpj: z.string().min(14, 'CNPJ deve ter pelo menos 14 caracteres'),
-  responsible: z.string().min(2, 'Nome do respons√°vel √© obrigat√≥rio'),
+  responsible: z.string().min(2, 'Nome do respons·vel È obrigatÛrio'),
   phone: z.string().min(10, 'Telefone deve ter pelo menos 10 caracteres'),
-  email: z.string().email('E-mail inv√°lido'),
-  area: z.string().min(2, '√Årea de atua√ß√£o √© obrigat√≥ria'),
-  city: z.string().min(2, 'Cidade √© obrigat√≥ria'),
-  state: z.string().min(2, 'Estado √© obrigat√≥rio'),
-  documentation: z.string().min(2, 'Selecione a documenta√ß√£o'),
+  email: z.string().email('E-mail inv·lido'),
+  area: z.string().min(2, '¡rea de atuaÁ„o È obrigatÛria'),
+  city: z.string().min(2, 'Cidade È obrigatÛria'),
+  state: z.string().min(2, 'Estado È obrigatÛrio'),
+  documentation: z.string().min(2, 'Selecione a documentaÁ„o'),
 });
 
 type PartnerFormData = z.infer<typeof partnerSchema>;
@@ -65,7 +65,7 @@ export default function Parceiros() {
             Cadastro Enviado!
           </h2>
           <p className="text-muted-foreground mb-8">
-            Nossa equipe de Comercial B2B entrar√° em contato em at√© 48 horas
+            Nossa equipe de Comercial B2B entrar· em contato em atÈ 48 horas
             para dar continuidade ao processo de parceria.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
@@ -84,7 +84,7 @@ export default function Parceiros() {
             </a>
             <Link to="/">
               <Button variant="outline" size="lg">
-                Voltar ao In√≠cio
+                Voltar ao InÌcio
               </Button>
             </Link>
           </div>
@@ -96,15 +96,15 @@ export default function Parceiros() {
   return (
     <div>
       <SEO
-        title={`Parceiros ‚Äî ${COMPANY.name}`}
-        description={`Seja um parceiro estrat√©gico da ${COMPANY.name}. Amplie sua rede de neg√≥cios e cres√ßa junto conosco.`}
+        title={`Parceiros ó ${COMPANY.name}`}
+        description={`Seja um parceiro estratÈgico da ${COMPANY.name}. Amplie sua rede de negÛcios e cresÁa junto conosco.`}
         keywords={[
           'parceiros',
           COMPANY.name,
           'parceria',
-          'neg√≥cios',
+          'negÛcios',
           'RH',
-          'terceiriza√ß√£o',
+          'terceirizaÁ„o',
           'facilities',
         ]}
         type="Organization"
@@ -126,7 +126,7 @@ export default function Parceiros() {
                   Cadastro de Parceiros
                 </h1>
                 <p className="text-muted-foreground mt-4">
-                  Empresas interessadas em recrutamento, sele√ß√£o e alian√ßas
+                  Empresas interessadas em recrutamento, seleÁ„o e alianÁas
                   comerciais podem se cadastrar para avaliar oportunidades de
                   parceria.
                 </p>
@@ -160,8 +160,8 @@ export default function Parceiros() {
                   </div>
                   <div className="md:col-span-2">
                     <Input
-                      label="Respons√°vel *"
-                      placeholder="Nome do respons√°vel"
+                      label="Respons·vel *"
+                      placeholder="Nome do respons·vel"
                       error={errors.responsible?.message}
                       {...register('responsible')}
                     />
@@ -185,8 +185,8 @@ export default function Parceiros() {
                   </div>
                   <div className="md:col-span-2">
                     <Input
-                      label="√Årea de Atua√ß√£o *"
-                      placeholder="Ex: Seguran√ßa, Portaria, Limpeza..."
+                      label="¡rea de AtuaÁ„o *"
+                      placeholder="Ex: SeguranÁa, Portaria, Limpeza..."
                       error={errors.area?.message}
                       {...register('area')}
                     />
@@ -194,7 +194,7 @@ export default function Parceiros() {
                   <div>
                     <Input
                       label="Cidade *"
-                      placeholder="S√£o Paulo"
+                      placeholder="S„o Paulo"
                       error={errors.city?.message}
                       {...register('city')}
                     />
@@ -209,14 +209,14 @@ export default function Parceiros() {
                   </div>
                   <div className="md:col-span-2">
                     <Select
-                      label="Documenta√ß√£o *"
+                      label="DocumentaÁ„o *"
                       error={errors.documentation?.message}
                       {...register('documentation')}
                     >
                       <option value="">Selecione</option>
                       <option value="contrato-social">Contrato Social</option>
-                      <option value="certidoes">Certid√µes Negativas</option>
-                      <option value="ambas">Contrato Social + Certid√µes</option>
+                      <option value="certidoes">Certidıes Negativas</option>
+                      <option value="ambas">Contrato Social + Certidıes</option>
                     </Select>
                     {errors.documentation && (
                       <p className="text-destructive mt-1 text-sm">

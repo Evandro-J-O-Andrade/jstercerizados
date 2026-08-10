@@ -1,4 +1,4 @@
-ï»¿import { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Shield,
@@ -49,14 +49,14 @@ const tabMap: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
 }[] = [
-  { key: 'dashboard', label: 'VisÃ£o Geral', icon: TrendingUp },
+  { key: 'dashboard', label: 'Visão Geral', icon: TrendingUp },
   { key: 'clientes', label: 'Clientes', icon: FileText },
   { key: 'parceiros', label: 'Parceiros', icon: Users },
   { key: 'fornecedores', label: 'Fornecedores', icon: Briefcase },
-  { key: 'curriculos', label: 'CurrÃ­culos', icon: FileText },
+  { key: 'curriculos', label: 'Currículos', icon: FileText },
   { key: 'vagas', label: 'Vagas', icon: Briefcase },
-  { key: 'usuarios', label: 'UsuÃ¡rios', icon: Users },
-  { key: 'relatorios', label: 'RelatÃ³rios', icon: TrendingUp },
+  { key: 'usuarios', label: 'Usuários', icon: Users },
+  { key: 'relatorios', label: 'Relatórios', icon: TrendingUp },
 ];
 
 const STATUS_VARIANTS: Record<string, StatusColorKey> = {
@@ -86,7 +86,7 @@ export default function Dashboard() {
 
   const stats = [
     {
-      label: 'OrÃ§amentos',
+      label: 'Orçamentos',
       value: budgets.length,
       icon: FileText,
       color: 'primary' as const,
@@ -104,7 +104,7 @@ export default function Dashboard() {
       color: 'accent' as const,
     },
     {
-      label: 'CurrÃ­culos',
+      label: 'Currículos',
       value: candidates.length,
       icon: FileText,
       color: 'warning' as const,
@@ -121,10 +121,10 @@ export default function Dashboard() {
                 <tr>
                   <th className="px-6 py-3">Nome</th>
                   <th className="px-6 py-3">Empresa</th>
-                  <th className="px-6 py-3">ServiÃ§o</th>
+                  <th className="px-6 py-3">Serviço</th>
                   <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Data</th>
-                  <th className="px-6 py-3">AÃ§Ãµes</th>
+                  <th className="px-6 py-3">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -185,9 +185,9 @@ export default function Dashboard() {
                 <tr>
                   <th className="px-6 py-3">Empresa</th>
                   <th className="px-6 py-3">CNPJ</th>
-                  <th className="px-6 py-3">ResponsÃ¡vel</th>
+                  <th className="px-6 py-3">Responsável</th>
                   <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">AÃ§Ãµes</th>
+                  <th className="px-6 py-3">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -247,7 +247,7 @@ export default function Dashboard() {
                   <th className="px-6 py-3">Produtos</th>
                   <th className="px-6 py-3">Representante</th>
                   <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">AÃ§Ãµes</th>
+                  <th className="px-6 py-3">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -308,7 +308,7 @@ export default function Dashboard() {
                   <th className="px-6 py-3">Cidade</th>
                   <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Data</th>
-                  <th className="px-6 py-3">AÃ§Ãµes</th>
+                  <th className="px-6 py-3">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -376,7 +376,7 @@ export default function Dashboard() {
             <h1 className="text-foreground text-3xl font-bold">Dashboard</h1>
           </div>
           <p className="text-muted-foreground">
-            Gerencie clientes, parceiros, fornecedores e currÃ­culos.
+            Gerencie clientes, parceiros, fornecedores e currículos.
           </p>
         </div>
       </section>
@@ -457,7 +457,7 @@ export default function Dashboard() {
             <div className="p-8 text-center">
               <TrendingUp className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
               <h3 className="text-foreground mb-2 text-lg font-semibold">
-                VisÃ£o Geral
+                Visão Geral
               </h3>
               <p className="text-muted-foreground mb-6">
                 Selecione uma aba para visualizar os dados.

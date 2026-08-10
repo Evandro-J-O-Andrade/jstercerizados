@@ -1,4 +1,4 @@
-# Backend — JSTerceirizados
+# Backend — JSEmpregos
 
 ## Futuro: Supabase
 

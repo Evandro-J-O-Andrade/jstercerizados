@@ -1,4 +1,4 @@
-# Refatoração JR Terceirizados — Migração para Agência de RH
+# Refatoração JR Empregos — Migração para Agência de RH
 
 **Data:** 06/08/2026  
 **Status:** Alterações aplicadas localmente, build validado, aguardando revisão  

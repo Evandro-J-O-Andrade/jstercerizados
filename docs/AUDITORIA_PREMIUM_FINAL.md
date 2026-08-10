@@ -1,4 +1,4 @@
-# Auditoria Premium Final — JSTerceirizados
+# Auditoria Premium Final — JSEmpregos
 
 **Data:** 2026-08-06
 **Status:** Fase 1 (Gate-01) concluída
@@ -7,7 +7,7 @@
 
 ## Resumo Executivo
 
-Foi executada uma auditoria completa do projeto JSTerceirizados, cobrindo bugs críticos, UX, navegação, WhatsApp, assets, ícones, hero, dark mode, motion e performance. As correções de maior prioridade foram aplicadas e o projeto está em condições de produção.
+Foi executada uma auditoria completa do projeto JSEmpregos, cobrindo bugs críticos, UX, navegação, WhatsApp, assets, ícones, hero, dark mode, motion e performance. As correções de maior prioridade foram aplicadas e o projeto está em condições de produção.
 
 ---
 
@@ -84,12 +84,12 @@ Criado `src/config/whatsappMessages.ts` com templates profissionais para cada co
 | Facilities            | Interesse no serviço de Facilities            |
 | Recepção              | Interesse no serviço de Recepção              |
 | Monitoramento         | Interesse no serviço de Monitoramento         |
-| Sobre                 | Interesse na JSTerceirizados                  |
+| Sobre                 | Interesse na JSEmpregos                       |
 | Serviços              | Interesse nos serviços                        |
 | Clientes              | Interesse nos clientes atendidos              |
 | Parceiros             | Interesse em ser parceiro                     |
 | Fornecedores          | Interesse em fornecer serviços                |
-| Carreiras             | Interesse em trabalhar na JSTerceirizados     |
+| Carreiras             | Interesse em trabalhar na JSEmpregos          |
 | Processo Seletivo     | Interesse no Processo Seletivo                |
 | FAQ                   | Dúvidas sobre serviços                        |
 | Contato               | Contato pelo site                             |

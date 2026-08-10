@@ -1,7 +1,7 @@
 # Auditoria de Implementação
 
-**Projeto:** J&S Terceirizados Ltda.  
-**Documento mestre:** `docs/SITE-JS-TERCEIRIZADOS/00-VISAO-GERAL.md`  
+**Projeto:** J&S Empregos Ltda.  
+**Documento mestre:** `docs/SITE-JS-Empregos/00-VISAO-GERAL.md`  
 **Data da auditoria:** 08/08/2026  
 **Escopo:** Código-fonte atual, rotas, componentes, páginas, widgets, acessibilidade, mobile, SEO e build.  
 **Regra:** Somente leitura. Nenhum código alterado durante esta auditoria.
@@ -28,7 +28,7 @@ Não foram encontrados erros de compilação ou build.
 
 | Requisito                             | Status          | Observação                                                                                     |
 | ------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------- |
-| Identidade: J&S Terceirizados Ltda.   | 🟡 PARCIAL      | Nome está correto, mas e-mail/domínio/redes sociais ainda apontam para `jrtelempregos.com.br`. |
+| Identidade: J&S Empregos Ltda.        | 🟡 PARCIAL      | Nome está correto, mas e-mail/domínio/redes sociais ainda apontam para `jrtelempregos.com.br`. |
 | Facilities como linha comercial       | 🟢 OK           | Presente em serviços, Home e Footer.                                                           |
 | Mão de obra temporária/efetiva        | 🟢 OK           | Presente em serviços, Home e Footer.                                                           |
 | Terceirização                         | 🟢 OK           | Presente em serviços, Home e Footer.                                                           |
@@ -106,7 +106,7 @@ Não foram encontrados erros de compilação ou build.
 
 | Item                            | Arquivo(s)                                                                                                         | Observação                                                                                                      |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| Atualizar identidade e contatos | `src/config/company.ts`, `src/config/contacts.ts`, `src/config/seo.ts`, `src/config/app.ts`, `src/mock/company.ts` | Migrar para `jsterceirizados.com.br` e redes sociais oficiais.                                                  |
+| Atualizar identidade e contatos | `src/config/company.ts`, `src/config/contacts.ts`, `src/config/seo.ts`, `src/config/app.ts`, `src/mock/company.ts` | Migrar para `jsEmpregos.com.br` e redes sociais oficiais.                                                       |
 | Números da Home                 | `src/pages/Home.tsx`                                                                                               | Validar com o cliente antes de publicar.                                                                        |
 | Rotas legais                    | `src/App.tsx`, `src/components/layout/Footer.tsx`                                                                  | Criar `/privacidade`, `/termos`, `/lgpd`, `/cookies` ou remover links.                                          |
 | Candidatura vinculada à vaga    | `src/pages/VagaDetalhe.tsx`                                                                                        | Criar `CandidaturaForm` reutilizável.                                                                           |
@@ -282,7 +282,7 @@ Não foram encontrados erros de compilação ou build.
 | `cardheros.png`      | 🟢 OK  | Presente em `public/images/hero/cardheros.png`.                                                                     |
 | Fallbacks SVG        | 🟢 OK  | SVGs inline usados como fallback corporativo.                                                                       |
 | Mapeamento assets    | 🟢 OK  | `src/content/assets.ts` e `src/config/images.ts` centralizam paths.                                                 |
-| Regras de tratamento | 🟢 OK  | `docs/SITE-JS-TERCEIRIZADOS/02-TRATAMENTO-IMAGENS.md` define regras obrigatórias para todos os componentes.         |
+| Regras de tratamento | 🟢 OK  | `docs/SITE-JS-Empregos/02-TRATAMENTO-IMAGENS.md` define regras obrigatórias para todos os componentes.              |
 | Inventário assets    | 🟢 OK  | `imagens_para_mover/` auditado (27 arquivos); mapeamento parcial realizado e assets copiados para `public/images/`. |
 
 ### Inventário de assets em `imagens_para_mover/`

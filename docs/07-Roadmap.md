@@ -1,4 +1,4 @@
-# Roadmap — JSTerceirizados
+# Roadmap — JSEmpregos
 
 ## Sprint 0 — Fundação
 

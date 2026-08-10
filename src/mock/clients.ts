@@ -45,7 +45,7 @@ export const CLIENT_TESTIMONIALS = [
     company: 'Empresa Alpha',
     image: '/images/team/carlos-silva.svg',
     quote:
-      'A J&S Terceirizados LTDA entregou profissionais qualificados em tempo recorde. Nossa equipe cresceu 40% sem perder a qualidade.',
+      'A J&S Empregos LTDA entregou profissionais qualificados em tempo recorde. Nossa equipe cresceu 40% sem perder a qualidade.',
     rating: 5,
   },
   {

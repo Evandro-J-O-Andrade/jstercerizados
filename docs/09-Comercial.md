@@ -1,4 +1,4 @@
-# Proposta Comercial — JSTerceirizados
+# Proposta Comercial — JSEmpregos
 
 ## Escopo do Projeto
 

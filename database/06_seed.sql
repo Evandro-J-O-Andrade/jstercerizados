@@ -9,8 +9,8 @@
 -- -----------------------------------------------------------------------------
 INSERT INTO empresa (razao_social, nome_fantasia, cnpj, telefone, email, site, endereco, cidade, estado)
 VALUES (
-  'JS Terceirizados Ltda',
-  'JS Terceirizados',
+  'JS Empregos Ltda',
+  'JS Empregos',
   '00000000000000',
   '(11) 96838-0592',
   'contato@jstercerizados.com.br',
@@ -30,7 +30,7 @@ INSERT INTO usuarios (empresa_id, nome, email, senha_hash, telefone, perfil, ati
 VALUES (
   1,
   'Administrador JS',
-  'admin@jsterceirizados.com.br',
+  'admin@jsEmpregos.com.br',
   '$2b$10$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   '(11) 96838-0592',
   'ADMIN',
@@ -49,9 +49,9 @@ VALUES (
 -- -----------------------------------------------------------------------------
 INSERT INTO usuarios (empresa_id, nome, email, senha_hash, telefone, perfil, ativo)
 VALUES
-  (1, 'Carlos Comercial', 'carlos@jsterceirizados.com.br', '$2b$10$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '(11) 90000-0001', 'COMERCIAL', 1),
-  (1, 'Fernanda RH',      'fernanda@jsterceirizados.com.br', '$2b$10$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '(11) 90000-0002', 'RH', 1),
-  (1, 'Patrícia Atendimento', 'patricia@jsterceirizados.com.br', '$2b$10$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '(11) 90000-0003', 'ATENDIMENTO', 1);
+  (1, 'Carlos Comercial', 'carlos@jsEmpregos.com.br', '$2b$10$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '(11) 90000-0001', 'COMERCIAL', 1),
+  (1, 'Fernanda RH',      'fernanda@jsEmpregos.com.br', '$2b$10$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '(11) 90000-0002', 'RH', 1),
+  (1, 'Patrícia Atendimento', 'patricia@jsEmpregos.com.br', '$2b$10$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '(11) 90000-0003', 'ATENDIMENTO', 1);
 
 
 -- -----------------------------------------------------------------------------
@@ -148,9 +148,9 @@ VALUES
 -- -----------------------------------------------------------------------------
 INSERT INTO webhooks (evento, url, metodo, ativo, secret)
 VALUES
-  ('NOVO_LEAD',            'https://hooks.jsterceirizados.com/webhook/n8n/leads',  'POST', 1, 'whsec_xxxxxxxxxx'),
-  ('NOVO_CLIENTE',         'https://hooks.jsterceirizados.com/webhook/n8n/clientes', 'POST', 1, 'whsec_yyyyyyyyyy'),
-  ('NOVO_CANDIDATO',       'https://hooks.jsterceirizados.com/webhook/n8n/rh',     'POST', 1, 'whsec_zzzzzzzzzz'),
-  ('NOVO_TICKET',          'https://hooks.jsterceirizados.com/webhook/n8n/tickets', 'POST', 1, 'whsec_aaaaaaaaaa'),
-  ('NOVO_PARCEIRO',        'https://hooks.jsterceirizados.com/webhook/n8n/parceiros', 'POST', 1, 'whsec_bbbbbbbbbb'),
-  ('CONTRATO_VENCENDO',    'https://hooks.jsterceirizados.com/webhook/n8n/contratos', 'POST', 0, 'whsec_cccccccccc');
+  ('NOVO_LEAD',            'https://hooks.jsEmpregos.com/webhook/n8n/leads',  'POST', 1, 'whsec_xxxxxxxxxx'),
+  ('NOVO_CLIENTE',         'https://hooks.jsEmpregos.com/webhook/n8n/clientes', 'POST', 1, 'whsec_yyyyyyyyyy'),
+  ('NOVO_CANDIDATO',       'https://hooks.jsEmpregos.com/webhook/n8n/rh',     'POST', 1, 'whsec_zzzzzzzzzz'),
+  ('NOVO_TICKET',          'https://hooks.jsEmpregos.com/webhook/n8n/tickets', 'POST', 1, 'whsec_aaaaaaaaaa'),
+  ('NOVO_PARCEIRO',        'https://hooks.jsEmpregos.com/webhook/n8n/parceiros', 'POST', 1, 'whsec_bbbbbbbbbb'),
+  ('CONTRATO_VENCENDO',    'https://hooks.jsEmpregos.com/webhook/n8n/contratos', 'POST', 0, 'whsec_cccccccccc');

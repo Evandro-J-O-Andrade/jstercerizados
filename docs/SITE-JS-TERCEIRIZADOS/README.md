@@ -1,4 +1,4 @@
-# Documentação do Projeto J&S Terceirizados
+# Documentação do Projeto J&S Empregos
 
 Esta pasta contém a documentação mestra do projeto.
 
@@ -6,7 +6,7 @@ Esta pasta contém a documentação mestra do projeto.
 
 ```
 docs/
-└── SITE-JS-TERCEIRIZADOS/
+└── SITE-JS-Empregos/
     ├── 00-VISAO-GERAL.md          # Documento mestre de arquitetura e regras
     ├── pages/                      # Documentos por página
     │   ├── HOME.md

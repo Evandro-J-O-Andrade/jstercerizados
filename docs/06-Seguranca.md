@@ -1,4 +1,4 @@
-# Segurança — JSTerceirizados
+# Segurança — JSEmpregos
 
 ## HTTPS
 

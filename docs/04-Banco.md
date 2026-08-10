@@ -1,4 +1,4 @@
-# Banco de Dados — JSTerceirizados
+# Banco de Dados — JSEmpregos
 
 ## Supabase (PostgreSQL)
 

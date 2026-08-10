@@ -1,4 +1,4 @@
-Ôªøimport { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Send, Phone, Shield } from 'lucide-react';
@@ -17,14 +17,14 @@ import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 
 const budgetSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  company: z.string().min(2, 'Nome da empresa √© obrigat√≥rio'),
+  company: z.string().min(2, 'Nome da empresa È obrigatÛrio'),
   cnpj: z.string().min(14, 'CNPJ deve ter pelo menos 14 caracteres'),
-  city: z.string().min(2, 'Cidade √© obrigat√≥ria'),
-  state: z.string().min(2, 'Estado √© obrigat√≥rio'),
-  email: z.string().email('E-mail inv√°lido'),
+  city: z.string().min(2, 'Cidade È obrigatÛria'),
+  state: z.string().min(2, 'Estado È obrigatÛrio'),
+  email: z.string().email('E-mail inv·lido'),
   phone: z.string().min(10, 'Telefone deve ter pelo menos 10 caracteres'),
   whatsapp: z.string().min(10, 'WhatsApp deve ter pelo menos 10 caracteres'),
-  service: z.string().min(1, 'Selecione um servi√ßo'),
+  service: z.string().min(1, 'Selecione um serviÁo'),
   posts: z.coerce.number().min(1, 'Deve ser pelo menos 1 posto'),
   message: z.string().min(10, 'Mensagem deve ter pelo menos 10 caracteres'),
 });
@@ -65,11 +65,11 @@ export default function Clientes() {
             <CheckCircle2 className="text-success h-10 w-10" />
           </div>
           <h2 className="text-foreground mb-4 text-2xl font-bold">
-            Solicita√ß√£o Enviada!
+            SolicitaÁ„o Enviada!
           </h2>
           <p className="text-muted-foreground mb-8">
-            Nossa equipe entrar√° em contato em at√© 24 horas. Enquanto isso, voc√™
-            pode nos chamar no WhatsApp para uma resposta mais r√°pida.
+            Nossa equipe entrar· em contato em atÈ 24 horas. Enquanto isso, vocÍ
+            pode nos chamar no WhatsApp para uma resposta mais r·pida.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <a
@@ -87,7 +87,7 @@ export default function Clientes() {
             </a>
             <Link to="/">
               <Button variant="outline" size="lg">
-                Voltar ao In√≠cio
+                Voltar ao InÌcio
               </Button>
             </Link>
           </div>
@@ -99,16 +99,16 @@ export default function Clientes() {
   return (
     <div>
       <SEO
-        title={`Clientes ‚Äî ${COMPANY.name}`}
-        description="Solicite or√ßamento de servi√ßos de RH, recrutamento, terceiriza√ß√£o e facilities. Atendimento personalizado para sua empresa."
+        title={`Clientes ó ${COMPANY.name}`}
+        description="Solicite orÁamento de serviÁos de RH, recrutamento, terceirizaÁ„o e facilities. Atendimento personalizado para sua empresa."
         keywords={[
           'clientes',
-          'or√ßamento',
-          'servi√ßos',
+          'orÁamento',
+          'serviÁos',
           COMPANY.name,
           'RH',
           'recrutamento',
-          'terceiriza√ß√£o',
+          'terceirizaÁ„o',
           'facilities',
           'limpeza',
           'jardinagem',
@@ -132,14 +132,14 @@ export default function Clientes() {
                   Solicite Profissionais para sua Empresa
                 </h1>
                 <p className="text-muted-foreground mt-4">
-                  Preencha o formul√°rio com seus dados e necessidades. Nossa
-                  equipe analisar√° sua solicita√ß√£o e elaborar√° uma proposta
+                  Preencha o formul·rio com seus dados e necessidades. Nossa
+                  equipe analisar· sua solicitaÁ„o e elaborar· uma proposta
                   personalizada.
                 </p>
 
                 <div className="mt-8 space-y-4">
                   {[
-                    'Resposta em at√© 24 horas',
+                    'Resposta em atÈ 24 horas',
                     'Proposta personalizada',
                     'Sem compromisso',
                     'Atendimento especializado',
@@ -165,7 +165,7 @@ export default function Clientes() {
                   <div className="md:col-span-2">
                     <Input
                       label="Seu Nome *"
-                      placeholder="Jo√£o Silva"
+                      placeholder="Jo„o Silva"
                       error={errors.name?.message}
                       {...register('name')}
                     />
@@ -173,7 +173,7 @@ export default function Clientes() {
                   <div className="md:col-span-2">
                     <Input
                       label="Empresa *"
-                      placeholder="ABC Seguran√ßa Ltda"
+                      placeholder="ABC SeguranÁa Ltda"
                       error={errors.company?.message}
                       {...register('company')}
                     />
@@ -189,7 +189,7 @@ export default function Clientes() {
                   <div className="grid grid-cols-2 gap-4">
                     <Input
                       label="Cidade *"
-                      placeholder="S√£o Paulo"
+                      placeholder="S„o Paulo"
                       error={errors.city?.message}
                       {...register('city')}
                     />
@@ -227,23 +227,23 @@ export default function Clientes() {
                   </div>
                   <div>
                     <Select
-                      label="Servi√ßo Desejado *"
+                      label="ServiÁo Desejado *"
                       error={errors.service?.message}
                       {...register('service')}
                     >
-                      <option value="">Selecione um servi√ßo</option>
-                      <option value="seguranca">Seguran√ßa Patrimonial</option>
+                      <option value="">Selecione um serviÁo</option>
+                      <option value="seguranca">SeguranÁa Patrimonial</option>
                       <option value="controle-acesso">
                         Controle de Acesso
                       </option>
                       <option value="portaria">Portaria</option>
-                      <option value="recepcao">Recep√ß√£o</option>
+                      <option value="recepcao">RecepÁ„o</option>
                       <option value="limpeza">Limpeza</option>
                       <option value="zeladoria">Zeladoria</option>
                       <option value="facilities">Facilities</option>
                       <option value="monitoramento">Monitoramento</option>
                       <option value="recrutamento">
-                        Recrutamento e Sele√ß√£o
+                        Recrutamento e SeleÁ„o
                       </option>
                       <option value="banco-talentos">Banco de Talentos</option>
                       <option value="hunting">Hunting de Executivos</option>

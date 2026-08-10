@@ -1,12 +1,12 @@
-# Benchmark — JS Terceirizados
+# Benchmark — JS Empregos
 
 ## Visão geral
 
-Análise da estrutura e conteúdo do site da JS Terceirizados, comparado com o nosso projeto.
+Análise da estrutura e conteúdo do site da JS Empregos, comparado com o nosso projeto.
 
-### Site atual: `https://www.jsterceirizados.com.br`
+### Site atual: `https://www.jsEmpregos.com.br`
 
-| Item                | JS Terceirizados       | Nosso Projeto               | Ação        |
+| Item                | JS Empregos            | Nosso Projeto               | Ação        |
 | ------------------- | ---------------------- | --------------------------- | ----------- |
 | Site institucional  | ✅ Sim                 | ✅ Sim                      | Mantém      |
 | PWA                 | ❌ Não                 | ✅ Planejado                | Evoluir     |
@@ -22,7 +22,7 @@ Análise da estrutura e conteúdo do site da JS Terceirizados, comparado com o n
 
 ## 1. Estrutura de navegação
 
-### JS Terceirizados
+### JS Empregos
 
 ```
 Home
@@ -59,7 +59,7 @@ Login
 
 ## 2. Serviços
 
-### JS Terceirizados oferece
+### JS Empregos oferece
 
 | Serviço                      | JS  | Nós |
 | ---------------------------- | --- | --- |
@@ -84,7 +84,7 @@ Login
 
 ## 3. Página "Empresa" (Sobre)
 
-### JS Terceirizados
+### JS Empregos
 
 - Texto institucional curto
 - Missão e visão (sem valores detalhados)
@@ -117,7 +117,7 @@ Metodologia
 
 ## 4. Trabalhe Conosco
 
-### JS Terceirizados
+### JS Empregos
 
 - Formulário simples com: nome, email, telefone, vaga desejada, currículo
 - Área limitada
@@ -137,7 +137,7 @@ JS é básico; nós já temos arquitetura superior.
 
 ## 5. Contato
 
-### JS Terceirizados
+### JS Empregos
 
 - Formulário com: nome, email, telefone, assunto, mensagem
 - Dados de contato no rodapé
@@ -157,7 +157,7 @@ JS tem dados fixos no HTML; nós centralizamos tudo.
 
 ## 6. Rodapé
 
-### JS Terceirizados
+### JS Empregos
 
 - Logo
 - Menu de navegação
@@ -208,13 +208,13 @@ Colunas:
 
 ## 8. Conclusão
 
-| Critério                | JS Terceirizados | Nosso Projeto         |
-| ----------------------- | ---------------- | --------------------- |
-| Estrutura institucional | Bom              | Excelente             |
-| Tecnologia              | Básica           | SaaS-ready            |
-| Automação               | Nenhuma          | n8n + WhatsApp        |
-| Área do cliente         | Nenhuma          | Dashboard futuro      |
-| SEO                     | Básico           | Otimizado por serviço |
-| Experiência do usuário  | Funcional        | Premium               |
+| Critério                | JS Empregos | Nosso Projeto         |
+| ----------------------- | ----------- | --------------------- |
+| Estrutura institucional | Bom         | Excelente             |
+| Tecnologia              | Básica      | SaaS-ready            |
+| Automação               | Nenhuma     | n8n + WhatsApp        |
+| Área do cliente         | Nenhuma     | Dashboard futuro      |
+| SEO                     | Básico      | Otimizado por serviço |
+| Experiência do usuário  | Funcional   | Premium               |
 
 **Diferencial:** Nosso projeto já parte de uma arquitetura SaaS, com formulários inteligentes, validações avançadas e preparação para Supabase, n8n e integrações.

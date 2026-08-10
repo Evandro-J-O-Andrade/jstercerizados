@@ -1,6 +1,6 @@
 # Regras de Tratamento de Imagens
 
-**Projeto:** J&S Terceirizados Ltda.  
+**Projeto:** J&S Empregos Ltda.  
 **Vigência:** obrigatória para todo o projeto.  
 **Escopo:** qualquer componente que exiba imagem.
 

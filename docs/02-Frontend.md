@@ -1,4 +1,4 @@
-# Frontend — JSTerceirizados
+# Frontend — JSEmpregos
 
 ## Stack Principal
 

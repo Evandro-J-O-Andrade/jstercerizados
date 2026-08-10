@@ -1,4 +1,4 @@
-# Projeto JR Terceirizados
+# Projeto JR Empregos
 
 ## Evolução para Agência de Empregos e Assessoria em RH
 
@@ -6,7 +6,7 @@
 
 ## 1. Visão do Cliente
 
-A JR Terceirizados passará por uma evolução de posicionamento.
+A JR Empregos passará por uma evolução de posicionamento.
 
 Objetivo: transformar a empresa em uma **Agência de Empregos e Assessoria em Recursos Humanos**, conectando:
 

@@ -1,8 +1,8 @@
-# JSTerceirizados
+# JSEmpregos
 
 ## Plataforma SaaS para Gestão de Empresas de Terceirização
 
-JSTerceirizados é uma plataforma web moderna desenvolvida para empresas de prestação de serviços de:
+JSEmpregos é uma plataforma web moderna desenvolvida para empresas de prestação de serviços de:
 
 - Segurança Patrimonial
 - Controle de Acesso
@@ -126,4 +126,4 @@ npm run format
 
 ## Licença
 
-MIT — Copyright © 2026 JSTerceirizados
+MIT — Copyright © 2026 JSEmpregos

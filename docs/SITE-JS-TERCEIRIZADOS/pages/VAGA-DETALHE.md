@@ -2,7 +2,7 @@
 
 **Rota:** `/vagas/:slug`
 **Status:** Documentação de referência
-**Referência:** `docs/SITE-JS-TERCEIRIZADOS/00-VISAO-GERAL.md`, `pages/VAGAS.md`
+**Referência:** `docs/SITE-JS-Empregos/00-VISAO-GERAL.md`, `pages/VAGAS.md`
 
 ---
 
@@ -118,7 +118,7 @@ Mesmo modelo de `Vaga` de VAGAS.md.
 
 ## 15. SEO
 
-- title: "{Título da vaga} — J&S Terceirizados"
+- title: "{Título da vaga} — J&S Empregos"
 - description: resumo da vaga
 - canonical: `/vagas/:slug`
 

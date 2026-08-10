@@ -2,7 +2,7 @@
 
 ## Overview
 
-JSTerceirizados uses a Feature-Based Architecture with Clean Architecture principles.
+JSEmpregos uses a Feature-Based Architecture with Clean Architecture principles.
 The codebase is organized so that business logic is decoupled from UI and infrastructure.
 
 ---

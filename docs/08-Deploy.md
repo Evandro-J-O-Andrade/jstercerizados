@@ -1,4 +1,4 @@
-# Deploy — JSTerceirizados
+# Deploy — JSEmpregos
 
 ## Hospedagem Frontend
 

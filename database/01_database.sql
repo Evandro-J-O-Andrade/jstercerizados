@@ -1,15 +1,15 @@
 -- =============================================================================
--- DATABASE CREATION — JS TERCEIRIZADOS SaaS
+-- DATABASE CREATION — JS Empregos SaaS
 -- =============================================================================
 -- MySQL 8.0 | utf8mb4 | InnoDB
 -- Migration target: Supabase PostgreSQL compatible
 -- =============================================================================
 
-CREATE DATABASE IF NOT EXISTS js_terceirizados
+CREATE DATABASE IF NOT EXISTS js_Empregos
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE js_terceirizados;
+USE js_Empregos;
 
 -- =============================================================================
 -- NOTES

@@ -1,7 +1,7 @@
 export const COMPANY = {
-  name: 'J&S Terceirizados LTDA',
-  tradingName: 'J&S Terceirizados LTDA',
-  brand: 'J&S Terceirizados',
+  name: 'J&S Empregos LTDA',
+  tradingName: 'J&S Empregos LTDA',
+  brand: 'J&S Empregos',
   cnpj: '00.000.000/0001-00',
   phone: '(11) 96838-0592',
   email: 'contato@jsterceirizados.com.br',

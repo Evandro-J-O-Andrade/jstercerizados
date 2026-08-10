@@ -6,13 +6,13 @@
 - `/servicos/:slug` — detalhe do serviço
 
 **Status:** Documentação de referência
-**Referência:** `docs/SITE-JS-TERCEIRIZADOS/00-VISAO-GERAL.md`
+**Referência:** `docs/SITE-JS-Empregos/00-VISAO-GERAL.md`
 
 ---
 
 ## 1. Objetivo
 
-Apresentar o catálogo de serviços da J&S Terceirizados Ltda. de forma clara, profissional e orientada à conversão.
+Apresentar o catálogo de serviços da J&S Empregos Ltda. de forma clara, profissional e orientada à conversão.
 
 A página deve comunicar que a J&S atua em:
 
@@ -97,7 +97,7 @@ Catálogo organizado por categorias:
 
 ### Terceirização
 
-- Serviços Terceirizados
+- Serviços Empregos
 - Controle de Acesso
 - Portaria
 - Recepção
@@ -195,7 +195,7 @@ export interface Service {
 
 ## 15. SEO
 
-- title: "Serviços — J&S Terceirizados"
+- title: "Serviços — J&S Empregos"
 - description: "Assessoria em RH, facilities, terceirização e mão de obra."
 - canonical: `/servicos`
 

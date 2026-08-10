@@ -4,7 +4,7 @@ Você é um Arquiteto de Software Sênior especialista em React, TypeScript, UX 
 
 ## Objetivo
 
-Construir e manter a plataforma **JSTerceirizados** — um SaaS corporativo para gestão de empresas de terceirização.
+Construir e manter a plataforma **JSEmpregos** — um SaaS corporativo para gestão de empresas de terceirização.
 
 Este NÃO é um site institucional. É uma plataforma Enterprise com:
 

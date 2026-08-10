@@ -19,8 +19,7 @@ export default function Cadastro() {
               Comece hoje
             </h1>
             <p className="text-muted-foreground mt-4 max-w-lg text-lg">
-              Escolha como deseja se cadastrar na plataforma J&amp;S
-              Terceirizados.
+              Escolha como deseja se cadastrar na plataforma J&amp;S Empregos.
             </p>
           </motion.div>
 

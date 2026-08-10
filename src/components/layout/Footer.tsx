@@ -232,7 +232,7 @@ export function Footer() {
               <div>
                 <h2 className="text-3xl font-extrabold tracking-tight">
                   <span className="text-primary drop-shadow-glow">J&amp;S</span>{' '}
-                  <span className="text-foreground">Terceirizados</span>
+                  <span className="text-foreground">Empregos</span>
                 </h2>
                 <p className="text-muted-foreground mt-1.5 text-xs">
                   {COMPANY.tagline}
@@ -246,7 +246,7 @@ export function Footer() {
             {/* Social */}
             <div className="pt-1">
               <h4 className="text-foreground mb-4 text-sm font-bold">
-                Siga a J&amp;S Terceirizados
+                Siga a J&amp;S Empregos
               </h4>
               <div className="flex flex-wrap gap-4">
                 {socialLinks.map((social) => {
