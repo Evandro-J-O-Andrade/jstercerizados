@@ -262,7 +262,7 @@ export function AccessibilityWidget({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="overlay-backdrop fixed inset-0 z-40"
+              className="overlay-backdrop fixed inset-0 z-[60]"
               onClick={() => {
                 stopTTS();
                 setIsOpen(false);
@@ -275,7 +275,7 @@ export function AccessibilityWidget({
               role="dialog"
               aria-modal="true"
               aria-labelledby="accessibility-title"
-              className="overlay-panel relative z-50 max-h-[calc(100vh-6rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl p-5 shadow-xl sm:max-h-[calc(100vh-4rem)] sm:w-96"
+              className="overlay-panel relative z-[70] max-h-[calc(100vh-6rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl p-5 shadow-xl sm:max-h-[calc(100vh-4rem)] sm:w-96"
             >
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -604,7 +604,7 @@ export function AccessibilityWidget({
         }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="shadow-glow-lg bg-primary text-primary-foreground flex items-center gap-2 rounded-full px-4 py-3 transition-colors sm:h-12 sm:w-12 sm:justify-center sm:px-0"
+        className="shadow-glow-lg bg-primary text-primary-foreground z-[60] flex items-center gap-2 rounded-full px-4 py-3 transition-colors sm:h-12 sm:w-12 sm:justify-center sm:px-0"
         aria-label="Abrir painel de acessibilidade"
         aria-expanded={isOpen}
         aria-controls="accessibility-panel"

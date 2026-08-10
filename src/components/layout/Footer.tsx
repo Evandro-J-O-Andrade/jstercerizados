@@ -73,7 +73,7 @@ const footerLinks = {
     { label: 'Suporte', href: '/suporte' },
     { label: 'FAQ', href: '/faq' },
     { label: 'Ajuda', href: '/suporte' },
-    { label: 'Login', href: '/login', icon: LogIn },
+    { label: 'Entrar', href: '/login', icon: LogIn },
   ],
 };
 
@@ -229,7 +229,7 @@ export function Footer({
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-border/50 bg-surface relative z-40 border-t">
+    <footer className="border-border/50 bg-surface relative z-10 border-t">
       <div className="via-primary/40 absolute -top-px right-0 left-0 h-px bg-gradient-to-r from-transparent to-transparent" />
 
       <div className="w-full">

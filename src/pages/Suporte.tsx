@@ -775,7 +775,7 @@ export default function Suporte() {
             {[
               {
                 icon: '🔐',
-                title: 'Acesso e Login',
+                title: 'Acesso e Entrada',
                 description: 'Esqueceu sua senha? Problemas para entrar?',
                 link: '/faq',
                 linkLabel: 'Ver perguntas',

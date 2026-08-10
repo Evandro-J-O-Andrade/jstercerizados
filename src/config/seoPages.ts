@@ -145,7 +145,7 @@ export const SEO_PAGES: Record<string, PageSEO> = {
     path: '/faq',
   },
   '/login': {
-    title: `Login | Acesse sua Conta | ${COMPANY.name}`,
+    title: `Entrar | Acesse sua Conta | ${COMPANY.name}`,
     description:
       'Acesse sua conta de candidato, empresa ou RH para acompanhar processos e vagas.',
     keywords: [

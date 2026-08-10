@@ -165,7 +165,7 @@ export function HumanChatWidget({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="overlay-backdrop fixed inset-0 z-40"
+              className="overlay-backdrop fixed inset-0 z-[60]"
               onClick={handleClose}
               aria-hidden="true"
             />
@@ -179,7 +179,7 @@ export function HumanChatWidget({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="overlay-panel relative z-50 mb-3 flex w-[calc(100vw-2rem)] max-w-[360px] flex-col sm:mb-3"
+              className="overlay-panel relative z-[70] mb-3 flex w-[calc(100vw-2rem)] max-w-[360px] flex-col sm:mb-3"
             >
               <div className="bg-background border-border flex h-[60vh] max-h-[500px] flex-col overflow-hidden rounded-2xl border shadow-2xl">
                 <div className="bg-primary/10 border-border/50 flex items-center justify-between border-b px-4 py-3">

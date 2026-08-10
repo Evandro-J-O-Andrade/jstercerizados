@@ -19,17 +19,17 @@ const FAQ_CATEGORIES = [
       {
         question: 'Como criar uma conta?',
         answer:
-          'Acesse o portal do cliente pelo menu superior, clique em Login e preencha seus dados. Caso não tenha uma conta, utilize a opção de cadastro.',
+          'Acesse o portal do cliente pelo menu superior, clique em Entrar e preencha seus dados. Caso não tenha uma conta, utilize a opção de cadastro.',
       },
       {
         question: 'Esqueci minha senha',
         answer:
-          'Clique em "Esqueci minha senha" na página de login e siga as instruções enviadas para seu e-mail cadastrado.',
+          'Clique em "Esqueci minha senha" na página de entrar e siga as instruções enviadas para seu e-mail cadastrado.',
       },
       {
         question: 'Como alterar meus dados?',
         answer:
-          'Após o login, acesse Configurações > Perfil para atualizar suas informações pessoais.',
+          'Após entrar, acesse Configurações > Perfil para atualizar suas informações pessoais.',
       },
     ],
   },

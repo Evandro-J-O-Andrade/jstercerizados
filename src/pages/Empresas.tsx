@@ -109,7 +109,7 @@ export default function Empresas() {
                 icon: MapPin,
               },
               {
-                title: 'WhatsApp First',
+                title: 'WhatsApp em Primeiro Lugar',
                 desc: 'Atendimento e acompanhamento via WhatsApp.',
                 icon: Phone,
               },

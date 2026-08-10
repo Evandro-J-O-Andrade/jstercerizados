@@ -100,7 +100,7 @@ export default function Login() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <SEO
-        title={`Login — ${COMPANY.name}`}
+        title={`Entrar — ${COMPANY.name}`}
         description={`Acesse sua conta na ${COMPANY.name}. Área do candidato, empresa ou administrador.`}
         keywords={[
           'login',

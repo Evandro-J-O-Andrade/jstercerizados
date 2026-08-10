@@ -13,7 +13,7 @@ export const NAVIGATION_LINKS: NavLink[] = [
   { label: 'Sobre Nós', href: '/sobre' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contato', href: '/contato' },
-  { label: 'Login', href: '/login' },
+  { label: 'Entrar', href: '/login' },
 ];
 
 export interface DashboardLink {

@@ -27,7 +27,7 @@ export const HERO_SLIDES: HeroSlideData[] = [
     image: '/images/services/assessoria-rh.png',
     imageAlt: 'Equipe em reunião corporativa de recrutamento',
     primaryCta: {
-      label: 'Contritar Funcionários',
+      label: 'Contratar Funcionários',
       href: '/servicos/assessoria-rh',
     },
     secondaryCta: {
@@ -84,7 +84,7 @@ export const HERO_SLIDES: HeroSlideData[] = [
     image: '/images/services/mao-de-obra-real.webp',
     imageAlt: 'Equipe de trabalho em obra corporativa',
     primaryCta: {
-      label: 'Contritar profissionais',
+      label: 'Contratar profissionais',
       href: '/servicos/mao-de-obra-temporaria',
     },
     secondaryCta: { label: 'Ver vagas', href: '/clientes' },
