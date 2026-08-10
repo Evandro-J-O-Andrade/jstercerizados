@@ -58,6 +58,39 @@ export const HERO_ASSETS = {
   trabalheConosco: '/images/trabalhe-conosco/trabalhe-conosco.webp',
 } as const;
 
+export const SHOWCASE_SLIDES = [
+  {
+    src: HERO_ASSETS.cardheros,
+    alt: 'J&S Empregos LTDA',
+    objectPosition: 'center 30%',
+  },
+  {
+    src: '/images/services/facilities-real.webp',
+    alt: 'Facilities e Terceirização',
+    objectPosition: 'center',
+  },
+  {
+    src: '/images/services/mao-de-obra-real.webp',
+    alt: 'Mão de Obra Temporária e Efetiva',
+    objectPosition: 'center',
+  },
+  {
+    src: '/images/services/limpeza-real.webp',
+    alt: 'Limpeza e Conservação',
+    objectPosition: 'center 25%',
+  },
+  {
+    src: '/images/services/jardinagem-real.webp',
+    alt: 'Jardinagem e Paisagismo',
+    objectPosition: 'center',
+  },
+  {
+    src: '/images/services/terceirizacao-real.webp',
+    alt: 'Terceirização de Serviços',
+    objectPosition: 'center',
+  },
+] as const;
+
 export const PARTNER_ASSETS = {
   vectorEngenharia: '/images/partners/vector-engenharia.webp',
   mistral: '/images/partners/mistral.webp',

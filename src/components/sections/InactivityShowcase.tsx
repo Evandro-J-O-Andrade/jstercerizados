@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { CinematicIntro } from './CinematicIntro';
+import { CinematicShowcase } from './CinematicShowcase';
+import { SHOWCASE_SLIDES } from '@/content/assets';
 
 const SHOWCASE_KEY = 'js-showcase-dismissed';
 const IDLE_THRESHOLD = 10 * 60 * 1000;
@@ -39,7 +40,7 @@ export function InactivityShowcase() {
     };
 
     IDLE_EVENTS.forEach((event) =>
-      window.addEventListener(event, handleActivity),
+      window.addEventListener(event, handleActivity, { passive: true }),
     );
     resetTimer();
 
@@ -53,5 +54,5 @@ export function InactivityShowcase() {
 
   if (!triggered) return null;
 
-  return <CinematicIntro onFinish={handleFinish} />;
+  return <CinematicShowcase slides={SHOWCASE_SLIDES} onFinish={handleFinish} />;
 }
