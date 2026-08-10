@@ -232,279 +232,188 @@ export function Footer({
     <footer className="border-border/50 bg-surface relative z-40 border-t">
       <div className="via-primary/40 absolute -top-px right-0 left-0 h-px bg-gradient-to-r from-transparent to-transparent" />
 
-      <div className="mx-auto max-w-[1600px] px-4 py-16 pb-28 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-          {/* ─── Identidade J&S ──────────────────── */}
-          <div className="space-y-6 lg:col-span-3">
-            <Link to="/" className="flex items-center gap-4">
-              <div className="border-border/50 shadow-glow bg-primary/10 relative rounded-2xl border p-2">
-                <img
-                  src={IMAGES.logo.dark}
-                  alt={COMPANY.name}
-                  className="drop-shadow-glow h-14 w-auto"
-                />
-              </div>
-              <div>
-                <h2 className="text-3xl font-extrabold tracking-tight">
-                  <span className="text-primary drop-shadow-glow">J&amp;S</span>{' '}
-                  <span className="text-foreground">Empregos</span>
-                </h2>
-                <p className="text-muted-foreground mt-1 text-xs">
-                  {COMPANY.tagline}
-                </p>
-              </div>
-            </Link>
-            <p className="text-muted-foreground max-w-sm text-sm leading-relaxed">
-              {COMPANY.description}
-            </p>
-
-            {/* Social */}
-            <div className="pt-2">
-              <h4 className="text-foreground mb-3 text-sm font-bold">
-                Siga a J&amp;S Empregos
-              </h4>
-              <div className="flex flex-wrap gap-3">
-                {socialLinks.map((social) => {
-                  const Icon = social.icon;
-                  return (
-                    <motion.a
-                      key={social.label}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      whileHover={{
-                        scale: 1.15,
-                        y: -4,
-                        transition: {
-                          type: 'spring',
-                          stiffness: 400,
-                          damping: 10,
-                        },
-                      }}
-                      whileTap={{ scale: 0.9 }}
-                      className="border-border/60 focus-visible:ring-primary relative flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 focus-visible:ring-2 focus-visible:outline-none"
-                      aria-label={social.label}
-                      style={{
-                        backgroundColor: `${social.color}18`,
-                        borderColor: `${social.color}66`,
-                      }}
-                    >
-                      <motion.div
-                        whileHover={{
-                          rotate: [0, -10, 10, -10, 0],
-                          transition: { duration: 0.4 },
-                        }}
-                        className="flex items-center justify-center"
-                      >
-                        <Icon
-                          className="h-5 w-5 transition-colors duration-300"
-                          style={{ color: social.color }}
-                          aria-hidden="true"
-                        />
-                      </motion.div>
-                    </motion.a>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* ─── Grupos desktop / accordions mobile ─ */}
-          <div className="lg:col-span-9">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5">
-              {/* Empresa */}
-              <div className="hidden lg:block">
-                <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
-                  Empresa
-                </h4>
-                <div className="space-y-3">
-                  {footerLinks.empresa.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
-                      className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
-                    >
-                      <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
-                      {link.label}
-                    </Link>
-                  ))}
+      <div className="w-full">
+        <div className="mx-auto max-w-[1600px] px-4 py-16 pb-28 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+            {/* ─── Identidade J&S ──────────────────── */}
+            <div className="space-y-6 lg:col-span-3">
+              <Link to="/" className="flex items-center gap-4">
+                <div className="border-border/50 shadow-glow bg-primary/10 relative rounded-2xl border p-2">
+                  <img
+                    src={IMAGES.logo.dark}
+                    alt={COMPANY.name}
+                    className="drop-shadow-glow h-14 w-auto"
+                  />
                 </div>
-              </div>
-
-              {/* Serviços */}
-              <div className="hidden lg:block">
-                <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
-                  Serviços
-                </h4>
-                <div className="space-y-3">
-                  {footerLinks.servicos.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
-                      className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
-                    >
-                      <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
-                      {link.label}
-                    </Link>
-                  ))}
+                <div>
+                  <h2 className="text-3xl font-extrabold tracking-tight">
+                    <span className="text-primary drop-shadow-glow">
+                      J&amp;S
+                    </span>{' '}
+                    <span className="text-foreground">Empregos</span>
+                  </h2>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    {COMPANY.tagline}
+                  </p>
                 </div>
-              </div>
+              </Link>
+              <p className="text-muted-foreground max-w-sm text-sm leading-relaxed">
+                {COMPANY.description}
+              </p>
 
-              {/* Candidatos */}
-              <div className="hidden lg:block">
-                <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
-                  Para Candidatos
+              {/* Social */}
+              <div className="pt-2">
+                <h4 className="text-foreground mb-3 text-sm font-bold">
+                  Siga a J&amp;S Empregos
                 </h4>
-                <div className="space-y-3">
-                  {footerLinks.candidatos.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
-                      className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
-                    >
-                      <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* Empresas */}
-              <div className="hidden lg:block">
-                <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
-                  Para Empresas
-                </h4>
-                <div className="space-y-3">
-                  {footerLinks.empresas.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
-                      className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
-                    >
-                      <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* Atendimento */}
-              <div className="hidden lg:block">
-                <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
-                  Atendimento
-                </h4>
-                <div className="space-y-3">
-                  {footerLinks.atendimento.map((link) => {
-                    const Icon = link.icon;
+                <div className="flex flex-wrap gap-3">
+                  {socialLinks.map((social) => {
+                    const Icon = social.icon;
                     return (
-                      <Link
-                        key={link.href}
-                        to={link.href}
-                        className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
+                      <motion.a
+                        key={social.label}
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        whileHover={{
+                          scale: 1.15,
+                          y: -4,
+                          transition: {
+                            type: 'spring',
+                            stiffness: 400,
+                            damping: 10,
+                          },
+                        }}
+                        whileTap={{ scale: 0.9 }}
+                        className="border-border/60 focus-visible:ring-primary relative flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 focus-visible:ring-2 focus-visible:outline-none"
+                        aria-label={social.label}
+                        style={{
+                          backgroundColor: `${social.color}18`,
+                          borderColor: `${social.color}66`,
+                        }}
                       >
-                        {Icon && <Icon className="text-primary/70 h-4 w-4" />}
-                        <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
-                        {link.label}
-                      </Link>
+                        <motion.div
+                          whileHover={{
+                            rotate: [0, -10, 10, -10, 0],
+                            transition: { duration: 0.4 },
+                          }}
+                          className="flex items-center justify-center"
+                        >
+                          <Icon
+                            className="h-5 w-5 transition-colors duration-300"
+                            style={{ color: social.color }}
+                            aria-hidden="true"
+                          />
+                        </motion.div>
+                      </motion.a>
                     );
                   })}
                 </div>
               </div>
             </div>
 
-            {/* Fale Conosco */}
-            <div className="mt-8 w-full">
-              <div className="mx-auto max-w-7xl">
-                <h4 className="text-primary mb-4 text-center text-xs font-bold tracking-wider uppercase">
-                  Fale Conosco
-                </h4>
-                <div className="border-border/50 bg-primary/5 rounded-xl border p-8">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {contactItems.map((item) => (
-                      <a
-                        key={item.type}
-                        href={item.href}
-                        target={item.type === 'map' ? '_blank' : undefined}
-                        rel={
-                          item.type === 'map'
-                            ? 'noopener noreferrer'
-                            : undefined
-                        }
-                        className="border-border/50 hover:border-primary/30 group flex items-center gap-3 rounded-xl border p-5 transition-all duration-300"
+            {/* ─── Grupos desktop / accordions mobile ─ */}
+            <div className="lg:col-span-9">
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5">
+                {/* Empresa */}
+                <div className="hidden lg:block">
+                  <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
+                    Empresa
+                  </h4>
+                  <div className="space-y-3">
+                    {footerLinks.empresa.map((link) => (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
                       >
-                        <div className="text-primary bg-primary/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
-                          <item.icon className="h-6 w-6" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-foreground text-base font-semibold">
-                            {item.label}
-                          </p>
-                          <p className="text-muted-foreground truncate text-sm">
-                            {item.value}
-                          </p>
-                          {item.subvalue && (
-                            <p className="text-muted-foreground text-sm">
-                              {item.subvalue}
-                            </p>
-                          )}
-                        </div>
-                        {item.type === 'map' && (
-                          <Globe className="text-primary h-5 w-5 transition-transform group-hover:translate-x-1" />
-                        )}
-                      </a>
+                        <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
+                        {link.label}
+                      </Link>
                     ))}
                   </div>
+                </div>
 
-                  <div className="border-border/50 bg-primary/5 mt-4 rounded-xl border p-4">
-                    <h5 className="text-foreground mb-3 text-sm font-bold">
-                      Horário de Atendimento
-                    </h5>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="text-primary h-4 w-4" />
-                        <span className="text-muted-foreground">
-                          Seg a Sex, 08h às 18h
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="text-primary h-4 w-4" />
-                        <span className="text-muted-foreground">
-                          Sáb, 08h às 12h
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="text-muted-foreground h-4 w-4" />
-                        <span className="text-muted-foreground">
-                          Domingo — Fechado
-                        </span>
-                      </div>
-                    </div>
+                {/* Serviços */}
+                <div className="hidden lg:block">
+                  <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
+                    Serviços
+                  </h4>
+                  <div className="space-y-3">
+                    {footerLinks.servicos.map((link) => (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
+                      >
+                        <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
+                        {link.label}
+                      </Link>
+                    ))}
                   </div>
+                </div>
 
-                  <div className="mt-4 flex items-center gap-3">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      className="flex-1"
-                      onClick={onOpenAccessibility}
-                      leftIcon={<Accessibility className="h-4 w-4" />}
-                    >
-                      Acessibilidade
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      className="flex-1"
-                      onClick={onOpenChat}
-                      leftIcon={<MessageCircle className="h-4 w-4" />}
-                    >
-                      Precisa de ajuda?
-                    </Button>
+                {/* Candidatos */}
+                <div className="hidden lg:block">
+                  <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
+                    Para Candidatos
+                  </h4>
+                  <div className="space-y-3">
+                    {footerLinks.candidatos.map((link) => (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
+                      >
+                        <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Empresas */}
+                <div className="hidden lg:block">
+                  <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
+                    Para Empresas
+                  </h4>
+                  <div className="space-y-3">
+                    {footerLinks.empresas.map((link) => (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
+                      >
+                        <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Atendimento */}
+                <div className="hidden lg:block">
+                  <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
+                    Atendimento
+                  </h4>
+                  <div className="space-y-3">
+                    {footerLinks.atendimento.map((link) => {
+                      const Icon = link.icon;
+                      return (
+                        <Link
+                          key={link.href}
+                          to={link.href}
+                          className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
+                        >
+                          {Icon && <Icon className="text-primary/70 h-4 w-4" />}
+                          <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
+                          {link.label}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -527,6 +436,93 @@ export function Footer({
                 title="Atendimento"
                 links={footerLinks.atendimento}
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Fale Conosco */}
+        <div className="mt-8 w-full">
+          <h4 className="text-primary mb-4 text-center text-xs font-bold tracking-wider uppercase">
+            Fale Conosco
+          </h4>
+          <div className="border-border/50 bg-primary/5 rounded-xl border p-8">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {contactItems.map((item) => (
+                <a
+                  key={item.type}
+                  href={item.href}
+                  target={item.type === 'map' ? '_blank' : undefined}
+                  rel={item.type === 'map' ? 'noopener noreferrer' : undefined}
+                  className="border-border/50 hover:border-primary/30 group flex items-center gap-3 rounded-xl border p-6 transition-all duration-300"
+                >
+                  <div className="text-primary bg-primary/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+                    <item.icon className="h-6 w-6" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-foreground text-base font-semibold">
+                      {item.label}
+                    </p>
+                    <p className="text-muted-foreground truncate text-sm">
+                      {item.value}
+                    </p>
+                    {item.subvalue && (
+                      <p className="text-muted-foreground text-sm">
+                        {item.subvalue}
+                      </p>
+                    )}
+                  </div>
+                  {item.type === 'map' && (
+                    <Globe className="text-primary h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  )}
+                </a>
+              ))}
+            </div>
+
+            <div className="border-border/50 bg-primary/5 mt-4 rounded-xl border p-4">
+              <h5 className="text-foreground mb-3 text-sm font-bold">
+                Horário de Atendimento
+              </h5>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="text-primary h-4 w-4" />
+                  <span className="text-muted-foreground">
+                    Seg a Sex, 08h às 18h
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="text-primary h-4 w-4" />
+                  <span className="text-muted-foreground">Sáb, 08h às 12h</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="text-muted-foreground h-4 w-4" />
+                  <span className="text-muted-foreground">
+                    Domingo — Fechado
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 flex items-center gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="flex-1"
+                onClick={onOpenAccessibility}
+                leftIcon={<Accessibility className="h-4 w-4" />}
+              >
+                Acessibilidade
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="flex-1"
+                onClick={onOpenChat}
+                leftIcon={<MessageCircle className="h-4 w-4" />}
+              >
+                Precisa de ajuda?
+              </Button>
             </div>
           </div>
         </div>
