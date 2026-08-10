@@ -318,18 +318,22 @@ export default function ServicoDetalhe() {
             {[
               {
                 label: 'Profissionais',
+                value: COMPANY.professionals,
                 icon: Shield,
               },
               {
                 label: 'Anos de Experiência',
+                value: `${COMPANY.yearsOfExperience}+`,
                 icon: Clock,
               },
               {
                 label: 'Clientes Atendidos',
+                value: COMPANY.clientsServed,
                 icon: Zap,
               },
               {
                 label: 'Cidades',
+                value: COMPANY.citiesCovered,
                 icon: MapPin,
               },
             ].map((stat) => (
@@ -342,7 +346,7 @@ export default function ServicoDetalhe() {
                   <stat.icon className="h-6 w-6" />
                 </div>
                 <p className="text-foreground text-3xl font-bold">
-                  {stat.label}
+                  {stat.value}
                 </p>
                 <p className="text-muted-foreground text-sm">{stat.label}</p>
               </motion.div>
