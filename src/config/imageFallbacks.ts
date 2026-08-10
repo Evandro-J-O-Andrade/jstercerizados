@@ -1,11 +1,11 @@
 export const IMAGE_FALLBACKS = {
-  global: '/images/fallback/default.webp',
-  vagas: '/images/fallback/vaga.webp',
-  servicos: '/images/fallback/servico.webp',
-  empresas: '/images/fallback/empresa.webp',
-  parceiros: '/images/fallback/parceiro.webp',
-  candidatos: '/images/fallback/candidato.webp',
-  blog: '/images/fallback/blog.webp',
+  global: '/images/fallbacks/default.svg',
+  vagas: '/images/fallbacks/vagas.png',
+  servicos: '/images/fallbacks/servicos.png',
+  empresas: '/images/fallbacks/empresas.svg',
+  parceiros: '/images/fallbacks/parceiros.svg',
+  candidatos: '/images/fallbacks/candidatos.svg',
+  blog: '/images/fallbacks/blog.svg',
 } as const;
 
 export type ImageFallbackType = keyof typeof IMAGE_FALLBACKS;

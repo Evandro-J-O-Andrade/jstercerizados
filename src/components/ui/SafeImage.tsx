@@ -63,7 +63,23 @@ export function SafeImage({
     setHasError(false);
   }, [src]);
 
+  useEffect(() => {
+    if (import.meta.env.DEV && !src && finalFallbackSrc) {
+      console.warn(
+        `[IMAGE MISSING] Imagem real não encontrada para o fallback "${finalFallbackSrc}". ` +
+          `Defina uma imagem real em vez de confiar no fallback.`,
+      );
+    }
+  }, [src, finalFallbackSrc]);
+
   const handleError = () => {
+    if (import.meta.env.DEV && currentSrc !== finalFallbackSrc) {
+      console.warn(
+        `[IMAGE MISSING] Imagem real não encontrada: ${currentSrc}\n` +
+          `Fallback utilizado: ${finalFallbackSrc}`,
+      );
+    }
+
     if (currentSrc !== finalFallbackSrc) {
       setCurrentSrc(finalFallbackSrc);
       setIsLoading(true);
@@ -71,6 +87,12 @@ export function SafeImage({
     }
 
     if (finalFallbackSrc !== GLOBAL_FALLBACK) {
+      if (import.meta.env.DEV) {
+        console.warn(
+          `[IMAGE MISSING] Fallback da categoria também falhou: ${finalFallbackSrc}\n` +
+            `Usando fallback global: ${GLOBAL_FALLBACK}`,
+        );
+      }
       setCurrentSrc(GLOBAL_FALLBACK);
       setIsLoading(true);
       return;
