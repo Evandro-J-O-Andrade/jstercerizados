@@ -80,7 +80,6 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
             loading="lazy"
             decoding="async"
             className="h-full w-full object-cover opacity-80 transition-all duration-500 group-hover:scale-105 group-hover:opacity-100"
-            fallbackSrc={fallbackImage}
           />
           <div className="from-card/90 via-card/40 absolute inset-0 bg-gradient-to-t to-transparent" />
           <div className="from-primary/10 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

@@ -156,7 +156,7 @@ export function HumanChatWidget({
   const chatPanelRef = useFocusTrap(open);
 
   return (
-    <div className="fixed right-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-50 sm:right-6 sm:bottom-8">
+    <div className="fixed right-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-50 sm:right-6 sm:bottom-16">
       <AnimatePresence>
         {open && (
           <>

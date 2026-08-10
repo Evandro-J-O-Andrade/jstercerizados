@@ -253,7 +253,7 @@ export function AccessibilityWidget({
   const accessibilityPanelRef = useFocusTrap(isOpen);
 
   return (
-    <div className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] left-4 z-50 sm:bottom-8 sm:left-6">
+    <div className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] left-4 z-50 sm:bottom-16 sm:left-6">
       <AnimatePresence>
         {isOpen && (
           <>
