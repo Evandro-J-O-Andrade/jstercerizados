@@ -1,246 +1,158 @@
-# SERVIÇOS
+# SERVICOS — Arquitetura e Implementação
 
-**Rotas:**
+## Rotas
 
-- `/servicos` — catálogo
-- `/servicos/:slug` — detalhe do serviço
+| Rota              | Descrição                    |
+| ----------------- | ---------------------------- |
+| `/servicos`       | Lista todos os serviços      |
+| `/servicos/:slug` | Página individual do serviço |
 
-**Status:** Documentação de referência
-**Referência:** `docs/SITE-JS-Empregos/00-VISAO-GERAL.md`
+## Lista de serviços (`/servicos`)
 
----
+### Organização por categoria
 
-## 1. Objetivo
+```text
+Soluções em RH
+  ├── Recrutamento e Seleção      (rh)
+  ├── Mão de Obra Temporária      (rh)
+  ├── Mão de Obra Efetiva         (rh)
+  ├── Assessoria em RH            (rh)
+  ├── Avaliação de Perfil         (rh)
+  └── Executive Search (Hunting)  (rh)
 
-Apresentar o catálogo de serviços da J&S Empregos Ltda. de forma clara, profissional e orientada à conversão.
+Soluções Operacionais (Facilities)
+  ├── Facilities                  (facilities)
+  ├── Jardim e Paisagismo         (facilities)
+  ├── Limpeza de Fachada          (facilities)
+  ├── Limpeza de Vidros           (facilities)
+  ├── Faxina                      (facilities)
+  ├── Limpeza Pós-Obra            (facilities)
+  ├── Limpeza Pré-Mudança         (facilities)
+  ├── Limpeza Pós-Mudança        (facilities)
+  ├── Controle de Acesso          (facilities)
+  ├── Recepção e Portaria         (facilities)
+  └── Zeladoria e Manutenção      (facilities)
 
-A página deve comunicar que a J&S atua em:
-
-- Recursos Humanos / Assessoria em RH
-- Mão de obra temporária e efetiva
-- Terceirização
-- Facilities
-
-Sem apagar nenhuma linha de negócio.
-
----
-
-## 2. Usuário principal
-
-- Empresas que precisam de RH, terceirização ou facilities
-- Candidatos que querem entender a atuação da J&S
-- Parceiros / fornecedores
-
----
-
-## 3. Objetivo comercial
-
-- Gerar leads B2B
-- Direcionar para solicitação de orçamento
-- Direcionar para contato comercial
-- Posicionar a J&S como referência em RH + Facilities
-
----
-
-## 4. Rotas
-
-- `/servicos`
-- `/servicos/:slug`
-
----
-
-## 5. Conteúdo fornecido pelo cliente
-
-Manter como referência:
-
-- Facilities
-- Limpeza / Conservação
-- Controle de acesso
-- Portaria
-- Recepção
-- Jardinagem
-- Mão de obra temporária
-- Mão de obra efetiva
-- Terceirização
-- Recrutamento e seleção
-- Assessoria em RH
-- Hunting de executivos
-- Avaliação de perfil
-- Banco de talentos
-
-Não inventar serviços adicionais.
-
----
-
-## 6. Estrutura visual
-
-Catálogo organizado por categorias:
-
-### Recursos Humanos
-
-- Assessoria em RH
-- Recrutamento e Seleção
-- Mão de Obra Temporária
-- Mão de Obra Efetiva
-- Hunting de Executivos
-- Avaliação de Perfil
-- Banco de Talentos
-
-### Facilities
-
-- Limpeza e Higienização
-- Limpeza de Fachadas
-- Limpeza de Vidros
-- Jardinagem
-- Faxina
-- Limpeza Pré/Pós-mudança
-
-### Terceirização
-
-- Serviços Empregos
-- Controle de Acesso
-- Portaria
-- Recepção
-
-Cada card deve conter:
-
-- imagem/fallback
-- título
-- descrição curta
-- CTA: "Conhecer serviço" → `/servicos/:slug`
-
----
-
-## 7. Seções
-
-1. Hero da página
-2. Grid por categoria
-3. CTA geral: "Solicitar orçamento"
-4. Footer
-
----
-
-## 8. CTAs
-
-- Primário: `Solicitar orçamento`
-- Secundário: `Falar com a J&S` → WhatsApp/Contato
-
----
-
-## 9. Componentes reutilizáveis
-
-- `Section`
-- `Container`
-- `ServiceCard`
-- `ServiceRequestForm`
-- `Button`
-- `SafeImage`
-
----
-
-## 10. Dados necessários
-
-```ts
-// src/content/services.ts ou src/services/mock/services.ts
-export interface Service {
-  slug: string;
-  title: string;
-  category: 'rh' | 'facilities' | 'terceirizacao';
-  shortDescription: string;
-  description: string;
-  image: string;
-  fallback: string;
-  benefits: string[];
-  services?: string[];
-  cta: string;
-  formType: 'service-request' | 'company-lead';
-}
+ Para Candidatos
+  ├── Cadastro de Currículo       (candidato)
+  ├── Busca de Vagas              (candidato)
+  ├── Alertas de Emprego          (candidato)
+  ├── Orientação Profissional     (candidato)
+  └── Atualização de Currículo    (candidato)
 ```
 
----
+### Componente
 
-## 11. Formulários
+```tsx
+// ServiceCard
+<ServiceCard service={service} index={i} />
+```
 
-`ServiceRequestForm`
+Cards em grid:
 
-- Campos: nome, empresa, e-mail, telefone, cidade, serviço de interesse, mensagem
-- O `serviço` deve ser pré-selecionado quando o usuário vier de `/servicos/:slug`
+- RH: `sm:grid-cols-2 lg:grid-cols-4`
+- Facilities: `sm:grid-cols-2 lg:grid-cols-4`
+- Candidato: `sm:grid-cols-2 lg:grid-cols-4`
 
----
+## Detalhe do serviço (`/servicos/:slug`)
 
-## 12. Responsividade
+### Estrutura
 
-- Desktop: grid 3 colunas
-- Tablet: grid 2 colunas
-- Mobile: grid 1 coluna
+```text
+Breadcrumbs: Home > Serviços > {titulo}
+```
 
----
+#### Premium Hero
 
-## 13. Dark / Light
+```text
+{titulo}
+{categoria_label}
+{description_longa}
+[WhatsApp: Solicitar Orçamento] [Fale Conosco]
+```
 
-- Cards devem manter contraste em ambos os temas
-- Imagens devem ter fallback escuro/claro adequado
+#### Stats
 
----
+```text
+Profissionais   Anos de Experiência   Clientes Atendidos   Cidades
+```
 
-## 14. Acessibilidade
+#### Sobre o serviço
 
-- headings hierárquicos
-- labels nos inputs
-- aria-label nos links de serviço
-- foco visível
-- teclado navegável
+```text
+{titulo} com Excelência
+{description}
+[benefits list]
+[WhatsApp: Solicitar Orçamento]
+```
 
----
+#### Processo (como trabalhamos)
 
-## 15. SEO
+```text
+01 Solicitação  02 Análise  03 Proposta  04 Execução
+```
 
-- title: "Serviços — J&S Empregos"
-- description: "Assessoria em RH, facilities, terceirização e mão de obra."
-- canonical: `/servicos`
+#### Diferenciais
 
----
+```text
+3 cards: Profissionais Certificados | Tecnologia Integrada | Suporte 24/7
+```
 
-## 16. Animações
+#### Galeria
 
-- entrada suave dos cards
-- hover discreto
-- respeitar `prefers-reduced-motion`
+```text
+4 imagens em grid
+```
 
----
+#### FAQ (5 perguntas)
 
-## 17. Estados
+#### CTA Final
 
-- loading: placeholder skeleton
-- empty: "Nenhum serviço encontrado"
-- error: mensagem de erro com retry
+```text
+Pronto para contratar {titulo}?
+[ServiceRequestForm service="{slug}" />
+```
 
----
+## Serviços existentes (`src/services/mock/services.ts`)
 
-## 18. Não fazer
+```text
+ID  Slug                        Title                    Category
+1   recrutamento-selecao        Recrutamento e Seleção   rh
+9   mao-de-obra-temporaria      Mão de Obra Temporária   rh
+11  mao-de-obra-efetiva         Mão de Obra Efetiva      rh
+12  assessoria-rh               Assessoria em RH         rh
+4   avaliacao-perfil            Avaliação de Perfil      rh
+4   hunting                     Executive Search         rh
+10  facilities                  Facilities               facilities
+6   jardinagem                  Jardinagem               facilities
+7   limpeza-de-fachada          Limpeza de Fachada       facilities
+8   limpeza-de-vidros           Limpeza de Vidros        facilities
+13  faxina                      Faxina                   facilities
+14  limpeza-pos-obra            Limpeza Pós-Obra         facilities
+28  limpeza-pre-mudanca         Limpeza Pré-Mudança      facilities
+29  limpeza-pos-mudanca         Limpeza Pós-Mudança      facilities
+3   terceirizacao               Terceirização            terceirizacao
+15  controle-acesso             Controle de Acesso       facilities
+16  portaria                    Recepção e Portaria      facilities
+20  cadastro-curriculo          Cadastro de Currículo    candidato
+21  busca-vagas                 Busca de Vagas           candidato
+22  alertas-emprego             Alertas de Emprego       candidato
+23  orientacao-profissional     Orientação Profissional  candidato
+24  atualizacao-curriculo       Atualização de Currículo candidato
+```
 
-- Não inventar serviços
-- Não remover categorias existentes
-- Não transformar a página em lista infinita sem organização
-- Não duplicar JSX por serviço
+### Services type
 
----
-
-## 19. Critérios de aceite
-
-- [ ] Catálogo completo por categoria
-- [ ] Todos os serviços reais listados
-- [ ] Navegação funcional para `/servicos/:slug`
-- [ ] CTA de solicitação de orçamento funcional
-- [ ] Responsivo mobile/tablet/desktop
-- [ ] Dark/light testado
-- [ ] Acessibilidade testada
-
----
-
-## 20. Checklist final
-
-- [ ] typecheck
-- [ ] build
-- [ ] sem erros de console
-- [ ] sem regressões em rotas existentes
+```ts
+interface Service {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  shortDescription: string;
+  benefits: string[];
+  image: string;
+  icon: string;
+  category: 'rh' | 'facilities' | 'terceirizacao' | 'candidato';
+}
+```
