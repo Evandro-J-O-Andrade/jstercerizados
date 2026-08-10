@@ -5,12 +5,16 @@ import {
   useState,
 } from 'react';
 import { cn } from '@/utils';
+import { IMAGE_FALLBACKS } from '@/config/imageFallbacks';
 
 interface SafeImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   fallback?: ReactNode;
   fallbackSrc?: string;
+  fallbackType?: keyof typeof IMAGE_FALLBACKS;
   skeleton?: boolean;
 }
+
+const GLOBAL_FALLBACK = IMAGE_FALLBACKS.global;
 
 const DEFAULT_FALLBACK = (
   <div className="bg-surface-alt flex h-full w-full items-center justify-center">
@@ -37,27 +41,43 @@ export function SafeImage({
   className,
   fallback,
   fallbackSrc,
+  fallbackType,
   skeleton = true,
   loading = 'lazy',
   ...props
 }: SafeImageProps) {
-  const [imgSrc, setImgSrc] = useState(src);
+  const categoryFallback =
+    fallbackType && IMAGE_FALLBACKS[fallbackType]
+      ? IMAGE_FALLBACKS[fallbackType]
+      : undefined;
+
+  const finalFallbackSrc = fallbackSrc ?? categoryFallback ?? GLOBAL_FALLBACK;
+
+  const [currentSrc, setCurrentSrc] = useState(src);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    setImgSrc(src);
+    setCurrentSrc(src);
     setIsLoading(true);
     setHasError(false);
   }, [src]);
 
   const handleError = () => {
-    if (imgSrc !== fallbackSrc && fallbackSrc) {
-      setImgSrc(fallbackSrc);
-    } else {
-      setIsLoading(false);
-      setHasError(true);
+    if (currentSrc !== finalFallbackSrc) {
+      setCurrentSrc(finalFallbackSrc);
+      setIsLoading(true);
+      return;
     }
+
+    if (finalFallbackSrc !== GLOBAL_FALLBACK) {
+      setCurrentSrc(GLOBAL_FALLBACK);
+      setIsLoading(true);
+      return;
+    }
+
+    setIsLoading(false);
+    setHasError(true);
   };
 
   return (
@@ -69,7 +89,7 @@ export function SafeImage({
         (fallback ?? DEFAULT_FALLBACK)
       ) : (
         <img
-          src={imgSrc}
+          src={currentSrc}
           alt={alt}
           loading={loading}
           onLoad={() => setIsLoading(false)}
