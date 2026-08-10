@@ -417,90 +417,96 @@ export function Footer({
 
             {/* Fale Conosco */}
             <div className="mt-8 w-full">
-              <h4 className="text-primary mb-4 text-center text-xs font-bold tracking-wider uppercase">
-                Fale Conosco
-              </h4>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {contactItems.map((item) => (
-                  <a
-                    key={item.type}
-                    href={item.href}
-                    target={item.type === 'map' ? '_blank' : undefined}
-                    rel={
-                      item.type === 'map' ? 'noopener noreferrer' : undefined
-                    }
-                    className="border-border/50 hover:border-primary/30 group flex items-center gap-3 rounded-xl border p-4 transition-all duration-300"
-                  >
-                    <div className="text-primary bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-                      <item.icon className="h-5 w-5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-foreground text-sm font-semibold">
-                        {item.label}
-                      </p>
-                      <p className="text-muted-foreground truncate text-xs">
-                        {item.value}
-                      </p>
-                      {item.subvalue && (
-                        <p className="text-muted-foreground text-xs">
-                          {item.subvalue}
-                        </p>
-                      )}
-                    </div>
-                    {item.type === 'map' && (
-                      <Globe className="text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    )}
-                  </a>
-                ))}
-              </div>
+              <div className="mx-auto max-w-4xl">
+                <h4 className="text-primary mb-4 text-center text-xs font-bold tracking-wider uppercase">
+                  Fale Conosco
+                </h4>
+                <div className="border-border/50 bg-primary/5 rounded-xl border p-5">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {contactItems.map((item) => (
+                      <a
+                        key={item.type}
+                        href={item.href}
+                        target={item.type === 'map' ? '_blank' : undefined}
+                        rel={
+                          item.type === 'map'
+                            ? 'noopener noreferrer'
+                            : undefined
+                        }
+                        className="border-border/50 hover:border-primary/30 group flex items-center gap-3 rounded-xl border p-4 transition-all duration-300"
+                      >
+                        <div className="text-primary bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+                          <item.icon className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-foreground text-sm font-semibold">
+                            {item.label}
+                          </p>
+                          <p className="text-muted-foreground truncate text-xs">
+                            {item.value}
+                          </p>
+                          {item.subvalue && (
+                            <p className="text-muted-foreground text-xs">
+                              {item.subvalue}
+                            </p>
+                          )}
+                        </div>
+                        {item.type === 'map' && (
+                          <Globe className="text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        )}
+                      </a>
+                    ))}
+                  </div>
 
-              <div className="border-border/50 bg-primary/5 mt-4 rounded-xl border p-4">
-                <h5 className="text-foreground mb-3 text-sm font-bold">
-                  Horário de Atendimento
-                </h5>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="text-primary h-4 w-4" />
-                    <span className="text-muted-foreground">
-                      Seg a Sex, 08h às 18h
-                    </span>
+                  <div className="border-border/50 bg-primary/5 mt-4 rounded-xl border p-4">
+                    <h5 className="text-foreground mb-3 text-sm font-bold">
+                      Horário de Atendimento
+                    </h5>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Clock className="text-primary h-4 w-4" />
+                        <span className="text-muted-foreground">
+                          Seg a Sex, 08h às 18h
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Clock className="text-primary h-4 w-4" />
+                        <span className="text-muted-foreground">
+                          Sáb, 08h às 12h
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Clock className="text-muted-foreground h-4 w-4" />
+                        <span className="text-muted-foreground">
+                          Domingo — Fechado
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="text-primary h-4 w-4" />
-                    <span className="text-muted-foreground">
-                      Sáb, 08h às 12h
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="text-muted-foreground h-4 w-4" />
-                    <span className="text-muted-foreground">
-                      Domingo — Fechado
-                    </span>
+
+                  <div className="mt-4 flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="flex-1"
+                      onClick={onOpenAccessibility}
+                      leftIcon={<Accessibility className="h-4 w-4" />}
+                    >
+                      Acessibilidade
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="flex-1"
+                      onClick={onOpenChat}
+                      leftIcon={<MessageCircle className="h-4 w-4" />}
+                    >
+                      Precisa de ajuda?
+                    </Button>
                   </div>
                 </div>
-              </div>
-
-              <div className="mt-4 flex items-center gap-3">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  className="flex-1"
-                  onClick={onOpenAccessibility}
-                  leftIcon={<Accessibility className="h-4 w-4" />}
-                >
-                  Acessibilidade
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  className="flex-1"
-                  onClick={onOpenChat}
-                  leftIcon={<MessageCircle className="h-4 w-4" />}
-                >
-                  Precisa de ajuda?
-                </Button>
               </div>
             </div>
 
