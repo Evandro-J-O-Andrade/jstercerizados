@@ -1,5 +1,4 @@
 ﻿import { motion } from 'framer-motion';
-import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Shield,
@@ -21,7 +20,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { HeroSplit } from '@/components/sections/HeroSplit';
-import { CinematicIntro } from '@/components/sections/CinematicIntro';
+import { CinematicShowcase } from '@/components/sections/CinematicIntro';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
@@ -31,8 +30,6 @@ import { PARTNERS_LOGOS } from '@/mock/partners';
 import { CLIENT_TESTIMONIALS } from '@/mock/clients';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { HERO_SLIDES } from '@/content/homeHero';
-
-const SHOWCASE_KEY = 'js-showcase-dismissed';
 
 const heroSlides = HERO_SLIDES.map((slide) => ({
   id: slide.id,
@@ -255,20 +252,6 @@ const facilitiesSolutions = [
 ];
 
 export default function Home() {
-  const [showcaseFinished, setShowcaseFinished] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem(SHOWCASE_KEY) === '1';
-    }
-    return false;
-  });
-
-  const handleShowcaseFinish = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem(SHOWCASE_KEY, '1');
-    }
-    setShowcaseFinished(true);
-  }, []);
-
   const destaques = mockGetVagas().slice(0, 4);
 
   return (
@@ -292,14 +275,10 @@ export default function Home() {
         ]}
         type="WebSite"
       />
-      {!showcaseFinished && <CinematicIntro onFinish={handleShowcaseFinish} />}
+      <CinematicShowcase />
 
       {/* 1. HERO */}
-      <HeroSplit
-        slides={heroSlides}
-        autoPlay={showcaseFinished}
-        interval={6000}
-      />
+      <HeroSplit slides={heroSlides} autoPlay interval={6000} />
 
       {/* 2. PARA EMPRESAS */}
       <Section className="bg-surface-alt">
