@@ -43,7 +43,7 @@ export const IMAGES = {
       fallback: '/images/hero/home/fallback.svg',
     },
     suporte: {
-      src: '/images/support/suporte.webp',
+      src: '/images/suporte/suporte.webp',
       fallback: '/images/hero/home/fallback.svg',
     },
     contato: {
@@ -89,7 +89,7 @@ export const IMAGES = {
   partners: {
     vectorEngenharia: '/images/partners/vector-engenharia.webp',
     mistral: '/images/partners/mistral.webp',
-    cadrempresaspareceiras: '/images/partners/cadrempresaspareceiras.png',
+    cadrempresaspareceiras: '/images/partners/cadastro-empresas-pareceiras.png',
   },
   empresas: {
     cadastro: '/images/empresas/cadastro-empresas.png',

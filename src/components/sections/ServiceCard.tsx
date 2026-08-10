@@ -1,11 +1,10 @@
-import { type ComponentType } from 'react';
+import type { ComponentType } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import type { Service } from '@/types/common';
 import { SERVICE_ICONS } from '@/constants/icons';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { SERVICE_IMAGES } from '@/content/assets';
 
 interface ServiceCardProps {
   service: Service;
@@ -19,42 +18,9 @@ const CATEGORY_LABELS: Record<Service['category'], string> = {
   candidato: 'Para Candidatos',
 };
 
-const SERVICE_IMAGE_FALLBACK: Record<string, string> = {
-  'recrutamento-selecao': SERVICE_IMAGES.recrutamento,
-  'mao-de-obra-temporaria': SERVICE_IMAGES.maoDeObraTemporaria,
-  'mao-de-obra-efetiva': SERVICE_IMAGES.maoDeObraEfetiva,
-  'assessoria-rh': SERVICE_IMAGES.assessoriaRh,
-  'avaliacao-perfil': SERVICE_IMAGES.assessoriaRh,
-  hunting: SERVICE_IMAGES.assessoriaRh,
-  facilities: SERVICE_IMAGES.facilities,
-  'seguranca-patrimonial': SERVICE_IMAGES.terceirizacao,
-  'limpeza-conservacao': SERVICE_IMAGES.limpeza,
-  'zeladoria-manutencao': SERVICE_IMAGES.facilities,
-  jardinagem: SERVICE_IMAGES.jardinagem,
-  'controle-acesso': SERVICE_IMAGES.terceirizacao,
-  portaria: SERVICE_IMAGES.facilities,
-  'limpeza-de-fachada': SERVICE_IMAGES.limpezaFachadaReal,
-  'limpeza-de-vidros': SERVICE_IMAGES.limpezaVidrosReal,
-  faxina: SERVICE_IMAGES.faxinaReal,
-  'limpeza-pos-obra': SERVICE_IMAGES.limpezaPosObraReal,
-  'limpeza-pre-mudanca': SERVICE_IMAGES.limpezaPreMudancaReal,
-  'limpeza-pos-mudanca': SERVICE_IMAGES.limpezaPosMudancaReal,
-  terceirizacao: SERVICE_IMAGES.terceirizacaoReal,
-};
-
 export function ServiceCard({ service, index }: ServiceCardProps) {
   const Icon: ComponentType<{ className?: string }> =
     SERVICE_ICONS[service.icon] || SERVICE_ICONS.shield;
-
-  const fallbackImage =
-    SERVICE_IMAGE_FALLBACK[service.slug] || SERVICE_IMAGES.facilitiesFallback;
-
-  const resolvedImage =
-    service.image &&
-    !service.image.includes('fallbacks') &&
-    !service.image.includes('svg')
-      ? service.image
-      : fallbackImage;
 
   return (
     <motion.div
@@ -78,7 +44,7 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
         {/* Image area */}
         <div className="relative h-52 overflow-hidden sm:h-56">
           <SafeImage
-            src={resolvedImage}
+            src={service.image}
             alt={service.title}
             loading="lazy"
             decoding="async"
