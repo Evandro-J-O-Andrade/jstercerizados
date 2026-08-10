@@ -1,4 +1,5 @@
 ﻿import { motion } from 'framer-motion';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Shield,
@@ -20,6 +21,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { HeroSplit } from '@/components/sections/HeroSplit';
+import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 import { InactivityShowcase } from '@/components/sections/InactivityShowcase';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
@@ -30,6 +32,7 @@ import { PARTNERS_LOGOS } from '@/mock/partners';
 import { CLIENT_TESTIMONIALS } from '@/mock/clients';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { HERO_SLIDES } from '@/content/homeHero';
+import { SHOWCASE_SLIDES } from '@/content/assets';
 
 const heroSlides = HERO_SLIDES.map((slide) => ({
   id: slide.id,
@@ -251,7 +254,23 @@ const facilitiesSolutions = [
   },
 ];
 
+const INTRO_KEY = 'js-home-intro-dismissed';
+
 export default function Home() {
+  const [introComplete, setIntroComplete] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem(INTRO_KEY) === '1';
+    }
+    return false;
+  });
+
+  const handleIntroFinish = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(INTRO_KEY, '1');
+    }
+    setIntroComplete(true);
+  }, []);
+
   const destaques = mockGetVagas().slice(0, 4);
 
   return (
@@ -275,10 +294,18 @@ export default function Home() {
         ]}
         type="WebSite"
       />
+
+      {!introComplete && (
+        <CinematicShowcase
+          slides={SHOWCASE_SLIDES}
+          onFinish={handleIntroFinish}
+        />
+      )}
+
       <InactivityShowcase />
 
       {/* 1. HERO */}
-      <HeroSplit slides={heroSlides} autoPlay interval={6000} />
+      <HeroSplit slides={heroSlides} autoPlay={introComplete} interval={6000} />
 
       {/* 2. PARA EMPRESAS */}
       <Section className="bg-surface-alt">
