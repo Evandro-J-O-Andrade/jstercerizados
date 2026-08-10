@@ -36,7 +36,7 @@ function App() {
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col overflow-x-hidden">
       <ScrollToTop />
       <Navbar />
       <main className="flex-1 pb-24 lg:pb-0">
