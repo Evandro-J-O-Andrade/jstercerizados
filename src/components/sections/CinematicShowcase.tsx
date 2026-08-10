@@ -3,9 +3,9 @@ import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { HERO_ASSETS } from '@/content/assets';
 
-const ENTER_MS = 2000;
-const HOLD_MS = 3000;
-const EXIT_MS = 1500;
+const ENTER_MS = 1500;
+const HOLD_MS = 2500;
+const EXIT_MS = 1000;
 const TOTAL_MS = ENTER_MS + HOLD_MS + EXIT_MS;
 
 const easing = [0.25, 0.4, 0.25, 1] as const;

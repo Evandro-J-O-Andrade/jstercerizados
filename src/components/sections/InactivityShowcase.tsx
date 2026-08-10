@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { CinematicShowcase } from './CinematicShowcase';
 
 const SHOWCASE_KEY = 'js-showcase-dismissed';
-const IDLE_THRESHOLD = 10 * 60 * 1000;
+const IDLE_THRESHOLD = 5 * 60 * 1000;
 
 const IDLE_EVENTS = [
   'pointermove',
