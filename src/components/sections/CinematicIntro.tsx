@@ -3,7 +3,6 @@ import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { HERO_ASSETS } from '@/content/assets';
 
-const INTRO_KEY = 'js-home-intro-dismissed';
 const DURATION_MS = 8000;
 const EXIT_MS = 600;
 
@@ -17,7 +16,6 @@ export function CinematicIntro({ onFinish }: { onFinish: () => void }) {
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const finish = useCallback(() => {
-    sessionStorage.setItem(INTRO_KEY, '1');
     timers.current.forEach(clearTimeout);
     timers.current = [];
     onFinish();
@@ -47,7 +45,6 @@ export function CinematicIntro({ onFinish }: { onFinish: () => void }) {
   }, [shouldReduceMotion, finish]);
 
   const handleSkip = useCallback(() => {
-    sessionStorage.setItem(INTRO_KEY, '1');
     timers.current.forEach(clearTimeout);
     setPhase('closing');
     setTimeout(finish, EXIT_MS);
