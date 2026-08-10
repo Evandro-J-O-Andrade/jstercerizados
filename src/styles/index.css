@@ -334,6 +334,7 @@
 
   .overlay-panel {
     background-color: hsl(var(--card));
+    backdrop-filter: none;
   }
 
   .high-contrast {
@@ -508,6 +509,7 @@
     border-width: 1px;
     border-color: hsl(var(--border));
     box-shadow: 0 20px 60px hsla(215, 35%, 10%, 0.2);
+    backdrop-filter: none;
   }
 
   .text-balance {
@@ -627,9 +629,10 @@
     border-width: 1px;
     border-color: hsl(var(--border));
     box-shadow: 0 20px 60px hsla(215, 35%, 10%, 0.25);
+    backdrop-filter: none;
   }
 
-  html {
+  [data-mobile] html {
     scrollbar-width: none;
   }
 
