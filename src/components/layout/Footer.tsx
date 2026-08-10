@@ -14,9 +14,12 @@ import {
   Globe,
   LogIn,
   ChevronDown,
+  Accessibility,
+  MessageCircle,
 } from 'lucide-react';
 import { COMPANY, SOCIAL_LINKS } from '@/config';
 import { IMAGES } from '@/config/images';
+import { Button } from '@/components/ui/Button';
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -216,7 +219,13 @@ function MobileAccordion({
   );
 }
 
-export function Footer() {
+export function Footer({
+  onOpenAccessibility,
+  onOpenChat,
+}: {
+  onOpenAccessibility?: () => void;
+  onOpenChat?: () => void;
+}) {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -404,71 +413,94 @@ export function Footer() {
                   })}
                 </div>
               </div>
+            </div>
 
-              {/* Fale Conosco */}
-              <div className="hidden lg:block">
-                <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
-                  Fale Conosco
-                </h4>
-                <div className="space-y-4">
-                  {contactItems.map((item) => (
-                    <a
-                      key={item.type}
-                      href={item.href}
-                      target={item.type === 'map' ? '_blank' : undefined}
-                      rel={
-                        item.type === 'map' ? 'noopener noreferrer' : undefined
-                      }
-                      className="border-border/50 hover:border-primary/30 group bg-primary/5 flex items-center gap-3 rounded-xl border p-3 transition-all duration-300"
-                    >
-                      <div className="text-primary bg-primary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
-                        <item.icon className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-foreground text-sm font-semibold">
-                          {item.label}
+            {/* Fale Conosco */}
+            <div className="border-border/50 bg-primary/5 mt-8 rounded-xl border p-5">
+              <h4 className="text-primary mb-4 text-xs font-bold tracking-wider uppercase">
+                Fale Conosco
+              </h4>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {contactItems.map((item) => (
+                  <a
+                    key={item.type}
+                    href={item.href}
+                    target={item.type === 'map' ? '_blank' : undefined}
+                    rel={
+                      item.type === 'map' ? 'noopener noreferrer' : undefined
+                    }
+                    className="border-border/50 hover:border-primary/30 group flex items-center gap-3 rounded-xl border p-3 transition-all duration-300"
+                  >
+                    <div className="text-primary bg-primary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                      <item.icon className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-foreground text-sm font-semibold">
+                        {item.label}
+                      </p>
+                      <p className="text-muted-foreground truncate text-xs">
+                        {item.value}
+                      </p>
+                      {item.subvalue && (
+                        <p className="text-muted-foreground text-xs">
+                          {item.subvalue}
                         </p>
-                        <p className="text-muted-foreground truncate text-xs">
-                          {item.value}
-                        </p>
-                        {item.subvalue && (
-                          <p className="text-muted-foreground text-xs">
-                            {item.subvalue}
-                          </p>
-                        )}
-                      </div>
-                      {item.type === 'map' && (
-                        <Globe className="text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
                       )}
-                    </a>
-                  ))}
-                </div>
+                    </div>
+                    {item.type === 'map' && (
+                      <Globe className="text-primary h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    )}
+                  </a>
+                ))}
+              </div>
 
-                <div className="border-border/50 bg-primary/5 mt-4 rounded-xl border p-4">
-                  <h5 className="text-foreground mb-3 text-sm font-bold">
-                    Horário de Atendimento
-                  </h5>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="text-primary h-4 w-4" />
-                      <span className="text-muted-foreground">
-                        Seg a Sex, 08h às 18h
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="text-primary h-4 w-4" />
-                      <span className="text-muted-foreground">
-                        Sáb, 08h às 12h
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="text-muted-foreground h-4 w-4" />
-                      <span className="text-muted-foreground">
-                        Domingo — Fechado
-                      </span>
-                    </div>
+              <div className="border-border/50 bg-primary/5 mt-4 rounded-xl border p-4">
+                <h5 className="text-foreground mb-3 text-sm font-bold">
+                  Horário de Atendimento
+                </h5>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="text-primary h-4 w-4" />
+                    <span className="text-muted-foreground">
+                      Seg a Sex, 08h às 18h
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="text-primary h-4 w-4" />
+                    <span className="text-muted-foreground">
+                      Sáb, 08h às 12h
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="text-muted-foreground h-4 w-4" />
+                    <span className="text-muted-foreground">
+                      Domingo — Fechado
+                    </span>
                   </div>
                 </div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1"
+                  onClick={onOpenAccessibility}
+                  leftIcon={<Accessibility className="h-4 w-4" />}
+                >
+                  Acessibilidade
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1"
+                  onClick={onOpenChat}
+                  leftIcon={<MessageCircle className="h-4 w-4" />}
+                >
+                  Precisa de ajuda?
+                </Button>
               </div>
             </div>
 
