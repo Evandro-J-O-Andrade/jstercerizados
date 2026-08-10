@@ -3,9 +3,9 @@ import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { HERO_ASSETS } from '@/content/assets';
 
-const ENTER_MS = 1500;
-const HOLD_MS = 2500;
-const EXIT_MS = 1000;
+const ENTER_MS = 2500;
+const HOLD_MS = 5000;
+const EXIT_MS = 2500;
 const TOTAL_MS = ENTER_MS + HOLD_MS + EXIT_MS;
 
 const easing = [0.25, 0.4, 0.25, 1] as const;
@@ -68,9 +68,9 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         black: { opacity: 0, scale: 1.2 },
         entering: {
           opacity: 1,
-          scale: [1.2, 0.85, 1.05, 1],
-          y: ['10%', '0%', '-2%', '0%'],
-          rotate: [2, -1, 0.5, 0],
+          scale: [1.1, 0.9, 1.02, 1],
+          y: ['5%', '0%', '-1%', '0%'],
+          rotate: [1, -0.5, 0.25, 0],
           transition: {
             duration: ENTER_MS / 1000,
             ease: easing,
@@ -79,19 +79,19 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         },
         holding: {
           opacity: 1,
-          scale: [1, 1.01, 1, 1.02, 1],
-          y: [0, 1, 0, -1, 0],
+          scale: [1, 1.005, 1, 1.005, 1],
+          y: [0, 0.5, 0, -0.5, 0],
           transition: {
             duration: HOLD_MS / 1000,
             ease: 'easeInOut',
-            times: [0, 0.3, 0.5, 0.7, 1],
+            times: [0, 0.2, 0.4, 0.6, 1],
             repeat: Infinity,
             repeatType: 'mirror',
           },
         },
         closing: {
           opacity: 0,
-          scale: 1.1,
+          scale: 1.05,
           transition: {
             duration: EXIT_MS / 1000,
             ease: easing,
@@ -125,13 +125,12 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
       <motion.div
         variants={imageVariants}
-        className="cinematic-hero-image absolute inset-0 h-full w-full"
+        className="cinematic-hero-image absolute inset-0 flex items-center justify-center"
       >
         <SafeImage
           src={HERO_ASSETS.cardheros}
-          fallbackSrc={HERO_ASSETS.cardheros2}
           alt="J&amp;S Empregos LTDA"
-          className="h-full w-full object-cover"
+          className="max-h-[80vh] max-w-[90vw] object-contain"
           loading="eager"
           decoding="async"
           skeleton={false}
@@ -150,7 +149,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       <button
         type="button"
         onClick={handleSkip}
-        className="absolute right-6 bottom-6 z-10 rounded-full border border-white/30 bg-black/20 px-4 py-2 text-xs font-medium text-white/60 backdrop-blur transition-colors hover:text-white"
+        className="absolute right-6 bottom-6 z-10 rounded-full border border-white/30 bg-black/20 px-4 py-2 text-xs font-medium text-white/80 backdrop-blur transition-colors hover:text-white"
       >
         Pular
       </button>
