@@ -15,6 +15,7 @@ import {
   Building2,
   Users,
   ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui/Button';
@@ -69,6 +70,7 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLButtonElement | null>(null);
@@ -406,27 +408,29 @@ export function Navbar() {
                   ))}
                 </div>
 
-                <div className="space-y-1">
-                  <p className="text-primary mb-2 text-xs font-bold tracking-wider uppercase">
-                    Empresas
-                  </p>
-                  <MobileMenuGroup
-                    title=""
-                    links={companiesSubmenu}
-                    onClose={() => setIsOpen(false)}
-                  />
-                </div>
+                <MobileAccordion
+                  title="Empresas"
+                  links={companiesSubmenu}
+                  isOpen={openAccordion === 'empresas'}
+                  onToggle={() =>
+                    setOpenAccordion(
+                      openAccordion === 'empresas' ? null : 'empresas',
+                    )
+                  }
+                  onClose={() => setIsOpen(false)}
+                />
 
-                <div className="space-y-1">
-                  <p className="text-primary mb-2 text-xs font-bold tracking-wider uppercase">
-                    Candidatos
-                  </p>
-                  <MobileMenuGroup
-                    title=""
-                    links={candidatesSubmenu}
-                    onClose={() => setIsOpen(false)}
-                  />
-                </div>
+                <MobileAccordion
+                  title="Candidatos"
+                  links={candidatesSubmenu}
+                  isOpen={openAccordion === 'candidatos'}
+                  onToggle={() =>
+                    setOpenAccordion(
+                      openAccordion === 'candidatos' ? null : 'candidatos',
+                    )
+                  }
+                  onClose={() => setIsOpen(false)}
+                />
 
                 <div className="space-y-1">
                   <p className="text-primary mb-2 text-xs font-bold tracking-wider uppercase">
@@ -537,40 +541,76 @@ export function Navbar() {
   );
 }
 
-function MobileMenuGroup({
+function MobileAccordion({
   title,
   links,
+  isOpen,
+  onToggle,
   onClose,
 }: {
   title: string;
   links: Array<{ label: string; href: string }>;
+  isOpen: boolean;
+  onToggle: () => void;
   onClose: () => void;
 }) {
   return (
     <motion.div
       variants={itemVariants}
-      className="border-border/60 rounded-lg border p-2"
+      className="border-border/50 rounded-xl border p-1"
     >
-      <p className="text-muted-foreground mb-2 px-2 text-xs font-semibold tracking-wider uppercase">
-        {title}
-      </p>
-      <div className="flex flex-col gap-1">
-        {links.map((link) => (
-          <Link
-            key={link.href}
-            to={link.href}
-            onClick={onClose}
-            className={cn(
-              'rounded-md px-4 py-2.5 text-sm transition-colors duration-200',
-              location.pathname === link.href
-                ? 'bg-primary/10 text-primary'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-            )}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="text-foreground hover:text-primary flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors duration-200"
+        aria-expanded={isOpen}
+        aria-controls={`accordion-${title}`}
+      >
+        <span className="text-primary text-xs font-bold tracking-wider uppercase">
+          {title}
+        </span>
+        <motion.span
+          animate={{ rotate: isOpen ? 90 : 0 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+        >
+          {isOpen ? (
+            <X className="text-muted-foreground h-4 w-4" />
+          ) : (
+            <ChevronRight className="text-muted-foreground h-4 w-4" />
+          )}
+        </motion.span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            id={`accordion-${title}`}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
+            className="overflow-hidden"
           >
-            {link.label}
-          </Link>
-        ))}
-      </div>
+            <div className="flex flex-col gap-1 px-2 pt-1 pb-2">
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  onClick={onClose}
+                  className={cn(
+                    'rounded-md px-4 py-2.5 text-sm transition-colors duration-200',
+                    location.pathname === link.href
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
