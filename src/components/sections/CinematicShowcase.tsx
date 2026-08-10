@@ -129,6 +129,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       >
         <SafeImage
           src={HERO_ASSETS.cardheros}
+          fallbackSrc={HERO_ASSETS.cardheros2}
           alt="J&amp;S Empregos LTDA"
           className="h-full w-full object-cover"
           loading="eager"
