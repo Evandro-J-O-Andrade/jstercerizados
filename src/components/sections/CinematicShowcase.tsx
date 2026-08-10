@@ -14,7 +14,7 @@ interface CinematicShowcaseProps {
   onFinish: () => void;
 }
 
-const SLIDE_DURATION = 2000;
+const SLIDE_DURATION = 1500;
 const TRANSITION_MS = 600;
 const EXIT_MS = 500;
 
