@@ -4,7 +4,7 @@ import { SafeImage } from '@/components/ui/SafeImage';
 import { HERO_ASSETS } from '@/content/assets';
 
 const ENTER_MS = 2500;
-const HOLD_MS = 5000;
+const HOLD_MS = 10000;
 const EXIT_MS = 2500;
 const TOTAL_MS = ENTER_MS + HOLD_MS + EXIT_MS;
 
@@ -130,7 +130,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         <SafeImage
           src={HERO_ASSETS.cardheros}
           alt="J&amp;S Empregos LTDA"
-          className="h-full w-full object-cover sm:max-h-[80vh] sm:max-w-[90vw]"
+          className="h-full w-full object-contain"
           loading="eager"
           decoding="async"
           skeleton={false}
@@ -139,17 +139,43 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
       {!shouldReduceMotion && phase === 'holding' && (
         <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"
+          className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, ease: easing }}
         />
       )}
 
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={
+          phase === 'holding' ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }
+        }
+        transition={{ duration: 0.8, ease: easing }}
+        className="absolute top-8 right-0 left-0 z-10 text-center"
+      >
+        <h1 className="text-4xl font-bold text-white drop-shadow-lg sm:text-5xl">
+          J&amp;S Empregos
+        </h1>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={
+          phase === 'holding' ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+        }
+        transition={{ duration: 0.8, ease: easing }}
+        className="absolute right-0 bottom-20 left-0 z-10 text-center"
+      >
+        <p className="text-xl text-white/90 drop-shadow-md sm:text-2xl">
+          Gestão em Recursos Humanos
+        </p>
+      </motion.div>
+
       <button
         type="button"
         onClick={handleSkip}
-        className="absolute right-6 bottom-6 z-10 rounded-full border border-white/30 bg-black/20 px-4 py-2 text-xs font-medium text-white/80 backdrop-blur transition-colors hover:text-white"
+        className="absolute right-6 bottom-6 z-20 rounded-full border border-white/30 bg-black/20 px-4 py-2 text-xs font-medium text-white/80 backdrop-blur transition-colors hover:text-white"
       >
         Pular
       </button>
