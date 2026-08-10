@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { HeroSplit } from '@/components/sections/HeroSplit';
 import { CinematicIntro } from '@/components/sections/CinematicIntro';
-import { CinematicShowcase } from '@/components/sections/InactivityShowcase';
+import { InactivityShowcase } from '@/components/sections/InactivityShowcase';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
@@ -295,7 +295,7 @@ export default function Home() {
       />
       {!introComplete && <CinematicIntro onFinish={handleIntroFinish} />}
 
-      <CinematicShowcase />
+      <InactivityShowcase />
 
       {/* 1. HERO */}
       <HeroSplit slides={heroSlides} autoPlay={introComplete} interval={6000} />
