@@ -13,7 +13,7 @@ export const IMAGES = {
     watermark: '/images/brand/watermark-logo.svg',
     grid: '/images/backgrounds/hero-grid.svg',
     lines: '/images/backgrounds/hero-lines.svg',
-    cardheros: '/images/hero/cardheros.png',
+    cardheros: '/images/hero/card-hero.png',
     home: {
       slides: [
         '/images/hero/home/hero-01.svg',
@@ -83,8 +83,8 @@ export const IMAGES = {
     limpezaPreMudancaReal: '/images/services/limpeza-pre-mudanca.webp',
     limpezaPosMudancaReal: '/images/services/limpeza-pos-mudanca.webp',
     limpezaPosObraReal: '/images/services/limpeza-pos-obra.webp',
-    trabalhoTemporizadoReal: '/images/services/trabalho-tercerizado.png',
-    trabalhoFreeLanceReal: '/images/services/trabalho-free-lance.png',
+    trabalhoTemporizadoReal: '/images/services/trabalho-terceirizado.png',
+    trabalhoFreeLanceReal: '/images/services/trabalho-freelance.png',
   },
   partners: {
     vectorEngenharia: '/images/partners/vector-engenharia.webp',
@@ -95,7 +95,7 @@ export const IMAGES = {
     cadastro: '/images/empresas/cadastro-empresas.png',
   },
   suporte: {
-    hero: '/images/support/suporte.webp',
+    hero: '/images/suporte/suporte.webp',
   },
   trabalheConosco: {
     hero: '/images/trabalhe-conosco/trabalhe-conosco.webp',

@@ -26,8 +26,8 @@ export const SERVICE_IMAGES = {
   limpezaPreMudancaReal: '/images/services/limpeza-pre-mudanca.webp',
   limpezaPosMudancaReal: '/images/services/limpeza-pos-mudanca.webp',
   limpezaPosObraReal: '/images/services/limpeza-pos-obra.webp',
-  trabalhoTemporizadoReal: '/images/services/trabalho-tercerizado.png',
-  trabalhoFreeLanceReal: '/images/services/trabalho-free-lance.png',
+  trabalhoTemporizadoReal: '/images/services/trabalho-terceirizado.png',
+  trabalhoFreeLanceReal: '/images/services/trabalho-freelance.png',
   avaliacaoPerfil: '/images/services/avaliacao-perfil.svg',
   hunting: '/images/services/hunting.svg',
   segurancaPatrimonial: '/images/services/controle-acesso.jfif',
@@ -45,8 +45,8 @@ export const FALLBACK_IMAGES = {
 } as const;
 
 export const HERO_ASSETS = {
-  cardheros: '/images/hero/cardheros.png',
-  bannerjs: '/images/hero/bannerjs.png',
+  cardheros: '/images/hero/card-hero.png',
+  bannerjs: '/images/hero/banner-js.png',
   homeSlides: [
     '/images/hero/home/hero-01.svg',
     '/images/hero/home/hero-02.svg',
@@ -60,5 +60,5 @@ export const HERO_ASSETS = {
 export const PARTNER_ASSETS = {
   vectorEngenharia: '/images/partners/vector-engenharia.webp',
   mistral: '/images/partners/mistral.webp',
-  cadrempresaspareceiras: '/images/partners/cadrempresaspareceiras.png',
+  cadrempresaspareceiras: '/images/partners/cadastro-empresas-pareceiras.png',
 } as const;
