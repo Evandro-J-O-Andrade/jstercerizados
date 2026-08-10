@@ -1,4 +1,4 @@
-import { useState } from 'react';
+Ôªøimport { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Send, Briefcase, Upload } from 'lucide-react';
@@ -17,30 +17,30 @@ import { cn } from '@/utils';
 
 const positionOptions = [
   { value: 'administrativo', label: 'Administrativo' },
-  { value: 'logistica', label: 'LogÌstica e ArmazÈm' },
-  { value: 'producao', label: 'ProduÁ„o' },
-  { value: 'ti', label: 'Tecnologia da InformaÁ„o' },
-  { value: 'comercio', label: 'ComÈrcio e Varejo' },
-  { value: 'servicos', label: 'ServiÁos Gerais' },
-  { value: 'limpeza', label: 'Limpeza e ConservaÁ„o' },
-  { value: 'seguranca', label: 'SeguranÁa e Portaria' },
-  { value: 'zeladoria', label: 'Zeladoria e ManutenÁ„o' },
-  { value: 'outro', label: 'Outra ·rea de atuaÁ„o' },
+  { value: 'logistica', label: 'Log√≠stica e Armaz√©m' },
+  { value: 'producao', label: 'Produ√ß√£o' },
+  { value: 'ti', label: 'Tecnologia da Informa√ß√£o' },
+  { value: 'comercio', label: 'Com√©rcio e Varejo' },
+  { value: 'servicos', label: 'Servi√ßos Gerais' },
+  { value: 'limpeza', label: 'Limpeza e Conserva√ß√£o' },
+  { value: 'seguranca', label: 'Seguran√ßa e Portaria' },
+  { value: 'zeladoria', label: 'Zeladoria e Manuten√ß√£o' },
+  { value: 'outro', label: 'Outra √°rea de atua√ß√£o' },
 ];
 
 const candidateSchema = z.object({
-  name: z.string().min(2, 'Nome È obrigatÛrio'),
+  name: z.string().min(2, 'Nome √© obrigat√≥rio'),
   cpf: z.string().optional(),
   rg: z.string().optional(),
   phone: z.string().min(10, 'Telefone deve ter pelo menos 10 caracteres'),
-  email: z.string().email('E-mail inv·lido'),
-  city: z.string().min(2, 'Cidade È obrigatÛria'),
-  position: z.string().min(1, 'Selecione uma ·rea de atuaÁ„o'),
-  experience: z.string().min(2, 'ExperiÍncia È obrigatÛria'),
+  email: z.string().email('E-mail inv√°lido'),
+  city: z.string().min(2, 'Cidade √© obrigat√≥ria'),
+  position: z.string().min(1, 'Selecione uma √°rea de atua√ß√£o'),
+  experience: z.string().min(2, 'Experi√™ncia √© obrigat√≥ria'),
   courses: z.string().optional(),
   availability: z.string().optional(),
   schedule: z.string().optional(),
-  resume: z.string().min(2, 'CurrÌculo È obrigatÛrio'),
+  resume: z.string().min(2, 'Curr√≠culo √© obrigat√≥rio'),
   resumeFile: z
     .instanceof(FileList)
     .optional()
@@ -55,7 +55,7 @@ const candidateSchema = z.object({
         ];
         return validTypes.includes(file.type);
       },
-      { message: 'Apenas PDF, DOC ou DOCX s„o aceitos' },
+      { message: 'Apenas PDF, DOC ou DOCX s√£o aceitos' },
     )
     .refine(
       (files) => {
@@ -63,7 +63,7 @@ const candidateSchema = z.object({
         const file = files[0];
         return file.size <= 10 * 1024 * 1024;
       },
-      { message: 'O arquivo deve ter no m·ximo 10 MB' },
+      { message: 'O arquivo deve ter no m√°ximo 10 MB' },
     ),
 });
 
@@ -123,11 +123,11 @@ export default function TrabalheConosco() {
             <CheckCircle2 className="text-success h-10 w-10" />
           </div>
           <h2 className="text-foreground mb-4 text-2xl font-bold">
-            CurrÌculo Enviado!
+            Curr√≠culo Enviado!
           </h2>
           <p className="text-muted-foreground mb-8">
-            Seu currÌculo foi recebido. A equipe de RH analisar· seu perfil e
-            entrar· em contato caso haja interesse.
+            Seu curr√≠culo foi recebido. A equipe de RH analisar√° seu perfil e
+            entrar√° em contato caso haja interesse.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <a
@@ -142,7 +142,7 @@ export default function TrabalheConosco() {
             </a>
             <Link to="/">
               <Button variant="outline" size="lg">
-                Voltar ao InÌcio
+                Voltar ao In√≠cio
               </Button>
             </Link>
           </div>
@@ -154,11 +154,11 @@ export default function TrabalheConosco() {
   return (
     <div>
       <SEO
-        title={`Trabalhe Conosco ó ${COMPANY.name}`}
-        description={`Cadastre seu currÌculo na ${COMPANY.name} e candidate-se ‡s nossas oportunidades de trabalho.`}
+        title={`Trabalhe Conosco ‚Äî ${COMPANY.name}`}
+        description={`Cadastre seu curr√≠culo na ${COMPANY.name} e candidate-se √†s nossas oportunidades de trabalho.`}
         keywords={[
           'trabalhe conosco',
-          'currÌculo',
+          'curr√≠culo',
           'candidatura',
           'emprego',
           'trabalho',
@@ -175,7 +175,7 @@ export default function TrabalheConosco() {
               Banco de Talentos
             </h1>
             <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
-              Cadastre seu currÌculo, escolha a vaga de interesse e faÁa parte
+              Cadastre seu curr√≠culo, escolha a vaga de interesse e fa√ßa parte
               do nosso banco de talentos para futuras oportunidades.
             </p>
           </div>
@@ -192,8 +192,8 @@ export default function TrabalheConosco() {
                   Banco de Talentos
                 </div>
                 <p className="text-muted-foreground">
-                  Selecione sua ·rea de atuaÁ„o e preencha o formul·rio com seus
-                  dados e anexe seu currÌculo.
+                  Selecione sua √°rea de atua√ß√£o e preencha o formul√°rio com seus
+                  dados e anexe seu curr√≠culo.
                 </p>
 
                 <div className="mt-6 space-y-3">
@@ -232,7 +232,7 @@ export default function TrabalheConosco() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                   onSubmit={handleSubmit(onSubmit)}
-                  className="bg-card border-border shadow-premium rounded-2xl border p-8"
+                  className="bg-card shadow-premium rounded-2xl p-8"
                 >
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div className="md:col-span-2">
@@ -263,7 +263,7 @@ export default function TrabalheConosco() {
                     <div className="md:col-span-2">
                       <Input
                         label="Cursos"
-                        placeholder="Ex: AdministraÁ„o, Inform·tica..."
+                        placeholder="Ex: Administra√ß√£o, Inform√°tica..."
                         error={errors.courses?.message}
                         {...register('courses')}
                       />
@@ -271,7 +271,7 @@ export default function TrabalheConosco() {
                     <div>
                       <Input
                         label="Disponibilidade"
-                        placeholder="Ex: Integral, Manh„, Tarde..."
+                        placeholder="Ex: Integral, Manh√£, Tarde..."
                         error={errors.availability?.message}
                         {...register('availability')}
                       />
@@ -279,7 +279,7 @@ export default function TrabalheConosco() {
                     <div>
                       <Input
                         label="Escala Preferida"
-                        placeholder="Ex: 2∫ turno, Noturno..."
+                        placeholder="Ex: 2¬∫ turno, Noturno..."
                         error={errors.schedule?.message}
                         {...register('schedule')}
                       />
@@ -305,23 +305,23 @@ export default function TrabalheConosco() {
                     <div>
                       <Input
                         label="Cidade *"
-                        placeholder="S„o Paulo"
+                        placeholder="S√£o Paulo"
                         error={errors.city?.message}
                         {...register('city')}
                       />
                     </div>
                     <div>
                       <Input
-                        label="ExperiÍncia *"
-                        placeholder="Ex: 2 anos na ·rea..."
+                        label="Experi√™ncia *"
+                        placeholder="Ex: 2 anos na √°rea..."
                         error={errors.experience?.message}
                         {...register('experience')}
                       />
                     </div>
                     <div className="md:col-span-2">
                       <Textarea
-                        label="CurrÌculo *"
-                        placeholder="Descreva sua experiÍncia profissional..."
+                        label="Curr√≠culo *"
+                        placeholder="Descreva sua experi√™ncia profissional..."
                         rows={4}
                         error={errors.resume?.message}
                         {...register('resume')}
@@ -329,7 +329,7 @@ export default function TrabalheConosco() {
                     </div>
                     <div className="md:col-span-2">
                       <label className="text-muted-foreground mb-1 block text-sm font-medium">
-                        Anexar CurrÌculo (PDF, DOC, DOCX ó m·x. 10 MB)
+                        Anexar Curr√≠culo (PDF, DOC, DOCX ‚Äî m√°x. 10 MB)
                       </label>
                       <div
                         className={cn(
@@ -346,7 +346,7 @@ export default function TrabalheConosco() {
                             setSelectedFile(file);
                           }}
                           className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                          aria-label="Selecionar arquivo de currÌculo"
+                          aria-label="Selecionar arquivo de curr√≠culo"
                         />
                         <div className="pointer-events-none text-center">
                           <Upload className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
@@ -356,7 +356,7 @@ export default function TrabalheConosco() {
                               : 'Arraste o arquivo ou clique para selecionar'}
                           </p>
                           <p className="text-muted-foreground/60 mt-1 text-xs">
-                            PDF, DOC ou DOCX ó atÈ 10 MB
+                            PDF, DOC ou DOCX ‚Äî at√© 10 MB
                           </p>
                         </div>
                       </div>
@@ -379,7 +379,7 @@ export default function TrabalheConosco() {
                       loading={isSubmitting}
                       leftIcon={<Send className="h-5 w-5" />}
                     >
-                      Enviar CurrÌculo
+                      Enviar Curr√≠culo
                     </Button>
                   </div>
                 </motion.form>
@@ -389,11 +389,11 @@ export default function TrabalheConosco() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-card border-border shadow-premium rounded-2xl border p-8 text-center"
+                  className="bg-card shadow-premium rounded-2xl p-8 text-center"
                 >
                   <Briefcase className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                   <p className="text-muted-foreground">
-                    Selecione uma vaga acima para preencher o formul·rio.
+                    Selecione uma vaga acima para preencher o formul√°rio.
                   </p>
                 </motion.div>
               )}

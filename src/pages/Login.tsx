@@ -1,4 +1,4 @@
-import { useState } from 'react';
+Ôªøimport { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, LogIn, Eye, EyeOff, Briefcase, Building2 } from 'lucide-react';
@@ -15,7 +15,7 @@ import { IMAGES } from '@/config/images';
 import { cn } from '@/utils';
 
 const loginSchema = z.object({
-  email: z.string().email('E-mail inv·lido'),
+  email: z.string().email('E-mail inv√°lido'),
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
 });
 
@@ -44,7 +44,7 @@ export default function Login() {
     if (success) {
       navigate('/dashboard');
     } else {
-      setError('E-mail ou senha inv·lidos');
+      setError('E-mail ou senha inv√°lidos');
     }
   };
 
@@ -61,7 +61,7 @@ export default function Login() {
             <Shield className="text-success h-10 w-10" />
           </div>
           <h2 className="text-foreground mb-4 text-2xl font-bold">
-            VocÍ j· est· logado!
+            Voc√™ j√° est√° logado!
           </h2>
           <p className="text-muted-foreground mb-8">
             Redirecionando para o painel administrativo...
@@ -79,18 +79,18 @@ export default function Login() {
   const profileConfig = {
     admin: {
       title: 'Painel Administrativo',
-      subtitle: 'Acesse sua conta para gerenciar cadastros e relatÛrios.',
+      subtitle: 'Acesse sua conta para gerenciar cadastros e relat√≥rios.',
       icon: <Shield className="h-8 w-8" />,
       placeholderEmail: 'admin@exemplo.com',
     },
     candidato: {
-      title: '¡rea do Candidato',
-      subtitle: 'Acesse seu perfil para gerenciar candidaturas e currÌculos.',
+      title: '√Årea do Candidato',
+      subtitle: 'Acesse seu perfil para gerenciar candidaturas e curr√≠culos.',
       icon: <Briefcase className="h-8 w-8" />,
       placeholderEmail: 'candidato@exemplo.com',
     },
     empresa: {
-      title: '¡rea da Empresa',
+      title: '√Årea da Empresa',
       subtitle: 'Publique vagas e acesse seu banco de talentos.',
       icon: <Building2 className="h-8 w-8" />,
       placeholderEmail: 'empresa@exemplo.com',
@@ -100,8 +100,8 @@ export default function Login() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <SEO
-        title={`Login ó ${COMPANY.name}`}
-        description={`Acesse sua conta na ${COMPANY.name}. ¡rea do candidato, empresa ou administrador.`}
+        title={`Login ‚Äî ${COMPANY.name}`}
+        description={`Acesse sua conta na ${COMPANY.name}. √Årea do candidato, empresa ou administrador.`}
         keywords={[
           'login',
           'acesso',
@@ -199,7 +199,7 @@ export default function Login() {
                   <Input
                     label="Senha"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="ïïïïïïïï"
+                    placeholder="‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢"
                     error={errors.password?.message}
                     {...register('password')}
                   />
@@ -255,7 +255,7 @@ export default function Login() {
                     to="/cadastro/candidato"
                     className="text-muted-foreground hover:text-primary text-sm transition-colors"
                   >
-                    Ainda n„o tem conta? Cadastre seu currÌculo
+                    Ainda n√£o tem conta? Cadastre seu curr√≠culo
                   </Link>
                 </div>
               )}
@@ -265,7 +265,7 @@ export default function Login() {
                     to="/cadastro/empresa"
                     className="text-muted-foreground hover:text-primary text-sm transition-colors"
                   >
-                    Ainda n„o tem conta? Publique sua primeira vaga
+                    Ainda n√£o tem conta? Publique sua primeira vaga
                   </Link>
                 </div>
               )}
@@ -274,7 +274,7 @@ export default function Login() {
 
           <div className="mt-6 text-center">
             <p className="text-muted-foreground/80 text-xs">
-              ¡rea restrita ó Acesso autorizado apenas.
+              √Årea restrita ‚Äî Acesso autorizado apenas.
             </p>
           </div>
         </div>

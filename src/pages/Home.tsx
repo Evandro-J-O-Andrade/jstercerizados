@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+ï»¿import { motion } from 'framer-motion';
 import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -44,13 +44,13 @@ const heroSlides = [
     ),
     title: (
       <>
-        Mais eficiência em Recursos Humanos,
+        <span className="text-primary">Mais eficiÃªncia</span> em RH.
         <br />
-        mais agilidade para sua empresa.
+        Mais resultados para sua empresa.
       </>
     ),
     subtitle:
-      'Simplifique processos, reduza o tempo gasto com tarefas operacionais e foque no que realmente importa: o crescimento do seu negócio.',
+      'Mais eficiÃªncia em Recursos Humanos, mais agilidade para sua empresa. Conectamos empresas aos profissionais certos e ajudamos candidatos a conquistar novas oportunidades.',
     cta: (
       <>
         <Link to="/empresas">
@@ -59,7 +59,7 @@ const heroSlides = [
             size="xl"
             className="shadow-glow-lg h-14 rounded-[18px] px-8 py-4 text-base"
           >
-            Contratar Funcionários
+            Contratar FuncionÃ¡rios
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </Link>
@@ -73,59 +73,6 @@ const heroSlides = [
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </Link>
-        <Link to="/servicos">
-          <Button
-            variant="ghost"
-            size="xl"
-            className="h-14 rounded-[18px] px-8 py-4 text-base"
-          >
-            Conheça nossos Serviços
-          </Button>
-        </Link>
-      </>
-    ),
-  },
-  {
-    id: 'conectando-talentos',
-    image: '/images/services/assessoria-rh.png',
-    alt: 'Conectando talentos às melhores oportunidades',
-    eyebrow: (
-      <span className="flex items-center gap-2">
-        <Users className="h-4 w-4" />
-        Para Candidatos
-      </span>
-    ),
-    title: (
-      <>
-        Conectando talentos às
-        <br />
-        melhores oportunidades.
-      </>
-    ),
-    subtitle:
-      'Encontramos o profissional certo para sua empresa e ajudamos candidatos a conquistar novas oportunidades de trabalho.',
-    cta: (
-      <>
-        <Link to="/trabalhe-conosco">
-          <Button
-            variant="secondary"
-            size="xl"
-            className="shadow-glow-lg h-14 rounded-[18px] px-8 py-4 text-base"
-          >
-            Cadastrar Currículo
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </Link>
-        <Link to="/vagas">
-          <Button
-            variant="outline"
-            size="xl"
-            className="border-border/30 text-foreground hover:bg-muted h-14 rounded-[18px] px-8 py-4 text-base backdrop-blur"
-          >
-            Ver Vagas
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </Link>
       </>
     ),
   },
@@ -134,7 +81,7 @@ const heroSlides = [
 const steps = [
   {
     step: '01',
-    title: 'Cadastre seu currículo',
+    title: 'Cadastre seu currÃ­culo',
     description: 'Preencha seus dados em poucos minutos.',
   },
   {
@@ -149,14 +96,14 @@ const steps = [
   },
   {
     step: '04',
-    title: 'Contratação',
-    description: 'Você inicia sua nova oportunidade.',
+    title: 'ContrataÃ§Ã£o',
+    description: 'VocÃª inicia sua nova oportunidade.',
   },
 ];
 
 const blogPosts = [
   {
-    title: 'Como fazer um currículo vencedor',
+    title: 'Como fazer um currÃ­culo vencedor',
     href: '/blog',
     category: 'Carreira',
     date: '2026-07-15',
@@ -168,7 +115,7 @@ const blogPosts = [
     date: '2026-07-10',
   },
   {
-    title: 'Tendências do mercado de trabalho',
+    title: 'TendÃªncias do mercado de trabalho',
     href: '/blog',
     category: 'Mercado',
     date: '2026-07-05',
@@ -185,12 +132,12 @@ const differentials = [
   {
     title: 'Banco de talentos atualizado',
     description:
-      'Base de currículos qualificados pronta para atender sua vaga com agilidade.',
+      'Base de currÃ­culos qualificados pronta para atender sua vaga com agilidade.',
     icon: Briefcase,
   },
   {
-    title: 'Atendimento rápido',
-    description: 'Respostas ágeis para candidatos e empresas, sem burocracia.',
+    title: 'Atendimento rÃ¡pido',
+    description: 'Respostas Ã¡geis para candidatos e empresas, sem burocracia.',
     icon: Zap,
   },
   {
@@ -200,61 +147,61 @@ const differentials = [
   },
   {
     title: 'Equipe especializada em RH',
-    description: 'Profissionais com experiência em recrutamento e seleção.',
+    description: 'Profissionais com experiÃªncia em recrutamento e seleÃ§Ã£o.',
     icon: Users,
   },
   {
     title: 'Processos seletivos eficientes',
     description:
-      'Metodologia rápida e humanizada para reduzir o tempo de contratação.',
+      'Metodologia rÃ¡pida e humanizada para reduzir o tempo de contrataÃ§Ã£o.',
     icon: CheckCircle2,
   },
   {
     title: 'Atendimento humanizado',
-    description: 'Acompanhamento próximo para candidatos e empresas.',
+    description: 'Acompanhamento prÃ³ximo para candidatos e empresas.',
     icon: Heart,
   },
 ];
 
 const empresaSolutions = [
   {
-    title: 'Recrutamento e Seleção',
+    title: 'Recrutamento e SeleÃ§Ã£o',
     description:
       'Encontramos o profissional certo para sua empresa com agilidade e assertividade.',
     href: '/servicos/recrutamento-selecao',
     icon: Search,
   },
   {
-    title: 'Mão de Obra Temporária',
+    title: 'MÃ£o de Obra TemporÃ¡ria',
     description:
-      'Profissionais qualificados para demandas sazonais ou projetos específicos.',
+      'Profissionais qualificados para demandas sazonais ou projetos especÃ­ficos.',
     href: '/servicos/mao-de-obra-temporaria',
     icon: Users,
   },
   {
-    title: 'Terceirização de Serviços',
+    title: 'TerceirizaÃ§Ã£o de ServiÃ§os',
     description:
-      'Reduza custos e aumente a eficiência com serviços terceirizados especializados.',
+      'Reduza custos e aumente a eficiÃªncia com serviÃ§os terceirizados especializados.',
     href: '/servicos/terceirizacao',
     icon: Building2,
   },
   {
     title: 'Hunting de Executivos',
     description:
-      'Identificação e atração de lideranças para posições estratégicas.',
+      'IdentificaÃ§Ã£o e atraÃ§Ã£o de lideranÃ§as para posiÃ§Ãµes estratÃ©gicas.',
     href: '/servicos/hunting',
     icon: Target,
   },
   {
-    title: 'Avaliação de Perfil',
+    title: 'AvaliaÃ§Ã£o de Perfil',
     description:
-      'Análise comportamental e técnica para garantir a melhor escolha.',
+      'AnÃ¡lise comportamental e tÃ©cnica para garantir a melhor escolha.',
     href: '/servicos/avaliacao-perfil',
     icon: FileText,
   },
   {
     title: 'Banco de Talentos',
-    description: 'Acesso a uma base atualizada de candidatos pré-qualificados.',
+    description: 'Acesso a uma base atualizada de candidatos prÃ©-qualificados.',
     href: '/servicos/banco-de-talentos',
     icon: Briefcase,
   },
@@ -262,7 +209,7 @@ const empresaSolutions = [
 
 const candidateBenefits = [
   {
-    title: 'Cadastro de Currículo',
+    title: 'Cadastro de CurrÃ­culo',
     description:
       'Cadastre-se gratuitamente e seja visto pelas melhores empresas.',
     icon: FileText,
@@ -274,18 +221,18 @@ const candidateBenefits = [
   },
   {
     title: 'Alertas de Emprego',
-    description: 'Receba notificações de novas vagas compatíveis com sua área.',
+    description: 'Receba notificaÃ§Ãµes de novas vagas compatÃ­veis com sua Ã¡rea.',
     icon: Bell,
   },
   {
-    title: 'Orientação Profissional',
+    title: 'OrientaÃ§Ã£o Profissional',
     description: 'Conte com suporte para melhorar sua empregabilidade.',
     icon: MessageSquare,
   },
   {
-    title: 'Atualização de Currículo',
+    title: 'AtualizaÃ§Ã£o de CurrÃ­culo',
     description:
-      'Mantenha seu currículo sempre atualizado para novas oportunidades.',
+      'Mantenha seu currÃ­culo sempre atualizado para novas oportunidades.',
     icon: FileText,
   },
 ];
@@ -310,15 +257,15 @@ export default function Home() {
   return (
     <div>
       <SEO
-        title={`${COMPANY.name} — Assessoria em RH, Recrutamento, Mão de Obra e Facilities`}
+        title={`${COMPANY.name} â€” Assessoria em RH, Recrutamento, MÃ£o de Obra e Facilities`}
         description={COMPANY.description}
         keywords={[
           'recrutamento',
-          'seleção de pessoas',
+          'seleÃ§Ã£o de pessoas',
           'banco de talentos',
-          'mão de obra temporária',
-          'mão de obra efetiva',
-          'terceirização',
+          'mÃ£o de obra temporÃ¡ria',
+          'mÃ£o de obra efetiva',
+          'terceirizaÃ§Ã£o',
           'facilities',
           'limpeza',
           'jardinagem',
@@ -350,13 +297,13 @@ export default function Home() {
               variants={revealUp}
               className="text-foreground text-3xl font-bold sm:text-4xl"
             >
-              Soluções de RH para sua empresa
+              SoluÃ§Ãµes de RH para sua empresa
             </motion.h2>
             <motion.p
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Conectando talentos às melhores oportunidades. Encontramos o
+              Conectando talentos Ã s melhores oportunidades. Encontramos o
               profissional certo para sua empresa e ajudamos candidatos a
               conquistar novas oportunidades de trabalho.
             </motion.p>
@@ -402,7 +349,7 @@ export default function Home() {
           >
             <Link to="/empresas">
               <Button variant="secondary" size="lg">
-                Solicitar Orçamento
+                Solicitar OrÃ§amento
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -430,7 +377,7 @@ export default function Home() {
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Cadastre seu currículo, candidate-se às vagas e acompanhe seus
+              Cadastre seu currÃ­culo, candidate-se Ã s vagas e acompanhe seus
               processos seletivos.
             </motion.p>
           </motion.div>
@@ -475,7 +422,7 @@ export default function Home() {
             </Link>
             <Link to="/trabalhe-conosco">
               <Button variant="outline" size="lg">
-                Cadastrar Currículo
+                Cadastrar CurrÃ­culo
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -504,7 +451,7 @@ export default function Home() {
                 variants={revealUp}
                 className="text-muted-foreground mt-4 max-w-2xl text-lg"
               >
-                Confira as oportunidades disponíveis no momento.
+                Confira as oportunidades disponÃ­veis no momento.
               </motion.p>
             </motion.div>
             <Link to="/vagas">
@@ -553,7 +500,7 @@ export default function Home() {
                     {vaga.modalidade === 'PRESENCIAL'
                       ? 'Presencial'
                       : vaga.modalidade === 'HIBRIDO'
-                        ? 'Híbrido'
+                        ? 'HÃ­brido'
                         : 'Remoto'}
                   </span>
                 </div>
@@ -591,7 +538,7 @@ export default function Home() {
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Cadastre seu currículo, candidate-se às vagas e conquiste sua nova
+              Cadastre seu currÃ­culo, candidate-se Ã s vagas e conquiste sua nova
               oportunidade.
             </motion.p>
           </motion.div>
@@ -696,7 +643,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 7. PARA EMPRESAS — seção comercial forte */}
+      {/* 7. PARA EMPRESAS â€” seÃ§Ã£o comercial forte */}
       <Section>
         <Container>
           <motion.div
@@ -732,16 +679,16 @@ export default function Home() {
 
             <div className="relative">
               <h3 className="text-foreground text-2xl font-bold sm:text-3xl">
-                Solicite um orçamento sem compromisso
+                Solicite um orÃ§amento sem compromisso
               </h3>
               <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
                 Nossa equipe comercial entende sua necessidade e envia uma
-                proposta personalizada em até 24 horas.
+                proposta personalizada em atÃ© 24 horas.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <Link to="/clientes">
                   <Button variant="secondary" size="lg">
-                    Solicitar Orçamento
+                    Solicitar OrÃ§amento
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
@@ -784,7 +731,7 @@ export default function Home() {
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Últimos artigos sobre currículo, entrevistas, mercado de trabalho
+              Ãšltimos artigos sobre currÃ­culo, entrevistas, mercado de trabalho
               e carreira.
             </motion.p>
           </motion.div>
@@ -857,16 +804,16 @@ export default function Home() {
               className="relative"
             >
               <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
-                Pronto para dar o próximo passo?
+                Pronto para dar o prÃ³ximo passo?
               </h2>
               <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
-                Encontre sua próxima oportunidade ou encontre os profissionais
+                Encontre sua prÃ³xima oportunidade ou encontre os profissionais
                 certos para sua empresa.
               </p>
               <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Link to="/vagas">
                   <Button variant="secondary" size="lg" className="w-full">
-                    Está procurando uma nova oportunidade?
+                    EstÃ¡ procurando uma nova oportunidade?
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>

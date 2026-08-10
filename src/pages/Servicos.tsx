@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+ï»¿import { motion } from 'framer-motion';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { Section } from '@/components/sections/Section';
 import { ServiceCard } from '@/components/sections/ServiceCard';
@@ -28,14 +28,14 @@ export default function Servicos() {
   return (
     <div className="pt-16 lg:pt-20">
       <SEO
-        title={`Serviços — ${COMPANY.name}`}
-        description="Assessoria em RH, recrutamento, mão de obra temporária e efetiva, terceirização, facilities, limpeza, jardinagem e portaria."
+        title={`ServiÃ§os â€” ${COMPANY.name}`}
+        description="Assessoria em RH, recrutamento, mÃ£o de obra temporÃ¡ria e efetiva, terceirizaÃ§Ã£o, facilities, limpeza, jardinagem e portaria."
         keywords={[
-          'serviços',
+          'serviÃ§os',
           'assessoria em RH',
           'recrutamento',
-          'mão de obra temporária',
-          'terceirização',
+          'mÃ£o de obra temporÃ¡ria',
+          'terceirizaÃ§Ã£o',
           'facilities',
           'limpeza',
           'jardinagem',
@@ -56,18 +56,18 @@ export default function Servicos() {
               variants={revealUp}
               className="text-foreground text-4xl font-bold sm:text-5xl"
             >
-              Nossos Serviços
+              Nossos ServiÃ§os
             </motion.h1>
             <motion.p
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Soluções completas em Recursos Humanos e Facilities para apoiar o
+              SoluÃ§Ãµes completas em Recursos Humanos e Facilities para apoiar o
               crescimento da sua empresa.
             </motion.p>
           </motion.div>
 
-          {/* Soluções em RH */}
+          {/* SoluÃ§Ãµes em RH */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -78,13 +78,13 @@ export default function Servicos() {
               variants={revealUp}
               className="text-foreground text-2xl font-bold"
             >
-              Soluções em RH
+              SoluÃ§Ãµes em RH
             </motion.h2>
             <motion.p
               variants={revealUp}
               className="text-muted-foreground mt-2 mb-6 max-w-2xl text-sm"
             >
-              Soluções em recrutamento, seleção e gestão de pessoas para
+              SoluÃ§Ãµes em recrutamento, seleÃ§Ã£o e gestÃ£o de pessoas para
               encontrar o profissional certo para sua equipe.
             </motion.p>
 
@@ -101,7 +101,7 @@ export default function Servicos() {
             </motion.div>
           </motion.div>
 
-          {/* Soluções Operacionais (Facilities) */}
+          {/* SoluÃ§Ãµes Operacionais (Facilities) */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -113,14 +113,14 @@ export default function Servicos() {
               variants={revealUp}
               className="text-foreground text-2xl font-bold"
             >
-              Soluções Operacionais (Facilities)
+              SoluÃ§Ãµes Operacionais (Facilities)
             </motion.h2>
             <motion.p
               variants={revealUp}
               className="text-muted-foreground mt-2 mb-6 max-w-2xl text-sm"
             >
-              Como solução complementar, oferecemos terceirização de serviços
-              operacionais: limpeza, segurança, portaria e zeladoria.
+              Como soluÃ§Ã£o complementar, oferecemos terceirizaÃ§Ã£o de serviÃ§os
+              operacionais: limpeza, seguranÃ§a, portaria e zeladoria.
             </motion.p>
 
             <motion.div
