@@ -37,6 +37,8 @@ const SERVICE_IMAGE_FALLBACK: Record<string, string> = {
   'limpeza-de-vidros': SERVICE_IMAGES.limpezaVidrosReal,
   faxina: SERVICE_IMAGES.faxinaReal,
   'limpeza-pos-obra': SERVICE_IMAGES.limpezaPosObraReal,
+  'limpeza-pre-mudanca': SERVICE_IMAGES.limpezaPreMudancaReal,
+  'limpeza-pos-mudanca': SERVICE_IMAGES.limpezaPosMudancaReal,
   terceirizacao: SERVICE_IMAGES.terceirizacaoReal,
 };
 

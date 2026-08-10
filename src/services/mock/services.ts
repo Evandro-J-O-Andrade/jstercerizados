@@ -212,7 +212,7 @@ export const mockServices: Service[] = [
     category: 'facilities',
   },
   {
-    id: '9',
+    id: '13',
     slug: 'faxina',
     title: 'Faxina',
     shortDescription:
@@ -232,7 +232,7 @@ export const mockServices: Service[] = [
     category: 'facilities',
   },
   {
-    id: '10',
+    id: '14',
     slug: 'limpeza-pos-obra',
     title: 'Limpeza Pós-Obra',
     shortDescription:
@@ -254,7 +254,51 @@ export const mockServices: Service[] = [
     category: 'facilities',
   },
   {
-    id: '11',
+    id: '28',
+    slug: 'limpeza-pre-mudanca',
+    title: 'Limpeza Pré-Mudança',
+    shortDescription:
+      'Preparação completa do imóvel antes da mudança para proteger superfícies e itens.',
+    description:
+      'Serviço de limpeza pré-mudança para preparar imóveis antes da mudança, removendo poeira, sujeira e protegendo áreas e itens. Garanta um ambiente limpo e seguro durante todo o processo de mudança.',
+    benefits: [
+      'Limpeza profunda completa',
+      'Proteção de superfícies',
+      'Remoção de poeira e detritos',
+      'Equipe especializada',
+      'Agendamento flexível',
+      'Garantia de satisfação',
+    ],
+    image:
+      SERVICE_IMAGES.limpezaPreMudancaReal ??
+      '/images/services/limpeza-pre-mudanca.svg',
+    icon: 'sparkles',
+    category: 'facilities',
+  },
+  {
+    id: '29',
+    slug: 'limpeza-pos-mudanca',
+    title: 'Limpeza Pós-Mudança',
+    shortDescription:
+      'Limpeza profunda e organização do imóvel após a mudança para deixar tudo impecável.',
+    description:
+      'Serviço de limpeza pós-mudança para deixar seu imóvel impecável após a mudança. Removemos poeira de alagamingação, organizamos e higienizamos todos os ambientes.',
+    benefits: [
+      'Limpeza profunda pós-mudança',
+      'Remoção de poeira de alagamingação',
+      'Higienização completa',
+      'Organização de ambientes',
+      'Equipe especializada',
+      'Acabamento impecável',
+    ],
+    image:
+      SERVICE_IMAGES.limpezaPosMudancaReal ??
+      '/images/services/limpeza-pos-mudanca.svg',
+    icon: 'sparkles',
+    category: 'facilities',
+  },
+  {
+    id: '18',
     slug: 'terceirizacao',
     title: 'Terceirização',
     shortDescription:
@@ -275,7 +319,7 @@ export const mockServices: Service[] = [
     category: 'terceirizacao',
   },
   {
-    id: '6',
+    id: '17',
     slug: 'limpeza-conservacao',
     title: 'Limpeza e Conservação',
     shortDescription:
@@ -296,7 +340,7 @@ export const mockServices: Service[] = [
     category: 'facilities',
   },
   {
-    id: '8',
+    id: '19',
     slug: 'zeladoria-manutencao',
     title: 'Zeladoria e Manutenção',
     shortDescription:

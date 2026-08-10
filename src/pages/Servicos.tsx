@@ -8,21 +8,9 @@ import { mockServices } from '@/services/mock/services';
 import { COMPANY } from '@/config';
 
 export default function Servicos() {
-  const rhServices = mockServices.filter((s) => {
-    const rhSlugs = [
-      'recrutamento-selecao',
-      'mao-de-obra-temporaria',
-      'mao-de-obra-efetiva',
-      'terceirizacao',
-      'assessoria-rh',
-      'avaliacao-perfil',
-      'hunting',
-    ];
-    return rhSlugs.includes(s.slug);
-  });
-
+  const rhServices = mockServices.filter((s) => s.category === 'rh');
   const facilitiesServices = mockServices.filter(
-    (s) => !rhServices.some((rh) => rh.id === s.id),
+    (s) => s.category === 'facilities' || s.category === 'terceirizacao',
   );
 
   return (
