@@ -66,12 +66,10 @@ const footerLinks = {
   empresas: [
     { label: 'Empresas', href: '/empresas' },
     { label: 'Divulgar Vaga', href: '/clientes' },
-    { label: 'Solicitar Contratação', href: '/clientes' },
   ],
   atendimento: [
     { label: 'Suporte', href: '/suporte' },
     { label: 'FAQ', href: '/faq' },
-    { label: 'Ajuda', href: '/suporte' },
     { label: 'Entrar', href: '/login', icon: LogIn },
   ],
 };
