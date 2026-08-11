@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { HERO_ASSETS } from '@/content/assets';
 
-const ENTER_MS = 2500;
+const ENTER_MS = 4000;
 const HOLD_MS = 10000;
 const EXIT_MS = 2500;
 
@@ -126,7 +126,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         entering: {
           opacity: 0,
           y: -20,
-          transition: { duration: 0.8, ease: easing, delay: 0.3 },
+          transition: { duration: 0.8, ease: easing, delay: 1.5 },
         },
         holding: {
           opacity: 1,
@@ -150,7 +150,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         entering: {
           opacity: 0,
           x: '-100vw',
-          transition: { duration: 0.8, ease: easing, delay: 0.3 },
+          transition: { duration: 0.8, ease: easing, delay: 1.5 },
         },
         holding: {
           opacity: 1,
@@ -174,7 +174,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         entering: {
           opacity: 0,
           y: 20,
-          transition: { duration: 0.8, ease: easing, delay: 0.5 },
+          transition: { duration: 0.8, ease: easing, delay: 2.5 },
         },
         holding: {
           opacity: 1,
@@ -198,7 +198,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         entering: {
           opacity: 0,
           x: '100vw',
-          transition: { duration: 0.8, ease: easing, delay: 0.5 },
+          transition: { duration: 0.8, ease: easing, delay: 2.5 },
         },
         holding: {
           opacity: 1,
