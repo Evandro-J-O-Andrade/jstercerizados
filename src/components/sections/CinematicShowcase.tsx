@@ -15,7 +15,12 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
   );
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(max-width: 767px)').matches;
+    }
+    return false;
+  });
 
   const finish = useCallback(() => {
     timers.current.forEach(clearTimeout);
@@ -38,10 +43,11 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
   }, []);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const mq = window.matchMedia('(max-width: 767px)');
+    const checkMobile = () => setIsMobile(mq.matches);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    mq.addEventListener('change', checkMobile);
+    return () => mq.removeEventListener('change', checkMobile);
   }, []);
 
   useEffect(() => {
