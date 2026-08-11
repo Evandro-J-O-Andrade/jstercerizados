@@ -154,14 +154,14 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-between overflow-hidden bg-black px-4 py-6 md:justify-center md:px-0 md:py-0"
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-black"
       initial="entering"
       animate={currentVariant}
       exit={{ opacity: 0, transition: { duration: 0.6, ease: easing } }}
     >
       <motion.div
         variants={textVariants}
-        className="relative z-10 mb-3 text-center md:absolute md:top-8 md:right-0 md:left-0 md:mb-0"
+        className="absolute top-8 right-0 left-0 z-10 text-center md:top-8"
       >
         <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
           J&amp;S Empregos
@@ -170,7 +170,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
       <motion.div
         variants={imageVariants}
-        className="relative flex w-full items-center justify-center md:absolute md:inset-0 md:h-full"
+        className="absolute inset-0 flex items-center justify-center"
       >
         {!imageLoaded && (
           <div className="bg-surface-alt absolute inset-0 flex items-center justify-center">
@@ -183,14 +183,14 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           loading="eager"
           decoding="sync"
           onLoad={() => setImageLoaded(true)}
-          className="max-h-[65vh] w-full object-contain md:absolute md:inset-0 md:h-full md:max-h-none"
+          className="h-full w-full object-contain"
           style={{ objectPosition: 'center 30%' }}
         />
       </motion.div>
 
       <motion.div
         variants={subtitleVariants}
-        className="absolute right-20 bottom-16 left-4 z-10 text-center md:relative md:right-0 md:bottom-auto md:left-0 md:mt-3"
+        className="absolute right-20 bottom-16 left-4 z-10 text-center md:right-0 md:bottom-24 md:left-0"
       >
         <p className="text-lg text-white/90 drop-shadow-md sm:text-xl md:text-2xl">
           Gestão em Recursos Humanos
