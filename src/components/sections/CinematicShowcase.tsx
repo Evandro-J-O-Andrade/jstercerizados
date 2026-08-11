@@ -15,6 +15,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
   );
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const finish = useCallback(() => {
     timers.current.forEach(clearTimeout);
@@ -34,6 +35,13 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     return () => {
       document.body.style.overflow = original;
     };
+  }, []);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
@@ -108,23 +116,41 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         holding: { opacity: 1, x: 0 },
         closing: { opacity: 0, x: 0, transition: { duration: 0.1 } },
       }
-    : {
-        entering: {
-          opacity: 0,
-          x: -90,
-          transition: { duration: 0.8, ease: easing, delay: 0.3 },
-        },
-        holding: {
-          opacity: 1,
-          x: 0,
-          transition: { duration: 0.8, ease: easing },
-        },
-        closing: {
-          opacity: 0,
-          x: -20,
-          transition: { duration: 0.6, ease: easing },
-        },
-      };
+    : isMobile
+      ? {
+          entering: {
+            opacity: 0,
+            y: -20,
+            transition: { duration: 0.8, ease: easing, delay: 0.3 },
+          },
+          holding: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.8, ease: easing },
+          },
+          closing: {
+            opacity: 0,
+            y: -10,
+            transition: { duration: 0.6, ease: easing },
+          },
+        }
+      : {
+          entering: {
+            opacity: 0,
+            x: '-100vw',
+            transition: { duration: 0.8, ease: easing, delay: 0.3 },
+          },
+          holding: {
+            opacity: 1,
+            x: 0,
+            transition: { duration: 0.8, ease: easing },
+          },
+          closing: {
+            opacity: 0,
+            x: '-20px',
+            transition: { duration: 0.6, ease: easing },
+          },
+        };
 
   const subtitleVariants: Variants = shouldReduceMotion
     ? {
@@ -132,23 +158,41 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         holding: { opacity: 1, x: 0 },
         closing: { opacity: 0, x: 0, transition: { duration: 0.1 } },
       }
-    : {
-        entering: {
-          opacity: 0,
-          x: 90,
-          transition: { duration: 0.8, ease: easing, delay: 0.5 },
-        },
-        holding: {
-          opacity: 1,
-          x: 0,
-          transition: { duration: 0.8, ease: easing },
-        },
-        closing: {
-          opacity: 0,
-          x: 20,
-          transition: { duration: 0.6, ease: easing },
-        },
-      };
+    : isMobile
+      ? {
+          entering: {
+            opacity: 0,
+            y: 20,
+            transition: { duration: 0.8, ease: easing, delay: 0.5 },
+          },
+          holding: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.8, ease: easing },
+          },
+          closing: {
+            opacity: 0,
+            y: 10,
+            transition: { duration: 0.6, ease: easing },
+          },
+        }
+      : {
+          entering: {
+            opacity: 0,
+            x: '100vw',
+            transition: { duration: 0.8, ease: easing, delay: 0.5 },
+          },
+          holding: {
+            opacity: 1,
+            x: 0,
+            transition: { duration: 0.8, ease: easing },
+          },
+          closing: {
+            opacity: 0,
+            x: '20px',
+            transition: { duration: 0.6, ease: easing },
+          },
+        };
 
   const currentVariant = shouldReduceMotion ? phase : phase;
 
