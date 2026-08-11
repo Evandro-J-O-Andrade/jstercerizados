@@ -8,6 +8,7 @@ import { ChatWidget } from '@/components/ui/ChatWidget';
 import { HumanChatWidget } from '@/components/ui/HumanChatWidget';
 import { PageLoader } from '@/components/ui/PageLoader';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
+import { IntroProvider, useIntro } from '@/contexts/IntroContext';
 
 const Home = lazy(() => import('@/pages/Home'));
 const Sobre = lazy(() => import('@/pages/Sobre'));
@@ -37,9 +38,40 @@ function App() {
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
 
   return (
+    <IntroProvider>
+      <AppContent
+        isAiChatOpen={isAiChatOpen}
+        setIsAiChatOpen={setIsAiChatOpen}
+        isHumanChatOpen={isHumanChatOpen}
+        setIsHumanChatOpen={setIsHumanChatOpen}
+        isAccessibilityOpen={isAccessibilityOpen}
+        setIsAccessibilityOpen={setIsAccessibilityOpen}
+      />
+    </IntroProvider>
+  );
+}
+
+function AppContent({
+  isAiChatOpen,
+  setIsAiChatOpen,
+  isHumanChatOpen,
+  setIsHumanChatOpen,
+  isAccessibilityOpen,
+  setIsAccessibilityOpen,
+}: {
+  isAiChatOpen: boolean;
+  setIsAiChatOpen: (value: boolean) => void;
+  isHumanChatOpen: boolean;
+  setIsHumanChatOpen: (value: boolean) => void;
+  isAccessibilityOpen: boolean;
+  setIsAccessibilityOpen: (value: boolean) => void;
+}) {
+  const { introComplete } = useIntro();
+
+  return (
     <div className="flex min-h-screen flex-col overflow-x-hidden">
       <ScrollToTop />
-      <Navbar />
+      {introComplete && <Navbar />}
       <main className="flex-1 pb-24 lg:pb-0">
         <Suspense fallback={<PageLoader />}>
           <Routes>
@@ -70,15 +102,17 @@ function App() {
           </Routes>
         </Suspense>
       </main>
-      <div className="pb-[127px] lg:pb-0">
-        <Footer
-          onOpenAccessibility={() => setIsAccessibilityOpen(true)}
-          onOpenChat={() => {
-            setIsAccessibilityOpen(false);
-            setIsAiChatOpen(true);
-          }}
-        />
-      </div>
+      {introComplete && (
+        <div className="pb-[127px] lg:pb-0">
+          <Footer
+            onOpenAccessibility={() => setIsAccessibilityOpen(true)}
+            onOpenChat={() => {
+              setIsAccessibilityOpen(false);
+              setIsAiChatOpen(true);
+            }}
+          />
+        </div>
+      )}
       <BottomNavigation />
       <AccessibilityWidget
         open={isAccessibilityOpen}

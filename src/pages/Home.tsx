@@ -1,5 +1,6 @@
 ﻿import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
+import { useIntro } from '@/contexts/IntroContext';
 import { Link } from 'react-router-dom';
 import {
   Shield,
@@ -254,11 +255,11 @@ const facilitiesSolutions = [
 ];
 
 export default function Home() {
-  const [introComplete, setIntroComplete] = useState(false);
+  const { introComplete, setIntroComplete } = useIntro();
 
   const handleIntroFinish = useCallback(() => {
     setIntroComplete(true);
-  }, []);
+  }, [setIntroComplete]);
 
   const destaques = mockGetVagas().slice(0, 4);
 
