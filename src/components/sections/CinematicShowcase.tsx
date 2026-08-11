@@ -110,89 +110,101 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         },
       };
 
-  const textVariants: Variants = shouldReduceMotion
+  const textVariantsMobile: Variants = shouldReduceMotion
     ? {
-        entering: { opacity: 1, y: 0, x: 0, transition: { duration: 0.1 } },
-        holding: { opacity: 1, y: 0, x: 0 },
-        closing: { opacity: 0, y: 0, x: 0, transition: { duration: 0.1 } },
+        entering: { opacity: 1, y: 0, transition: { duration: 0.1 } },
+        holding: { opacity: 1, y: 0 },
+        closing: { opacity: 0, y: 0, transition: { duration: 0.1 } },
       }
-    : isMobile
-      ? {
-          entering: {
-            opacity: 0,
-            y: -20,
-            transition: { duration: 0.8, ease: easing, delay: 0.3 },
-          },
-          holding: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.8, ease: easing },
-          },
-          closing: {
-            opacity: 0,
-            y: -10,
-            transition: { duration: 0.6, ease: easing },
-          },
-        }
-      : {
-          entering: {
-            opacity: 0,
-            x: '-100vw',
-            transition: { duration: 0.8, ease: easing, delay: 0.3 },
-          },
-          holding: {
-            opacity: 1,
-            x: 0,
-            transition: { duration: 0.8, ease: easing },
-          },
-          closing: {
-            opacity: 0,
-            x: '-20px',
-            transition: { duration: 0.6, ease: easing },
-          },
-        };
+    : {
+        entering: {
+          opacity: 0,
+          y: -20,
+          transition: { duration: 0.8, ease: easing, delay: 0.3 },
+        },
+        holding: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: easing },
+        },
+        closing: {
+          opacity: 0,
+          y: -10,
+          transition: { duration: 0.6, ease: easing },
+        },
+      };
 
-  const subtitleVariants: Variants = shouldReduceMotion
+  const textVariantsDesktop: Variants = shouldReduceMotion
     ? {
-        entering: { opacity: 1, y: 0, x: 0, transition: { duration: 0.1 } },
-        holding: { opacity: 1, y: 0, x: 0 },
-        closing: { opacity: 0, y: 0, x: 0, transition: { duration: 0.1 } },
+        entering: { opacity: 1, x: 0, transition: { duration: 0.1 } },
+        holding: { opacity: 1, x: 0 },
+        closing: { opacity: 0, x: 0, transition: { duration: 0.1 } },
       }
-    : isMobile
-      ? {
-          entering: {
-            opacity: 0,
-            y: 20,
-            transition: { duration: 0.8, ease: easing, delay: 0.5 },
-          },
-          holding: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.8, ease: easing },
-          },
-          closing: {
-            opacity: 0,
-            y: 10,
-            transition: { duration: 0.6, ease: easing },
-          },
-        }
-      : {
-          entering: {
-            opacity: 0,
-            x: '100vw',
-            transition: { duration: 0.8, ease: easing, delay: 0.5 },
-          },
-          holding: {
-            opacity: 1,
-            x: 0,
-            transition: { duration: 0.8, ease: easing },
-          },
-          closing: {
-            opacity: 0,
-            x: '20px',
-            transition: { duration: 0.6, ease: easing },
-          },
-        };
+    : {
+        entering: {
+          opacity: 0,
+          x: '-100vw',
+          transition: { duration: 0.8, ease: easing, delay: 0.3 },
+        },
+        holding: {
+          opacity: 1,
+          x: 0,
+          transition: { duration: 0.8, ease: easing },
+        },
+        closing: {
+          opacity: 0,
+          x: '-20px',
+          transition: { duration: 0.6, ease: easing },
+        },
+      };
+
+  const subtitleVariantsMobile: Variants = shouldReduceMotion
+    ? {
+        entering: { opacity: 1, y: 0, transition: { duration: 0.1 } },
+        holding: { opacity: 1, y: 0 },
+        closing: { opacity: 0, y: 0, transition: { duration: 0.1 } },
+      }
+    : {
+        entering: {
+          opacity: 0,
+          y: 20,
+          transition: { duration: 0.8, ease: easing, delay: 0.5 },
+        },
+        holding: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: easing },
+        },
+        closing: {
+          opacity: 0,
+          y: 10,
+          transition: { duration: 0.6, ease: easing },
+        },
+      };
+
+  const subtitleVariantsDesktop: Variants = shouldReduceMotion
+    ? {
+        entering: { opacity: 1, x: 0, transition: { duration: 0.1 } },
+        holding: { opacity: 1, x: 0 },
+        closing: { opacity: 0, x: 0, transition: { duration: 0.1 } },
+      }
+    : {
+        entering: {
+          opacity: 0,
+          x: '100vw',
+          transition: { duration: 0.8, ease: easing, delay: 0.5 },
+        },
+        holding: {
+          opacity: 1,
+          x: 0,
+          transition: { duration: 0.8, ease: easing },
+        },
+        closing: {
+          opacity: 0,
+          x: '20px',
+          transition: { duration: 0.6, ease: easing },
+        },
+      };
 
   const currentVariant = shouldReduceMotion ? phase : phase;
 
@@ -204,7 +216,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       exit={{ opacity: 0, transition: { duration: 0.6, ease: easing } }}
     >
       <motion.div
-        variants={textVariants}
+        variants={isMobile ? textVariantsMobile : textVariantsDesktop}
         className="absolute top-[12px] right-0 left-0 z-10 text-center md:top-8"
       >
         <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
@@ -233,7 +245,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       </motion.div>
 
       <motion.div
-        variants={subtitleVariants}
+        variants={isMobile ? subtitleVariantsMobile : subtitleVariantsDesktop}
         className="absolute right-20 bottom-16 left-4 z-10 text-center md:right-0 md:bottom-24 md:left-0"
       >
         <p className="text-lg text-white/90 drop-shadow-md sm:text-xl md:text-2xl">
