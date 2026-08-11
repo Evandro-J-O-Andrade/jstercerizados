@@ -388,7 +388,7 @@ export function ChatWidget({
       <motion.button
         onClick={() => setOpen(!open)}
         className={cn(
-          'shadow-glow-lg bg-primary text-primary-foreground flex items-center gap-2 rounded-full px-4 py-3 transition-colors',
+          'shadow-glow-lg bg-primary text-primary-foreground relative z-[60] flex items-center gap-2 rounded-full px-4 py-3 transition-colors',
           open ? 'rounded-full' : 'rounded-full',
         )}
         whileHover={{ scale: 1.05 }}

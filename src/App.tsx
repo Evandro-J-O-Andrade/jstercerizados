@@ -70,7 +70,13 @@ function App() {
         </Suspense>
       </main>
       <div className="pb-[127px] lg:pb-0">
-        <Footer />
+        <Footer
+          onOpenAccessibility={() => setIsAccessibilityOpen(true)}
+          onOpenChat={() => {
+            setIsAccessibilityOpen(false);
+            setIsChatOpen(true);
+          }}
+        />
       </div>
       <BottomNavigation />
       <AccessibilityWidget
