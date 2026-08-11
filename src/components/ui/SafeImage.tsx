@@ -96,10 +96,8 @@ export function SafeImage({
     }
 
     const timeout = setTimeout(() => {
-      if (mounted && !didLoadRef.current) {
-        handleLoad();
-      }
-    }, 3000);
+      setIsLoading(false);
+    }, 2000);
 
     return () => {
       mounted = false;
