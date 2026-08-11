@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { CinematicShowcase } from './CinematicShowcase';
 
-const SHOWCASE_KEY = 'js-showcase-dismissed';
 const IDLE_THRESHOLD = 5 * 60 * 1000;
 
 const IDLE_EVENTS = [
@@ -18,7 +17,6 @@ export function InactivityShowcase() {
   const hasTriggered = useRef(false);
 
   const handleFinish = useCallback(() => {
-    sessionStorage.setItem(SHOWCASE_KEY, '1');
     setTriggered(false);
   }, []);
 
@@ -27,7 +25,6 @@ export function InactivityShowcase() {
       if (idleTimer.current) clearTimeout(idleTimer.current);
       if (triggered || hasTriggered.current) return;
       idleTimer.current = setTimeout(() => {
-        if (sessionStorage.getItem(SHOWCASE_KEY)) return;
         hasTriggered.current = true;
         setTriggered(true);
       }, IDLE_THRESHOLD);

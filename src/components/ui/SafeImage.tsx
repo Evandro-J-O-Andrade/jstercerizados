@@ -12,6 +12,7 @@ interface SafeImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   fallbackSrc?: string;
   fallbackType?: keyof typeof IMAGE_FALLBACKS;
   skeleton?: boolean;
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 }
 
 const GLOBAL_FALLBACK = IMAGE_FALLBACKS.global;
@@ -44,6 +45,7 @@ export function SafeImage({
   fallbackType,
   skeleton = true,
   loading = 'lazy',
+  objectFit = 'cover',
   ...props
 }: SafeImageProps) {
   const categoryFallback =
@@ -117,9 +119,10 @@ export function SafeImage({
           onLoad={() => setIsLoading(false)}
           onError={handleError}
           className={cn(
-            'h-full w-full object-cover transition-opacity duration-300',
+            'h-full w-full transition-opacity duration-300',
             isLoading ? 'opacity-0' : 'opacity-100',
           )}
+          style={{ objectFit }}
           {...props}
         />
       )}

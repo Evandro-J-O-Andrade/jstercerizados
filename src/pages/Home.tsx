@@ -253,20 +253,10 @@ const facilitiesSolutions = [
   },
 ];
 
-const INTRO_KEY = 'js-home-intro-dismissed';
-
 export default function Home() {
-  const [introComplete, setIntroComplete] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem(INTRO_KEY) === '1';
-    }
-    return false;
-  });
+  const [introComplete, setIntroComplete] = useState(false);
 
   const handleIntroFinish = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem(INTRO_KEY, '1');
-    }
     setIntroComplete(true);
   }, []);
 

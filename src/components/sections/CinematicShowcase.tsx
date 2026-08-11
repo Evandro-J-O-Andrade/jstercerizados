@@ -6,15 +6,14 @@ import { HERO_ASSETS } from '@/content/assets';
 const ENTER_MS = 2500;
 const HOLD_MS = 10000;
 const EXIT_MS = 2500;
-const TOTAL_MS = ENTER_MS + HOLD_MS + EXIT_MS;
 
 const easing = [0.25, 0.4, 0.25, 1] as const;
 
 export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
   const shouldReduceMotion = useReducedMotion();
-  const [phase, setPhase] = useState<
-    'black' | 'entering' | 'holding' | 'closing'
-  >('black');
+  const [phase, setPhase] = useState<'entering' | 'holding' | 'closing'>(
+    'entering',
+  );
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const finish = useCallback(() => {
@@ -37,17 +36,15 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       return () => clearTimeout(t);
     }
 
-    const t1 = setTimeout(() => setPhase('entering'), 200);
-    const t2 = setTimeout(() => setPhase('holding'), ENTER_MS + 200);
-    const t3 = setTimeout(() => setPhase('closing'), ENTER_MS + 200 + HOLD_MS);
-    const t4 = setTimeout(finish, TOTAL_MS + 400);
-    timers.current = [t1, t2, t3, t4];
+    const t1 = setTimeout(() => setPhase('holding'), ENTER_MS);
+    const t2 = setTimeout(() => setPhase('closing'), ENTER_MS + HOLD_MS);
+    const t3 = setTimeout(finish, ENTER_MS + HOLD_MS + EXIT_MS);
+    timers.current = [t1, t2, t3];
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
-      clearTimeout(t4);
     };
   }, [shouldReduceMotion, finish]);
 
@@ -59,18 +56,16 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
   const imageVariants: Variants = shouldReduceMotion
     ? {
-        black: { opacity: 0 },
         entering: { opacity: 1, transition: { duration: 0.1 } },
         holding: { opacity: 1 },
         closing: { opacity: 0, transition: { duration: 0.1 } },
       }
     : {
-        black: { opacity: 0, scale: 1.2 },
         entering: {
           opacity: 1,
-          scale: [1.1, 0.9, 1.02, 1],
-          y: ['5%', '0%', '-1%', '0%'],
-          rotate: [1, -0.5, 0.25, 0],
+          scale: [1.02, 0.98, 1.01, 1],
+          y: ['2%', '0%', '-0.5%', '0%'],
+          rotate: [0.5, -0.25, 0.1, 0],
           transition: {
             duration: ENTER_MS / 1000,
             ease: easing,
@@ -79,8 +74,8 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         },
         holding: {
           opacity: 1,
-          scale: [1, 1.005, 1, 1.005, 1],
-          y: [0, 0.5, 0, -0.5, 0],
+          scale: [1, 1.002, 1, 1.002, 1],
+          y: [0, 0.3, 0, -0.3, 0],
           transition: {
             duration: HOLD_MS / 1000,
             ease: 'easeInOut',
@@ -91,7 +86,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         },
         closing: {
           opacity: 0,
-          scale: 1.05,
+          scale: 1.02,
           transition: {
             duration: EXIT_MS / 1000,
             ease: easing,
@@ -99,30 +94,15 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         },
       };
 
-  const currentVariant = shouldReduceMotion
-    ? phase === 'black'
-      ? 'entering'
-      : phase
-    : phase;
-
-  const bgVariants: Variants = shouldReduceMotion
-    ? {}
-    : {
-        black: { opacity: 1, transition: { duration: 0.5 } },
-        entering: { opacity: 1 },
-        holding: { opacity: 1 },
-        closing: { opacity: 1 },
-      };
+  const currentVariant = shouldReduceMotion ? phase : phase;
 
   return (
     <motion.div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-black"
-      initial="black"
+      className="fixed inset-0 z-[90] flex items-center justify-center overflow-hidden bg-black"
+      initial="entering"
       animate={currentVariant}
       exit={{ opacity: 0, transition: { duration: 0.6, ease: easing } }}
     >
-      <motion.div variants={bgVariants} className="absolute inset-0 bg-black" />
-
       <motion.div
         variants={imageVariants}
         className="cinematic-hero-image absolute inset-0 flex items-center justify-center"
@@ -130,7 +110,8 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         <SafeImage
           src={HERO_ASSETS.cardheros}
           alt="J&amp;S Empregos LTDA"
-          className="h-full w-full object-contain"
+          className="h-full w-full"
+          objectFit="contain"
           loading="eager"
           decoding="async"
           skeleton={false}
