@@ -49,14 +49,6 @@ const companyOptions = [
   { label: 'Falar com atendimento humano', value: 'human_support' },
 ];
 
-const initialOptions = [
-  { label: 'Sou candidato', value: 'candidate' },
-  { label: 'Sou empresa', value: 'company' },
-  { label: 'Quero saber sobre uma vaga', value: 'job_info' },
-  { label: 'Quero contratar profissionais', value: 'hire' },
-  { label: 'Falar com atendimento humano', value: 'human_support' },
-];
-
 export function ChatWidget({
   isOpen,
   onOpenChange,
@@ -64,6 +56,9 @@ export function ChatWidget({
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = isOpen ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
   const [mode, setMode] = useState<ChatMode>('ai');
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -241,7 +236,7 @@ export function ChatWidget({
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [open]);
+  }, [open, setOpen]);
 
   const chatPanelRef = useFocusTrap(open);
 
