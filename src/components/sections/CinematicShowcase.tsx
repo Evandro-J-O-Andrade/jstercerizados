@@ -112,15 +112,15 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
   const textVariants: Variants = shouldReduceMotion
     ? {
-        entering: { opacity: 1, x: 0, transition: { duration: 0.1 } },
-        holding: { opacity: 1, x: 0 },
-        closing: { opacity: 0, x: 0, transition: { duration: 0.1 } },
+        entering: { opacity: 1, y: 0, x: 0, transition: { duration: 0.1 } },
+        holding: { opacity: 1, y: 0, x: 0 },
+        closing: { opacity: 0, y: 0, x: 0, transition: { duration: 0.1 } },
       }
     : isMobile
       ? {
           entering: {
             opacity: 0,
-            y: -20,
+            y: -10,
             transition: { duration: 0.8, ease: easing, delay: 0.3 },
           },
           holding: {
@@ -130,7 +130,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           },
           closing: {
             opacity: 0,
-            y: -10,
+            y: -5,
             transition: { duration: 0.6, ease: easing },
           },
         }
@@ -154,15 +154,15 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
   const subtitleVariants: Variants = shouldReduceMotion
     ? {
-        entering: { opacity: 1, x: 0, transition: { duration: 0.1 } },
-        holding: { opacity: 1, x: 0 },
-        closing: { opacity: 0, x: 0, transition: { duration: 0.1 } },
+        entering: { opacity: 1, y: 0, x: 0, transition: { duration: 0.1 } },
+        holding: { opacity: 1, y: 0, x: 0 },
+        closing: { opacity: 0, y: 0, x: 0, transition: { duration: 0.1 } },
       }
     : isMobile
       ? {
           entering: {
             opacity: 0,
-            y: 20,
+            y: 10,
             transition: { duration: 0.8, ease: easing, delay: 0.5 },
           },
           holding: {
@@ -172,7 +172,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           },
           closing: {
             opacity: 0,
-            y: 10,
+            y: 5,
             transition: { duration: 0.6, ease: easing },
           },
         }
