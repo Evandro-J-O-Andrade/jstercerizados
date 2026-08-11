@@ -32,7 +32,8 @@ const Login = lazy(() => import('@/pages/Login'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 
 function App() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
+  const [isHumanChatOpen, setIsHumanChatOpen] = useState(false);
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
 
   return (
@@ -74,7 +75,7 @@ function App() {
           onOpenAccessibility={() => setIsAccessibilityOpen(true)}
           onOpenChat={() => {
             setIsAccessibilityOpen(false);
-            setIsChatOpen(true);
+            setIsAiChatOpen(true);
           }}
         />
       </div>
@@ -84,11 +85,21 @@ function App() {
         onOpenChange={setIsAccessibilityOpen}
         onOpenChat={() => {
           setIsAccessibilityOpen(false);
-          setIsChatOpen(true);
+          setIsAiChatOpen(true);
         }}
       />
-      <ChatWidget isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
-      <HumanChatWidget isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
+      <ChatWidget
+        isOpen={isAiChatOpen}
+        onOpenChange={setIsAiChatOpen}
+        onRequestHuman={() => {
+          setIsAiChatOpen(false);
+          setIsHumanChatOpen(true);
+        }}
+      />
+      <HumanChatWidget
+        isOpen={isHumanChatOpen}
+        onOpenChange={setIsHumanChatOpen}
+      />
     </div>
   );
 }

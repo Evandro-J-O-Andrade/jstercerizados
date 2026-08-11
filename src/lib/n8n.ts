@@ -1,13 +1,6 @@
-const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL ?? '';
-
 export async function sendToN8n(payload: Record<string, unknown>) {
-  if (!N8N_WEBHOOK_URL) {
-    console.warn('VITE_N8N_WEBHOOK_URL is not configured');
-    return { ok: false, reason: 'missing_url' as const };
-  }
-
   try {
-    const response = await fetch(N8N_WEBHOOK_URL, {
+    const response = await fetch('/api/handoff', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +13,11 @@ export async function sendToN8n(payload: Record<string, unknown>) {
     });
 
     if (!response.ok) {
-      throw new Error(`n8n responded with ${response.status}`);
+      const data = await response.json().catch(() => ({}));
+      throw new Error(
+        (data as { error?: string })?.error ??
+          `Server responded with ${response.status}`,
+      );
     }
 
     return { ok: true };

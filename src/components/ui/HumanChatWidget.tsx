@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { getSupabaseClient } from '@/lib/supabase';
 import { useRealtimeChat } from '@/hooks/useRealtimeChat';
+import { sendToN8n } from '@/lib/n8n';
 import { X, Send, User, Headphones, Bot, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils';
@@ -26,7 +27,8 @@ export function HumanChatWidget({
   subject?: string;
 }) {
   const [internalOpen, setInternalOpen] = useState(false);
-  const open = isOpen ?? internalOpen;
+  const isControlled = isOpen !== undefined;
+  const open = isControlled ? isOpen! : internalOpen;
   const setOpen = onOpenChange ?? setInternalOpen;
   const [roomId, setRoomId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([
@@ -88,6 +90,13 @@ export function HumanChatWidget({
 
       setRoomId(data.id);
       setConnecting(false);
+
+      void sendToN8n({
+        event: 'human_chat_requested',
+        roomId: data.id,
+        visitorId,
+        subject: subject || 'Atendimento humano',
+      });
     };
 
     if (open && !roomId) {
@@ -277,28 +286,30 @@ export function HumanChatWidget({
         )}
       </AnimatePresence>
 
-      <motion.button
-        onClick={() => setOpen(!open)}
-        className={cn(
-          'shadow-glow-lg bg-primary text-primary-foreground relative z-[60] flex items-center gap-2 rounded-full px-4 py-3 transition-colors',
-        )}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        aria-label={open ? 'Fechar chat humano' : 'Abrir atendimento humano'}
-        aria-expanded={open}
-        aria-controls="human-chat-panel"
-      >
-        {open ? (
-          <X className="h-5 w-5" />
-        ) : (
-          <>
-            <Headphones className="h-5 w-5" />
-            <span className="hidden text-sm font-medium sm:inline">
-              Fale com atendente
-            </span>
-          </>
-        )}
-      </motion.button>
+      {!isControlled && (
+        <motion.button
+          onClick={() => setOpen(!open)}
+          className={cn(
+            'shadow-glow-lg bg-primary text-primary-foreground relative z-[60] flex items-center gap-2 rounded-full px-4 py-3 transition-colors',
+          )}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          aria-label={open ? 'Fechar chat humano' : 'Abrir atendimento humano'}
+          aria-expanded={open}
+          aria-controls="human-chat-panel"
+        >
+          {open ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <>
+              <Headphones className="h-5 w-5" />
+              <span className="hidden text-sm font-medium sm:inline">
+                Fale com atendente
+              </span>
+            </>
+          )}
+        </motion.button>
+      )}
     </div>
   );
 }
