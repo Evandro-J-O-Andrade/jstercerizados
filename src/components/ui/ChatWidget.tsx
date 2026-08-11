@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils';
-import { sendToOpenRouter } from '@/lib/openrouter';
+import { sendChatRequest } from '@/lib/chat-client';
 
 type ChatRole = 'user' | 'assistant' | 'system' | 'agent';
 
@@ -96,9 +96,7 @@ export function ChatWidget({
   };
 
   const getAIReply = async (userText: string): Promise<string> => {
-    const result = await sendToOpenRouter([
-      { role: 'user', content: userText },
-    ]);
+    const result = await sendChatRequest([{ role: 'user', content: userText }]);
 
     if (result.ok && result.reply) {
       return result.reply;

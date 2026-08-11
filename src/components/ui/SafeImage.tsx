@@ -71,6 +71,7 @@ export function SafeImage({
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const img = new Image();
+    if (!src) return;
     img.src = src;
 
     let mounted = true;
