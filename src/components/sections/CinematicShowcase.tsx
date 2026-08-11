@@ -120,24 +120,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       ? {
           entering: {
             opacity: 0,
-            y: -20,
-            transition: { duration: 0.8, ease: easing, delay: 0.3 },
-          },
-          holding: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.8, ease: easing },
-          },
-          closing: {
-            opacity: 0,
-            y: -10,
-            transition: { duration: 0.6, ease: easing },
-          },
-        }
-      : {
-          entering: {
-            opacity: 0,
-            x: 80,
+            x: -120,
             transition: { duration: 0.8, ease: easing, delay: 0.3 },
           },
           holding: {
@@ -147,7 +130,24 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           },
           closing: {
             opacity: 0,
-            x: 20,
+            x: -30,
+            transition: { duration: 0.6, ease: easing },
+          },
+        }
+      : {
+          entering: {
+            opacity: 0,
+            x: 120,
+            transition: { duration: 0.8, ease: easing, delay: 0.3 },
+          },
+          holding: {
+            opacity: 1,
+            x: 0,
+            transition: { duration: 0.8, ease: easing },
+          },
+          closing: {
+            opacity: 0,
+            x: 30,
             transition: { duration: 0.6, ease: easing },
           },
         };
@@ -162,7 +162,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       ? {
           entering: {
             opacity: 0,
-            y: 20,
+            y: 40,
             transition: { duration: 0.8, ease: easing, delay: 0.5 },
           },
           holding: {
@@ -172,14 +172,14 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           },
           closing: {
             opacity: 0,
-            y: 10,
+            y: 30,
             transition: { duration: 0.6, ease: easing },
           },
         }
       : {
           entering: {
             opacity: 0,
-            x: -80,
+            x: -120,
             transition: { duration: 0.8, ease: easing, delay: 0.5 },
           },
           holding: {
@@ -189,7 +189,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           },
           closing: {
             opacity: 0,
-            x: -20,
+            x: -30,
             transition: { duration: 0.6, ease: easing },
           },
         };
@@ -205,7 +205,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     >
       <motion.div
         variants={textVariants}
-        className="absolute top-[12px] right-0 left-0 z-10 text-center md:top-8"
+        className="absolute top-14 right-0 left-0 z-10 text-center md:top-8"
       >
         <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
           J&amp;S Empregos
