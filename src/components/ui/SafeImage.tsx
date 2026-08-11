@@ -73,19 +73,19 @@ export function SafeImage({
     const img = new Image();
     img.src = src;
 
+    let mounted = true;
+
     const handleLoad = () => {
-      if (!didLoadRef.current) {
-        didLoadRef.current = true;
-        setIsLoading(false);
-      }
+      if (!mounted) return;
+      setIsLoading(false);
+      didLoadRef.current = true;
     };
 
     const handleError = () => {
-      if (!didLoadRef.current) {
-        didLoadRef.current = true;
-        setIsLoading(false);
-        setHasError(true);
-      }
+      if (!mounted) return;
+      setIsLoading(false);
+      setHasError(true);
+      didLoadRef.current = true;
     };
 
     img.onload = handleLoad;
@@ -95,7 +95,15 @@ export function SafeImage({
       handleLoad();
     }
 
+    const timeout = setTimeout(() => {
+      if (mounted && !didLoadRef.current) {
+        handleLoad();
+      }
+    }, 3000);
+
     return () => {
+      mounted = false;
+      clearTimeout(timeout);
       img.onload = null;
       img.onerror = null;
     };
