@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
-import { MessageCircle, X, Send, User, Headphones, ChevronRight, Bot, Loader2 } from 'lucide-react';
+import { MessageCircle, X, Send, Headphones, ChevronRight, Bot, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils';
 import { sendChatRequest } from '@/lib/chat-client';
