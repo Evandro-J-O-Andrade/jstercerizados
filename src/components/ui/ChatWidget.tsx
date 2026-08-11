@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils';
+import { sendToOpenRouter } from '@/lib/openrouter';
 
 type ChatRole = 'user' | 'assistant' | 'system' | 'agent';
 
@@ -48,31 +49,13 @@ const companyOptions = [
   { label: 'Falar com atendimento humano', value: 'human_support' },
 ];
 
-const faqResponses: Record<string, string> = {
-  how_to_register:
-    'Para cadastrar seu currículo, clique em "Cadastrar Currículo" no menu superior ou acesse a página "Trabalhe Conosco". O cadastro é rápido e gratuito!',
-  how_selection_works:
-    'Nosso processo seletivo é simples: cadastro, análise do perfil, entrevista (quando necessário) e encaminhamento para as vagas compatíveis.',
-  where_to_see_jobs:
-    'Você pode ver todas as vagas disponíveis na seção "Vagas" do site ou clicando em "Quero uma Vaga" na Home.',
-  how_to_hire:
-    'Para contratar, clique em "Divulgar Vaga" ou "Solicitar Orçamento" e nossa equipe entrará em contato em até 24h.',
-  rh_services:
-    'Oferecemos recrutamento e seleção, mão de obra temporária e efetiva, terceirização e facilities.',
-  request_quote:
-    'Ótimo! Vou encaminhar você para nossa equipe comercial. Em breve alguém entrará em contato.',
-  human_support:
-    'Vou encaminhar você para nossa equipe humana. Por favor, aguarde um momento...',
-  job_info:
-    'Para informações sobre vagas específicas, acesse a página "Vagas" ou fale com nosso atendimento.',
-  hire: 'Para contratar profissionais, clique em "Divulgar Vaga" ou entre em contato pelo WhatsApp.',
-  support:
-    'Nosso horário de atendimento é de Seg a Sex, 08h às 18h. Você também pode falar conosco pelo WhatsApp.',
-  candidate:
-    'Perfeito! Como candidato, você pode cadastrar seu currículo, buscar vagas e acompanhar processos seletivos. Como posso ajudar?',
-  company:
-    'Ótimo! Como empresa, oferecemos soluções completas de RH. Como posso ajudar?',
-};
+const initialOptions = [
+  { label: 'Sou candidato', value: 'candidate' },
+  { label: 'Sou empresa', value: 'company' },
+  { label: 'Quero saber sobre uma vaga', value: 'job_info' },
+  { label: 'Quero contratar profissionais', value: 'hire' },
+  { label: 'Falar com atendimento humano', value: 'human_support' },
+];
 
 export function ChatWidget({
   isOpen,
@@ -81,9 +64,6 @@ export function ChatWidget({
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
-  const [internalOpen, setInternalOpen] = useState(false);
-  const open = isOpen ?? internalOpen;
-  const setOpen = onOpenChange ?? setInternalOpen;
   const [mode, setMode] = useState<ChatMode>('ai');
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -120,6 +100,18 @@ export function ChatWidget({
     ]);
   };
 
+  const getAIReply = async (userText: string): Promise<string> => {
+    const result = await sendToOpenRouter([
+      { role: 'user', content: userText },
+    ]);
+
+    if (result.ok && result.reply) {
+      return result.reply;
+    }
+
+    return 'Obrigado pela sua mensagem! Em breve um atendente irá te responder. Enquanto isso, você pode escolher uma das opções abaixo:';
+  };
+
   const handleOptionClick = (value: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -131,32 +123,45 @@ export function ChatWidget({
     setMessages((prev) => [...prev, userMessage]);
     setIsTyping(true);
 
-    setTimeout(() => {
-      const responseContent =
-        faqResponses[value] || 'Em breve um atendente irá te responder.';
-      let nextOptions: Message['options'] | undefined;
+    const respond = async () => {
+      try {
+        const responseContent = await getAIReply(userMessage.content);
+        let nextOptions: Message['options'] | undefined;
 
-      if (value === 'candidate') {
-        nextOptions = candidateOptions;
-      } else if (value === 'company') {
-        nextOptions = companyOptions;
-      } else if (value === 'support' || value === 'human_support') {
-        startHumanChat();
+        if (value === 'candidate') {
+          nextOptions = candidateOptions;
+        } else if (value === 'company') {
+          nextOptions = companyOptions;
+        } else if (value === 'support' || value === 'human_support') {
+          startHumanChat();
+          setIsTyping(false);
+          return;
+        }
+
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: responseContent,
+          timestamp: new Date(),
+          options: nextOptions,
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+      } catch {
+        const fallbackMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: 'Em breve um atendente irá te responder.',
+          timestamp: new Date(),
+          options: initialOptions,
+        };
+        setMessages((prev) => [...prev, fallbackMessage]);
+      } finally {
         setIsTyping(false);
-        return;
       }
+    };
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: responseContent,
-        timestamp: new Date(),
-        options: nextOptions,
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-      setIsTyping(false);
-    }, 800);
+    void respond();
   };
 
   const handleSend = () => {
@@ -173,19 +178,32 @@ export function ChatWidget({
     setInputValue('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      if (mode === 'human') {
-        const agentMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'agent',
-          content:
-            'Obrigado pelo contato. Um atendente já foi notificado e responderá em instantes.',
-          timestamp: new Date(),
-          agentName: 'Atendente',
-        };
-        setMessages((prev) => [...prev, agentMessage]);
-      } else {
-        const assistantMessage: Message = {
+    const respond = async () => {
+      try {
+        const reply = await getAIReply(userMessage.content);
+
+        if (mode === 'human') {
+          const agentMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'agent',
+            content:
+              'Obrigado pelo contato. Um atendente já foi notificado e responderá em instantes.',
+            timestamp: new Date(),
+            agentName: 'Atendente',
+          };
+          setMessages((prev) => [...prev, agentMessage]);
+        } else {
+          const assistantMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: reply,
+            timestamp: new Date(),
+            options: initialOptions,
+          };
+          setMessages((prev) => [...prev, assistantMessage]);
+        }
+      } catch {
+        const fallbackMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content:
@@ -193,10 +211,13 @@ export function ChatWidget({
           timestamp: new Date(),
           options: initialOptions,
         };
-        setMessages((prev) => [...prev, assistantMessage]);
+        setMessages((prev) => [...prev, fallbackMessage]);
+      } finally {
+        setIsTyping(false);
       }
-      setIsTyping(false);
-    }, 1000);
+    };
+
+    void respond();
   };
 
   const getRoleIcon = (role: ChatRole) => {
