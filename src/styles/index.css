@@ -662,6 +662,12 @@
     scrollbar-width: none;
   }
 
+  html,
+  body,
+  #root {
+    background-color: #000;
+  }
+
   body {
     overflow-x: hidden;
   }

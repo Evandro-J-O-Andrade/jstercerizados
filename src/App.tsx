@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useState, useCallback } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -8,7 +8,8 @@ import { ChatWidget } from '@/components/ui/ChatWidget';
 import { HumanChatWidget } from '@/components/ui/HumanChatWidget';
 import { PageLoader } from '@/components/ui/PageLoader';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
-import { IntroProvider, useIntro } from '@/contexts/IntroContext';
+import { useIntro } from '@/contexts/IntroContext';
+import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 
 const Home = lazy(() => import('@/pages/Home'));
 const Sobre = lazy(() => import('@/pages/Sobre'));
@@ -36,42 +37,20 @@ function App() {
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [isHumanChatOpen, setIsHumanChatOpen] = useState(false);
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
+  const { introComplete, setIntroComplete } = useIntro();
 
-  return (
-    <IntroProvider>
-      <AppContent
-        isAiChatOpen={isAiChatOpen}
-        setIsAiChatOpen={setIsAiChatOpen}
-        isHumanChatOpen={isHumanChatOpen}
-        setIsHumanChatOpen={setIsHumanChatOpen}
-        isAccessibilityOpen={isAccessibilityOpen}
-        setIsAccessibilityOpen={setIsAccessibilityOpen}
-      />
-    </IntroProvider>
-  );
-}
+  const handleIntroFinish = useCallback(() => {
+    setIntroComplete(true);
+  }, [setIntroComplete]);
 
-function AppContent({
-  isAiChatOpen,
-  setIsAiChatOpen,
-  isHumanChatOpen,
-  setIsHumanChatOpen,
-  isAccessibilityOpen,
-  setIsAccessibilityOpen,
-}: {
-  isAiChatOpen: boolean;
-  setIsAiChatOpen: (value: boolean) => void;
-  isHumanChatOpen: boolean;
-  setIsHumanChatOpen: (value: boolean) => void;
-  isAccessibilityOpen: boolean;
-  setIsAccessibilityOpen: (value: boolean) => void;
-}) {
-  const { introComplete } = useIntro();
+  if (!introComplete) {
+    return <CinematicShowcase onFinish={handleIntroFinish} />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden">
       <ScrollToTop />
-      {introComplete && <Navbar />}
+      <Navbar />
       <main className="flex-1 pb-24 lg:pb-0">
         <Suspense fallback={<PageLoader />}>
           <Routes>
@@ -102,17 +81,15 @@ function AppContent({
           </Routes>
         </Suspense>
       </main>
-      {introComplete && (
-        <div className="pb-[127px] lg:pb-0">
-          <Footer
-            onOpenAccessibility={() => setIsAccessibilityOpen(true)}
-            onOpenChat={() => {
-              setIsAccessibilityOpen(false);
-              setIsAiChatOpen(true);
-            }}
-          />
-        </div>
-      )}
+      <div className="pb-[127px] lg:pb-0">
+        <Footer
+          onOpenAccessibility={() => setIsAccessibilityOpen(true)}
+          onOpenChat={() => {
+            setIsAccessibilityOpen(false);
+            setIsAiChatOpen(true);
+          }}
+        />
+      </div>
       <BottomNavigation />
       <AccessibilityWidget
         open={isAccessibilityOpen}

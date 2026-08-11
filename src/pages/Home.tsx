@@ -1,6 +1,4 @@
-﻿import { motion, AnimatePresence } from 'framer-motion';
-import { useCallback } from 'react';
-import { useIntro } from '@/contexts/IntroContext';
+﻿import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   Shield,
@@ -22,7 +20,6 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { HeroSplit } from '@/components/sections/HeroSplit';
-import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 import { InactivityShowcase } from '@/components/sections/InactivityShowcase';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
@@ -255,12 +252,6 @@ const facilitiesSolutions = [
 ];
 
 export default function Home() {
-  const { introComplete, setIntroComplete } = useIntro();
-
-  const handleIntroFinish = useCallback(() => {
-    setIntroComplete(true);
-  }, [setIntroComplete]);
-
   const destaques = mockGetVagas().slice(0, 4);
 
   return (
@@ -285,851 +276,833 @@ export default function Home() {
         type="WebSite"
       />
 
-      <AnimatePresence>
-        {!introComplete && <CinematicShowcase onFinish={handleIntroFinish} />}
-      </AnimatePresence>
+      <InactivityShowcase />
 
-      {introComplete && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
-        >
-          <InactivityShowcase />
+      {/* 1. HERO */}
+      <HeroSplit slides={heroSlides} interval={6000} />
 
-          {/* 1. HERO */}
-          <HeroSplit
-            slides={heroSlides}
-            autoPlay={introComplete}
-            interval={6000}
-          />
+      {/* 2. PARA EMPRESAS */}
+      <Section className="bg-surface-alt">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Soluções para sua empresa
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Assessoria em RH, recrutamento, mão de obra temporária,
+              terceirização e facilities para sua empresa.
+            </motion.p>
+          </motion.div>
 
-          {/* 2. PARA EMPRESAS */}
-          <Section className="bg-surface-alt">
-            <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {empresaSolutions.map((solution) => (
               <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.2)}
-                className="mb-12 text-center"
+                key={solution.title}
+                variants={staggerItem('up')}
+                className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300"
               >
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground text-3xl font-bold sm:text-4xl"
-                >
-                  Soluções para sua empresa
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-                >
-                  Assessoria em RH, recrutamento, mão de obra temporária,
-                  terceirização e facilities para sua empresa.
-                </motion.p>
+                <div className="bg-primary/10 text-primary mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                  <solution.icon className="h-6 w-6" />
+                </div>
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  {solution.title}
+                </h3>
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                  {solution.description}
+                </p>
+                <Link to={solution.href}>
+                  <Button variant="outline" size="sm" className="w-full">
+                    Saiba mais
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
               </motion.div>
+            ))}
+          </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-10 text-center"
+          >
+            <Link to="/empresas">
+              <Button variant="secondary" size="lg">
+                Solicitar Orçamento
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 3. SOLUÇÕES EM FACILITIES */}
+      <Section>
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Soluções em Facilities
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Limpeza, controle de acesso, jardinagem e recepção. Serviços
+              operacionais integrados para sua empresa.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {facilitiesSolutions.map((solution) => (
               <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerReveal(0.1)}
-                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                key={solution.title}
+                variants={staggerItem('up')}
+                className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 text-center transition-all duration-300"
               >
-                {empresaSolutions.map((solution) => (
-                  <motion.div
-                    key={solution.title}
-                    variants={staggerItem('up')}
-                    className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300"
-                  >
-                    <div className="bg-primary/10 text-primary mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                      <solution.icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-foreground mb-2 text-lg font-semibold">
-                      {solution.title}
+                <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                  <solution.icon className="h-6 w-6" />
+                </div>
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  {solution.title}
+                </h3>
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                  {solution.description}
+                </p>
+                <Link to={solution.href}>
+                  <Button variant="outline" size="sm" className="w-full">
+                    Saiba mais
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-10 text-center"
+          >
+            <Link to="/servicos">
+              <Button variant="secondary" size="lg">
+                Conheça nossas soluções
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 4. PARA CANDIDATOS */}
+      <Section className="bg-surface-alt">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Para Candidatos
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Cadastre seu currículo, candidate-se às vagas e acompanhe seus
+              processos seletivos.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {candidateBenefits.map((benefit) => (
+              <motion.div
+                key={benefit.title}
+                variants={staggerItem('up')}
+                className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 text-center transition-all duration-300"
+              >
+                <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                  <benefit.icon className="h-6 w-6" />
+                </div>
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  {benefit.title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {benefit.description}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-10 flex flex-wrap justify-center gap-4"
+          >
+            <Link to="/vagas">
+              <Button variant="secondary" size="lg">
+                Ver Vagas
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Link to="/trabalhe-conosco">
+              <Button variant="outline" size="lg">
+                Cadastrar Currículo
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 5. VAGAS EM DESTAQUE */}
+      <Section className="bg-surface-alt">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mb-12 flex items-end justify-between"
+          >
+            <motion.div variants={revealUp}>
+              <motion.h2
+                variants={revealUp}
+                className="text-foreground text-3xl font-bold sm:text-4xl"
+              >
+                Vagas em Destaque
+              </motion.h2>
+              <motion.p
+                variants={revealUp}
+                className="text-muted-foreground mt-4 max-w-2xl text-lg"
+              >
+                Confira as oportunidades disponíveis no momento.
+              </motion.p>
+            </motion.div>
+            <Link to="/vagas">
+              <Button variant="outline" size="sm">
+                Ver todas as vagas
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
+          >
+            {destaques.map((vaga) => (
+              <motion.div
+                key={vaga.id}
+                variants={staggerItem('up')}
+                className="bg-card shadow-premium group relative flex flex-col rounded-2xl p-6 transition-all duration-300"
+              >
+                <div className="mb-4 flex items-start justify-between">
+                  <div>
+                    <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
+                      {vaga.titulo}
                     </h3>
-                    <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-                      {solution.description}
+                    <p className="text-muted-foreground text-sm">
+                      {vaga.empresa}
                     </p>
-                    <Link to={solution.href}>
-                      <Button variant="outline" size="sm" className="w-full">
-                        Saiba mais
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
+                  </div>
+                  <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium">
+                    {vaga.tipoContrato}
+                  </span>
+                </div>
 
+                <div className="text-muted-foreground mb-4 space-y-1 text-sm">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    <span>
+                      {vaga.cidade}, {vaga.estado}
+                    </span>
+                  </div>
+                  <span className="inline-block text-xs">
+                    {vaga.modalidade === 'PRESENCIAL'
+                      ? 'Presencial'
+                      : vaga.modalidade === 'HIBRIDO'
+                        ? 'Híbrido'
+                        : 'Remoto'}
+                  </span>
+                </div>
+
+                <div className="mt-auto flex gap-2">
+                  <Link to={`/vagas/${vaga.slug}`} className="flex-1">
+                    <Button variant="primary" size="sm" className="w-full">
+                      Ver vaga
+                    </Button>
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 5. COMO FUNCIONA */}
+      <Section>
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Como Funciona
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Cadastre seu currículo, candidate-se às vagas e conquiste sua nova
+              oportunidade.
+            </motion.p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+            {steps.map((step, index) => (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                key={step.step}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="mt-10 text-center"
+                transition={{ delay: index * 0.15, duration: 0.6 }}
+                className="relative text-center"
               >
-                <Link to="/empresas">
+                {index < steps.length - 1 && (
+                  <div className="bg-border absolute top-8 right-[-3rem] left-[calc(50%+3rem)] hidden h-0.5 md:block" />
+                )}
+                <div className="bg-muted text-foreground mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold">
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 200,
+                      damping: 15,
+                    }}
+                  >
+                    {step.step}
+                  </motion.span>
+                </div>
+                <motion.h3
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.15 + 0.1 }}
+                  className="text-foreground mb-2 text-lg font-semibold"
+                >
+                  {step.title}
+                </motion.h3>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.15 + 0.15 }}
+                  className="text-muted-foreground text-sm"
+                >
+                  {step.description}
+                </motion.p>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      {/* 6. POR QUE ESCOLHER A J&S */}
+      <Section className="bg-surface-alt">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Por que escolher a J&amp;S
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Atendimento especializado em RH com foco em resultados para
+              empresas e candidatos.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {differentials.map((item) => (
+              <motion.div
+                key={item.title}
+                variants={staggerItem('up')}
+                className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300"
+              >
+                <div className="bg-primary/10 text-primary mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                  <item.icon className="h-6 w-6" />
+                </div>
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  {item.title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 8. CLIENTES E PARCEIROS */}
+      <Section className="bg-surface-alt">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Clientes e Parceiros
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Empresas que confiam nosso trabalho.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.08)}
+            className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+          >
+            {PARTNERS_LOGOS.map((partner) => (
+              <motion.div
+                key={partner.name}
+                variants={staggerItem('up')}
+                className="bg-card border-border flex h-24 items-center justify-center rounded-xl border p-4 opacity-70 grayscale grayscale-[0.8] transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+              >
+                <img
+                  src={partner.logo}
+                  alt={partner.name}
+                  className="max-h-12 max-w-full object-contain"
+                  loading="lazy"
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 9. DEPOIMENTOS */}
+      <Section>
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              O que dizem nossos clientes
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Depoimentos de empresas e candidatos que fizeram parte da J&S.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-8 lg:grid-cols-2"
+          >
+            {CLIENT_TESTIMONIALS.map((testimonial) => (
+              <motion.div
+                key={testimonial.id}
+                variants={staggerItem('up')}
+                className="bg-card border-border shadow-premium rounded-2xl border p-8"
+              >
+                <Quote className="text-primary/20 h-10 w-10" />
+                <p className="text-muted-foreground mt-4 text-sm leading-relaxed">
+                  "{testimonial.quote}"
+                </p>
+                <div className="mt-6 flex items-center gap-4">
+                  <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
+                    <span className="text-primary text-xl font-bold">
+                      {testimonial.name.charAt(0)}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-foreground font-semibold">
+                      {testimonial.name}
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      {testimonial.role} — {testimonial.company}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 10. NÚMEROS */}
+      <Section className="bg-surface-alt">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Resultados que comprovam nossa experiência
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Mais de uma década conectando empresas e profissionais.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-2 gap-6 sm:grid-cols-4"
+          >
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
+            >
+              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                <span className="text-2xl font-bold">15+</span>
+              </div>
+              <p className="text-foreground font-semibold">
+                Anos de experiência
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
+            >
+              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                <span className="text-2xl font-bold">
+                  {COMPANY.clientsServed}+
+                </span>
+              </div>
+              <p className="text-foreground font-semibold">
+                Clientes atendidos
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
+            >
+              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                <span className="text-2xl font-bold">
+                  {COMPANY.professionals}+
+                </span>
+              </div>
+              <p className="text-foreground font-semibold">
+                Profissionais colocados
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
+            >
+              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                <span className="text-2xl font-bold">
+                  {COMPANY.citiesCovered}+
+                </span>
+              </div>
+              <p className="text-foreground font-semibold">Cidades atendidas</p>
+            </motion.div>
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 11. PARA EMPRESAS — seção comercial forte */}
+      <Section>
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Precisa contratar?
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Encontramos profissionais qualificados para sua necessidade.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative overflow-hidden rounded-3xl p-8 text-center sm:p-12"
+          >
+            <div className="bg-primary/5 animate-float-slow absolute -top-20 -right-20 h-60 w-60 rounded-full blur-3xl" />
+            <div className="bg-primary/5 animate-float-medium absolute -bottom-20 -left-20 h-60 w-60 rounded-full blur-3xl" />
+
+            <div className="relative">
+              <h3 className="text-foreground text-2xl font-bold sm:text-3xl">
+                Solicite um orçamento sem compromisso
+              </h3>
+              <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
+                Nossa equipe comercial entende sua necessidade e envia uma
+                proposta personalizada em até 24 horas.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <Link to="/clientes">
                   <Button variant="secondary" size="lg">
                     Solicitar Orçamento
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-              </motion.div>
-            </Container>
-          </Section>
-
-          {/* 3. SOLUÇÕES EM FACILITIES */}
-          <Section>
-            <Container>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.2)}
-                className="mb-12 text-center"
-              >
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground text-3xl font-bold sm:text-4xl"
+                <a
+                  href={getWhatsAppUrl(
+                    COMPANY.whatsapp,
+                    WHATSAPP_MESSAGES.comercial,
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  Soluções em Facilities
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-                >
-                  Limpeza, controle de acesso, jardinagem e recepção. Serviços
-                  operacionais integrados para sua empresa.
-                </motion.p>
-              </motion.div>
-
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerReveal(0.1)}
-                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-              >
-                {facilitiesSolutions.map((solution) => (
-                  <motion.div
-                    key={solution.title}
-                    variants={staggerItem('up')}
-                    className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 text-center transition-all duration-300"
-                  >
-                    <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                      <solution.icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-foreground mb-2 text-lg font-semibold">
-                      {solution.title}
-                    </h3>
-                    <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-                      {solution.description}
-                    </p>
-                    <Link to={solution.href}>
-                      <Button variant="outline" size="sm" className="w-full">
-                        Saiba mais
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="mt-10 text-center"
-              >
-                <Link to="/servicos">
-                  <Button variant="secondary" size="lg">
-                    Conheça nossas soluções
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-              </motion.div>
-            </Container>
-          </Section>
-
-          {/* 4. PARA CANDIDATOS */}
-          <Section className="bg-surface-alt">
-            <Container>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.2)}
-                className="mb-12 text-center"
-              >
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground text-3xl font-bold sm:text-4xl"
-                >
-                  Para Candidatos
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-                >
-                  Cadastre seu currículo, candidate-se às vagas e acompanhe seus
-                  processos seletivos.
-                </motion.p>
-              </motion.div>
-
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerReveal(0.1)}
-                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-              >
-                {candidateBenefits.map((benefit) => (
-                  <motion.div
-                    key={benefit.title}
-                    variants={staggerItem('up')}
-                    className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 text-center transition-all duration-300"
-                  >
-                    <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                      <benefit.icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-foreground mb-2 text-lg font-semibold">
-                      {benefit.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {benefit.description}
-                    </p>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="mt-10 flex flex-wrap justify-center gap-4"
-              >
-                <Link to="/vagas">
-                  <Button variant="secondary" size="lg">
-                    Ver Vagas
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link to="/trabalhe-conosco">
                   <Button variant="outline" size="lg">
-                    Cadastrar Currículo
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <Phone className="mr-2 h-5 w-5" />
+                    Falar no WhatsApp
                   </Button>
-                </Link>
-              </motion.div>
-            </Container>
-          </Section>
-
-          {/* 5. VAGAS EM DESTAQUE */}
-          <Section className="bg-surface-alt">
-            <Container>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.15)}
-                className="mb-12 flex items-end justify-between"
-              >
-                <motion.div variants={revealUp}>
-                  <motion.h2
-                    variants={revealUp}
-                    className="text-foreground text-3xl font-bold sm:text-4xl"
-                  >
-                    Vagas em Destaque
-                  </motion.h2>
-                  <motion.p
-                    variants={revealUp}
-                    className="text-muted-foreground mt-4 max-w-2xl text-lg"
-                  >
-                    Confira as oportunidades disponíveis no momento.
-                  </motion.p>
-                </motion.div>
-                <Link to="/vagas">
-                  <Button variant="outline" size="sm">
-                    Ver todas as vagas
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              </motion.div>
-
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerReveal(0.1)}
-                className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
-              >
-                {destaques.map((vaga) => (
-                  <motion.div
-                    key={vaga.id}
-                    variants={staggerItem('up')}
-                    className="bg-card shadow-premium group relative flex flex-col rounded-2xl p-6 transition-all duration-300"
-                  >
-                    <div className="mb-4 flex items-start justify-between">
-                      <div>
-                        <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
-                          {vaga.titulo}
-                        </h3>
-                        <p className="text-muted-foreground text-sm">
-                          {vaga.empresa}
-                        </p>
-                      </div>
-                      <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium">
-                        {vaga.tipoContrato}
-                      </span>
-                    </div>
-
-                    <div className="text-muted-foreground mb-4 space-y-1 text-sm">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        <span>
-                          {vaga.cidade}, {vaga.estado}
-                        </span>
-                      </div>
-                      <span className="inline-block text-xs">
-                        {vaga.modalidade === 'PRESENCIAL'
-                          ? 'Presencial'
-                          : vaga.modalidade === 'HIBRIDO'
-                            ? 'Híbrido'
-                            : 'Remoto'}
-                      </span>
-                    </div>
-
-                    <div className="mt-auto flex gap-2">
-                      <Link to={`/vagas/${vaga.slug}`} className="flex-1">
-                        <Button variant="primary" size="sm" className="w-full">
-                          Ver vaga
-                        </Button>
-                      </Link>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </Container>
-          </Section>
-
-          {/* 5. COMO FUNCIONA */}
-          <Section>
-            <Container>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.2)}
-                className="mb-12 text-center"
-              >
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground text-3xl font-bold sm:text-4xl"
-                >
-                  Como Funciona
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-                >
-                  Cadastre seu currículo, candidate-se às vagas e conquiste sua
-                  nova oportunidade.
-                </motion.p>
-              </motion.div>
-
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-                {steps.map((step, index) => (
-                  <motion.div
-                    key={step.step}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.15, duration: 0.6 }}
-                    className="relative text-center"
-                  >
-                    {index < steps.length - 1 && (
-                      <div className="bg-border absolute top-8 right-[-3rem] left-[calc(50%+3rem)] hidden h-0.5 md:block" />
-                    )}
-                    <div className="bg-muted text-foreground mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold">
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        whileInView={{ scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 200,
-                          damping: 15,
-                        }}
-                      >
-                        {step.step}
-                      </motion.span>
-                    </div>
-                    <motion.h3
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.15 + 0.1 }}
-                      className="text-foreground mb-2 text-lg font-semibold"
-                    >
-                      {step.title}
-                    </motion.h3>
-                    <motion.p
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.15 + 0.15 }}
-                      className="text-muted-foreground text-sm"
-                    >
-                      {step.description}
-                    </motion.p>
-                  </motion.div>
-                ))}
+                </a>
               </div>
-            </Container>
-          </Section>
+            </div>
+          </motion.div>
+        </Container>
+      </Section>
 
-          {/* 6. POR QUE ESCOLHER A J&S */}
-          <Section className="bg-surface-alt">
-            <Container>
+      {/* 12. BLOG */}
+      <Section className="bg-surface-alt">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Blog
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Últimos artigos sobre currículo, entrevistas, mercado de trabalho
+              e carreira.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {blogPosts.map((post) => (
               <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.15)}
-                className="mb-12 text-center"
+                key={post.title}
+                variants={staggerItem('up')}
+                className="bg-card shadow-premium rounded-2xl p-6 transition-all duration-300"
               >
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground text-3xl font-bold sm:text-4xl"
-                >
-                  Por que escolher a J&amp;S
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-                >
-                  Atendimento especializado em RH com foco em resultados para
-                  empresas e candidatos.
-                </motion.p>
-              </motion.div>
-
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerReveal(0.1)}
-                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-              >
-                {differentials.map((item) => (
-                  <motion.div
-                    key={item.title}
-                    variants={staggerItem('up')}
-                    className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300"
-                  >
-                    <div className="bg-primary/10 text-primary mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                      <item.icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-foreground mb-2 text-lg font-semibold">
-                      {item.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {item.description}
-                    </p>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </Container>
-          </Section>
-
-          {/* 8. CLIENTES E PARCEIROS */}
-          <Section className="bg-surface-alt">
-            <Container>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.2)}
-                className="mb-12 text-center"
-              >
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground text-3xl font-bold sm:text-4xl"
-                >
-                  Clientes e Parceiros
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-                >
-                  Empresas que confiam nosso trabalho.
-                </motion.p>
-              </motion.div>
-
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerReveal(0.08)}
-                className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
-              >
-                {PARTNERS_LOGOS.map((partner) => (
-                  <motion.div
-                    key={partner.name}
-                    variants={staggerItem('up')}
-                    className="bg-card border-border flex h-24 items-center justify-center rounded-xl border p-4 opacity-70 grayscale grayscale-[0.8] transition-all duration-300 hover:opacity-100 hover:grayscale-0"
-                  >
-                    <img
-                      src={partner.logo}
-                      alt={partner.name}
-                      className="max-h-12 max-w-full object-contain"
-                      loading="lazy"
-                    />
-                  </motion.div>
-                ))}
-              </motion.div>
-            </Container>
-          </Section>
-
-          {/* 9. DEPOIMENTOS */}
-          <Section>
-            <Container>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.2)}
-                className="mb-12 text-center"
-              >
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground text-3xl font-bold sm:text-4xl"
-                >
-                  O que dizem nossos clientes
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-                >
-                  Depoimentos de empresas e candidatos que fizeram parte da J&S.
-                </motion.p>
-              </motion.div>
-
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerReveal(0.1)}
-                className="grid grid-cols-1 gap-8 lg:grid-cols-2"
-              >
-                {CLIENT_TESTIMONIALS.map((testimonial) => (
-                  <motion.div
-                    key={testimonial.id}
-                    variants={staggerItem('up')}
-                    className="bg-card border-border shadow-premium rounded-2xl border p-8"
-                  >
-                    <Quote className="text-primary/20 h-10 w-10" />
-                    <p className="text-muted-foreground mt-4 text-sm leading-relaxed">
-                      "{testimonial.quote}"
-                    </p>
-                    <div className="mt-6 flex items-center gap-4">
-                      <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
-                        <span className="text-primary text-xl font-bold">
-                          {testimonial.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-foreground font-semibold">
-                          {testimonial.name}
-                        </h3>
-                        <p className="text-muted-foreground text-sm">
-                          {testimonial.role} — {testimonial.company}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </Container>
-          </Section>
-
-          {/* 10. NÚMEROS */}
-          <Section className="bg-surface-alt">
-            <Container>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.2)}
-                className="mb-12 text-center"
-              >
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground text-3xl font-bold sm:text-4xl"
-                >
-                  Resultados que comprovam nossa experiência
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-                >
-                  Mais de uma década conectando empresas e profissionais.
-                </motion.p>
-              </motion.div>
-
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerReveal(0.1)}
-                className="grid grid-cols-2 gap-6 sm:grid-cols-4"
-              >
-                <motion.div
-                  variants={staggerItem('up')}
-                  className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
-                >
-                  <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                    <span className="text-2xl font-bold">15+</span>
-                  </div>
-                  <p className="text-foreground font-semibold">
-                    Anos de experiência
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  variants={staggerItem('up')}
-                  className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
-                >
-                  <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                    <span className="text-2xl font-bold">
-                      {COMPANY.clientsServed}+
-                    </span>
-                  </div>
-                  <p className="text-foreground font-semibold">
-                    Clientes atendidos
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  variants={staggerItem('up')}
-                  className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
-                >
-                  <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                    <span className="text-2xl font-bold">
-                      {COMPANY.professionals}+
-                    </span>
-                  </div>
-                  <p className="text-foreground font-semibold">
-                    Profissionais colocados
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  variants={staggerItem('up')}
-                  className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
-                >
-                  <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                    <span className="text-2xl font-bold">
-                      {COMPANY.citiesCovered}+
-                    </span>
-                  </div>
-                  <p className="text-foreground font-semibold">
-                    Cidades atendidas
-                  </p>
-                </motion.div>
-              </motion.div>
-            </Container>
-          </Section>
-
-          {/* 11. PARA EMPRESAS — seção comercial forte */}
-          <Section>
-            <Container>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.2)}
-                className="mb-12 text-center"
-              >
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground text-3xl font-bold sm:text-4xl"
-                >
-                  Precisa contratar?
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-                >
-                  Encontramos profissionais qualificados para sua necessidade.
-                </motion.p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="relative overflow-hidden rounded-3xl p-8 text-center sm:p-12"
-              >
-                <div className="bg-primary/5 animate-float-slow absolute -top-20 -right-20 h-60 w-60 rounded-full blur-3xl" />
-                <div className="bg-primary/5 animate-float-medium absolute -bottom-20 -left-20 h-60 w-60 rounded-full blur-3xl" />
-
-                <div className="relative">
-                  <h3 className="text-foreground text-2xl font-bold sm:text-3xl">
-                    Solicite um orçamento sem compromisso
-                  </h3>
-                  <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
-                    Nossa equipe comercial entende sua necessidade e envia uma
-                    proposta personalizada em até 24 horas.
-                  </p>
-                  <div className="mt-8 flex flex-wrap justify-center gap-4">
-                    <Link to="/clientes">
-                      <Button variant="secondary" size="lg">
-                        Solicitar Orçamento
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
-                    </Link>
-                    <a
-                      href={getWhatsAppUrl(
-                        COMPANY.whatsapp,
-                        WHATSAPP_MESSAGES.comercial,
-                      )}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button variant="outline" size="lg">
-                        <Phone className="mr-2 h-5 w-5" />
-                        Falar no WhatsApp
-                      </Button>
-                    </a>
-                  </div>
+                <div className="text-primary mb-4 flex items-center justify-between text-xs font-medium">
+                  <span>{post.category}</span>
+                  <span>{post.date}</span>
                 </div>
-              </motion.div>
-            </Container>
-          </Section>
-
-          {/* 12. BLOG */}
-          <Section className="bg-surface-alt">
-            <Container>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.15)}
-                className="mb-12 text-center"
-              >
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground text-3xl font-bold sm:text-4xl"
+                <h3 className="text-foreground mb-2 text-base font-semibold">
+                  {post.title}
+                </h3>
+                <Link
+                  to={post.href}
+                  className="text-primary text-sm font-medium"
                 >
-                  Blog
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-                >
-                  Últimos artigos sobre currículo, entrevistas, mercado de
-                  trabalho e carreira.
-                </motion.p>
+                  Ler artigo <ArrowRight className="ml-1 inline h-4 w-4" />
+                </Link>
               </motion.div>
+            ))}
+          </motion.div>
 
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerReveal(0.1)}
-                className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-              >
-                {blogPosts.map((post) => (
-                  <motion.div
-                    key={post.title}
-                    variants={staggerItem('up')}
-                    className="bg-card shadow-premium rounded-2xl p-6 transition-all duration-300"
-                  >
-                    <div className="text-primary mb-4 flex items-center justify-between text-xs font-medium">
-                      <span>{post.category}</span>
-                      <span>{post.date}</span>
-                    </div>
-                    <h3 className="text-foreground mb-2 text-base font-semibold">
-                      {post.title}
-                    </h3>
-                    <Link
-                      to={post.href}
-                      className="text-primary text-sm font-medium"
-                    >
-                      Ler artigo <ArrowRight className="ml-1 inline h-4 w-4" />
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-10 text-center"
+          >
+            <Link to="/blog">
+              <Button variant="outline" size="lg">
+                Ver todos os artigos
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </motion.div>
+        </Container>
+      </Section>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="mt-10 text-center"
-              >
-                <Link to="/blog">
-                  <Button variant="outline" size="lg">
-                    Ver todos os artigos
+      {/* 13. CTA FINAL */}
+      <Section>
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
+            className="relative overflow-hidden rounded-3xl p-8 text-center sm:p-12"
+          >
+            <div className="animate-pulse-glow absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsla(var(--primary),0.15),transparent_60%)]" />
+            <div className="bg-primary/5 animate-float-slow absolute -top-20 -right-20 h-60 w-60 rounded-full blur-3xl" />
+            <div className="bg-primary/5 animate-float-medium absolute -bottom-20 -left-20 h-60 w-60 rounded-full blur-3xl" />
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="relative"
+            >
+              <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
+                Pronto para dar o próximo passo?
+              </h2>
+              <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
+                Encontre sua próxima oportunidade ou encontre os profissionais
+                certos para sua empresa.
+              </p>
+              <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Link to="/vagas">
+                  <Button variant="secondary" size="lg" className="w-full">
+                    Está procurando uma nova oportunidade?
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-              </motion.div>
-            </Container>
-          </Section>
-
-          {/* 13. CTA FINAL */}
-          <Section>
-            <Container>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
-                className="relative overflow-hidden rounded-3xl p-8 text-center sm:p-12"
-              >
-                <div className="animate-pulse-glow absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsla(var(--primary),0.15),transparent_60%)]" />
-                <div className="bg-primary/5 animate-float-slow absolute -top-20 -right-20 h-60 w-60 rounded-full blur-3xl" />
-                <div className="bg-primary/5 animate-float-medium absolute -bottom-20 -left-20 h-60 w-60 rounded-full blur-3xl" />
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 }}
-                  className="relative"
-                >
-                  <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
-                    Pronto para dar o próximo passo?
-                  </h2>
-                  <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
-                    Encontre sua próxima oportunidade ou encontre os
-                    profissionais certos para sua empresa.
-                  </p>
-                  <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <Link to="/vagas">
-                      <Button variant="secondary" size="lg" className="w-full">
-                        Está procurando uma nova oportunidade?
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
-                    </Link>
-                    <Link to="/empresas">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="border-border/30 text-foreground hover:bg-muted w-full"
-                      >
-                        Precisa de profissionais para sua empresa?
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
-                    </Link>
-                  </div>
-                </motion.div>
-              </motion.div>
-            </Container>
-          </Section>
-        </motion.div>
-      )}
+                <Link to="/empresas">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-border/30 text-foreground hover:bg-muted w-full"
+                  >
+                    Precisa de profissionais para sua empresa?
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          </motion.div>
+        </Container>
+      </Section>
     </div>
   );
 }
