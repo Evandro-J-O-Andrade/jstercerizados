@@ -658,11 +658,6 @@
     backdrop-filter: none;
   }
 
-  /* Cinematic Showcase — object-position responsivo */
-  .cinematic-hero-image img {
-    object-position: center 30%;
-  }
-
   [data-mobile] html {
     scrollbar-width: none;
   }

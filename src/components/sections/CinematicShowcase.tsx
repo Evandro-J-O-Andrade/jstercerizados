@@ -154,14 +154,23 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-black"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black"
       initial="entering"
       animate={currentVariant}
       exit={{ opacity: 0, transition: { duration: 0.6, ease: easing } }}
     >
       <motion.div
+        variants={textVariants}
+        className="relative z-10 mb-4 text-center md:absolute md:top-8 md:right-0 md:left-0 md:mb-0"
+      >
+        <h1 className="text-4xl font-bold text-white drop-shadow-lg sm:text-5xl md:text-6xl">
+          J&amp;S Empregos
+        </h1>
+      </motion.div>
+
+      <motion.div
         variants={imageVariants}
-        className="absolute inset-0 flex items-center justify-center"
+        className="relative flex w-full items-center justify-center md:absolute md:inset-0 md:h-full"
       >
         {!imageLoaded && (
           <div className="bg-surface-alt absolute inset-0 flex items-center justify-center">
@@ -174,23 +183,14 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           loading="eager"
           decoding="sync"
           onLoad={() => setImageLoaded(true)}
-          className="h-full w-full object-contain"
+          className="max-h-[50vh] w-full object-contain md:absolute md:inset-0 md:h-full md:max-h-none"
           style={{ objectPosition: 'center 30%' }}
         />
       </motion.div>
 
       <motion.div
-        variants={textVariants}
-        className="absolute top-8 right-0 left-0 z-10 text-center"
-      >
-        <h1 className="text-4xl font-bold text-white drop-shadow-lg sm:text-5xl md:text-6xl">
-          J&amp;S Empregos
-        </h1>
-      </motion.div>
-
-      <motion.div
         variants={subtitleVariants}
-        className="absolute right-0 bottom-24 left-0 z-10 text-center"
+        className="relative z-10 mt-4 text-center md:absolute md:right-0 md:bottom-24 md:left-0 md:mt-0"
       >
         <p className="text-xl text-white/90 drop-shadow-md sm:text-2xl md:text-3xl">
           Gestão em Recursos Humanos
