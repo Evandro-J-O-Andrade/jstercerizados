@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { CinematicShowcase } from './CinematicShowcase';
 
-const IDLE_THRESHOLD = 5 * 60 * 1000;
+const IDLE_THRESHOLD = 3 * 60 * 1000;
 
 const IDLE_EVENTS = [
   'pointermove',

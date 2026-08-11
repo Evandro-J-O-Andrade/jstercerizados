@@ -2,6 +2,7 @@ import {
   type ImgHTMLAttributes,
   type ReactNode,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { cn } from '@/utils';
@@ -58,11 +59,23 @@ export function SafeImage({
   const [currentSrc, setCurrentSrc] = useState(src);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const didLoadRef = useRef(false);
 
   useEffect(() => {
     setCurrentSrc(src);
     setIsLoading(true);
     setHasError(false);
+    didLoadRef.current = false;
+  }, [src]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const img = new Image();
+    img.src = src;
+    if (img.complete && !didLoadRef.current) {
+      didLoadRef.current = true;
+      setIsLoading(false);
+    }
   }, [src]);
 
   useEffect(() => {

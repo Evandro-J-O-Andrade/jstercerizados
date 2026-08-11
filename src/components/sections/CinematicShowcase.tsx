@@ -14,12 +14,19 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     'entering',
   );
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const finish = useCallback(() => {
     timers.current.forEach(clearTimeout);
     timers.current = [];
     onFinish();
   }, [onFinish]);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = HERO_ASSETS.cardheros;
+    img.onload = () => setImageLoaded(true);
+  }, []);
 
   useEffect(() => {
     const original = document.body.style.overflow;
@@ -35,25 +42,19 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       return () => clearTimeout(t);
     }
 
-    const t1 = setTimeout(() => setPhase('holding'), ENTER_MS);
-    const t2 = setTimeout(() => setPhase('closing'), ENTER_MS + HOLD_MS);
-    const t3 = setTimeout(finish, ENTER_MS + HOLD_MS + EXIT_MS);
-    timers.current = [t1, t2, t3];
+    const t1 = setTimeout(() => setPhase('entering'), 100);
+    const t2 = setTimeout(() => setPhase('holding'), ENTER_MS + 100);
+    const t3 = setTimeout(() => setPhase('closing'), ENTER_MS + HOLD_MS + 100);
+    const t4 = setTimeout(finish, ENTER_MS + HOLD_MS + EXIT_MS + 100);
+    timers.current = [t1, t2, t3, t4];
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      clearTimeout(t4);
     };
   }, [shouldReduceMotion, finish]);
-
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  useEffect(() => {
-    const img = new Image();
-    img.src = HERO_ASSETS.cardheros;
-    img.onload = () => setImageLoaded(true);
-  }, []);
 
   const handleSkip = useCallback(() => {
     timers.current.forEach(clearTimeout);
@@ -70,19 +71,19 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     : {
         entering: {
           opacity: 1,
-          scale: [1.01, 0.99, 1.005, 1],
-          y: ['1%', '0%', '-0.3%', '0%'],
-          rotate: [0.3, -0.15, 0.05, 0],
+          scale: [1.02, 0.98, 1.01, 1],
+          y: ['3%', '0%', '-1%', '0%'],
+          rotate: [0.5, -0.3, 0.15, 0],
           transition: {
             duration: ENTER_MS / 1000,
             ease: easing,
-            times: [0, 0.5, 0.8, 1],
+            times: [0, 0.4, 0.75, 1],
           },
         },
         holding: {
           opacity: 1,
-          scale: [1, 1.001, 1, 1.001, 1],
-          y: [0, 0.2, 0, -0.2, 0],
+          scale: [1, 1.003, 1, 1.003, 1],
+          y: [0, 0.4, 0, -0.4, 0],
           transition: {
             duration: HOLD_MS / 1000,
             ease: 'easeInOut',
@@ -93,7 +94,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         },
         closing: {
           opacity: 0,
-          scale: 1.01,
+          scale: 1.02,
           transition: {
             duration: EXIT_MS / 1000,
             ease: easing,
@@ -101,19 +102,72 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         },
       };
 
+  const textVariants: Variants = shouldReduceMotion
+    ? {
+        entering: { opacity: 1, y: 0, transition: { duration: 0.1 } },
+        holding: { opacity: 1, y: 0 },
+        closing: { opacity: 0, y: 0, transition: { duration: 0.1 } },
+      }
+    : {
+        entering: {
+          opacity: 0,
+          y: -20,
+          transition: { duration: 0.8, ease: easing, delay: 0.3 },
+        },
+        holding: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: easing },
+        },
+        closing: {
+          opacity: 0,
+          y: -10,
+          transition: { duration: 0.6, ease: easing },
+        },
+      };
+
+  const subtitleVariants: Variants = shouldReduceMotion
+    ? {
+        entering: { opacity: 1, y: 0, transition: { duration: 0.1 } },
+        holding: { opacity: 1, y: 0 },
+        closing: { opacity: 0, y: 0, transition: { duration: 0.1 } },
+      }
+    : {
+        entering: {
+          opacity: 0,
+          y: 20,
+          transition: { duration: 0.8, ease: easing, delay: 0.5 },
+        },
+        holding: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: easing },
+        },
+        closing: {
+          opacity: 0,
+          y: 10,
+          transition: { duration: 0.6, ease: easing },
+        },
+      };
+
   const currentVariant = shouldReduceMotion ? phase : phase;
 
   return (
     <motion.div
-      className="fixed inset-0 z-30 flex items-center justify-center overflow-hidden bg-black"
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-black"
       initial="entering"
       animate={currentVariant}
       exit={{ opacity: 0, transition: { duration: 0.6, ease: easing } }}
     >
       <motion.div
         variants={imageVariants}
-        className="cinematic-hero-image absolute inset-0 flex items-center justify-center"
+        className="absolute inset-0 flex items-center justify-center"
       >
+        {!imageLoaded && (
+          <div className="bg-surface-alt absolute inset-0 flex items-center justify-center">
+            <div className="bg-muted h-16 w-16 animate-pulse rounded-full" />
+          </div>
+        )}
         <img
           src={HERO_ASSETS.cardheros}
           alt="J&amp;S Empregos LTDA"
@@ -125,43 +179,20 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         />
       </motion.div>
 
-      {!imageLoaded && (
-        <div className="bg-surface-alt absolute inset-0 flex items-center justify-center">
-          <div className="bg-muted h-16 w-16 animate-pulse rounded-full" />
-        </div>
-      )}
-
-      {!shouldReduceMotion && phase === 'holding' && (
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/50"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, ease: easing }}
-        />
-      )}
-
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={
-          phase === 'holding' ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }
-        }
-        transition={{ duration: 0.8, ease: easing }}
+        variants={textVariants}
         className="absolute top-8 right-0 left-0 z-10 text-center"
       >
-        <h1 className="text-4xl font-bold text-white drop-shadow-lg sm:text-5xl">
+        <h1 className="text-4xl font-bold text-white drop-shadow-lg sm:text-5xl md:text-6xl">
           J&amp;S Empregos
         </h1>
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={
-          phase === 'holding' ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-        }
-        transition={{ duration: 0.8, ease: easing }}
-        className="absolute right-0 bottom-20 left-0 z-10 text-center"
+        variants={subtitleVariants}
+        className="absolute right-0 bottom-24 left-0 z-10 text-center"
       >
-        <p className="text-xl text-white/90 drop-shadow-md sm:text-2xl">
+        <p className="text-xl text-white/90 drop-shadow-md sm:text-2xl md:text-3xl">
           Gestão em Recursos Humanos
         </p>
       </motion.div>
