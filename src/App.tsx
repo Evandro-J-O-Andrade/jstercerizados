@@ -31,9 +31,18 @@ const Termos = lazy(() => import('@/pages/Termos'));
 const Login = lazy(() => import('@/pages/Login'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 
+type ChatView = 'ai' | 'human' | null;
+
 function App() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatView, setChatView] = useState<ChatView>(null);
+  const [humanSubject, setHumanSubject] = useState('Atendimento humano');
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
+
+  const openAI = () => setChatView('ai');
+  const openHuman = ({ subject }: { subject: string }) => {
+    setHumanSubject(subject);
+    setChatView('human');
+  };
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden">
@@ -74,7 +83,7 @@ function App() {
           onOpenAccessibility={() => setIsAccessibilityOpen(true)}
           onOpenChat={() => {
             setIsAccessibilityOpen(false);
-            setIsChatOpen(true);
+            openAI();
           }}
         />
       </div>
@@ -84,11 +93,23 @@ function App() {
         onOpenChange={setIsAccessibilityOpen}
         onOpenChat={() => {
           setIsAccessibilityOpen(false);
-          setIsChatOpen(true);
+          openAI();
         }}
       />
-      <ChatWidget isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
-      <HumanChatWidget isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
+      {chatView === 'ai' && (
+        <ChatWidget
+          isOpen
+          onOpenChange={(open) => setChatView(open ? 'ai' : null)}
+          onHumanHandoff={openHuman}
+        />
+      )}
+      {chatView === 'human' && (
+        <HumanChatWidget
+          isOpen
+          subject={humanSubject}
+          onOpenChange={(open) => setChatView(open ? 'human' : null)}
+        />
+      )}
     </div>
   );
 }
