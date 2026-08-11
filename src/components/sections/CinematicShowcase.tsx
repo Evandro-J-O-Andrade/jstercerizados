@@ -111,7 +111,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     : {
         entering: {
           opacity: 0,
-          x: -50,
+          x: -90,
           transition: { duration: 0.8, ease: easing, delay: 0.3 },
         },
         holding: {
@@ -135,7 +135,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     : {
         entering: {
           opacity: 0,
-          x: 50,
+          x: 90,
           transition: { duration: 0.8, ease: easing, delay: 0.5 },
         },
         holding: {
