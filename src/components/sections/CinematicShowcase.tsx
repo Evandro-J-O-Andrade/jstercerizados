@@ -138,12 +138,12 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           entering: {
             opacity: 0,
             x: '-100vw',
-            transition: { duration: 0.8, ease: easing, delay: 0.3 },
+            transition: { duration: 1.4, ease: easing, delay: 0.3 },
           },
           holding: {
             opacity: 1,
             x: 0,
-            transition: { duration: 0.8, ease: easing },
+            transition: { duration: 1.4, ease: easing },
           },
           closing: {
             opacity: 0,
@@ -180,12 +180,12 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           entering: {
             opacity: 0,
             x: '100vw',
-            transition: { duration: 0.8, ease: easing, delay: 0.5 },
+            transition: { duration: 1.4, ease: easing, delay: 0.5 },
           },
           holding: {
             opacity: 1,
             x: 0,
-            transition: { duration: 0.8, ease: easing },
+            transition: { duration: 1.4, ease: easing },
           },
           closing: {
             opacity: 0,
