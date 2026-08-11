@@ -161,7 +161,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     >
       <motion.div
         variants={textVariants}
-        className="absolute top-8 right-0 left-0 z-10 text-center md:top-8"
+        className="absolute top-[36px] right-0 left-0 z-10 text-center md:top-8"
       >
         <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
           J&amp;S Empregos
