@@ -15,7 +15,6 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
   );
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   const finish = useCallback(() => {
     timers.current.forEach(clearTimeout);
@@ -35,13 +34,6 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     return () => {
       document.body.style.overflow = original;
     };
-  }, []);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
@@ -116,41 +108,23 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         holding: { opacity: 1, x: 0 },
         closing: { opacity: 0, x: 0, transition: { duration: 0.1 } },
       }
-    : isMobile
-      ? {
-          entering: {
-            opacity: 0,
-            y: -30,
-            transition: { duration: 0.8, ease: easing, delay: 0.3 },
-          },
-          holding: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.8, ease: easing },
-          },
-          closing: {
-            opacity: 0,
-            y: -15,
-            transition: { duration: 0.6, ease: easing },
-          },
-        }
-      : {
-          entering: {
-            opacity: 0,
-            x: -160,
-            transition: { duration: 0.8, ease: easing, delay: 0.3 },
-          },
-          holding: {
-            opacity: 1,
-            x: 0,
-            transition: { duration: 0.8, ease: easing },
-          },
-          closing: {
-            opacity: 0,
-            x: -40,
-            transition: { duration: 0.6, ease: easing },
-          },
-        };
+    : {
+        entering: {
+          opacity: 0,
+          x: -80,
+          transition: { duration: 0.8, ease: easing, delay: 0.3 },
+        },
+        holding: {
+          opacity: 1,
+          x: 0,
+          transition: { duration: 0.8, ease: easing },
+        },
+        closing: {
+          opacity: 0,
+          x: -20,
+          transition: { duration: 0.6, ease: easing },
+        },
+      };
 
   const subtitleVariants: Variants = shouldReduceMotion
     ? {
@@ -158,41 +132,23 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         holding: { opacity: 1, x: 0 },
         closing: { opacity: 0, x: 0, transition: { duration: 0.1 } },
       }
-    : isMobile
-      ? {
-          entering: {
-            opacity: 0,
-            y: 30,
-            transition: { duration: 0.8, ease: easing, delay: 0.5 },
-          },
-          holding: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.8, ease: easing },
-          },
-          closing: {
-            opacity: 0,
-            y: 15,
-            transition: { duration: 0.6, ease: easing },
-          },
-        }
-      : {
-          entering: {
-            opacity: 0,
-            x: 160,
-            transition: { duration: 0.8, ease: easing, delay: 0.5 },
-          },
-          holding: {
-            opacity: 1,
-            x: 0,
-            transition: { duration: 0.8, ease: easing },
-          },
-          closing: {
-            opacity: 0,
-            x: 40,
-            transition: { duration: 0.6, ease: easing },
-          },
-        };
+    : {
+        entering: {
+          opacity: 0,
+          x: 80,
+          transition: { duration: 0.8, ease: easing, delay: 0.5 },
+        },
+        holding: {
+          opacity: 1,
+          x: 0,
+          transition: { duration: 0.8, ease: easing },
+        },
+        closing: {
+          opacity: 0,
+          x: 20,
+          transition: { duration: 0.6, ease: easing },
+        },
+      };
 
   const currentVariant = shouldReduceMotion ? phase : phase;
 
@@ -203,87 +159,43 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       animate={currentVariant}
       exit={{ opacity: 0, transition: { duration: 0.6, ease: easing } }}
     >
-      {isMobile ? (
-        <>
-          <motion.div
-            variants={textVariants}
-            className="cinematic-hero-text absolute top-14 right-0 left-0 z-10 text-center md:top-8"
-          >
-            <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
-              J&amp;S Empregos
-            </h1>
-          </motion.div>
+      <motion.div
+        variants={textVariants}
+        className="absolute top-[12px] right-0 left-0 z-10 text-center md:top-8"
+      >
+        <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
+          J&amp;S Empregos
+        </h1>
+      </motion.div>
 
-          <motion.div
-            variants={imageVariants}
-            className="absolute inset-0 flex items-center justify-center"
-          >
-            {!imageLoaded && (
-              <div className="bg-surface-alt absolute inset-0 flex items-center justify-center">
-                <div className="bg-muted h-16 w-16 animate-pulse rounded-full" />
-              </div>
-            )}
-            <img
-              src={HERO_ASSETS.cardheros}
-              alt="J&amp;S Empregos LTDA"
-              loading="eager"
-              decoding="sync"
-              onLoad={() => setImageLoaded(true)}
-              className="h-full w-full object-contain"
-              style={{ objectPosition: 'center 30%' }}
-            />
-          </motion.div>
+      <motion.div
+        variants={imageVariants}
+        className="absolute inset-0 flex items-center justify-center"
+      >
+        {!imageLoaded && (
+          <div className="bg-surface-alt absolute inset-0 flex items-center justify-center">
+            <div className="bg-muted h-16 w-16 animate-pulse rounded-full" />
+          </div>
+        )}
+        <img
+          src={HERO_ASSETS.cardheros}
+          alt="J&amp;S Empregos LTDA"
+          loading="eager"
+          decoding="sync"
+          onLoad={() => setImageLoaded(true)}
+          className="h-full w-full object-contain"
+          style={{ objectPosition: 'center 30%' }}
+        />
+      </motion.div>
 
-          <motion.div
-            variants={subtitleVariants}
-            className="cinematic-hero-subtitle absolute right-0 bottom-16 left-0 z-10 text-center md:right-0 md:bottom-24 md:left-0"
-          >
-            <p className="text-lg text-white/90 drop-shadow-md sm:text-xl md:text-2xl">
-              Gestão em Recursos Humanos
-            </p>
-          </motion.div>
-        </>
-      ) : (
-        <>
-          <motion.div
-            variants={imageVariants}
-            className="absolute inset-0 flex items-center justify-center"
-          >
-            {!imageLoaded && (
-              <div className="bg-surface-alt absolute inset-0 flex items-center justify-center">
-                <div className="bg-muted h-16 w-16 animate-pulse rounded-full" />
-              </div>
-            )}
-            <img
-              src={HERO_ASSETS.cardheros}
-              alt="J&amp;S Empregos LTDA"
-              loading="eager"
-              decoding="sync"
-              onLoad={() => setImageLoaded(true)}
-              className="h-full w-full object-contain"
-              style={{ objectPosition: 'center 30%' }}
-            />
-          </motion.div>
-
-          <motion.div
-            variants={subtitleVariants}
-            className="absolute top-1/2 left-[calc(50%+45vw+12px)] z-10 max-w-[45vw] -translate-y-1/2 text-left"
-          >
-            <p className="text-lg text-white/90 drop-shadow-md sm:text-xl md:text-2xl">
-              Gestão em Recursos Humanos
-            </p>
-          </motion.div>
-
-          <motion.div
-            variants={textVariants}
-            className="absolute top-1/2 right-[calc(50%+45vw+12px)] z-10 max-w-[45vw] -translate-y-1/2 text-right"
-          >
-            <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
-              J&amp;S Empregos
-            </h1>
-          </motion.div>
-        </>
-      )}
+      <motion.div
+        variants={subtitleVariants}
+        className="absolute right-20 bottom-16 left-4 z-10 text-center md:right-0 md:bottom-24 md:left-0"
+      >
+        <p className="text-lg text-white/90 drop-shadow-md sm:text-xl md:text-2xl">
+          Gestão em Recursos Humanos
+        </p>
+      </motion.div>
 
       <button
         type="button"
