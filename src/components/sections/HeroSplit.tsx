@@ -51,7 +51,7 @@ export function HeroSplit({
   description,
   cta,
   slides,
-  autoPlay = false,
+  autoPlay = true,
   interval = 5000,
 }: HeroSplitProps) {
   const [current, setCurrent] = useState(0);
