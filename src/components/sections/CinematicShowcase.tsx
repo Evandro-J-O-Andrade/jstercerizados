@@ -154,16 +154,16 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-between overflow-hidden bg-black px-4 py-6 md:justify-center md:px-0 md:py-0"
       initial="entering"
       animate={currentVariant}
       exit={{ opacity: 0, transition: { duration: 0.6, ease: easing } }}
     >
       <motion.div
         variants={textVariants}
-        className="relative z-10 mb-4 text-center md:absolute md:top-8 md:right-0 md:left-0 md:mb-0"
+        className="relative z-10 mb-3 text-center md:absolute md:top-8 md:right-0 md:left-0 md:mb-0"
       >
-        <h1 className="text-4xl font-bold text-white drop-shadow-lg sm:text-5xl md:text-6xl">
+        <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
           J&amp;S Empregos
         </h1>
       </motion.div>
@@ -183,16 +183,16 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
           loading="eager"
           decoding="sync"
           onLoad={() => setImageLoaded(true)}
-          className="max-h-[50vh] w-full object-contain md:absolute md:inset-0 md:h-full md:max-h-none"
+          className="max-h-[65vh] w-full object-contain md:absolute md:inset-0 md:h-full md:max-h-none"
           style={{ objectPosition: 'center 30%' }}
         />
       </motion.div>
 
       <motion.div
         variants={subtitleVariants}
-        className="relative z-10 mt-4 text-center md:absolute md:right-0 md:bottom-24 md:left-0 md:mt-0"
+        className="relative z-10 mt-3 text-center md:absolute md:right-0 md:bottom-24 md:left-0 md:mt-0"
       >
-        <p className="text-xl text-white/90 drop-shadow-md sm:text-2xl md:text-3xl">
+        <p className="text-lg text-white/90 drop-shadow-md sm:text-xl md:text-2xl">
           Gestão em Recursos Humanos
         </p>
       </motion.div>
