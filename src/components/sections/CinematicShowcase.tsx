@@ -190,7 +190,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
       <motion.div
         variants={subtitleVariants}
-        className="relative z-10 mt-3 text-center md:absolute md:right-0 md:bottom-24 md:left-0 md:mt-0"
+        className="absolute right-20 bottom-16 left-4 z-10 text-center md:relative md:right-0 md:bottom-auto md:left-0 md:mt-3"
       >
         <p className="text-lg text-white/90 drop-shadow-md sm:text-xl md:text-2xl">
           Gestão em Recursos Humanos
