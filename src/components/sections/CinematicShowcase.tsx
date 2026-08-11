@@ -205,7 +205,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
     >
       <motion.div
         variants={textVariants}
-        className="absolute top-[12px] right-0 left-0 z-10 text-center md:top-8"
+        className="absolute top-16 right-0 left-0 z-10 text-center md:top-8"
       >
         <h1 className="text-3xl font-bold text-white drop-shadow-lg sm:text-4xl md:text-5xl lg:text-6xl">
           J&amp;S Empregos
@@ -234,7 +234,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
 
       <motion.div
         variants={subtitleVariants}
-        className="absolute right-20 bottom-16 left-4 z-10 text-center md:right-0 md:bottom-24 md:left-0"
+        className="absolute right-0 bottom-24 left-0 z-10 text-center md:bottom-24"
       >
         <p className="text-lg text-white/90 drop-shadow-md sm:text-xl md:text-2xl">
           Gestão em Recursos Humanos

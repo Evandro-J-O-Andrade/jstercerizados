@@ -61,7 +61,6 @@ const footerLinks = {
     { label: 'Vagas', href: '/vagas' },
     { label: 'Cadastrar Currículo', href: '/trabalhe-conosco' },
     { label: 'Processo Seletivo', href: '/processo-seletivo' },
-    { label: 'Trabalhe Conosco', href: '/trabalhe-conosco' },
     { label: 'FAQ', href: '/faq' },
   ],
   empresas: [
