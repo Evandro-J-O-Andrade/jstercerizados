@@ -72,10 +72,33 @@ export function SafeImage({
     if (typeof window === 'undefined') return;
     const img = new Image();
     img.src = src;
-    if (img.complete && !didLoadRef.current) {
-      didLoadRef.current = true;
-      setIsLoading(false);
+
+    const handleLoad = () => {
+      if (!didLoadRef.current) {
+        didLoadRef.current = true;
+        setIsLoading(false);
+      }
+    };
+
+    const handleError = () => {
+      if (!didLoadRef.current) {
+        didLoadRef.current = true;
+        setIsLoading(false);
+        setHasError(true);
+      }
+    };
+
+    img.onload = handleLoad;
+    img.onerror = handleError;
+
+    if (img.complete) {
+      handleLoad();
     }
+
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
   }, [src]);
 
   useEffect(() => {
