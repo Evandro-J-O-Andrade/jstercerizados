@@ -660,22 +660,7 @@
 
   /* Cinematic Showcase — object-position responsivo */
   .cinematic-hero-image img {
-    object-position: 60% center;
-  }
-  @media (min-width: 640px) {
-    .cinematic-hero-image img {
-      object-position: center 35%;
-    }
-  }
-  @media (min-width: 768px) {
-    .cinematic-hero-image img {
-      object-position: center 33%;
-    }
-  }
-  @media (min-width: 1024px) {
-    .cinematic-hero-image img {
-      object-position: center 30%;
-    }
+    object-position: center 30%;
   }
 
   [data-mobile] html {
