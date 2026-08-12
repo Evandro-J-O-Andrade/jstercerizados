@@ -142,6 +142,7 @@ export default function Suporte() {
     prioridade: '',
     assunto: '',
     descricao: '',
+    observacoes: '',
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -485,7 +486,7 @@ export default function Suporte() {
                           </label>
                           <Textarea
                             name="observacoes"
-                            value={formData.descricao}
+                            value={formData.observacoes}
                             onChange={handleChange}
                             placeholder="Conte um pouco sobre sua necessidade..."
                             rows={3}

@@ -20,7 +20,7 @@ import {
 
 export default function Empresas() {
   return (
-    <div className="min-h-screen pt-16 lg:pt-20">
+    <div className="min-h-screen">
       <SEO
         title={`Para Empresas — ${COMPANY.name}`}
         description="Soluções em recrutamento, seleção, mão de obra temporária e efetiva, terceirização e facilities para empresas."
@@ -71,7 +71,7 @@ export default function Empresas() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-8 flex justify-center gap-4"
           >
-            <Link to="/trabalhe-conosco">
+            <Link to="/clientes">
               <Button variant="primary" size="lg">
                 <Users className="mr-2 h-5 w-5" />
                 Divulgar Vaga

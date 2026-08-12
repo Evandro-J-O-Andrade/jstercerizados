@@ -16,16 +16,18 @@ import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { cn } from '@/utils';
 
 const positionOptions = [
-  { value: 'administrativo', label: 'Administrativo' },
-  { value: 'logistica', label: 'Logística e Armazém' },
-  { value: 'producao', label: 'Produção' },
-  { value: 'ti', label: 'Tecnologia da Informação' },
-  { value: 'comercio', label: 'Comércio e Varejo' },
-  { value: 'servicos', label: 'Serviços Gerais' },
-  { value: 'limpeza', label: 'Limpeza e Conservação' },
-  { value: 'seguranca', label: 'Segurança e Portaria' },
-  { value: 'zeladoria', label: 'Zeladoria e Manutenção' },
-  { value: 'outro', label: 'Outra área de atuação' },
+  { value: 'auxiliar-de-embalagens', label: 'Auxiliar de embalagens' },
+  { value: 'auxiliar-logistico', label: 'Auxiliar logístico' },
+  { value: 'auxiliar-de-rh', label: 'Auxiliar de RH' },
+  { value: 'assistente-administrativo', label: 'Assistente administrativo' },
+  { value: 'assistente-rh', label: 'Assistente RH' },
+  { value: 'assistente-dp', label: 'Assistente DP' },
+  { value: 'analista-dp', label: 'Analista DP' },
+  { value: 'conferente', label: 'Conferente' },
+  { value: 'auxiliar-de-tapeçaria', label: 'Auxiliar de tapeçaria' },
+  { value: 'assistente-de-expedicao', label: 'Assistente de expedição' },
+  { value: 'assistente-de-pcp', label: 'Assistente de PCP' },
+  { value: 'auxiliar-de-almoxarifado', label: 'Auxiliar de almoxarifado' },
 ];
 
 const candidateSchema = z.object({
@@ -35,7 +37,9 @@ const candidateSchema = z.object({
   phone: z.string().min(10, 'Telefone deve ter pelo menos 10 caracteres'),
   email: z.string().email('E-mail inválido'),
   city: z.string().min(2, 'Cidade é obrigatória'),
-  position: z.string().min(1, 'Selecione uma área de atuação'),
+  positions: z
+    .array(z.string())
+    .min(1, 'Selecione pelo menos uma área de interesse'),
   experience: z.string().min(2, 'Experiência é obrigatória'),
   courses: z.string().optional(),
   availability: z.string().optional(),
@@ -71,7 +75,7 @@ type CandidateFormData = z.infer<typeof candidateSchema>;
 
 export default function TrabalheConosco() {
   const [submitted, setSubmitted] = useState(false);
-  const [selectedPosition, setSelectedPosition] = useState('');
+  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const {
@@ -82,7 +86,7 @@ export default function TrabalheConosco() {
   } = useForm<CandidateFormData>({
     resolver: zodResolver(candidateSchema),
     defaultValues: {
-      position: '',
+      positions: [],
     },
   });
 
@@ -97,7 +101,7 @@ export default function TrabalheConosco() {
       email: data.email,
       city: data.city,
       experience: data.experience,
-      position: data.position,
+      position: data.positions.join(', '),
       resume: data.resume,
       availability: data.availability ?? '',
       courses: data.courses ?? '',
@@ -106,7 +110,7 @@ export default function TrabalheConosco() {
     });
     setSubmitted(true);
     reset();
-    setSelectedPosition('');
+    setSelectedPositions([]);
     setSelectedFile(null);
   };
 
@@ -172,11 +176,16 @@ export default function TrabalheConosco() {
         <Container>
           <div className="mb-12 text-center">
             <h1 className="text-foreground text-3xl font-bold sm:text-4xl">
-              Cadastrar Currículo
+              Banco de Talentos
             </h1>
             <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
-              Cadastre seu currículo, escolha a vaga de interesse e faça parte
-              das oportunidades que temos para você.
+              Mesmo que não exista uma vaga aberta no momento, seu perfil pode
+              fazer parte do nosso Banco de Talentos.
+            </p>
+            <p className="text-muted-foreground mx-auto mt-2 max-w-2xl text-base">
+              Selecione as oportunidades que você procura e cadastre seu
+              currículo. A J&S Empregos entrará em contato quando houver
+              compatibilidade.
             </p>
           </div>
 
@@ -189,31 +198,36 @@ export default function TrabalheConosco() {
               >
                 <div className="bg-primary/10 text-primary mb-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
                   <Briefcase className="h-4 w-4" />
-                  Cadastrar Currículo
+                  Qual oportunidade você procura?
                 </div>
                 <p className="text-muted-foreground">
-                  Selecione sua área de atuação e preencha o formulário com seus
-                  dados e anexe seu currículo.
+                  Selecione uma ou mais áreas de interesse e preencha o
+                  formulário com seus dados.
                 </p>
 
-                <div className="mt-6 space-y-3">
+                <div className="mt-6 max-h-[520px] space-y-3 overflow-y-auto pr-1">
                   {positionOptions.map((opt) => (
                     <label
                       key={opt.value}
                       className={cn(
                         'flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
-                        selectedPosition === opt.value
+                        selectedPositions.includes(opt.value)
                           ? 'border-primary bg-primary/5'
                           : 'border-border hover:border-primary',
                       )}
                     >
                       <input
-                        type="radio"
-                        name="position"
+                        type="checkbox"
                         value={opt.value}
-                        checked={selectedPosition === opt.value}
-                        onChange={(e) => setSelectedPosition(e.target.value)}
-                        className="text-primary focus:ring-primary h-4 w-4"
+                        checked={selectedPositions.includes(opt.value)}
+                        onChange={(e) => {
+                          setSelectedPositions((prev) =>
+                            e.target.checked
+                              ? [...prev, opt.value]
+                              : prev.filter((v) => v !== opt.value),
+                          );
+                        }}
+                        className="text-primary focus:ring-primary h-4 w-4 rounded"
                       />
                       <span className="text-muted-foreground text-sm font-medium">
                         {opt.label}
@@ -225,15 +239,29 @@ export default function TrabalheConosco() {
             </div>
 
             <div className="lg:col-span-3">
-              {selectedPosition && (
+              {selectedPositions.length > 0 && (
                 <motion.form
-                  key={selectedPosition}
+                  key={selectedPositions.join(',')}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                   onSubmit={handleSubmit(onSubmit)}
                   className="bg-card shadow-premium rounded-2xl p-8"
                 >
+                  <div className="mb-4">
+                    <p className="text-muted-foreground text-sm">
+                      Áreas selecionadas:{' '}
+                      <span className="text-foreground font-medium">
+                        {selectedPositions
+                          .map(
+                            (val) =>
+                              positionOptions.find((o) => o.value === val)
+                                ?.label,
+                          )
+                          .join(', ')}
+                      </span>
+                    </p>
+                  </div>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div className="md:col-span-2">
                       <Input
@@ -368,7 +396,7 @@ export default function TrabalheConosco() {
                     </div>
                   </div>
 
-                  <input type="hidden" {...register('position')} />
+                  <input type="hidden" {...register('positions')} />
 
                   <div className="mt-8">
                     <Button
@@ -379,13 +407,13 @@ export default function TrabalheConosco() {
                       loading={isSubmitting}
                       leftIcon={<Send className="h-5 w-5" />}
                     >
-                      Enviar Currículo
+                      Enviar Currículo para o Banco de Talentos
                     </Button>
                   </div>
                 </motion.form>
               )}
 
-              {!selectedPosition && (
+              {selectedPositions.length === 0 && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -393,7 +421,8 @@ export default function TrabalheConosco() {
                 >
                   <Briefcase className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                   <p className="text-muted-foreground">
-                    Selecione uma vaga acima para preencher o formulário.
+                    Selecione uma ou mais oportunidades acima para enviar seu
+                    currículo.
                   </p>
                 </motion.div>
               )}

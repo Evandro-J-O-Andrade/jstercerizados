@@ -20,10 +20,9 @@ export const HERO_SLIDES: HeroSlideData[] = [
     id: 'rh',
     eyebrow: 'ASSESSORIA EM RECURSOS HUMANOS',
     eyebrowIcon: Shield,
-    title:
-      'Mais eficiência em Recursos Humanos, mais agilidade para sua empresa.',
+    title: 'Mais eficiência em RH. Mais resultados para sua empresa.',
     description:
-      'Simplifique processos operacionais, reduza encargos e dedique seu tempo ao que realmente importa: o crescimento do seu negócio.',
+      'Mão de obra temporária e efetiva, recrutamento, seleção e soluções em RH para empresas.',
     image: '/images/services/assessoria-rh.png',
     imageAlt: 'Equipe em reunião corporativa de recrutamento',
     primaryCta: {

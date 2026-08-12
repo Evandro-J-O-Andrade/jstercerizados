@@ -16,6 +16,8 @@ import {
   Users,
   ChevronDown,
   ChevronRight,
+  MessageCircle,
+  Headphones,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui/Button';
@@ -30,15 +32,22 @@ import {
 } from '@/config';
 
 const companiesSubmenu = [
-  { label: 'Empresas', href: '/empresas' },
+  { label: 'Soluções para Empresas', href: '/empresas' },
   { label: 'Divulgar Vaga', href: '/clientes' },
-  { label: 'Parceiros', href: '/parceiros' },
+  { label: 'Clientes', href: '/clientes' },
+  { label: 'Fornecedores', href: '/fornecedores' },
 ];
 
 const candidatesSubmenu = [
   { label: 'Candidatos', href: '/candidatos' },
   { label: 'Trabalhe Conosco', href: '/trabalhe-conosco' },
   { label: 'Processo Seletivo', href: '/processo-seletivo' },
+];
+
+const contactSubmenu = [
+  { label: 'Fale Conosco', href: '/contato' },
+  { label: 'WhatsApp', href: '/contato' },
+  { label: 'Suporte', href: '/suporte' },
   { label: 'FAQ', href: '/faq' },
 ];
 
@@ -284,6 +293,11 @@ export function Navbar() {
             items={companiesSubmenu}
           />
           <Dropdown label="Candidatos" icon={Users} items={candidatesSubmenu} />
+          <Dropdown
+            label="Contato"
+            icon={MessageCircle}
+            items={contactSubmenu}
+          />
 
           <Button
             variant="ghost"
@@ -358,7 +372,7 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="overlay-backdrop fixed inset-0 z-[60] lg:hidden"
+              className="overlay-backdrop fixed inset-0 z-40 lg:hidden"
               onClick={() => {
                 setIsOpen(false);
                 setOpenAccordion(null);
@@ -375,7 +389,7 @@ export function Navbar() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="overlay-panel fixed top-0 right-0 z-[70] h-full w-[85%] max-w-md lg:hidden"
+              className="overlay-panel fixed top-0 right-0 z-50 h-full w-[85%] max-w-md lg:hidden"
               style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
               <div className="flex items-center justify-between p-4">
@@ -443,6 +457,18 @@ export function Navbar() {
                   onToggle={() =>
                     setOpenAccordion(
                       openAccordion === 'candidatos' ? null : 'candidatos',
+                    )
+                  }
+                  onClose={() => setIsOpen(false)}
+                />
+
+                <MobileAccordion
+                  title="Contato"
+                  links={contactSubmenu}
+                  isOpen={openAccordion === 'contato'}
+                  onToggle={() =>
+                    setOpenAccordion(
+                      openAccordion === 'contato' ? null : 'contato',
                     )
                   }
                   onClose={() => setIsOpen(false)}

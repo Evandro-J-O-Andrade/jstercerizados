@@ -97,19 +97,23 @@ export interface Vaga {
   id: string;
   slug: string;
   titulo: string;
-  empresa: string;
-  cidade: string;
-  estado: string;
-  tipoContrato:
+  empresa?: string;
+  cidade?: string;
+  estado?: string;
+  tipoContrato?:
     'CLT' | 'ESTAGIO' | 'TEMPORARIO' | 'FREELA' | 'TERCEIRIZADO' | 'CD';
-  nivel: 'ESTAGIO' | 'JUNIOR' | 'PLENO' | 'SENIOR' | 'MASTER' | 'LIDERANCA';
+  nivel?: 'ESTAGIO' | 'JUNIOR' | 'PLENO' | 'SENIOR' | 'MASTER' | 'LIDERANCA';
   salarioMin?: number;
   salarioMax?: number;
-  modalidade: 'PRESENCIAL' | 'HIBRIDO' | 'REMOTO';
-  beneficios: string[];
-  requisitos: string;
-  descricao: string;
-  vagas: number;
+  modalidade?: 'PRESENCIAL' | 'HIBRIDO' | 'REMOTO';
+  beneficios?: string[];
+  requisitos?: string;
+  descricao?: string;
+  responsibilities?: string;
+  area?: string;
+  workload?: string;
+  workSchedule?: string;
+  vagas?: number;
   status: 'BORRAR' | 'ATIVA' | 'ARQUIVADA' | 'CONTRATADA';
   dataPublicacao: string;
 }

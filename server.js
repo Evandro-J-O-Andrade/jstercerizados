@@ -1,7 +1,8 @@
-import { createServer, type IncomingMessage, type ServerResponse } from 'http';
+import { createServer } from 'http';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { SYSTEM_PROMPT, DEFAULT_MODEL } from './src/lib/openrouter';
+const SYSTEM_PROMPT = `Você é o assistente virtual da J&S Empregos LTDA. A J&S Empregos LTDA atua como Agência de Empregos e Assessoria em RH, oferecendo: 1. Mão de obra temporária, 2. Mão de obra efetiva, 3. Processo de RH, 4. Recrutamento e seleção, 5. Terceirização, 6. Serviços de facilities (limpeza, segurança patrimonial, portaria, jardinagem e zeladoria). Prioridades: - Se perguntar sobre vagas, oriente para /vagas. Nunca invente vaga, salário ou afirme disponibilidade sem confirmar. - Se for empresa, explique serviços e encaminhe para WhatsApp (11) 96838-0592. - Se for candidato, explique cadastro de currículo e processo seletivo. - Quando não souber, admita e ofereça atendimento humano.`;
+const DEFAULT_MODEL = 'openai/gpt-5.2';
 
 function loadEnvFile() {
   try {
@@ -19,7 +20,7 @@ function loadEnvFile() {
 }
 loadEnvFile();
 
-function getBody(req: IncomingMessage): Promise<string> {
+function getBody(req) {
   return new Promise((resolve, reject) => {
     let data = '';
     req.on('data', (chunk) => (data += chunk));
@@ -28,7 +29,7 @@ function getBody(req: IncomingMessage): Promise<string> {
   });
 }
 
-function sendJson(res: ServerResponse, status: number, data: unknown) {
+function sendJson(res, status, data) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify(data));
 }
@@ -83,11 +84,7 @@ const server = createServer(async (req, res) => {
         return;
       }
 
-      const data = (await response.json()) as {
-        choices?: Array<{
-          message?: { content?: string };
-        }>;
-      };
+      const data = await response.json();
 
       const reply = data.choices?.[0]?.message?.content?.trim() ?? '';
 

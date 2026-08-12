@@ -8,9 +8,8 @@ import { JobApplicationForm } from '@/components/forms/JobApplicationForm';
 import { mockGetVagaBySlug } from '@/services/mock/vagas';
 import { COMPANY } from '@/config';
 import { ArrowLeft, MapPin, Clock, DollarSign, Briefcase } from 'lucide-react';
-import type { Vaga } from '@/types/common';
 
-const CONTRATO_LABELS: Record<Vaga['tipoContrato'], string> = {
+const CONTRATO_LABELS: Record<string, string> = {
   CLT: 'CLT',
   ESTAGIO: 'Estágio',
   TEMPORARIO: 'Temporário',
@@ -19,7 +18,7 @@ const CONTRATO_LABELS: Record<Vaga['tipoContrato'], string> = {
   CD: 'C/D',
 };
 
-const MODALIDADE_LABELS: Record<Vaga['modalidade'], string> = {
+const MODALIDADE_LABELS: Record<string, string> = {
   PRESENCIAL: 'Presencial',
   HIBRIDO: 'Híbrido',
   REMOTO: 'Remoto',
@@ -31,7 +30,7 @@ export default function VagaDetalhe() {
 
   if (!vaga) {
     return (
-      <div className="min-h-screen pt-16 lg:pt-20">
+      <div className="min-h-screen">
         <Section className="pt-20 md:pt-28">
           <Container>
             <motion.div
@@ -65,12 +64,15 @@ export default function VagaDetalhe() {
     });
 
   return (
-    <div className="min-h-screen pt-16 lg:pt-20">
+    <div className="min-h-screen">
       <SEO
         title={`${vaga.titulo} — ${COMPANY.name}`}
-        description={vaga.descricao}
+        description={
+          vaga.descricao || `Oportunidade de ${vaga.titulo} na ${COMPANY.name}.`
+        }
         keywords={[
           vaga.titulo,
+          vaga.area || '',
           'vaga',
           'emprego',
           'trabalho',
@@ -106,39 +108,59 @@ export default function VagaDetalhe() {
                 <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
                   {vaga.titulo}
                 </h1>
-                <p className="text-muted-foreground mt-2 text-lg">
-                  {vaga.empresa}
-                </p>
+                {vaga.empresa && (
+                  <p className="text-muted-foreground mt-2 text-lg">
+                    {vaga.empresa}
+                  </p>
+                )}
               </div>
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-medium ${
-                  vaga.tipoContrato === 'CLT'
-                    ? 'bg-success/10 text-success'
-                    : 'bg-primary/10 text-primary'
-                }`}
-              >
-                {CONTRATO_LABELS[vaga.tipoContrato]}
-              </span>
+              {vaga.tipoContrato && (
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-medium ${
+                    vaga.tipoContrato === 'CLT'
+                      ? 'bg-success/10 text-success'
+                      : 'bg-primary/10 text-primary'
+                  }`}
+                >
+                  {CONTRATO_LABELS[vaga.tipoContrato]}
+                </span>
+              )}
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6"
+              className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
             >
-              <div className="flex items-center gap-3">
-                <MapPin className="text-primary h-5 w-5" />
-                <span className="text-sm">
-                  {vaga.cidade}, {vaga.estado}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Clock className="text-primary h-5 w-5" />
-                <span className="text-sm">
-                  {MODALIDADE_LABELS[vaga.modalidade]}
-                </span>
-              </div>
+              {vaga.area && (
+                <div className="flex items-center gap-3">
+                  <Briefcase className="text-primary h-5 w-5" />
+                  <span className="text-sm">{vaga.area}</span>
+                </div>
+              )}
+              {vaga.cidade && vaga.estado && (
+                <div className="flex items-center gap-3">
+                  <MapPin className="text-primary h-5 w-5" />
+                  <span className="text-sm">
+                    {vaga.cidade}, {vaga.estado}
+                  </span>
+                </div>
+              )}
+              {vaga.workSchedule && (
+                <div className="flex items-center gap-3">
+                  <Clock className="text-primary h-5 w-5" />
+                  <span className="text-sm">{vaga.workSchedule}</span>
+                </div>
+              )}
+              {vaga.modalidade && (
+                <div className="flex items-center gap-3">
+                  <Briefcase className="text-primary h-5 w-5" />
+                  <span className="text-sm">
+                    {MODALIDADE_LABELS[vaga.modalidade]}
+                  </span>
+                </div>
+              )}
               {vaga.salarioMin && (
                 <div className="flex items-center gap-3">
                   <DollarSign className="text-primary h-5 w-5" />
@@ -150,10 +172,12 @@ export default function VagaDetalhe() {
                   </span>
                 </div>
               )}
-              <div className="flex items-center gap-3">
-                <Briefcase className="text-primary h-5 w-5" />
-                <span className="text-sm">{vaga.vagas} vaga(s)</span>
-              </div>
+              {vaga.workload && (
+                <div className="flex items-center gap-3">
+                  <Clock className="text-primary h-5 w-5" />
+                  <span className="text-sm">{vaga.workload}</span>
+                </div>
+              )}
             </motion.div>
 
             <motion.div
@@ -161,23 +185,38 @@ export default function VagaDetalhe() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
-              <div className="border-border mb-8 border-t pt-8">
-                <h2 className="text-foreground mb-4 text-xl font-semibold">
-                  Sobre a vaga
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  {vaga.descricao}
-                </p>
-              </div>
+              {vaga.descricao && (
+                <div className="border-border mb-8 border-t pt-8">
+                  <h2 className="text-foreground mb-4 text-xl font-semibold">
+                    Sobre a vaga
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {vaga.descricao}
+                  </p>
+                </div>
+              )}
 
-              <div className="border-border mb-8 border-t pt-8">
-                <h2 className="text-foreground mb-4 text-xl font-semibold">
-                  Requisitos
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  {vaga.requisitos}
-                </p>
-              </div>
+              {vaga.responsibilities && (
+                <div className="border-border mb-8 border-t pt-8">
+                  <h2 className="text-foreground mb-4 text-xl font-semibold">
+                    Responsabilidades e atribuições
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {vaga.responsibilities}
+                  </p>
+                </div>
+              )}
+
+              {vaga.requisitos && (
+                <div className="border-border mb-8 border-t pt-8">
+                  <h2 className="text-foreground mb-4 text-xl font-semibold">
+                    Requisitos e qualificações
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {vaga.requisitos}
+                  </p>
+                </div>
+              )}
 
               {vaga.beneficios && vaga.beneficios.length > 0 && (
                 <div className="border-border mb-8 border-t pt-8">

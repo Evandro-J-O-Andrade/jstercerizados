@@ -59,7 +59,7 @@ export default function Vagas() {
   };
 
   return (
-    <div className="min-h-screen pt-16 lg:pt-20">
+    <div className="min-h-screen">
       <SEO
         title={`Vagas — ${COMPANY.name}`}
         description={`Oportunidades de trabalho e vagas disponíveis na ${COMPANY.name}. Encontre sua próxima oportunidade profissional.`}
@@ -271,28 +271,35 @@ export default function Vagas() {
                       <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
                         {vaga.titulo}
                       </h3>
-                      <p className="text-muted-foreground text-sm">
-                        {vaga.empresa}
-                      </p>
+                      {vaga.empresa && (
+                        <p className="text-muted-foreground text-sm">
+                          {vaga.empresa}
+                        </p>
+                      )}
                     </div>
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                        vaga.tipoContrato === 'CLT'
-                          ? 'bg-success/10 text-success'
-                          : 'bg-primary/10 text-primary'
-                      }`}
-                    >
-                      {CONTRATO_LABELS[vaga.tipoContrato] || vaga.tipoContrato}
-                    </span>
+                    {vaga.tipoContrato && (
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                          vaga.tipoContrato === 'CLT'
+                            ? 'bg-success/10 text-success'
+                            : 'bg-primary/10 text-primary'
+                        }`}
+                      >
+                        {CONTRATO_LABELS[vaga.tipoContrato] ||
+                          vaga.tipoContrato}
+                      </span>
+                    )}
                   </div>
 
                   <div className="mb-4 space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="text-muted-foreground h-4 w-4" />
-                      <span className="text-muted-foreground">
-                        {vaga.cidade}, {vaga.estado}
-                      </span>
-                    </div>
+                    {vaga.cidade && vaga.estado && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <MapPin className="text-muted-foreground h-4 w-4" />
+                        <span className="text-muted-foreground">
+                          {vaga.cidade}, {vaga.estado}
+                        </span>
+                      </div>
+                    )}
                     {vaga.salarioMin && (
                       <div className="flex items-center gap-2 text-sm">
                         <span className="text-muted-foreground">R$</span>
@@ -312,6 +319,11 @@ export default function Vagas() {
                           : vaga.modalidade === 'HIBRIDO'
                             ? 'Híbrido'
                             : 'Remoto'}
+                      </span>
+                    )}
+                    {vaga.area && (
+                      <span className="text-muted-foreground/70 inline-block text-xs">
+                        {vaga.area}
                       </span>
                     )}
                   </div>

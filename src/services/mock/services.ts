@@ -105,6 +105,47 @@ export const mockServices: Service[] = [
     category: 'rh',
   },
   {
+    id: '25',
+    slug: 'banco-de-talentos',
+    title: 'Banco de Talentos',
+    shortDescription:
+      'Cadastre seu currículo e seja encontrado por empresas parceiras.',
+    description:
+      'Mantenha seu currículo atualizado no nosso Banco de Talentos e seja encontrado por empresas que buscam profissionais como você.',
+    benefits: [
+      'Cadastro rápido e gratuito',
+      'Currículo visível para empresas parceiras',
+      'Atualização de dados',
+      'Alertas de novas vagas',
+      'Acesso a currículos qualificados',
+    ],
+    image:
+      SERVICE_IMAGES.bancoTalentoReal ?? '/images/services/banco-talentos.svg',
+    icon: 'users',
+    category: 'rh',
+  },
+  {
+    id: '26',
+    slug: 'processo-de-rh',
+    title: 'Processo de RH',
+    shortDescription:
+      'Estruturamos todo o processo de recrutamento e seleção da sua empresa.',
+    description:
+      'Estruturamos todo o processo de recrutamento e seleção da sua empresa, desde a abertura da vaga até a integração do novo colaborador.',
+    benefits: [
+      'Estruturação de processos',
+      'Metodologias de seleção',
+      'Acompanhamento de indicadores',
+      'Integração de novos colaboradores',
+      'Relatórios de eficiência',
+      'Melhoria contínua',
+    ],
+    image:
+      SERVICE_IMAGES.avaliacaoPerfil ?? '/images/services/avaliacao-perfil.svg',
+    icon: 'briefcase',
+    category: 'rh',
+  },
+  {
     id: '4',
     slug: 'hunting',
     title: 'Executive Search (Hunting)',
@@ -213,12 +254,12 @@ export const mockServices: Service[] = [
   },
   {
     id: '13',
-    slug: 'faxina',
-    title: 'Faxina',
+    slug: 'faxina-diarista',
+    title: 'Faxina Diarista',
     shortDescription:
       'Serviço de faxina residencial e comercial com limpeza profunda e organização.',
     description:
-      'Serviço de faxina residencial e comercial com limpeza profunda, organização de ambientes e atenção aos detalhes para deixar tudo impecável.',
+      'Serviço de faxina diarista residencial e comercial com limpeza profunda, organização de ambientes e atenção aos detalhes para deixar tudo impecável.',
     benefits: [
       'Limpeza profunda',
       'Organização de ambientes',
@@ -317,27 +358,6 @@ export const mockServices: Service[] = [
       SERVICE_IMAGES.terceirizacaoReal ?? '/images/services/terceirizacao.svg',
     icon: 'building',
     category: 'terceirizacao',
-  },
-  {
-    id: '17',
-    slug: 'limpeza-conservacao',
-    title: 'Limpeza e Conservação',
-    shortDescription:
-      'Limpeza profissional com produtos ecológicos e equipe treinada.',
-    description:
-      'Serviço de limpeza profissional com equipe treinada, produtos ecológicos e metodologia que garante higiene e conservação do seu ambiente.',
-    benefits: [
-      'Equipe treinada e uniformizada',
-      'Produtos ecológicos',
-      'Limpeza diária e periódica',
-      'Conservação de ambientes',
-      'Controle de qualidade',
-      'Relatórios de limpeza',
-    ],
-    image:
-      SERVICE_IMAGES.limpezaReal ?? '/images/services/limpeza-escritorio.jfif',
-    icon: 'sparkles',
-    category: 'facilities',
   },
   {
     id: '19',

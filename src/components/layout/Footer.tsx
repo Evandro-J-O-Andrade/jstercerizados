@@ -61,16 +61,16 @@ const footerLinks = {
     { label: 'Vagas', href: '/vagas' },
     { label: 'Cadastrar Currículo', href: '/trabalhe-conosco' },
     { label: 'Processo Seletivo', href: '/processo-seletivo' },
-    { label: 'FAQ', href: '/faq' },
   ],
   empresas: [
     { label: 'Empresas', href: '/empresas' },
     { label: 'Divulgar Vaga', href: '/clientes' },
   ],
-  atendimento: [
+  contato: [
+    { label: 'Fale Conosco', href: '/contato' },
+    { label: 'WhatsApp', href: '/contato' },
     { label: 'Suporte', href: '/suporte' },
     { label: 'FAQ', href: '/faq' },
-    { label: 'Entrar', href: '/login', icon: LogIn },
   ],
 };
 
@@ -394,10 +394,10 @@ export function Footer({
                 {/* Atendimento */}
                 <div className="hidden lg:block">
                   <h4 className="text-primary mb-5 text-xs font-bold tracking-wider uppercase">
-                    Atendimento
+                    Contato
                   </h4>
                   <div className="space-y-3">
-                    {footerLinks.atendimento.map((link) => {
+                    {footerLinks.contato.map((link) => {
                       const Icon = link.icon;
                       return (
                         <Link
@@ -429,10 +429,7 @@ export function Footer({
                 links={footerLinks.candidatos}
               />
               <MobileAccordion title="Empresas" links={footerLinks.empresas} />
-              <MobileAccordion
-                title="Atendimento"
-                links={footerLinks.atendimento}
-              />
+              <MobileAccordion title="Contato" links={footerLinks.contato} />
             </div>
           </div>
         </div>

@@ -31,11 +31,16 @@ const publicNavItems: NavItem[] = [
   { label: 'Entrar', href: '/login', icon: LogIn },
 ];
 
-const partnerNavItems: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Documentos', href: '#', icon: FileText },
-  { label: 'Oportunidades', href: '#', icon: Briefcase },
-  { label: 'Perfil', href: '#', icon: Settings },
+const candidateNavItems: NavItem[] = [
+  { label: 'Início', href: '/', icon: Home },
+  { label: 'Vagas', href: '/vagas', icon: Briefcase },
+  { label: 'Currículo', href: '/dashboard/candidato', icon: FileText },
+];
+
+const companyNavItems: NavItem[] = [
+  { label: 'Início', href: '/', icon: Home },
+  { label: 'Vagas', href: '/vagas', icon: Briefcase },
+  { label: 'Candidatos', href: '/candidatos', icon: Users },
 ];
 
 const adminNavItems: NavItem[] = [
@@ -47,12 +52,14 @@ const adminNavItems: NavItem[] = [
 
 export function BottomNavigation() {
   const { pathname } = useLocation();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, profile } = useAuth();
 
   const navItems = isAuthenticated
-    ? user?.role === 'admin'
+    ? profile?.role === 'admin'
       ? adminNavItems
-      : partnerNavItems
+      : profile?.role === 'empresa'
+        ? companyNavItems
+        : candidateNavItems
     : publicNavItems;
 
   return (

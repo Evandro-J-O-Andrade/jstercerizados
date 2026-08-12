@@ -12,6 +12,7 @@ import {
   Eye,
   Edit,
   Trash2,
+  LogOut,
 } from 'lucide-react';
 import type {
   BudgetRequest,
@@ -32,6 +33,8 @@ import {
   mockDeleteCandidate,
 } from '@/services/mock';
 import { STATUS_COLORS, type StatusColorKey } from '@/constants/colors';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/utils';
 
 type Tab =
@@ -78,6 +81,9 @@ const STATUS_VARIANTS: Record<string, StatusColorKey> = {
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
+  const { profile, logout, authError } = useAuth();
+  const navigate = useNavigate();
+  const role = profile?.role ?? 'admin';
 
   const budgets = mockGetBudgets();
   const partners = mockGetPartners();
@@ -110,6 +116,11 @@ export default function Dashboard() {
       color: 'warning' as const,
     },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   function renderTable() {
     switch (activeTab) {
@@ -366,18 +377,48 @@ export default function Dashboard() {
     }
   }
 
+  const isCandidate = role === 'candidato';
+  const isCompany = role === 'empresa';
+
   return (
-    <div className="min-h-[calc(100vh-4rem)]">
+    <div className="min-h-screen">
+      {authError && (
+        <div className="bg-warning/10 text-warning mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+          <div className="rounded-xl p-4 text-sm">{authError}</div>
+        </div>
+      )}
       {/* Header */}
       <section className="bg-muted py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-2 flex items-center gap-3">
-            <Shield className="text-primary h-8 w-8" />
-            <h1 className="text-foreground text-3xl font-bold">Dashboard</h1>
+          <div className="mb-2 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Shield className="text-primary h-8 w-8" />
+              <div>
+                <h1 className="text-foreground text-3xl font-bold">
+                  {isCandidate
+                    ? 'Área do Candidato'
+                    : isCompany
+                      ? 'Área da Empresa'
+                      : 'Painel Administrativo'}
+                </h1>
+                <p className="text-muted-foreground">
+                  {isCandidate
+                    ? 'Gerencie seu currículo e candidaturas.'
+                    : isCompany
+                      ? 'Publique vagas e acompanhe candidaturas.'
+                      : 'Gerencie clientes, parceiros, fornecedores e currículos.'}
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<LogOut className="h-4 w-4" />}
+              onClick={handleLogout}
+            >
+              Sair
+            </Button>
           </div>
-          <p className="text-muted-foreground">
-            Gerencie clientes, parceiros, fornecedores e currículos.
-          </p>
         </div>
       </section>
 
@@ -411,92 +452,112 @@ export default function Dashboard() {
       </section>
 
       {/* Tabs */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="border-border mb-6 border-b">
-          <nav className="flex gap-6 overflow-x-auto" aria-label="Tabs">
-            {tabMap.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={cn(
-                  'flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium whitespace-nowrap transition-colors',
-                  activeTab === tab.key
-                    ? 'border-primary text-primary'
-                    : 'text-muted-foreground hover:text-foreground border-transparent',
-                )}
-              >
-                <tab.icon className="h-4 w-4" />
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        {/* Filters */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row">
-          <div className="relative flex-1">
-            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <Input
-              placeholder="Pesquisar..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+      {role === 'admin' && (
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="border-border mb-6 border-b">
+            <nav className="flex gap-6 overflow-x-auto" aria-label="Tabs">
+              {tabMap.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={cn(
+                    'flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium whitespace-nowrap transition-colors',
+                    activeTab === tab.key
+                      ? 'border-primary text-primary'
+                      : 'text-muted-foreground hover:text-foreground border-transparent',
+                  )}
+                >
+                  <tab.icon className="h-4 w-4" />
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
           </div>
-          <Button variant="outline" leftIcon={<Filter className="h-4 w-4" />}>
-            Filtros
-          </Button>
-          <Button variant="outline" leftIcon={<Download className="h-4 w-4" />}>
-            Exportar CSV
-          </Button>
-        </div>
 
-        {/* Content */}
-        <div className="bg-card shadow-premium overflow-hidden rounded-2xl">
-          {activeTab === 'dashboard' ? (
-            <div className="p-8 text-center">
-              <TrendingUp className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-              <h3 className="text-foreground mb-2 text-lg font-semibold">
-                Visão Geral
-              </h3>
-              <p className="text-muted-foreground mb-6">
-                Selecione uma aba para visualizar os dados.
-              </p>
-              <div className="grid grid-cols-1 gap-4 text-left sm:grid-cols-2 lg:grid-cols-4">
-                {stats.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="bg-surface-alt rounded-lg p-4"
-                  >
-                    <p className="text-foreground text-2xl font-bold">
-                      {stat.value}
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                      {stat.label}
+          {/* Filters */}
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row">
+            <div className="relative flex-1">
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+              <Input
+                placeholder="Pesquisar..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button variant="outline" leftIcon={<Filter className="h-4 w-4" />}>
+              Filtros
+            </Button>
+            <Button
+              variant="outline"
+              leftIcon={<Download className="h-4 w-4" />}
+            >
+              Exportar CSV
+            </Button>
+          </div>
+
+          {/* Content */}
+          <div className="bg-card shadow-premium overflow-hidden rounded-2xl">
+            {activeTab === 'dashboard' ? (
+              <div className="p-8 text-center">
+                <TrendingUp className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  Visão Geral
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Selecione uma aba para visualizar os dados.
+                </p>
+                <div className="grid grid-cols-1 gap-4 text-left sm:grid-cols-2 lg:grid-cols-4">
+                  {stats.map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="bg-surface-alt rounded-lg p-4"
+                    >
+                      <p className="text-foreground text-2xl font-bold">
+                        {stat.value}
+                      </p>
+                      <p className="text-muted-foreground text-sm">
+                        {stat.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="p-6">
+                {budgets.length === 0 &&
+                partners.length === 0 &&
+                suppliers.length === 0 &&
+                candidates.length === 0 ? (
+                  <div className="py-12 text-center">
+                    <FileText className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+                    <p className="text-muted-foreground">
+                      Nenhum registro encontrado.
                     </p>
                   </div>
-                ))}
+                ) : (
+                  renderTable()
+                )}
               </div>
-            </div>
-          ) : (
-            <div className="p-6">
-              {budgets.length === 0 &&
-              partners.length === 0 &&
-              suppliers.length === 0 &&
-              candidates.length === 0 ? (
-                <div className="py-12 text-center">
-                  <FileText className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-                  <p className="text-muted-foreground">
-                    Nenhum registro encontrado.
-                  </p>
-                </div>
-              ) : (
-                renderTable()
-              )}
-            </div>
-          )}
-        </div>
-      </section>
+            )}
+          </div>
+        </section>
+      )}
+
+      {(isCandidate || isCompany) && (
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="bg-card shadow-premium rounded-2xl p-8">
+            <h3 className="text-foreground mb-4 text-lg font-semibold">
+              {isCandidate ? 'Meu Perfil' : 'Minha Empresa'}
+            </h3>
+            <p className="text-muted-foreground">
+              {isCandidate
+                ? 'Gerencie seu currículo e acompanhe suas candidaturas.'
+                : 'Gerencie as vagas da sua empresa e acompanhe os candidatos.'}
+            </p>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

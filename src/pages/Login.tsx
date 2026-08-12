@@ -1,6 +1,6 @@
-﻿import { useState } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Shield, LogIn, Eye, EyeOff, Briefcase, Building2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,26 +27,55 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [profile, setProfile] = useState<ProfileType>('admin');
-  const { login, isAuthenticated } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, isAuthenticated, profile: userProfile, authError } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = (location.state as { from?: { pathname: string } })?.from
+    ?.pathname;
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      const target = from || getDashboardPath(userProfile?.role);
+      navigate(target, { replace: true });
+    }
+  }, [isAuthenticated, userProfile, navigate, from]);
+
+  const getDashboardPath = (role?: string | null): string => {
+    if (role === 'candidato') return '/dashboard/candidato';
+    if (role === 'empresa') return '/dashboard/empresa';
+    return '/dashboard';
+  };
+
   const onSubmit = async (data: LoginFormData): Promise<void> => {
     setError('');
-    const success = await login(data.email, data.password);
-    if (success) {
-      navigate('/dashboard');
-    } else {
-      setError('E-mail ou senha inválidos');
+    setIsSubmitting(true);
+
+    try {
+      const result = await login(data.email, data.password);
+
+      if (result.error) {
+        setError(result.error);
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+    }
+  }, [authError]);
 
   if (isAuthenticated) {
     return (
@@ -64,9 +93,9 @@ export default function Login() {
             Você já está logado!
           </h2>
           <p className="text-muted-foreground mb-8">
-            Redirecionando para o painel administrativo...
+            Redirecionando para o painel...
           </p>
-          <Link to="/dashboard">
+          <Link to={getDashboardPath(userProfile?.role)}>
             <Button variant="primary" size="lg">
               Ir para o Painel
             </Button>
@@ -229,12 +258,12 @@ export default function Login() {
                       Lembrar de mim
                     </span>
                   </label>
-                  <a
-                    href="#"
+                  <Link
+                    to="/recuperar-senha"
                     className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
                   >
                     Esqueceu a senha?
-                  </a>
+                  </Link>
                 </div>
 
                 <Button

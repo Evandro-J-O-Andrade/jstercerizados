@@ -15,7 +15,7 @@ import {
   MessageSquare,
   Phone,
   Quote,
-  Sparkle,
+  Wrench,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
@@ -164,6 +164,22 @@ const differentials = [
 
 const empresaSolutions = [
   {
+    title: 'Mão de Obra Temporária',
+    description:
+      'Profissionais qualificados para demandas sazonais ou projetos específicos.',
+    href: '/servicos/mao-de-obra-temporaria',
+    icon: Users,
+    highlight: true,
+  },
+  {
+    title: 'Mão de Obra Efetiva',
+    description:
+      'Contratação de profissionais permanentes com seleção completa e acompanhamento.',
+    href: '/servicos/mao-de-obra-efetiva',
+    icon: Users,
+    highlight: true,
+  },
+  {
     title: 'Assessoria em RH',
     description:
       'Profissional de RH dedicado para recrutamento, gestão e consultoria estratégica.',
@@ -178,25 +194,18 @@ const empresaSolutions = [
     icon: Search,
   },
   {
-    title: 'Mão de Obra Temporária',
+    title: 'Processo de RH',
     description:
-      'Profissionais qualificados para demandas sazonais ou projetos específicos.',
-    href: '/servicos/mao-de-obra-temporaria',
+      'Estruturamos todo o processo de recrutamento e seleção da sua empresa.',
+    href: '/servicos/processo-de-rh',
+    icon: Shield,
+  },
+  {
+    title: 'Banco de Talentos',
+    description:
+      'Cadastre seu currículo e seja encontrado por empresas parceiras.',
+    href: '/trabalhe-conosco',
     icon: Users,
-  },
-  {
-    title: 'Terceirização de Serviços',
-    description:
-      'Reduza custos e aumente a eficiência com serviços terceirizados especializados.',
-    href: '/servicos/terceirizacao',
-    icon: Building2,
-  },
-  {
-    title: 'Facilities',
-    description:
-      'Limpeza, segurança, portaria, jardinagem e recepção para seu ambiente profissional.',
-    href: '/servicos/facilities',
-    icon: Sparkle,
   },
 ];
 
@@ -222,28 +231,49 @@ const candidateBenefits = [
 
 const facilitiesSolutions = [
   {
-    title: 'Limpeza e Conservação',
+    title: 'Limpeza',
     description:
       'Limpeza profissional com produtos ecológicos e equipe treinada para sua empresa.',
-    href: '/servicos/limpeza-conservacao',
+    href: '/servicos/limpeza',
     icon: FileText,
   },
   {
-    title: 'Controle de Acesso',
+    title: 'Faxina diarista',
     description:
-      'Portaria 24h e controle de fluxo de pessoas para sua empresa ou condomínio.',
+      'Serviço de faxina residencial e comercial com limpeza profunda e organização.',
+    href: '/servicos/faxina-diarista',
+    icon: FileText,
+  },
+  {
+    title: 'Controlador de acesso',
+    description:
+      'Portaria 24h, recepção e controle de fluxo de pessoas para sua empresa ou condomínio.',
     href: '/servicos/controle-acesso',
     icon: Shield,
   },
   {
-    title: 'Jardinagem e Paisagismo',
+    title: 'Portaria',
     description:
-      'Manutenção de áreas verdes com projetos personalizados e cuidado profissional.',
+      'Equipe qualificada para recepção, portaria e segurança do seu local.',
+    href: '/servicos/portaria',
+    icon: Users,
+  },
+  {
+    title: 'Zeladoria',
+    description:
+      'Manutenção preventiva e conservação de instalações para condomínios e empresas.',
+    href: '/servicos/zeladoria-manutencao',
+    icon: Wrench,
+  },
+  {
+    title: 'Jardinagem',
+    description:
+      'Manutenção e conservação de áreas verdes com qualidade e profissionalismo.',
     href: '/servicos/jardinagem',
     icon: Heart,
   },
   {
-    title: 'Recepção e Portaria',
+    title: 'Recepção',
     description:
       'Equipe qualificada para recepção, atendimento e segurança do seu local.',
     href: '/servicos/portaria',
@@ -257,21 +287,26 @@ export default function Home() {
   return (
     <div>
       <SEO
-        title={`${COMPANY.name} — Assessoria em RH, Recrutamento, Mão de Obra e Facilities`}
-        description={COMPANY.description}
+        title={`${COMPANY.name} — Assessoria em RH, Recrutamento, Seleção e Banco de Talentos`}
+        description={
+          COMPANY.tagline +
+          ' Assessoria em RH, recrutamento, mão de obra temporária e efetiva, seleção, banco de talentos e facilities.'
+        }
         keywords={[
+          'assessoria em RH',
           'recrutamento',
           'seleção de pessoas',
           'mão de obra temporária',
           'mão de obra efetiva',
+          'banco de talentos',
+          'processo de RH',
           'terceirização',
           'facilities',
           'limpeza',
           'jardinagem',
           'portaria',
-          'assessoria em RH',
-          'RH',
           'vagas de emprego',
+          COMPANY.name,
         ]}
         type="WebSite"
       />
@@ -447,8 +482,8 @@ export default function Home() {
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Cadastre seu currículo, candidate-se às vagas e acompanhe seus
-              processos seletivos.
+              Encontre oportunidades, acompanhe suas candidaturas e mantenha seu
+              currículo atualizado.
             </motion.p>
           </motion.div>
 
@@ -457,45 +492,44 @@ export default function Home() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid grid-cols-1 gap-6 md:grid-cols-2"
           >
-            {candidateBenefits.map((benefit) => (
-              <motion.div
-                key={benefit.title}
-                variants={staggerItem('up')}
-                className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 text-center transition-all duration-300"
-              >
-                <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                  <benefit.icon className="h-6 w-6" />
-                </div>
-                <h3 className="text-foreground mb-2 text-lg font-semibold">
-                  {benefit.title}
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {benefit.description}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-10 flex flex-wrap justify-center gap-4"
-          >
-            <Link to="/vagas">
-              <Button variant="secondary" size="lg">
-                Ver Vagas
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link to="/trabalhe-conosco">
-              <Button variant="outline" size="lg">
-                Cadastrar Currículo
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card border-border hover:border-primary/30 rounded-2xl border p-8 transition-all duration-300"
+            >
+              <h3 className="text-foreground mb-2 text-xl font-semibold">
+                Já é candidato?
+              </h3>
+              <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
+                Faça seu login e acompanhe suas oportunidades. Receba novas
+                vagas, acompanhe candidaturas e mantenha seu currículo sempre
+                atualizado.
+              </p>
+              <Link to="/login">
+                <Button variant="primary" size="lg" className="w-full">
+                  Fazer login
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card border-border hover:border-primary/30 rounded-2xl border p-8 transition-all duration-300"
+            >
+              <h3 className="text-foreground mb-2 text-xl font-semibold">
+                Ainda não tem cadastro?
+              </h3>
+              <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
+                Cadastre seu currículo gratuitamente e seja visto pelas melhores
+                empresas. É rápido, gratuito e você só precisa preencher uma
+                vez.
+              </p>
+              <Link to="/trabalhe-conosco">
+                <Button variant="secondary" size="lg" className="w-full">
+                  Cadastrar currículo
+                </Button>
+              </Link>
+            </motion.div>
           </motion.div>
         </Container>
       </Section>
