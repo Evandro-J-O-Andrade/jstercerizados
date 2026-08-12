@@ -1,6 +1,20 @@
 import { type ReactNode, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { HeroImage } from './HeroImage';
+import { SafeImage } from '@/components/ui/SafeImage';
+
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia('(max-width: 768px)').matches,
+  );
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 768px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    media.addEventListener('change', handler);
+    return () => media.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
+};
 
 export interface HeroSplitSlide {
   id: string;
@@ -24,19 +38,19 @@ export interface HeroSplitProps {
   interval?: number;
 }
 
-const slideTextVariants = {
-  hidden: { opacity: 0, x: -24 },
+const slideTextVariants = (isMobile: boolean) => ({
+  hidden: { opacity: 0, x: isMobile ? '-50vw' : '-80vw' },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.7, ease: [0.25, 0.4, 0.25, 1] },
+    transition: { duration: 0.9, ease: [0.25, 0.4, 0.25, 1] },
   },
   exit: {
     opacity: 0,
-    x: 24,
-    transition: { duration: 0.4, ease: [0.25, 0.4, 0.25, 1] },
+    x: isMobile ? '50vw' : '80vw',
+    transition: { duration: 0.5, ease: [0.25, 0.4, 0.25, 1] },
   },
-};
+});
 
 const reducedMotionTextVariants = {
   hidden: { opacity: 0 },
@@ -56,9 +70,10 @@ export function HeroSplit({
 }: HeroSplitProps) {
   const [current, setCurrent] = useState(0);
   const shouldReduceMotion = useReducedMotion();
+  const isMobile = useIsMobile();
   const textVariants = shouldReduceMotion
     ? reducedMotionTextVariants
-    : slideTextVariants;
+    : slideTextVariants(isMobile);
 
   useEffect(() => {
     if (!autoPlay || slides.length <= 1) return;
@@ -76,8 +91,45 @@ export function HeroSplit({
   const slideCta = slide.cta ?? cta;
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
+    <section className="relative flex min-h-[85vh] items-center overflow-hidden pt-16 lg:pt-20">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,hsla(215,35%,25%,0.3),transparent_70%)]" />
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={slide.id}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+          className="absolute inset-0"
+        >
+          <SafeImage
+            src={slide.image}
+            alt={slide.alt}
+            className="h-full w-full object-cover"
+            loading="eager"
+            decoding="async"
+          />
+          <img
+            src="/images/hero/hero-overlay.svg"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-65"
+            aria-hidden="true"
+          />
+        </motion.div>
+      </AnimatePresence>
+
+      <div className="from-background/95 via-background/70 absolute inset-0 bg-gradient-to-r to-transparent" />
+      <div className="from-background via-background/30 to-background/10 absolute inset-0 bg-gradient-to-t" />
+
+      <img
+        src="/images/backgrounds/hero-grid.svg"
+        alt=""
+        className="absolute inset-0 h-full w-full opacity-80"
+        aria-hidden="true"
+      />
+
+      <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
         <div className="flex flex-col justify-center">
           {slideEyebrow && (
             <motion.div
@@ -133,10 +185,18 @@ export function HeroSplit({
           <AnimatePresence mode="wait">
             <motion.div
               key={slide.id}
-              initial={{ opacity: 0, x: 24, scale: 0.98 }}
+              initial={{
+                opacity: 0,
+                x: isMobile ? '40vw' : '60vw',
+                scale: 0.98,
+              }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: -24, scale: 0.98 }}
-              transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+              exit={{
+                opacity: 0,
+                x: isMobile ? '-40vw' : '-60vw',
+                scale: 0.98,
+              }}
+              transition={{ duration: 0.9, ease: [0.25, 0.4, 0.25, 1] }}
             >
               <HeroImage
                 src={slide.image}
