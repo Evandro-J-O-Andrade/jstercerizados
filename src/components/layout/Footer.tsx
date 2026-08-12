@@ -12,7 +12,6 @@ import {
   Youtube,
   Heart,
   Globe,
-  LogIn,
   ChevronDown,
   Accessibility,
   MessageCircle,
@@ -398,14 +397,12 @@ export function Footer({
                   </h4>
                   <div className="space-y-3">
                     {footerLinks.contato.map((link) => {
-                      const Icon = link.icon;
                       return (
                         <Link
                           key={link.href}
                           to={link.href}
                           className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
                         >
-                          {Icon && <Icon className="text-primary/70 h-4 w-4" />}
                           <span className="text-primary/50 h-1 w-1 rounded-full bg-current" />
                           {link.label}
                         </Link>

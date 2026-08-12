@@ -17,7 +17,6 @@ import {
   ChevronDown,
   ChevronRight,
   MessageCircle,
-  Headphones,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui/Button';

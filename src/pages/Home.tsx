@@ -12,7 +12,6 @@ import {
   Heart,
   ArrowRight,
   MapPin,
-  MessageSquare,
   Phone,
   Quote,
   Wrench,
@@ -206,26 +205,6 @@ const empresaSolutions = [
       'Cadastre seu currículo e seja encontrado por empresas parceiras.',
     href: '/trabalhe-conosco',
     icon: Users,
-  },
-];
-
-const candidateBenefits = [
-  {
-    title: 'Cadastro de Currículo',
-    description:
-      'Cadastre-se gratuitamente e seja visto pelas melhores empresas.',
-    icon: FileText,
-  },
-  {
-    title: 'Busca de Vagas',
-    description: 'Encontre oportunidades alinhadas ao seu perfil e objetivos.',
-    icon: Search,
-  },
-  {
-    title: 'Acompanhe seu processo',
-    description:
-      'Consulte o andamento da sua candidatura de forma simples e prática.',
-    icon: MessageSquare,
   },
 ];
 
