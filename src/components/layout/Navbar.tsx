@@ -220,7 +220,7 @@ export function Navbar() {
             >
               {items.map((item) => (
                 <Link
-                  key={item.href}
+                  key={`${item.label}-${item.href}`}
                   to={item.href}
                   onClick={() => setOpen(false)}
                   className={cn(
@@ -635,7 +635,7 @@ function MobileAccordion({
             <div className="flex flex-col gap-0.5 px-2 pt-1 pb-1.5">
               {links.map((link) => (
                 <Link
-                  key={link.href}
+                  key={`${link.label}-${link.href}`}
                   to={link.href}
                   onClick={onClose}
                   className={cn(
