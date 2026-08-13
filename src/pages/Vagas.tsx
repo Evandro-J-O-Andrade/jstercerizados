@@ -352,7 +352,7 @@ export default function Vagas() {
                         Ver vaga
                       </Button>
                     </Link>
-                    <Link to="/trabalhe-conosco" className="flex-1">
+                    <Link to={`/vagas/${vaga.slug}`} className="flex-1">
                       <Button variant="outline" size="sm" className="w-full">
                         Candidatar-se
                       </Button>
