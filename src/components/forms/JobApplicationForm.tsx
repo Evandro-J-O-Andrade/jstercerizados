@@ -6,6 +6,16 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { COMPANY, getWhatsAppUrl } from '@/config';
 import { Mail, MapPin, Clock, CheckCircle2, Upload } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import {
+  sanitizeText,
+  sanitizeName,
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeTextarea,
+} from '@/utils/sanitize';
 
 type JobApplicationFormProps = {
   jobTitle?: string;
@@ -23,58 +33,40 @@ const contractOptions = [
   { value: 'CD', label: 'C/D' },
 ];
 
+const jobApplicationSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Informe seu nome completo')
+    .max(120, 'Nome muito longo'),
+  email: z.string().min(1, 'Informe seu e-mail').email('E-mail inválido'),
+  phone: z
+    .string()
+    .min(10, 'Informe um telefone válido')
+    .max(20, 'Telefone inválido'),
+  city: z.string().min(2, 'Informe sua cidade').max(80, 'Cidade muito longa'),
+  contract: z.string().optional(),
+  experience: z.string().max(2000, 'Experiência muito longa').optional(),
+  message: z.string().max(2000, 'Mensagem muito longa').optional(),
+  lgpd: z
+    .string()
+    .min(1, 'Você precisa autorizar o tratamento de dados para continuar'),
+});
+
+type JobApplicationFormData = z.infer<typeof jobApplicationSchema>;
+
 export function JobApplicationForm({
   jobTitle,
   jobSlug,
   vagaId,
 }: JobApplicationFormProps) {
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    city: '',
-    contract: '',
-    experience: '',
-    message: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const update =
-    (field: string) =>
-    (
-      e: React.ChangeEvent<
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >,
-    ) => {
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
-    };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    const message = encodeURIComponent(
-      `*Nova candidatura*\n\n` +
-        `*Vaga:* ${jobTitle || 'Não informada'}\n` +
-        `*ID da vaga:* ${vagaId || '-'}\n` +
-        `*Slug:* ${jobSlug || '-'}\n` +
-        `*Nome:* ${form.name}\n` +
-        `*E-mail:* ${form.email}\n` +
-        `*Telefone:* ${form.phone}\n` +
-        `*Cidade:* ${form.city}\n` +
-        `*Tipo de contrato:* ${form.contract || '-'}\n` +
-        `*Experiência:* ${form.experience || '-'}\n` +
-        `*Mensagem:* ${form.message || '-'}`,
-    );
-
-    window.open(getWhatsAppUrl(COMPANY.whatsapp, message), '_blank');
-
-    setLoading(false);
-    setSuccess(true);
-    setForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<JobApplicationFormData>({
+    resolver: zodResolver(jobApplicationSchema),
+    defaultValues: {
       name: '',
       email: '',
       phone: '',
@@ -82,7 +74,31 @@ export function JobApplicationForm({
       contract: '',
       experience: '',
       message: '',
-    });
+      lgpd: '',
+    },
+  });
+
+  const [success, setSuccess] = useState(false);
+
+  const onSubmit = async (data: JobApplicationFormData): Promise<void> => {
+    const message = encodeURIComponent(
+      `*Nova candidatura*\n\n` +
+        `*Vaga:* ${jobTitle || 'Não informada'}\n` +
+        `*ID da vaga:* ${vagaId || '-'}\n` +
+        `*Slug:* ${jobSlug || '-'}\n` +
+        `*Nome:* ${sanitizeName(data.name)}\n` +
+        `*E-mail:* ${sanitizeEmail(data.email)}\n` +
+        `*Telefone:* ${sanitizePhone(data.phone)}\n` +
+        `*Cidade:* ${sanitizeText(data.city)}\n` +
+        `*Tipo de contrato:* ${sanitizeText(data.contract || '') || '-'}\n` +
+        `*Experiência:* ${sanitizeTextarea(data.experience || '') || '-'}\n` +
+        `*Mensagem:* ${sanitizeTextarea(data.message || '') || '-'}`,
+    );
+
+    window.open(getWhatsAppUrl(COMPANY.whatsapp, message), '_blank');
+
+    setSuccess(true);
+    reset();
   };
 
   if (success) {
@@ -110,7 +126,7 @@ export function JobApplicationForm({
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       className="bg-card border-border rounded-2xl border p-6 sm:p-8"
     >
       <div className="mb-6">
@@ -125,38 +141,29 @@ export function JobApplicationForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input
           label="Nome completo"
-          name="name"
-          value={form.name}
-          onChange={update('name')}
-          required
+          error={errors.name?.message}
+          {...register('name')}
         />
         <Input
           label="E-mail"
           type="email"
-          name="email"
-          value={form.email}
-          onChange={update('email')}
-          required
+          error={errors.email?.message}
+          {...register('email')}
         />
         <Input
           label="Telefone/WhatsApp"
-          name="phone"
-          value={form.phone}
-          onChange={update('phone')}
-          required
+          error={errors.phone?.message}
+          {...register('phone')}
         />
         <Input
           label="Cidade"
-          name="city"
-          value={form.city}
-          onChange={update('city')}
-          required
+          error={errors.city?.message}
+          {...register('city')}
         />
         <Select
           label="Tipo de contrato desejado"
-          name="contract"
-          value={form.contract}
-          onChange={update('contract')}
+          error={errors.contract?.message}
+          {...register('contract')}
         >
           {contractOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -166,9 +173,8 @@ export function JobApplicationForm({
         </Select>
         <Input
           label="Experiência profissional"
-          name="experience"
-          value={form.experience}
-          onChange={update('experience')}
+          error={errors.experience?.message}
+          {...register('experience')}
           placeholder="Ex.: 2 anos em atendimento"
         />
       </div>
@@ -176,16 +182,35 @@ export function JobApplicationForm({
       <div className="mt-4">
         <Textarea
           label="Mensagem"
-          name="message"
-          value={form.message}
-          onChange={update('message')}
+          error={errors.message?.message}
+          {...register('message')}
           rows={4}
           placeholder="Conte um pouco sobre você..."
         />
       </div>
 
+      <div className="mt-4">
+        <label className="text-muted-foreground mb-1 flex items-center gap-2 text-sm font-medium">
+          <input
+            type="checkbox"
+            className="text-primary focus:ring-primary h-4 w-4 rounded"
+            {...register('lgpd')}
+          />
+          Autorizo o tratamento dos meus dados pessoais para esta candidatura.
+        </label>
+        {errors.lgpd && (
+          <p className="text-destructive mt-1 text-sm">{errors.lgpd.message}</p>
+        )}
+      </div>
+
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Button type="submit" variant="primary" size="lg" loading={loading}>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          loading={isSubmitting}
+          disabled={isSubmitting}
+        >
           <Upload className="mr-2 h-4 w-4" />
           Enviar candidatura
         </Button>

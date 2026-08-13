@@ -6,6 +6,16 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { COMPANY, getWhatsAppUrl } from '@/config';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import {
+  sanitizeText,
+  sanitizeName,
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeTextarea,
+} from '@/utils/sanitize';
 
 type ServiceRequestFormProps = {
   serviceSlug?: string;
@@ -39,64 +49,38 @@ const environmentOptions = [
   { value: 'outro', label: 'Outro' },
 ];
 
+const serviceRequestSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Informe seu nome completo')
+    .max(120, 'Nome muito longo'),
+  company: z.string().max(120, 'Nome da empresa muito longo').optional(),
+  email: z.string().min(1, 'Informe seu e-mail').email('E-mail inválido'),
+  phone: z
+    .string()
+    .min(10, 'Informe um telefone válido')
+    .max(20, 'Telefone inválido'),
+  city: z.string().min(2, 'Informe sua cidade').max(80, 'Cidade muito longa'),
+  service: z.string().min(1, 'Selecione um serviço'),
+  environment: z.string().optional(),
+  message: z.string().max(2000, 'Mensagem muito longa').optional(),
+  bestTime: z.string().max(120, 'Horário muito longo').optional(),
+});
+
+type ServiceRequestFormData = z.infer<typeof serviceRequestSchema>;
+
 export function ServiceRequestForm({
   serviceSlug,
   serviceName,
 }: ServiceRequestFormProps) {
-  const [form, setForm] = useState({
-    name: '',
-    company: '',
-    email: '',
-    phone: '',
-    city: '',
-    service: serviceSlug ?? '',
-    environment: '',
-    message: '',
-    bestTime: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const update =
-    (field: string) =>
-    (
-      e: React.ChangeEvent<
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >,
-    ) => {
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
-    };
-
-  useEffect(() => {
-    if (serviceSlug) {
-      setForm((prev) => ({ ...prev, service: serviceSlug }));
-    }
-  }, [serviceSlug]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    const message = encodeURIComponent(
-      `*Nova solicitação de serviço*\n\n` +
-        `*Serviço:* ${serviceName || form.service || 'Não informado'}\n` +
-        `*Nome:* ${form.name}\n` +
-        `*Empresa:* ${form.company || '-'}\n` +
-        `*E-mail:* ${form.email}\n` +
-        `*Telefone:* ${form.phone}\n` +
-        `*Cidade:* ${form.city}\n` +
-        `*Ambiente:* ${form.environment || '-'}\n` +
-        `*Melhor horário:* ${form.bestTime || '-'}\n` +
-        `*Mensagem:* ${form.message || '-'}`,
-    );
-
-    window.open(getWhatsAppUrl(COMPANY.whatsapp, message), '_blank');
-
-    setLoading(false);
-    setSuccess(true);
-    setForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<ServiceRequestFormData>({
+    resolver: zodResolver(serviceRequestSchema),
+    defaultValues: {
       name: '',
       company: '',
       email: '',
@@ -106,7 +90,35 @@ export function ServiceRequestForm({
       environment: '',
       message: '',
       bestTime: '',
-    });
+    },
+  });
+
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (serviceSlug) {
+      reset({ service: serviceSlug });
+    }
+  }, [serviceSlug, reset]);
+
+  const onSubmit = async (data: ServiceRequestFormData): Promise<void> => {
+    const message = encodeURIComponent(
+      `*Nova solicitação de serviço*\n\n` +
+        `*Serviço:* ${serviceName || sanitizeText(data.service) || 'Não informado'}\n` +
+        `*Nome:* ${sanitizeName(data.name)}\n` +
+        `*Empresa:* ${sanitizeText(data.company || '') || '-'}\n` +
+        `*E-mail:* ${sanitizeEmail(data.email)}\n` +
+        `*Telefone:* ${sanitizePhone(data.phone)}\n` +
+        `*Cidade:* ${sanitizeText(data.city)}\n` +
+        `*Ambiente:* ${sanitizeText(data.environment || '') || '-'}\n` +
+        `*Melhor horário:* ${sanitizeText(data.bestTime || '') || '-'}\n` +
+        `*Mensagem:* ${sanitizeTextarea(data.message || '') || '-'}`,
+    );
+
+    window.open(getWhatsAppUrl(COMPANY.whatsapp, message), '_blank');
+
+    setSuccess(true);
+    reset();
   };
 
   if (success) {
@@ -134,7 +146,7 @@ export function ServiceRequestForm({
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       className="bg-card border-border rounded-2xl border p-6 sm:p-8"
     >
       <div className="mb-6">
@@ -149,45 +161,34 @@ export function ServiceRequestForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input
           label="Nome completo"
-          name="name"
-          value={form.name}
-          onChange={update('name')}
-          required
+          error={errors.name?.message}
+          {...register('name')}
         />
         <Input
           label="Empresa"
-          name="company"
-          value={form.company}
-          onChange={update('company')}
+          error={errors.company?.message}
+          {...register('company')}
         />
         <Input
           label="E-mail"
           type="email"
-          name="email"
-          value={form.email}
-          onChange={update('email')}
-          required
+          error={errors.email?.message}
+          {...register('email')}
         />
         <Input
           label="Telefone/WhatsApp"
-          name="phone"
-          value={form.phone}
-          onChange={update('phone')}
-          required
+          error={errors.phone?.message}
+          {...register('phone')}
         />
         <Input
           label="Cidade"
-          name="city"
-          value={form.city}
-          onChange={update('city')}
-          required
+          error={errors.city?.message}
+          {...register('city')}
         />
         <Select
           label="Serviço"
-          name="service"
-          value={form.service}
-          onChange={update('service')}
-          required
+          error={errors.service?.message}
+          {...register('service')}
         >
           {serviceOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -197,9 +198,8 @@ export function ServiceRequestForm({
         </Select>
         <Select
           label="Tipo de ambiente"
-          name="environment"
-          value={form.environment}
-          onChange={update('environment')}
+          error={errors.environment?.message}
+          {...register('environment')}
         >
           {environmentOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -209,9 +209,8 @@ export function ServiceRequestForm({
         </Select>
         <Input
           label="Melhor horário para contato"
-          name="bestTime"
-          value={form.bestTime}
-          onChange={update('bestTime')}
+          error={errors.bestTime?.message}
+          {...register('bestTime')}
           placeholder="Ex.: 14h às 17h"
         />
       </div>
@@ -219,16 +218,21 @@ export function ServiceRequestForm({
       <div className="mt-4">
         <Textarea
           label="Mensagem"
-          name="message"
-          value={form.message}
-          onChange={update('message')}
+          error={errors.message?.message}
+          {...register('message')}
           rows={4}
           placeholder="Descreva sua necessidade..."
         />
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Button type="submit" variant="primary" size="lg" loading={loading}>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          loading={isSubmitting}
+          disabled={isSubmitting}
+        >
           <Phone className="mr-2 h-4 w-4" />
           Solicitar orçamento
         </Button>
