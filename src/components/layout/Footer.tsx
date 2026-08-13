@@ -199,7 +199,7 @@ function MobileAccordion({
             const Icon = link.icon;
             return (
               <Link
-                key={link.href}
+                key={`${link.label}-${link.href}`}
                 to={link.href}
                 className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
               >
@@ -322,7 +322,7 @@ export function Footer({
                   <div className="space-y-3">
                     {footerLinks.empresa.map((link) => (
                       <Link
-                        key={link.href}
+                        key={`${link.label}-${link.href}`}
                         to={link.href}
                         className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
                       >
@@ -341,7 +341,7 @@ export function Footer({
                   <div className="space-y-3">
                     {footerLinks.servicos.map((link) => (
                       <Link
-                        key={link.href}
+                        key={`${link.label}-${link.href}`}
                         to={link.href}
                         className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
                       >
@@ -360,7 +360,7 @@ export function Footer({
                   <div className="space-y-3">
                     {footerLinks.candidatos.map((link) => (
                       <Link
-                        key={link.href}
+                        key={`${link.label}-${link.href}`}
                         to={link.href}
                         className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
                       >
@@ -379,7 +379,7 @@ export function Footer({
                   <div className="space-y-3">
                     {footerLinks.empresas.map((link) => (
                       <Link
-                        key={link.href}
+                        key={`${link.label}-${link.href}`}
                         to={link.href}
                         className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
                       >
@@ -399,7 +399,7 @@ export function Footer({
                     {footerLinks.contato.map((link) => {
                       return (
                         <Link
-                          key={link.href}
+                          key={`${link.label}-${link.href}`}
                           to={link.href}
                           className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm transition-colors duration-200"
                         >
