@@ -31,6 +31,13 @@ import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { sendToN8n } from '@/lib/n8n';
+import {
+  sanitizeText,
+  sanitizeName,
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeTextarea,
+} from '@/utils/sanitize';
 
 const SUPPORT_CARDS = [
   {
@@ -147,6 +154,8 @@ export default function Suporte() {
 
   const [submitted, setSubmitted] = useState(false);
   const [protocol, setProtocol] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -159,18 +168,37 @@ export default function Suporte() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     const now = new Date();
     const proto = `SUP-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
     setProtocol(proto);
 
     const payload = {
       protocol: proto,
-      ...formData,
+      nome: sanitizeName(formData.nome),
+      empresa: sanitizeText(formData.empresa),
+      telefone: sanitizePhone(formData.telefone),
+      email: sanitizeEmail(formData.email),
+      cliente: formData.cliente,
+      contrato: sanitizeText(formData.contrato),
+      categoria: formData.categoria,
+      prioridade: formData.prioridade,
+      assunto: sanitizeText(formData.assunto),
+      descricao: sanitizeTextarea(formData.descricao),
+      observacoes: sanitizeTextarea(formData.observacoes),
       submittedAt: now.toISOString(),
     };
 
-    await sendToN8n(payload);
-    setSubmitted(true);
+    try {
+      await sendToN8n(payload);
+      setSubmitted(true);
+    } catch {
+      setError('Erro ao enviar solicitação. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -324,6 +352,11 @@ export default function Suporte() {
                       </motion.div>
                     ) : (
                       <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+                        {error && (
+                          <div className="bg-destructive/10 text-destructive rounded-xl p-4 text-sm">
+                            {error}
+                          </div>
+                        )}
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                           <div>
                             <label className="text-foreground mb-2 block text-sm font-medium">
@@ -499,9 +532,13 @@ export default function Suporte() {
                             variant="primary"
                             size="lg"
                             className="flex-1"
+                            loading={isSubmitting}
+                            disabled={isSubmitting}
                           >
                             <Send className="mr-2 h-5 w-5" />
-                            Enviar Solicitação
+                            {isSubmitting
+                              ? 'Enviando...'
+                              : 'Enviar Solicitação'}
                           </Button>
                           <a
                             href={getWhatsAppUrl(

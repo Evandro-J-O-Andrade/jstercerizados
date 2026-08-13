@@ -14,6 +14,13 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { mockSubmitBudget } from '@/services/mock/clientes';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
+import {
+  sanitizeText,
+  sanitizeName,
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeTextarea,
+} from '@/utils/sanitize';
 
 const budgetSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -47,7 +54,20 @@ export default function Clientes() {
   });
 
   const onSubmit = async (data: BudgetFormData): Promise<void> => {
-    mockSubmitBudget({ ...data, status: 'new' });
+    mockSubmitBudget({
+      name: sanitizeName(data.name),
+      company: sanitizeText(data.company),
+      cnpj: sanitizeText(data.cnpj),
+      city: sanitizeText(data.city),
+      state: sanitizeText(data.state).toUpperCase(),
+      email: sanitizeEmail(data.email),
+      phone: sanitizePhone(data.phone),
+      whatsapp: sanitizePhone(data.whatsapp),
+      service: data.service,
+      posts: data.posts,
+      message: sanitizeTextarea(data.message),
+      status: 'new',
+    });
     setSubmitted(true);
     reset();
   };
@@ -277,6 +297,7 @@ export default function Clientes() {
                     size="lg"
                     className="w-full"
                     loading={isSubmitting}
+                    disabled={isSubmitting}
                     leftIcon={<Phone className="h-5 w-5" />}
                   >
                     Enviar e Abrir WhatsApp

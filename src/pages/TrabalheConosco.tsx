@@ -14,6 +14,14 @@ import { Container } from '@/components/common/Container';
 import { mockSubmitCandidate } from '@/services/mock/curriculos';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { cn } from '@/utils';
+import {
+  sanitizeText,
+  sanitizeName,
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeTextarea,
+  sanitizeFileName,
+} from '@/utils/sanitize';
 
 const positionOptions = [
   { value: 'auxiliar-de-embalagens', label: 'Auxiliar de embalagens' },
@@ -94,19 +102,19 @@ export default function TrabalheConosco() {
     const resumeFile = data.resumeFile?.[0] ?? null;
 
     mockSubmitCandidate({
-      name: data.name,
-      cpf: data.cpf ?? '',
-      rg: data.rg ?? '',
-      phone: data.phone,
-      email: data.email,
-      city: data.city,
-      experience: data.experience,
+      name: sanitizeName(data.name),
+      cpf: data.cpf ? sanitizeText(data.cpf) : '',
+      rg: data.rg ? sanitizeText(data.rg) : '',
+      phone: sanitizePhone(data.phone),
+      email: sanitizeEmail(data.email),
+      city: sanitizeText(data.city),
+      experience: sanitizeTextarea(data.experience),
       position: data.positions.join(', '),
-      resume: data.resume,
-      availability: data.availability ?? '',
-      courses: data.courses ?? '',
+      resume: sanitizeTextarea(data.resume),
+      availability: data.availability ? sanitizeText(data.availability) : '',
+      courses: data.courses ? sanitizeText(data.courses) : '',
       status: 'received',
-      resumeFileName: resumeFile?.name ?? '',
+      resumeFileName: resumeFile ? sanitizeFileName(resumeFile.name) : '',
     });
     setSubmitted(true);
     reset();
@@ -371,7 +379,19 @@ export default function TrabalheConosco() {
                           accept=".pdf,.doc,.docx"
                           onChange={(e) => {
                             const file = e.target.files?.[0] ?? null;
-                            setSelectedFile(file);
+                            if (file) {
+                              const sanitizedName = sanitizeFileName(file.name);
+                              const sanitizedFile = new File(
+                                [file],
+                                sanitizedName,
+                                {
+                                  type: file.type,
+                                },
+                              );
+                              setSelectedFile(sanitizedFile);
+                            } else {
+                              setSelectedFile(null);
+                            }
                           }}
                           className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                           aria-label="Selecionar arquivo de currículo"
@@ -405,6 +425,7 @@ export default function TrabalheConosco() {
                       size="lg"
                       className="w-full"
                       loading={isSubmitting}
+                      disabled={isSubmitting}
                       leftIcon={<Send className="h-5 w-5" />}
                     >
                       Enviar Currículo para o Banco de Talentos

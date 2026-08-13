@@ -20,6 +20,13 @@ import {
   getWhatsAppUrl,
   IMAGES,
 } from '@/config';
+import {
+  sanitizeText,
+  sanitizeName,
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeTextarea,
+} from '@/utils/sanitize';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Nome é obrigatório'),
@@ -46,12 +53,12 @@ export default function Contato() {
 
   const onSubmit = async (data: ContactFormData): Promise<void> => {
     mockSubmitContact({
-      name: data.name,
-      company: data.company,
-      email: data.email,
-      phone: data.phone,
-      subject: data.subject,
-      message: data.message,
+      name: sanitizeName(data.name),
+      company: sanitizeText(data.company),
+      email: sanitizeEmail(data.email),
+      phone: sanitizePhone(data.phone),
+      subject: sanitizeText(data.subject),
+      message: sanitizeTextarea(data.message),
       city: COMPANY.address.city,
       state: COMPANY.address.state,
     });
@@ -283,6 +290,7 @@ export default function Contato() {
                     size="lg"
                     className="w-full"
                     loading={isSubmitting}
+                    disabled={isSubmitting}
                     leftIcon={<Phone className="h-5 w-5" />}
                   >
                     Enviar e Abrir WhatsApp

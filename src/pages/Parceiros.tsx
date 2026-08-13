@@ -13,6 +13,12 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { mockSubmitPartner } from '@/services/mock/parceiros';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
+import {
+  sanitizeText,
+  sanitizeName,
+  sanitizeEmail,
+  sanitizePhone,
+} from '@/utils/sanitize';
 
 const partnerSchema = z.object({
   company: z.string().min(2, 'Nome da empresa é obrigatório'),
@@ -42,7 +48,15 @@ export default function Parceiros() {
 
   const onSubmit = async (data: PartnerFormData): Promise<void> => {
     mockSubmitPartner({
-      ...data,
+      company: sanitizeText(data.company),
+      cnpj: sanitizeText(data.cnpj),
+      responsible: sanitizeName(data.responsible),
+      phone: sanitizePhone(data.phone),
+      email: sanitizeEmail(data.email),
+      area: sanitizeText(data.area),
+      city: sanitizeText(data.city),
+      state: sanitizeText(data.state).toUpperCase(),
+      documentation: sanitizeText(data.documentation),
       status: 'pending',
     });
     setSubmitted(true);
@@ -233,6 +247,7 @@ export default function Parceiros() {
                     size="lg"
                     className="w-full"
                     loading={isSubmitting}
+                    disabled={isSubmitting}
                     leftIcon={<Phone className="h-5 w-5" />}
                   >
                     Enviar Cadastro e Abrir WhatsApp
