@@ -169,6 +169,16 @@ function CinematicChapter({
       ref={ref}
       className={`relative w-full ${index > 0 ? 'mt-12' : ''}`}
     >
+      {index > 0 && (
+        <div className="absolute inset-x-0 top-0 hidden lg:block">
+          <div className="relative mx-auto h-12 max-w-5xl">
+            <div className="bg-border/60 absolute top-0 left-1/2 h-full w-px -translate-x-1/2" />
+            <div className="bg-primary/40 absolute top-1/2 left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full" />
+            <div className="bg-border/40 absolute top-0 left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full" />
+            <div className="bg-border/40 absolute bottom-0 left-1/2 h-3 w-3 -translate-x-1/2 translate-y-1/2 rounded-full" />
+          </div>
+        </div>
+      )}
       <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-10">
         <motion.div
           initial={imageHidden}
