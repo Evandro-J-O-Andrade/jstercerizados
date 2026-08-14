@@ -32,7 +32,7 @@ import {
 
 const companiesSubmenu = [
   { label: 'Soluções para Empresas', href: '/empresas' },
-  { label: 'Divulgar Vaga', href: '/clientes' },
+  { label: 'Divulgar Vaga', href: '/empresas/divulgar-vaga' },
   { label: 'Clientes', href: '/clientes' },
   { label: 'Fornecedores', href: '/fornecedores' },
 ];
@@ -325,7 +325,7 @@ export function Navbar() {
               </Button>
             </Link>
           ) : (
-            <Link to="/clientes">
+            <Link to="/empresas/divulgar-vaga">
               <Button variant="primary" size="sm">
                 Divulgar Vaga
               </Button>
@@ -488,7 +488,11 @@ export function Navbar() {
                   </motion.div>
                   <motion.div variants={itemVariants}>
                     <Link
-                      to={isAuthenticated ? '/dashboard' : '/clientes'}
+                      to={
+                        isAuthenticated
+                          ? '/dashboard'
+                          : '/empresas/divulgar-vaga'
+                      }
                       onClick={() => setIsOpen(false)}
                       className="text-muted-foreground hover:bg-muted hover:text-foreground block rounded-lg px-3 py-2 text-sm font-medium transition-colors"
                     >

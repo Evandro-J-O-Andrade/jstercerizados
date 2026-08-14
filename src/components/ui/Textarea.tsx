@@ -22,7 +22,7 @@ export function Textarea({
       {label && (
         <label
           htmlFor={textareaId}
-          className="text-muted-foreground mb-1 block text-sm font-medium"
+          className="text-muted-foreground mb-1.5 block text-sm font-medium"
         >
           {label}
         </label>
@@ -30,9 +30,9 @@ export function Textarea({
       <textarea
         id={textareaId}
         className={cn(
-          'border-input bg-surface text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:ring-primary/20 read-only:bg-muted/30 read-only:text-muted-foreground w-full resize-y rounded-lg border px-4 py-2.5 transition-colors focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+          'border-input bg-surface text-foreground placeholder:text-muted-foreground/60 focus-visible:border-primary focus-visible:ring-primary/20 read-only:bg-muted/30 read-only:text-muted-foreground w-full resize-y rounded-lg border px-4 py-2.5 transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
           error &&
-            'border-destructive focus:border-destructive focus:ring-destructive/20',
+            'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20',
           className,
         )}
         aria-invalid={!!error}
@@ -40,12 +40,15 @@ export function Textarea({
         {...props}
       />
       {error && (
-        <p id={`${textareaId}-error`} className="text-destructive mt-1 text-sm">
+        <p
+          id={`${textareaId}-error`}
+          className="text-destructive mt-1.5 text-sm"
+        >
           {error}
         </p>
       )}
       {helperText && !error && (
-        <p className="text-muted-foreground mt-1 text-sm">{helperText}</p>
+        <p className="text-muted-foreground mt-1.5 text-sm">{helperText}</p>
       )}
     </div>
   );

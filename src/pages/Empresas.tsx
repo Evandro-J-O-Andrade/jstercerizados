@@ -71,7 +71,7 @@ export default function Empresas() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-8 flex justify-center gap-4"
           >
-            <Link to="/clientes">
+            <Link to="/empresas/divulgar-vaga">
               <Button variant="primary" size="lg">
                 <Users className="mr-2 h-5 w-5" />
                 Divulgar Vaga

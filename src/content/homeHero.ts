@@ -86,7 +86,7 @@ export const HERO_SLIDES: HeroSlideData[] = [
       label: 'Contratar profissionais',
       href: '/servicos/mao-de-obra-temporaria',
     },
-    secondaryCta: { label: 'Ver vagas', href: '/clientes' },
+    secondaryCta: { label: 'Ver vagas', href: '/vagas' },
     candidateCta: { label: 'Candidatar-se', href: '/trabalhe-conosco' },
   },
   {

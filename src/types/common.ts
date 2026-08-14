@@ -138,3 +138,29 @@ export interface NavLink {
   label: string;
   href: string;
 }
+
+export interface JobCreatePayload {
+  company: {
+    name: string;
+    cnpj?: string;
+    contactName: string;
+    email: string;
+    phone: string;
+    whatsapp?: string;
+  };
+  job: {
+    title: string;
+    quantity: number;
+    city: string;
+    state: string;
+    contractType: string;
+    salary?: string;
+    benefits?: string;
+    schedule?: string;
+    description: string;
+    requirements?: string;
+    education?: string;
+  };
+  source: 'website';
+  consentLgpd: boolean;
+}

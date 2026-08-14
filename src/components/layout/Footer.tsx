@@ -63,7 +63,7 @@ const footerLinks = {
   ],
   empresas: [
     { label: 'Empresas', href: '/empresas' },
-    { label: 'Divulgar Vaga', href: '/clientes' },
+    { label: 'Divulgar Vaga', href: '/empresas/divulgar-vaga' },
   ],
   contato: [
     { label: 'Fale Conosco', href: '/contato' },

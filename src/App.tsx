@@ -20,6 +20,7 @@ const ServicoDetalhe = lazy(() => import('@/pages/ServicoDetalhe'));
 const Vagas = lazy(() => import('@/pages/Vagas'));
 const VagaDetalhe = lazy(() => import('@/pages/VagaDetalhe'));
 const Empresas = lazy(() => import('@/pages/Empresas'));
+const DivulgarVaga = lazy(() => import('@/pages/DivulgarVaga'));
 const Candidatos = lazy(() => import('@/pages/Candidatos'));
 const Blog = lazy(() => import('@/pages/Blog'));
 const Parceiros = lazy(() => import('@/pages/Parceiros'));
@@ -65,6 +66,10 @@ function App() {
               <Route path="/vagas" element={<Vagas />} />
               <Route path="/vagas/:slug" element={<VagaDetalhe />} />
               <Route path="/empresas" element={<Empresas />} />
+              <Route
+                path="/empresas/divulgar-vaga"
+                element={<DivulgarVaga />}
+              />
               <Route path="/candidatos" element={<Candidatos />} />
               <Route path="/servicos" element={<Servicos />} />
               <Route path="/servicos/:slug" element={<ServicoDetalhe />} />
