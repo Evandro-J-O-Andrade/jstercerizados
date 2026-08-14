@@ -136,6 +136,23 @@ function useReducedMotion() {
   return prefersReducedMotion;
 }
 
+function TimelineWebConnector() {
+  return (
+    <div
+      className="pointer-events-none relative hidden h-28 w-full lg:block"
+      aria-hidden="true"
+    >
+      <div className="bg-border/60 absolute inset-x-0 top-0 h-full w-px" />
+      <div className="bg-primary/50 absolute top-1/2 left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full" />
+      <div className="border-primary/30 absolute top-1/2 left-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full border" />
+      <div className="border-border/40 absolute top-[18%] left-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full border" />
+      <div className="border-border/30 absolute top-[25%] left-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full border" />
+      <div className="border-border/40 absolute top-[82%] left-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full border" />
+      <div className="border-border/30 absolute top-[75%] left-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full border" />
+    </div>
+  );
+}
+
 function CinematicChapter({
   chapter,
   index,
@@ -169,16 +186,6 @@ function CinematicChapter({
       ref={ref}
       className={`relative w-full ${index > 0 ? 'mt-12' : ''}`}
     >
-      {index > 0 && (
-        <div className="absolute inset-x-0 top-0 hidden lg:block">
-          <div className="relative mx-auto h-12 max-w-5xl">
-            <div className="bg-border/60 absolute top-0 left-1/2 h-full w-px -translate-x-1/2" />
-            <div className="bg-primary/40 absolute top-1/2 left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full" />
-            <div className="bg-border/40 absolute top-0 left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full" />
-            <div className="bg-border/40 absolute bottom-0 left-1/2 h-3 w-3 -translate-x-1/2 translate-y-1/2 rounded-full" />
-          </div>
-        </div>
-      )}
       <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-10">
         <motion.div
           initial={imageHidden}
@@ -370,17 +377,16 @@ export default function Sobre() {
             </motion.p>
           </motion.div>
 
-          <div className="relative space-y-20">
+          <div className="relative">
             {COMPANY_TIMELINE.map((_item, index) => {
               const chapter = chapters[index];
               if (!chapter) return null;
 
               return (
-                <CinematicChapter
-                  key={chapter.id}
-                  chapter={chapter}
-                  index={index}
-                />
+                <div key={chapter.id} className="relative">
+                  {index > 0 && <TimelineWebConnector />}
+                  <CinematicChapter chapter={chapter} index={index} />
+                </div>
               );
             })}
           </div>
