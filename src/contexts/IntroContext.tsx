@@ -13,29 +13,16 @@ interface IntroContextValue {
 
 const IntroContext = createContext<IntroContextValue | null>(null);
 
-const INTRO_KEY = 'jse_intro_complete';
-
-function getInitialState(): boolean {
-  if (typeof sessionStorage === 'undefined') {
-    return false;
-  }
-  const stored = sessionStorage.getItem(INTRO_KEY);
-  return stored === 'true';
-}
-
 export function IntroProvider({ children }: { children: ReactNode }) {
-  const [introComplete, setIntroComplete] = useState<boolean>(getInitialState);
+  const [introComplete, setIntroComplete] = useState<boolean>(false);
 
-  const setIntroCompletePersistent = useCallback((value: boolean) => {
+  const setIntroCompleteMemo = useCallback((value: boolean) => {
     setIntroComplete(value);
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem(INTRO_KEY, String(value));
-    }
   }, []);
 
   return (
     <IntroContext.Provider
-      value={{ introComplete, setIntroComplete: setIntroCompletePersistent }}
+      value={{ introComplete, setIntroComplete: setIntroCompleteMemo }}
     >
       {children}
     </IntroContext.Provider>

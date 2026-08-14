@@ -1,23 +1,12 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext, useCallback, useContext, useState } from 'react';
 const IntroContext = createContext(null);
-const INTRO_KEY = 'jse_intro_complete';
-function getInitialState() {
-    if (typeof sessionStorage === 'undefined') {
-        return false;
-    }
-    const stored = sessionStorage.getItem(INTRO_KEY);
-    return stored === 'true';
-}
 export function IntroProvider({ children }) {
-    const [introComplete, setIntroComplete] = useState(getInitialState);
-    const setIntroCompletePersistent = useCallback((value) => {
+    const [introComplete, setIntroComplete] = useState(false);
+    const setIntroCompleteMemo = useCallback((value) => {
         setIntroComplete(value);
-        if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem(INTRO_KEY, String(value));
-        }
     }, []);
-    return (_jsx(IntroContext.Provider, { value: { introComplete, setIntroComplete: setIntroCompletePersistent }, children: children }));
+    return (_jsx(IntroContext.Provider, { value: { introComplete, setIntroComplete: setIntroCompleteMemo }, children: children }));
 }
 export function useIntro() {
     const context = useContext(IntroContext);
