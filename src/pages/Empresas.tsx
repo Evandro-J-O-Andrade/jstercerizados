@@ -8,6 +8,7 @@ import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { CLIENTS_LIST } from '@/mock/clients';
 import { PARTNERS_LOGOS } from '@/mock/partners';
+import { ClientCard } from '@/components/sections/ClientCard';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import {
@@ -173,26 +174,9 @@ export default function Empresas() {
               className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
             >
               {CLIENTS_LIST.filter((client) => client.name && client.logo).map(
-                (client) => (
-                  <motion.div
-                    key={client.id}
-                    variants={staggerItem('up')}
-                    whileHover={{ scale: 1.05 }}
-                    className="group bg-muted/50 border-border/50 relative overflow-hidden rounded-2xl border"
-                  >
-                    <div className="relative aspect-[4/3] w-full overflow-hidden">
-                      <SafeImage
-                        src={client.logo!}
-                        fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%232a2a2a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='16'%3EEmpresa%3C/text%3E%3C/svg%3E"
-                        alt={client.name!}
-                        className="h-full w-full object-cover grayscale-[40%] transition-all duration-300 group-hover:grayscale-0"
-                      />
-                    </div>
-                    <div className="p-3 text-center">
-                      <span className="text-foreground text-xs font-semibold">
-                        {client.name!}
-                      </span>
-                    </div>
+                (client, index) => (
+                  <motion.div key={client.id} variants={staggerItem('up')}>
+                    <ClientCard client={client} index={index} />
                   </motion.div>
                 ),
               )}
