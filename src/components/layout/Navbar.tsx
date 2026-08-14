@@ -45,7 +45,6 @@ const candidatesSubmenu = [
 
 const contactSubmenu = [
   { label: 'Fale Conosco', href: '/contato' },
-  { label: 'WhatsApp', href: '/contato' },
   { label: 'Suporte', href: '/suporte' },
   { label: 'FAQ', href: '/faq' },
 ];

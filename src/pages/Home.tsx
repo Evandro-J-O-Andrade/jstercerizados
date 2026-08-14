@@ -193,13 +193,6 @@ const facilitiesSolutions = [
     href: '/servicos/jardinagem',
     icon: Heart,
   },
-  {
-    title: 'Recepção',
-    description:
-      'Equipe qualificada para recepção, atendimento e segurança do seu local.',
-    href: '/servicos/portaria',
-    icon: Users,
-  },
 ];
 
 export default function Home() {
