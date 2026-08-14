@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { HERO_ASSETS } from '@/content/assets';
 
-const ENTER_MS = 4000;
-const HOLD_MS = 10000;
-const EXIT_MS = 2500;
+const ENTER_MS = 3500;
+const HOLD_MS = 5000;
+const EXIT_MS = 2000;
 
 const easing = [0.25, 0.4, 0.25, 1] as const;
 
@@ -82,39 +82,72 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
         holding: { opacity: 1 },
         closing: { opacity: 0, transition: { duration: 0.1 } },
       }
-    : {
-        entering: {
-          opacity: 1,
-          scale: [1.02, 0.98, 1.01, 1],
-          y: ['3%', '0%', '-1%', '0%'],
-          rotate: [0.5, -0.3, 0.15, 0],
-          transition: {
-            duration: ENTER_MS / 1000,
-            ease: easing,
-            times: [0, 0.4, 0.75, 1],
+    : isMobile
+      ? {
+          entering: {
+            opacity: 1,
+            scale: [1.01, 0.99, 1],
+            y: ['2%', '0%', '-1%', '0%'],
+            transition: {
+              duration: ENTER_MS / 1000,
+              ease: easing,
+              times: [0, 0.5, 1],
+            },
           },
-        },
-        holding: {
-          opacity: 1,
-          scale: [1, 1.003, 1, 1.003, 1],
-          y: [0, 0.4, 0, -0.4, 0],
-          transition: {
-            duration: HOLD_MS / 1000,
-            ease: 'easeInOut',
-            times: [0, 0.2, 0.4, 0.6, 1],
-            repeat: Infinity,
-            repeatType: 'mirror',
+          holding: {
+            opacity: 1,
+            scale: [1, 1.002, 1],
+            y: [0, 0.2, 0],
+            transition: {
+              duration: HOLD_MS / 1000,
+              ease: 'easeInOut',
+              times: [0, 0.5, 1],
+              repeat: Infinity,
+              repeatType: 'mirror',
+            },
           },
-        },
-        closing: {
-          opacity: 0,
-          scale: 1.02,
-          transition: {
-            duration: EXIT_MS / 1000,
-            ease: easing,
+          closing: {
+            opacity: 0,
+            scale: 1.01,
+            transition: {
+              duration: EXIT_MS / 1000,
+              ease: easing,
+            },
           },
-        },
-      };
+        }
+      : {
+          entering: {
+            opacity: 1,
+            scale: [1.02, 0.98, 1.01, 1],
+            y: ['3%', '0%', '-1%', '0%'],
+            rotate: [0.5, -0.3, 0.15, 0],
+            transition: {
+              duration: ENTER_MS / 1000,
+              ease: easing,
+              times: [0, 0.4, 0.75, 1],
+            },
+          },
+          holding: {
+            opacity: 1,
+            scale: [1, 1.003, 1, 1.003, 1],
+            y: [0, 0.4, 0, -0.4, 0],
+            transition: {
+              duration: HOLD_MS / 1000,
+              ease: 'easeInOut',
+              times: [0, 0.2, 0.4, 0.6, 1],
+              repeat: Infinity,
+              repeatType: 'mirror',
+            },
+          },
+          closing: {
+            opacity: 0,
+            scale: 1.02,
+            transition: {
+              duration: EXIT_MS / 1000,
+              ease: easing,
+            },
+          },
+        };
 
   const textVariantsMobile: Variants = shouldReduceMotion
     ? {
@@ -262,7 +295,10 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
       <button
         type="button"
         onClick={handleSkip}
-        className="absolute right-6 bottom-6 z-20 rounded-full border border-white/30 bg-black/20 px-4 py-2 text-xs font-medium text-white/80 backdrop-blur transition-colors hover:text-white"
+        className="absolute right-6 bottom-6 z-20 rounded-full border border-white/30 bg-black/20 px-4 py-2 text-xs font-medium text-white/80 backdrop-blur transition-colors hover:text-white md:right-8 md:bottom-8"
+        style={{
+          bottom: 'max(env(safe-area-inset-bottom, 0px) + 1.5rem, 1.5rem)',
+        }}
       >
         Pular
       </button>

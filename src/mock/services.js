@@ -1,0 +1,116 @@
+export const SERVICES_DEMO = [
+    {
+        id: 'seguranca-patrimonial',
+        title: 'Segurança Patrimonial',
+        description: 'Proteção completa de ativos com tecnologia avançada e profissionais qualificados.',
+        icon: 'shield',
+        price: 'Sob consulta',
+        features: [
+            'Rondas ostensivas e dinâmicas',
+            'Controle de acesso biométrico',
+            'Monitoramento 24/7',
+            'Relatórios de segurança',
+        ],
+        image: '/images/services/seguranca-patrimonial.svg',
+    },
+    {
+        id: 'controle-acesso',
+        title: 'Controle de Acesso',
+        description: 'Soluções inteligentes para gerenciamento de fluxo de pessoas e veículos.',
+        icon: 'door-open',
+        price: 'Sob consulta',
+        features: [
+            'Catracas e sensores',
+            'Integração com biometria',
+            'Controle de visitantes',
+            'Dashboard de fluxo',
+        ],
+        image: '/images/services/controle-acesso.svg',
+    },
+    {
+        id: 'portaria',
+        title: 'Portaria',
+        description: 'Atendimento e monitoramento profissional para condomínios e empresas.',
+        icon: 'user-check',
+        price: 'Sob consulta',
+        features: [
+            'Porteiros treinados',
+            'Controle de visitantes',
+            'Gravação de veículos',
+            'Emergências 24h',
+        ],
+        image: '/images/services/portaria.svg',
+    },
+    {
+        id: 'limpeza',
+        title: 'Limpeza',
+        description: 'Serviços de limpeza profissional com produtos ecológicos e eficazes.',
+        icon: 'sparkles',
+        price: 'Sob consulta',
+        features: [
+            'Limpeza profunda',
+            'Produtos de limpeza ecológicos',
+            'Equipe multidisciplinar',
+            'Certificação Qualidade',
+        ],
+        image: '/images/services/limpeza.svg',
+    },
+    {
+        id: 'zeladoria',
+        title: 'Zeladoria',
+        description: 'Manutenção predial e jardinagem para preservação do patrimônio.',
+        icon: 'wrench',
+        price: 'Sob consulta',
+        features: [
+            'Manutenção preventiva',
+            'Jardinagem e paisagismo',
+            'Pintura e pequenos consertos',
+            'Limpeza de calhas e telhados',
+        ],
+        image: '/images/services/zeladoria.svg',
+    },
+    {
+        id: 'facilities',
+        title: 'Facilities',
+        description: 'Gestão integrada de serviços para o dia a dia da sua empresa.',
+        icon: 'building',
+        price: 'Sob consulta',
+        features: [
+            'Café e copo',
+            'Recepção e atendimento',
+            'Manutenção predial',
+            'Suporte técnico',
+        ],
+        image: '/images/services/facilities.svg',
+    },
+];
+export const SERVICES_FEATURES = [
+    {
+        title: 'Tecnologia Avançada',
+        description: 'Sistemas de monitoramento e controle de última geração.',
+        icon: 'monitor',
+    },
+    {
+        title: 'Profissionais Qualificados',
+        description: 'Equipe treinada e certificada para cada segmento.',
+        icon: 'users',
+    },
+    {
+        title: 'Garantia de Qualidade',
+        description: 'Processos rigorosos e conformidade com normas.',
+        icon: 'award',
+    },
+    {
+        title: 'Atendimento 24h',
+        description: 'Suporte completo para sua operação.',
+        icon: 'clock',
+    },
+];
+export const SERVICES_GRID = [
+    '/images/services/seguranca-patrimonial.svg',
+    '/images/services/controle-acesso.svg',
+    '/images/services/portaria.svg',
+    '/images/services/limpeza.svg',
+    '/images/services/zeladoria.svg',
+    '/images/services/facilities.svg',
+];

@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  type ReactNode,
+} from 'react';
 
 interface IntroContextValue {
   introComplete: boolean;
@@ -7,11 +13,30 @@ interface IntroContextValue {
 
 const IntroContext = createContext<IntroContextValue | null>(null);
 
+const INTRO_KEY = 'jse_intro_complete';
+
+function getInitialState(): boolean {
+  if (typeof sessionStorage === 'undefined') {
+    return false;
+  }
+  const stored = sessionStorage.getItem(INTRO_KEY);
+  return stored === 'true';
+}
+
 export function IntroProvider({ children }: { children: ReactNode }) {
-  const [introComplete, setIntroComplete] = useState(false);
+  const [introComplete, setIntroComplete] = useState<boolean>(getInitialState);
+
+  const setIntroCompletePersistent = useCallback((value: boolean) => {
+    setIntroComplete(value);
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(INTRO_KEY, String(value));
+    }
+  }, []);
 
   return (
-    <IntroContext.Provider value={{ introComplete, setIntroComplete }}>
+    <IntroContext.Provider
+      value={{ introComplete, setIntroComplete: setIntroCompletePersistent }}
+    >
       {children}
     </IntroContext.Provider>
   );

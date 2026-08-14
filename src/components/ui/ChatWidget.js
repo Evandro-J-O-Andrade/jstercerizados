@@ -1,0 +1,177 @@
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { X, Send, User, ChevronRight, Bot } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { cn } from '@/utils';
+import { sendChatRequest } from '@/lib/chat-client';
+const initialOptions = [
+    { label: 'Sou candidato', value: 'candidate' },
+    { label: 'Sou empresa', value: 'company' },
+    { label: 'Quero saber sobre uma vaga', value: 'job_info' },
+    { label: 'Quero contratar profissionais', value: 'hire' },
+    { label: 'Falar com atendimento humano', value: 'human_support' },
+];
+const candidateOptions = [
+    { label: 'Como cadastro meu currículo?', value: 'how_to_register' },
+    { label: 'Como funciona o processo seletivo?', value: 'how_selection_works' },
+    { label: 'Onde vejo as vagas?', value: 'where_to_see_jobs' },
+    { label: 'Falar com atendimento humano', value: 'human_support' },
+];
+const companyOptions = [
+    { label: 'Como minha empresa pode contratar?', value: 'how_to_hire' },
+    { label: 'Quais são os serviços de RH?', value: 'rh_services' },
+    { label: 'Solicitar orçamento', value: 'request_quote' },
+    { label: 'Falar com atendimento humano', value: 'human_support' },
+];
+export function ChatWidget({ isOpen, onOpenChange, onRequestHuman, }) {
+    const [internalOpen, setInternalOpen] = useState(false);
+    const open = isOpen ?? internalOpen;
+    const setOpen = onOpenChange ?? setInternalOpen;
+    const [messages, setMessages] = useState([
+        {
+            id: '1',
+            role: 'assistant',
+            content: 'Olá! Como podemos ajudar?',
+            timestamp: new Date(),
+            options: initialOptions,
+        },
+    ]);
+    const [inputValue, setInputValue] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const messagesEndRef = useRef(null);
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages, isTyping]);
+    const startHumanChat = () => {
+        onRequestHuman?.();
+    };
+    const getAIReply = async (history) => {
+        const result = await sendChatRequest(history.map((m) => ({ role: m.role, content: m.content })));
+        if (result.ok && result.reply) {
+            return result.reply;
+        }
+        return 'Obrigado pela sua mensagem! Em breve um atendente irá te responder. Enquanto isso, você pode escolher uma das opções abaixo:';
+    };
+    const handleOptionClick = (value) => {
+        if (value === 'support' || value === 'human_support') {
+            startHumanChat();
+            return;
+        }
+        const userMessage = {
+            id: Date.now().toString(),
+            role: 'user',
+            content: initialOptions.find((o) => o.value === value)?.label || value,
+            timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, userMessage]);
+        const fullHistory = [...messages, userMessage];
+        setIsTyping(true);
+        const respond = async () => {
+            try {
+                const responseContent = await getAIReply(fullHistory);
+                let nextOptions;
+                if (value === 'candidate') {
+                    nextOptions = candidateOptions;
+                }
+                else if (value === 'company') {
+                    nextOptions = companyOptions;
+                }
+                const assistantMessage = {
+                    id: (Date.now() + 1).toString(),
+                    role: 'assistant',
+                    content: responseContent,
+                    timestamp: new Date(),
+                    options: nextOptions,
+                };
+                setMessages((prev) => [...prev, assistantMessage]);
+            }
+            catch {
+                const fallbackMessage = {
+                    id: (Date.now() + 1).toString(),
+                    role: 'assistant',
+                    content: 'Em breve um atendente irá te responder.',
+                    timestamp: new Date(),
+                    options: initialOptions,
+                };
+                setMessages((prev) => [...prev, fallbackMessage]);
+            }
+            finally {
+                setIsTyping(false);
+            }
+        };
+        void respond();
+    };
+    const handleSend = () => {
+        if (!inputValue.trim())
+            return;
+        const userMessage = {
+            id: Date.now().toString(),
+            role: 'user',
+            content: inputValue,
+            timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, userMessage]);
+        const fullHistory = [...messages, userMessage];
+        setInputValue('');
+        setIsTyping(true);
+        const respond = async () => {
+            try {
+                const reply = await getAIReply(fullHistory);
+                const assistantMessage = {
+                    id: (Date.now() + 1).toString(),
+                    role: 'assistant',
+                    content: reply,
+                    timestamp: new Date(),
+                    options: initialOptions,
+                };
+                setMessages((prev) => [...prev, assistantMessage]);
+            }
+            catch {
+                const fallbackMessage = {
+                    id: (Date.now() + 1).toString(),
+                    role: 'assistant',
+                    content: 'Obrigado pela sua mensagem! Em breve um atendente irá te responder. Enquanto isso, você pode escolher uma das opções abaixo:',
+                    timestamp: new Date(),
+                    options: initialOptions,
+                };
+                setMessages((prev) => [...prev, fallbackMessage]);
+            }
+            finally {
+                setIsTyping(false);
+            }
+        };
+        void respond();
+    };
+    const getRoleIcon = (role) => {
+        switch (role) {
+            case 'user':
+                return _jsx(User, { className: "h-4 w-4" });
+            case 'assistant':
+                return _jsx(Bot, { className: "h-4 w-4" });
+            case 'system':
+                return _jsx(Bot, { className: "h-4 w-4" });
+            default:
+                return null;
+        }
+    };
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape' && open) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [open, setOpen]);
+    const chatPanelRef = useFocusTrap(open);
+    return (_jsxs("div", { className: "fixed right-4 bottom-[calc(6rem+env(safe-area-inset-bottom)-10px)] z-50 sm:right-6 sm:bottom-16", children: [_jsx(AnimatePresence, { children: open && (_jsxs(_Fragment, { children: [_jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.2 }, className: "overlay-backdrop fixed inset-0 z-40", onClick: () => setOpen(false), "aria-hidden": "true" }), _jsx(motion.div, { id: "chat-panel", ref: chatPanelRef, role: "dialog", "aria-modal": "true", "aria-labelledby": "chat-title", initial: { opacity: 0, y: 20, scale: 0.95 }, animate: { opacity: 1, y: 0, scale: 1 }, exit: { opacity: 0, y: 20, scale: 0.95 }, transition: { duration: 0.2 }, className: "overlay-panel relative z-50 mb-3 flex w-[calc(100vw-2rem)] max-w-[360px] flex-col sm:mb-3", children: _jsxs("div", { className: "bg-background border-border flex h-[60vh] max-h-[500px] flex-col overflow-hidden rounded-2xl border shadow-2xl", children: [_jsxs("div", { className: "bg-primary/10 border-border/50 flex items-center justify-between border-b px-4 py-3", children: [_jsxs("div", { className: "flex items-center gap-3", children: [_jsx("div", { className: "bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full", children: _jsx(Bot, { className: "h-4 w-4" }) }), _jsxs("div", { children: [_jsx("h3", { id: "chat-title", className: "text-foreground text-sm font-semibold", children: "Assistente J&S" }), _jsx("p", { className: "text-muted-foreground text-xs", children: "Assistente IA \u2022 Online" })] })] }), _jsx("button", { onClick: () => setOpen(false), className: "text-muted-foreground hover:text-foreground focus-visible:ring-primary focus-visible:ring-2 focus-visible:outline-none", "aria-label": "Fechar chat", children: _jsx(X, { className: "h-5 w-5" }) })] }), _jsxs("div", { className: "flex-1 space-y-4 overflow-y-auto p-4", children: [messages.map((message) => (_jsxs("div", { className: cn('flex gap-2', message.role === 'user'
+                                                    ? 'flex-row-reverse'
+                                                    : 'flex-row'), children: [message.role !== 'user' && (_jsx("div", { className: "bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full", children: getRoleIcon(message.role) })), _jsxs("div", { className: cn('max-w-[80%] rounded-2xl px-4 py-2 text-sm', message.role === 'user'
+                                                            ? 'bg-primary text-primary-foreground'
+                                                            : 'bg-muted text-foreground'), children: [_jsx("p", { children: message.content }), message.options && (_jsx("div", { className: "mt-3 space-y-2", children: message.options.map((option) => (_jsxs("button", { onClick: () => handleOptionClick(option.value), className: "bg-background hover:bg-primary/10 flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs transition-colors", children: [_jsx("span", { children: option.label }), _jsx(ChevronRight, { className: "text-muted-foreground h-3 w-3" })] }, option.value))) }))] })] }, message.id))), isTyping && (_jsxs("div", { className: "flex items-center gap-2", children: [_jsx("div", { className: "bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full", children: _jsx(Bot, { className: "h-4 w-4" }) }), _jsx("div", { className: "bg-muted rounded-2xl px-4 py-2", children: _jsxs("div", { className: "flex gap-1", children: [_jsx("span", { className: "bg-foreground/20 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]" }), _jsx("span", { className: "bg-foreground/20 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]" }), _jsx("span", { className: "bg-foreground/20 h-2 w-2 animate-bounce rounded-full" })] }) })] })), _jsx("div", { ref: messagesEndRef })] }), _jsxs("div", { className: "border-border/50 border-t p-3", children: [_jsx("button", { type: "button", onClick: startHumanChat, className: "text-primary mb-2 text-xs font-semibold", children: "Falar com atendente humano" }), _jsxs("div", { className: "flex items-center gap-2", children: [_jsx("input", { type: "text", value: inputValue, onChange: (e) => setInputValue(e.target.value), onKeyDown: (e) => e.key === 'Enter' && handleSend(), placeholder: "Digite sua mensagem...", className: "bg-background border-border focus:border-primary flex-1 rounded-lg border px-3 py-2 text-sm outline-none" }), _jsx(Button, { variant: "primary", size: "icon", onClick: handleSend, disabled: !inputValue.trim(), "aria-label": "Enviar mensagem", children: _jsx(Send, { className: "h-4 w-4" }) })] })] })] }) })] })) }), _jsx(motion.button, { onClick: () => setOpen(!open), className: cn('shadow-glow-lg bg-primary text-primary-foreground relative z-50 flex items-center gap-2 rounded-full px-4 py-3 transition-colors', open ? 'rounded-full' : 'rounded-full'), whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 }, "aria-label": open ? 'Fechar chat' : 'Abrir assistente J&S', "aria-expanded": open, "aria-controls": "chat-panel", children: open ? (_jsx(X, { className: "h-5 w-5" })) : (_jsxs(_Fragment, { children: [_jsx(Bot, { className: "h-5 w-5" }), _jsx("span", { className: "hidden text-sm font-medium sm:inline", children: "Assistente J&S" })] })) })] }));
+}

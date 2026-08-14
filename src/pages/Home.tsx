@@ -19,7 +19,6 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { HeroSplit } from '@/components/sections/HeroSplit';
-import { InactivityShowcase } from '@/components/sections/InactivityShowcase';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
@@ -289,8 +288,6 @@ export default function Home() {
         ]}
         type="WebSite"
       />
-
-      <InactivityShowcase />
 
       {/* 1. HERO */}
       <HeroSplit slides={heroSlides} interval={6000} />
