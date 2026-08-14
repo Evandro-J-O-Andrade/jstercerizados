@@ -71,26 +71,15 @@ export function AccessibilityWidget({
     if (typeof window === 'undefined') return DEFAULT_STATE;
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        return { ...DEFAULT_STATE, ...JSON.parse(stored) };
-      }
+      return stored ? { ...DEFAULT_STATE, ...JSON.parse(stored) } : DEFAULT_STATE;
     } catch {
-      // ignore
+      return DEFAULT_STATE;
     }
-    return DEFAULT_STATE;
   });
 
   const [tts, setTTS] = useState<TTSState>(DEFAULT_TTS);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isOpen]);
 
   const applySettings = useCallback((state: AccessibilityState) => {
     const root = document.documentElement;
@@ -107,7 +96,7 @@ export function AccessibilityWidget({
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     } catch {
-      // ignore
+      // ignore storage errors
     }
   }, [settings, applySettings]);
 
@@ -118,34 +107,15 @@ export function AccessibilityWidget({
     }
   }, []);
 
-  const toggle = (key: keyof AccessibilityState) => {
-    setSettings((prev) => {
-      const next = { ...prev, [key]: !prev[key] };
-      return next;
-    });
-  };
-
-  const reset = () => {
-    setSettings(DEFAULT_STATE);
-    stopTTS();
-  };
-
-  const getVoices = (): SpeechSynthesisVoice[] => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return [];
-    return window.speechSynthesis.getVoices();
-  };
-
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-
   useEffect(() => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
-    const updateVoices = () => setVoices(getVoices());
+
+    const updateVoices = () => setVoices(window.speechSynthesis.getVoices());
     updateVoices();
-    window.speechSynthesis.onvoiceschanged = updateVoices;
+    window.speechSynthesis.addEventListener('voiceschanged', updateVoices);
+
     return () => {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.onvoiceschanged = null;
-      }
+      window.speechSynthesis.removeEventListener('voiceschanged', updateVoices);
     };
   }, []);
 
@@ -157,50 +127,44 @@ export function AccessibilityWidget({
     utteranceRef.current = null;
   }, []);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        stopTTS();
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, setIsOpen, stopTTS]);
+  const closePanel = useCallback(() => {
+    // Fechar o painel não interrompe uma leitura já iniciada.
+    setIsOpen(false);
+  }, [setIsOpen]);
 
-  const togglePauseTTS = useCallback(() => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
-    if (tts.paused) {
-      window.speechSynthesis.resume();
-      setTTS((prev) => ({ ...prev, paused: false, speaking: true }));
-    } else if (tts.speaking) {
-      window.speechSynthesis.pause();
-      setTTS((prev) => ({ ...prev, paused: true }));
-    }
-  }, [tts.paused, tts.speaking]);
+  const reset = () => {
+    setSettings(DEFAULT_STATE);
+    stopTTS();
+  };
+
+  const toggle = (key: keyof AccessibilityState) => {
+    setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const speakPage = useCallback(() => {
     stopTTS();
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
 
-    const root = document.documentElement;
-    const content = root.querySelector('main') || root;
+    const content = document.querySelector('main') ?? document.body;
     const elements = content.querySelectorAll(
       'h1, h2, h3, h4, h5, h6, p, li, a, button',
     );
     const textParts: string[] = [];
+
     elements.forEach((el) => {
       const text = el.textContent?.trim();
-      if (!text || text.length === 0) return;
+      if (!text) return;
+
       const style = window.getComputedStyle(el);
       if (
         style.display === 'none' ||
         style.visibility === 'hidden' ||
-        style.opacity === '0'
+        style.opacity === '0' ||
+        el.closest('[aria-hidden="true"]')
       ) {
         return;
       }
+
       textParts.push(text);
     });
 
@@ -210,15 +174,12 @@ export function AccessibilityWidget({
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'pt-BR';
     utterance.rate = tts.rate;
-    if (tts.voice) {
-      utterance.voice = tts.voice;
-    }
+    if (tts.voice) utterance.voice = tts.voice;
 
     utterance.onend = () => {
       setTTS(DEFAULT_TTS);
       utteranceRef.current = null;
     };
-
     utterance.onerror = () => {
       setTTS(DEFAULT_TTS);
       utteranceRef.current = null;
@@ -227,30 +188,41 @@ export function AccessibilityWidget({
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
     setTTS((prev) => ({ ...prev, speaking: true, paused: false }));
-  }, [tts.rate, tts.voice, stopTTS]);
+  }, [stopTTS, tts.rate, tts.voice]);
 
-  const handleVoiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = voices.find((v) => v.name === e.target.value) || null;
-    setTTS((prev) => ({ ...prev, voice: selected }));
-  };
+  const togglePauseTTS = useCallback(() => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
 
-  const handleRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rate = Number(e.target.value);
-    setTTS((prev) => ({ ...prev, rate }));
-  };
+    if (tts.paused) {
+      window.speechSynthesis.resume();
+      setTTS((prev) => ({ ...prev, paused: false, speaking: true }));
+    } else if (tts.speaking) {
+      window.speechSynthesis.pause();
+      setTTS((prev) => ({ ...prev, paused: true }));
+    }
+  }, [tts.paused, tts.speaking]);
 
   useEffect(() => {
-    return () => {
-      stopTTS();
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closePanel();
     };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [closePanel, isOpen]);
+
+  useEffect(() => {
+    return () => stopTTS();
   }, [stopTTS]);
+
+  const accessibilityPanelRef = useFocusTrap(isOpen);
 
   const handleWhatsApp = () => {
     const message = encodeURIComponent(WHATSAPP_MESSAGES.whatsappButton);
     window.open(getWhatsAppUrl(COMPANY.whatsapp, message), '_blank');
   };
-
-  const accessibilityPanelRef = useFocusTrap(isOpen);
 
   return (
     <div className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom)-10px)] left-4 z-50 sm:bottom-16 sm:left-6">
@@ -263,10 +235,7 @@ export function AccessibilityWidget({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="overlay-backdrop fixed inset-0 z-40"
-              onClick={() => {
-                stopTTS();
-                setIsOpen(false);
-              }}
+              onClick={closePanel}
               aria-hidden="true"
             />
             <div
@@ -289,10 +258,7 @@ export function AccessibilityWidget({
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
-                    stopTTS();
-                    setIsOpen(false);
-                  }}
+                  onClick={closePanel}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Fechar painel de acessibilidade"
                 >
@@ -357,12 +323,21 @@ export function AccessibilityWidget({
                       </label>
                       <select
                         value={tts.voice?.name || ''}
-                        onChange={handleVoiceChange}
+                        onChange={(event) => {
+                          const selected =
+                            voices.find(
+                              (voice) => voice.name === event.target.value,
+                            ) ?? null;
+                          setTTS((prev) => ({ ...prev, voice: selected }));
+                        }}
                         className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full rounded-lg border px-2 py-1.5 text-xs outline-none focus:ring-2"
                       >
                         <option value="">Selecionar voz</option>
                         {voices.map((voice) => (
-                          <option key={voice.name} value={voice.name}>
+                          <option
+                            key={`${voice.name}-${voice.lang}`}
+                            value={voice.name}
+                          >
                             {voice.name} ({voice.lang})
                           </option>
                         ))}
@@ -381,11 +356,24 @@ export function AccessibilityWidget({
                         max="2"
                         step="0.1"
                         value={tts.rate}
-                        onChange={handleRateChange}
+                        onChange={(event) =>
+                          setTTS((prev) => ({
+                            ...prev,
+                            rate: Number(event.target.value),
+                          }))
+                        }
                         className="w-full"
+                        aria-label="Velocidade da leitura"
                       />
                     </div>
                   </div>
+
+                  {tts.speaking && (
+                    <p className="text-muted-foreground mt-2 text-xs">
+                      A leitura continua mesmo se você fechar este painel. Use
+                      “Parar” para interrompê-la.
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -428,127 +416,64 @@ export function AccessibilityWidget({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-foreground flex items-center gap-2 text-sm font-medium">
-                    <Contrast className="h-4 w-4" />
-                    Alto contraste
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => toggle('highContrast')}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      settings.highContrast ? 'bg-primary' : 'bg-muted'
-                    }`}
-                    aria-pressed={settings.highContrast}
-                    aria-label="Alternar alto contraste"
-                  >
-                    <span
-                      className={`bg-background inline-block h-4 w-4 rounded-full transition-transform ${
-                        settings.highContrast
-                          ? 'translate-x-6'
-                          : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-foreground flex items-center gap-2 text-sm font-medium">
-                    <Eye className="h-4 w-4" />
-                    Destacar links
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => toggle('highlightLinks')}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      settings.highlightLinks ? 'bg-primary' : 'bg-muted'
-                    }`}
-                    aria-pressed={settings.highlightLinks}
-                    aria-label="Alternar destaque de links"
-                  >
-                    <span
-                      className={`bg-background inline-block h-4 w-4 rounded-full transition-transform ${
-                        settings.highlightLinks
-                          ? 'translate-x-6'
-                          : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-foreground flex items-center gap-2 text-sm font-medium">
-                    {settings.reducedMotion ? (
+                {[
+                  {
+                    key: 'highContrast' as const,
+                    icon: <Contrast className="h-4 w-4" />,
+                    label: 'Alto contraste',
+                  },
+                  {
+                    key: 'highlightLinks' as const,
+                    icon: <Eye className="h-4 w-4" />,
+                    label: 'Destacar links',
+                  },
+                  {
+                    key: 'reducedMotion' as const,
+                    icon: settings.reducedMotion ? (
                       <Pause className="h-4 w-4" />
                     ) : (
                       <Play className="h-4 w-4" />
-                    )}
-                    Reduzir animações
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => toggle('reducedMotion')}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      settings.reducedMotion ? 'bg-primary' : 'bg-muted'
-                    }`}
-                    aria-pressed={settings.reducedMotion}
-                    aria-label="Alternar redução de animações"
+                    ),
+                    label: 'Reduzir animações',
+                  },
+                  {
+                    key: 'increasedSpacing' as const,
+                    icon: <Type className="h-4 w-4" />,
+                    label: 'Espaçamento de texto',
+                  },
+                  {
+                    key: 'focusMode' as const,
+                    icon: <Eye className="h-4 w-4" />,
+                    label: 'Modo foco',
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.key}
+                    className="flex items-center justify-between"
                   >
-                    <span
-                      className={`bg-background inline-block h-4 w-4 rounded-full transition-transform ${
-                        settings.reducedMotion
-                          ? 'translate-x-6'
-                          : 'translate-x-1'
+                    <span className="text-foreground flex items-center gap-2 text-sm font-medium">
+                      {item.icon}
+                      {item.label}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => toggle(item.key)}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        settings[item.key] ? 'bg-primary' : 'bg-muted'
                       }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-foreground flex items-center gap-2 text-sm font-medium">
-                    <Type className="h-4 w-4" />
-                    Espaçamento de texto
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => toggle('increasedSpacing')}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      settings.increasedSpacing ? 'bg-primary' : 'bg-muted'
-                    }`}
-                    aria-pressed={settings.increasedSpacing}
-                    aria-label="Alternar espaçamento de texto"
-                  >
-                    <span
-                      className={`bg-background inline-block h-4 w-4 rounded-full transition-transform ${
-                        settings.increasedSpacing
-                          ? 'translate-x-6'
-                          : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-foreground flex items-center gap-2 text-sm font-medium">
-                    <Eye className="h-4 w-4" />
-                    Modo foco
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => toggle('focusMode')}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      settings.focusMode ? 'bg-primary' : 'bg-muted'
-                    }`}
-                    aria-pressed={settings.focusMode}
-                    aria-label="Alternar modo foco"
-                  >
-                    <span
-                      className={`bg-background inline-block h-4 w-4 rounded-full transition-transform ${
-                        settings.focusMode ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
+                      aria-pressed={settings[item.key]}
+                      aria-label={`Alternar ${item.label.toLowerCase()}`}
+                    >
+                      <span
+                        className={`bg-background inline-block h-4 w-4 rounded-full transition-transform ${
+                          settings[item.key]
+                            ? 'translate-x-6'
+                            : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                ))}
 
                 <div className="border-border border-t pt-4">
                   <p className="text-foreground mb-3 flex items-center gap-2 text-sm font-medium">
@@ -561,7 +486,6 @@ export function AccessibilityWidget({
                       variant="outline"
                       size="sm"
                       onClick={handleWhatsApp}
-                      className="justify-center"
                     >
                       <Phone className="mr-2 h-4 w-4" />
                       WhatsApp
@@ -571,10 +495,9 @@ export function AccessibilityWidget({
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setIsOpen(false);
+                        closePanel();
                         onOpenChat?.();
                       }}
-                      className="justify-center"
                     >
                       <Bot className="mr-2 h-4 w-4" />
                       Chat Online
@@ -597,15 +520,17 @@ export function AccessibilityWidget({
           </>
         )}
       </AnimatePresence>
+
       <motion.button
-        onClick={() => {
-          stopTTS();
-          setIsOpen(!isOpen);
-        }}
+        onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className="shadow-glow-lg bg-primary text-primary-foreground relative z-50 flex items-center gap-2 rounded-full px-4 py-3 transition-colors sm:h-12 sm:w-12 sm:justify-center sm:px-0"
-        aria-label="Abrir painel de acessibilidade"
+        aria-label={
+          isOpen
+            ? 'Fechar painel de acessibilidade'
+            : 'Abrir painel de acessibilidade'
+        }
         aria-expanded={isOpen}
         aria-controls="accessibility-panel"
       >
