@@ -7,6 +7,7 @@ import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { CLIENTS_LIST } from '@/mock/clients';
+import { PARTNERS_LOGOS } from '@/mock/partners';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import {
@@ -16,6 +17,8 @@ import {
   MapPin,
   CheckCircle2,
   Shield,
+  Briefcase,
+  Handshake,
 } from 'lucide-react';
 
 export default function Empresas() {
@@ -52,7 +55,7 @@ export default function Empresas() {
               className="bg-primary/10 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
             >
               <Building2 className="h-4 w-4" />
-              <span>Para Empresas Parceiras</span>
+              <span>Para Empresas</span>
             </motion.div>
 
             <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
@@ -109,8 +112,8 @@ export default function Empresas() {
                 icon: MapPin,
               },
               {
-                title: 'WhatsApp em Primeiro Lugar',
-                desc: 'Atendimento e acompanhamento via WhatsApp.',
+                title: 'Atendimento WhatsApp',
+                desc: 'Comunicação direta e acompanhamento em tempo real.',
                 icon: Phone,
               },
               {
@@ -140,20 +143,27 @@ export default function Empresas() {
             ))}
           </motion.div>
 
-          {/* Empresas parceiras */}
+          {/* Clientes que confiam na J&S */}
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerReveal(0.15)}
-            className="mt-16"
+            className="mt-24"
           >
             <motion.h2
               variants={revealUp}
               className="text-foreground text-center text-3xl font-bold sm:text-4xl"
             >
-              Empresas Parceiras
+              Clientes que confiam na J&S
             </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center text-lg"
+            >
+              Empresas que escolheram nossas soluções para apoiar seus processos
+              de Recursos Humanos, mão de obra e serviços especializados.
+            </motion.p>
 
             <motion.div
               initial="hidden"
@@ -186,6 +196,187 @@ export default function Empresas() {
                   </motion.div>
                 ),
               )}
+            </motion.div>
+          </motion.div>
+
+          {/* Nossos parceiros */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mt-24"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-center text-3xl font-bold sm:text-4xl"
+            >
+              Nossos parceiros
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center text-lg"
+            >
+              Construímos uma rede de parceiros estratégicos para ampliar nossas
+              soluções e entregar mais eficiência aos nossos clientes.
+            </motion.p>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerReveal(0.1)}
+              className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-6"
+            >
+              {PARTNERS_LOGOS.map((partner) => (
+                <motion.div
+                  key={partner.name}
+                  variants={staggerItem('up')}
+                  whileHover={{ scale: 1.05 }}
+                  className="group bg-muted/50 border-border/50 relative overflow-hidden rounded-2xl border"
+                >
+                  <div className="relative aspect-[4/3] w-full overflow-hidden">
+                    <SafeImage
+                      src={partner.photo}
+                      fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%232a2a2a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='16'%3EEmpresa%3C/text%3E%3C/svg%3E"
+                      alt={partner.name}
+                      className="h-full w-full object-cover grayscale-[40%] transition-all duration-300 group-hover:grayscale-0"
+                    />
+                  </div>
+                  <div className="p-3 text-center">
+                    <span className="text-foreground text-xs font-semibold">
+                      {partner.name}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Fornecedores */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mt-24"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-center text-3xl font-bold sm:text-4xl"
+            >
+              Seja um fornecedor J&S
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center text-lg"
+            >
+              Fazemos parte de uma cadeia de valor ampla e qualificada. Se sua
+              empresa fornece produtos ou serviços compatíveis com nossas
+              operações, queremos conhecer você.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-10 flex justify-center"
+            >
+              <Link to="/fornecedores">
+                <Button variant="secondary" size="lg">
+                  <Briefcase className="mr-2 h-5 w-5" />
+                  Quero ser fornecedor
+                </Button>
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          {/* Sua empresa */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mt-24"
+          >
+            <motion.div
+              variants={revealUp}
+              className="bg-card border-border shadow-premium rounded-3xl border p-8 sm:p-12"
+            >
+              <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+                <motion.div variants={staggerItem('up')}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="bg-primary/10 text-primary mb-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
+                  >
+                    <Handshake className="h-4 w-4" />
+                    <span>Soluções para empresas</span>
+                  </motion.div>
+                  <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
+                    Sua empresa precisa contratar?
+                  </h2>
+                  <p className="text-muted-foreground mt-4 text-lg">
+                    Encontre uma solução adequada para a necessidade da sua
+                    empresa. Recrutamento, seleção, mão de obra e facilities com
+                    agilidade e qualidade.
+                  </p>
+
+                  <div className="mt-8 flex flex-wrap gap-4">
+                    <Link to="/empresas/divulgar-vaga">
+                      <Button variant="primary" size="lg">
+                        <Users className="mr-2 h-5 w-5" />
+                        Divulgar vaga
+                      </Button>
+                    </Link>
+                    <motion.a
+                      href={getWhatsAppUrl(
+                        COMPANY.whatsapp,
+                        WHATSAPP_MESSAGES.comercial,
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Button variant="outline" size="lg">
+                        <Phone className="mr-2 h-5 w-5" />
+                        Falar com nosso comercial
+                      </Button>
+                    </motion.a>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={staggerItem('up')}
+                  className="bg-muted/50 border-border/50 rounded-2xl border p-6"
+                >
+                  <h3 className="text-foreground mb-4 text-lg font-semibold">
+                    Nossas soluções
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      'Recrutamento e Seleção',
+                      'Mão de Obra Temporária',
+                      'Mão de Obra Efetiva',
+                      'Assessoria em RH',
+                      'Terceirização e Facilities',
+                      'Limpeza e Conservação',
+                      'Jardinagem e Paisagismo',
+                      'Portaria e Zeladoria',
+                    ].map((solution) => (
+                      <div key={solution} className="flex items-center gap-3">
+                        <CheckCircle2 className="text-primary h-5 w-5 flex-shrink-0" />
+                        <span className="text-muted-foreground text-sm">
+                          {solution}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
             </motion.div>
           </motion.div>
         </Container>
