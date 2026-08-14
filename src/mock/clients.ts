@@ -20,7 +20,7 @@ export const CLIENTS_LIST: Client[] = [
     id: 'client-02',
     name: 'Vector Engenharia e Sistemas de Automação',
     logo: '/images/clientes/vector-engenharia.webp',
-    image: '/images/clientes/vector-engenharia-real.webp',
+    image: '/images/clientes/vector-engenharia.webp',
     website: 'https://vector.com.br/',
     description:
       'Engenharia, automação industrial e sistemas inteligentes para indústria e empresas.',
