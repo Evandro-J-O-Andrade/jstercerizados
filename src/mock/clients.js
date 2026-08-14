@@ -28,9 +28,10 @@ export const CLIENTS_LIST = [
     {
         id: 'client-04',
         name: 'Vectro Engenharia',
-        logo: null,
-        website: null,
-        description: null,
+        logo: '/images/clientes/vectro-engenharia.png',
+        website: 'https://www.vectroengenharia.com.br/',
+        description:
+        'Engenharia e soluções técnicas para projetos residenciais, comerciais e industriais.',
     },
 ];
 export const CLIENT_TESTIMONIALS = [];
