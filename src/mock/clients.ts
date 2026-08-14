@@ -37,7 +37,7 @@ export const CLIENTS_LIST: Client[] = [
   {
     id: 'client-04',
     name: 'Vectro Engenharia',
-    logo: '/images/clientes/vectro-engenharia.png',
+    logo: '/images/clientes/vector-engenharia.webp',
     website: 'https://www.vectroengenharia.com.br/',
     description:
       'Engenharia e soluções técnicas para projetos residenciais, comerciais e industriais.',
