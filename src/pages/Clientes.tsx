@@ -4,12 +4,10 @@ import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
-import { staggerReveal } from '@/animations/scroll';
-import { staggerItem } from '@/animations/fade';
 import { CLIENTS_LIST } from '@/mock/clients';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
-import { Building2, Users, Phone } from 'lucide-react';
+import { Building2, Users, Phone, ExternalLink } from 'lucide-react';
 
 export default function Clientes() {
   const confirmedClients = CLIENTS_LIST.filter(
@@ -32,6 +30,7 @@ export default function Clientes() {
         ]}
         type="WebSite"
       />
+
       <Section className="pt-20 md:pt-28">
         <Container>
           <motion.div
@@ -51,69 +50,114 @@ export default function Clientes() {
             </motion.div>
 
             <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
-              Clientes que confiam na J&S
+              Relacionamentos que constroem confiança
             </h1>
             <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
-              Empresas que escolheram nossas soluções para apoiar seus processos
-              de Recursos Humanos, mão de obra e serviços especializados.
+              A J&S Empregos LTDA conecta empresas e profissionais com soluções
+              em Recursos Humanos, recrutamento, terceirização e facilities.
+              Cada parceiro faz parte da nossa história.
             </p>
           </motion.div>
+        </Container>
+      </Section>
 
-          {confirmedClients.length > 0 ? (
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-100px' }}
-              variants={staggerReveal(0.1)}
-              className="mt-16 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
-            >
-              {confirmedClients.map((client) => (
-                <motion.div
-                  key={client.id}
-                  variants={staggerItem('up')}
-                  whileHover={{ scale: 1.05 }}
-                  className="group bg-muted/50 border-border/50 relative overflow-hidden rounded-2xl border"
+      <Section className="pb-0">
+        <Container>
+          <div className="mt-20 space-y-20">
+            {confirmedClients.map((client, index) => (
+              <motion.div
+                key={client.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-100px' }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16 ${
+                  index % 2 === 1 ? 'direction-rtl' : ''
+                }`}
+                style={{ direction: 'ltr' }}
+              >
+                <div
+                  className={`relative aspect-[16/10] overflow-hidden rounded-3xl ${
+                    index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'
+                  }`}
                 >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden">
+                  {client.image ? (
                     <SafeImage
-                      src={client.logo!}
-                      fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%232a2a2a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='16'%3EEmpresa%3C/text%3E%3C/svg%3E"
-                      alt={client.name!}
-                      className="h-full w-full object-cover grayscale-[40%] transition-all duration-300 group-hover:grayscale-0"
+                      src={client.image}
+                      alt={client.name}
+                      className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
                     />
-                  </div>
-                  <div className="p-3 text-center">
-                    <span className="text-foreground text-xs font-semibold">
-                      {client.name!}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mt-16 text-center"
-            >
-              <p className="text-muted-foreground">
-                Os clientes desta seção são confirmados diretamente pela J&S.
-              </p>
-            </motion.div>
-          )}
+                  ) : (
+                    <div className="bg-muted/30 flex h-full w-full items-center justify-center">
+                      {client.logo && (
+                        <SafeImage
+                          src={client.logo}
+                          alt={client.name}
+                          className="h-24 w-auto object-contain"
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
 
+                <div
+                  className={`${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}
+                >
+                  <div className="max-w-xl">
+                    {client.logo && (
+                      <div className="mb-6 h-10 w-auto">
+                        <SafeImage
+                          src={client.logo}
+                          alt={client.name}
+                          className="h-full w-auto object-contain"
+                        />
+                      </div>
+                    )}
+                    <h3 className="text-foreground text-2xl font-bold sm:text-3xl">
+                      {client.name}
+                    </h3>
+                    {client.description && (
+                      <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
+                        {client.description}
+                      </p>
+                    )}
+                    {client.website && (
+                      <a
+                        href={client.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:text-primary/80 mt-6 inline-flex items-center gap-2 text-sm font-semibold transition-colors"
+                      >
+                        Conhecer empresa
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      <Section className="mt-24">
+        <Container>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-16 text-center"
+            transition={{ duration: 0.6 }}
+            className="text-center"
           >
             <div className="bg-card border-border shadow-premium rounded-3xl border p-8 sm:p-12">
               <Users className="text-primary mx-auto mb-4 h-12 w-12" />
               <h2 className="text-foreground text-2xl font-bold sm:text-3xl">
-                Sua empresa também pode ser atendida pela J&S
+                Grandes empresas possuem grandes desafios.
+                <br />
+                <span className="text-primary">
+                  A J&S trabalha para que pessoas e processos estejam à altura
+                  deles.
+                </span>
               </h2>
               <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
                 Converse com nosso time comercial e entenda como podemos apoiar
@@ -122,7 +166,7 @@ export default function Clientes() {
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <Link to="/empresas">
                   <Button variant="primary" size="lg">
-                    Conhecer soluções
+                    Falar com a J&S
                   </Button>
                 </Link>
                 <motion.a
@@ -137,7 +181,7 @@ export default function Clientes() {
                 >
                   <Button variant="outline" size="lg">
                     <Phone className="mr-2 h-5 w-5" />
-                    Falar com consultor
+                    WhatsApp comercial
                   </Button>
                 </motion.a>
               </div>

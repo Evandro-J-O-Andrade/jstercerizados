@@ -1,12 +1,15 @@
 import { motion } from 'framer-motion';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Linkedin, Instagram } from 'lucide-react';
 import { SafeImage } from '@/components/ui/SafeImage';
 
 interface Client {
   id: string;
   name: string;
-  logo: string;
+  logo: string | null;
+  image?: string | null;
   website?: string | null;
+  description?: string | null;
+  socials?: { linkedin?: string; instagram?: string } | null;
 }
 
 interface ClientCardProps {
@@ -25,20 +28,31 @@ export function ClientCard({ client, index = 0 }: ClientCardProps) {
       className="group bg-card border-border shadow-premium relative overflow-hidden rounded-2xl border transition-all duration-300"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden">
-        <SafeImage
-          src={client.logo}
-          fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%232a2a2a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='16'%3EEmpresa%3C/text%3E%3C/svg%3E"
-          alt={client.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {client.logo ? (
+          <SafeImage
+            src={client.logo}
+            alt={client.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="bg-muted/50 flex h-full w-full items-center justify-center">
+            <span className="text-muted-foreground text-sm font-medium">
+              {client.name}
+            </span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
 
       <div className="p-5">
         <h3 className="text-foreground text-lg font-semibold">{client.name}</h3>
-
-        {client.website && (
-          <div className="mt-3">
+        {client.description && (
+          <p className="text-muted-foreground mt-2 line-clamp-2 text-sm">
+            {client.description}
+          </p>
+        )}
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          {client.website && (
             <a
               href={client.website}
               target="_blank"
@@ -48,8 +62,28 @@ export function ClientCard({ client, index = 0 }: ClientCardProps) {
               <ExternalLink className="h-4 w-4" />
               Conhecer empresa
             </a>
-          </div>
-        )}
+          )}
+          {client.socials?.linkedin && (
+            <a
+              href={client.socials.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Linkedin className="h-4 w-4" />
+            </a>
+          )}
+          {client.socials?.instagram && (
+            <a
+              href={client.socials.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Instagram className="h-4 w-4" />
+            </a>
+          )}
+        </div>
       </div>
     </motion.div>
   );

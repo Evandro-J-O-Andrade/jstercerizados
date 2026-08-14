@@ -14,6 +14,7 @@ import {
   MapPin,
   Phone,
   Wrench,
+  Handshake,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
@@ -23,9 +24,11 @@ import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { mockGetVagas } from '@/services/mock/vagas';
-import { PARTNERS_LOGOS } from '@/mock/partners';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { HERO_SLIDES } from '@/content/homeHero';
+import { COMPANY_TIMELINE } from '@/mock/company';
+import { CLIENTS_LIST } from '@/mock/clients';
+import { SafeImage } from '@/components/ui/SafeImage';
 
 const heroSlides = HERO_SLIDES.map((slide) => ({
   id: slide.id,
@@ -725,8 +728,8 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 8. CLIENTES E PARCEIROS */}
-      <Section className="bg-surface-alt">
+      {/* 6. RELACIONAMENTOS */}
+      <Section>
         <Container>
           <motion.div
             initial="hidden"
@@ -739,38 +742,110 @@ export default function Home() {
               variants={revealUp}
               className="text-foreground text-3xl font-bold sm:text-4xl"
             >
-              Clientes e Parceiros
+              Relacionamentos que fazem parte da nossa história
             </motion.h2>
             <motion.p
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Empresas que confiam nosso trabalho.
+              Clientes, parceiros e fornecedores que caminham ao nosso lado.
             </motion.p>
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerReveal(0.08)}
-            className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
-          >
-            {PARTNERS_LOGOS.map((partner) => (
-              <motion.div
-                key={partner.name}
-                variants={staggerItem('up')}
-                className="bg-card border-border flex h-24 items-center justify-center rounded-xl border p-4 opacity-70 grayscale grayscale-[0.8] transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerReveal(0.1)}
+              className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 text-center transition-all duration-300"
+            >
+              <Building2 className="text-primary mx-auto mb-4 h-10 w-10" />
+              <h3 className="text-foreground text-lg font-semibold">
+                Clientes
+              </h3>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Abarca Móveis, Vector, Mistral Vidros e outros que confiam na
+                J&S.
+              </p>
+              <Link
+                to="/clientes"
+                className="text-primary hover:text-primary/80 mt-4 inline-flex items-center gap-1 text-sm font-medium transition-colors"
               >
-                <img
-                  src={partner.logo}
-                  alt={partner.name}
-                  className="max-h-12 max-w-full object-contain"
-                  loading="lazy"
-                />
-              </motion.div>
-            ))}
-          </motion.div>
+                Conheça nossos clientes
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerReveal(0.1)}
+              className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 text-center transition-all duration-300"
+            >
+              <Handshake className="text-primary mx-auto mb-4 h-10 w-10" />
+              <h3 className="text-foreground text-lg font-semibold">
+                Parceiros
+              </h3>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Rede estratégica que amplia nossas soluções e eficiência.
+              </p>
+              <Link
+                to="/parceiros"
+                className="text-primary hover:text-primary/80 mt-4 inline-flex items-center gap-1 text-sm font-medium transition-colors"
+              >
+                Seja nosso parceiro
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerReveal(0.1)}
+              className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 text-center transition-all duration-300"
+            >
+              <Briefcase className="text-primary mx-auto mb-4 h-10 w-10" />
+              <h3 className="text-foreground text-lg font-semibold">
+                Fornecedores
+              </h3>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Uma operação forte depende de bons fornecedores.
+              </p>
+              <Link
+                to="/fornecedores"
+                className="text-primary hover:text-primary/80 mt-4 inline-flex items-center gap-1 text-sm font-medium transition-colors"
+              >
+                Seja nosso fornecedor
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerReveal(0.1)}
+              className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 text-center transition-all duration-300"
+            >
+              <Phone className="text-primary mx-auto mb-4 h-10 w-10" />
+              <h3 className="text-foreground text-lg font-semibold">
+                Empresas
+              </h3>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Sua empresa quer fazer parte dessa rede?
+              </p>
+              <Link
+                to="/empresas"
+                className="text-primary hover:text-primary/80 mt-4 inline-flex items-center gap-1 text-sm font-medium transition-colors"
+              >
+                Falar com a J&S
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </motion.div>
+          </div>
         </Container>
       </Section>
 
@@ -928,7 +1003,129 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 12. BLOG */}
+      {/* 7. LINHA DO TEMPO */}
+      <Section className="bg-surface-alt">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              A Jornada J&S
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Mais de uma década construindo confiança e conectando pessoas.
+            </motion.p>
+          </motion.div>
+
+          <div className="relative">
+            <div className="bg-border absolute top-0 left-4 h-full w-0.5 md:left-1/2" />
+
+            <div className="space-y-12">
+              {COMPANY_TIMELINE.map((item, index) => (
+                <motion.div
+                  key={item.year}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className={`relative flex flex-col gap-4 md:flex-row md:items-center ${
+                    index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
+                  }`}
+                >
+                  <div
+                    className={`ml-12 md:w-1/2 ${
+                      index % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12'
+                    }`}
+                  >
+                    <div className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300">
+                      <span className="text-primary text-4xl font-bold">
+                        {item.year}
+                      </span>
+                      <h3 className="text-foreground mt-2 text-xl font-semibold">
+                        {item.event}
+                      </h3>
+                      <p className="text-muted-foreground mt-2 text-sm">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-primary border-background absolute top-6 left-4 h-4 w-4 rounded-full border-4 md:left-1/2 md:-translate-x-1/2" />
+
+                  <div className="hidden md:block md:w-1/2" />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </Container>
+      </Section>
+
+      {/* 8. CLIENTES REAIS */}
+      <Section>
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Empresas que já fazem parte dessa história
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Conheça alguns dos clientes que confiam na J&S.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
+          >
+            {CLIENTS_LIST.filter((client) => client.name && client.logo).map(
+              (client) => (
+                <motion.div
+                  key={client.id}
+                  variants={staggerItem('up')}
+                  className="bg-card border-border hover:border-primary/30 flex flex-col items-center justify-center rounded-2xl border p-6 transition-all duration-300"
+                >
+                  <div className="h-16 w-auto">
+                    <SafeImage
+                      src={client.logo!}
+                      alt={client.name!}
+                      className="h-full w-auto object-contain"
+                    />
+                  </div>
+                  <span className="text-foreground mt-3 text-center text-sm font-medium">
+                    {client.name!}
+                  </span>
+                </motion.div>
+              ),
+            )}
+          </motion.div>
+        </Container>
+      </Section>
+
+      {/* 9. BLOG */}
       <Section className="bg-surface-alt">
         <Container>
           <motion.div
