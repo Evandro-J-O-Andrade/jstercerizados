@@ -1,16 +1,16 @@
-import { motion, useInView, useReducedMotion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { Shield, Award, Users, Target } from 'lucide-react';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { COMPANY_TIMELINE, type TimelineItem } from '@/mock/company';
+import { COMPANY_TIMELINE } from '@/mock/company';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config';
-import { HERO_ASSETS } from '@/content/assets';
+import { HERO_ASSETS, SERVICE_IMAGES } from '@/content/assets';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 const valores = [
   {
@@ -39,69 +39,211 @@ const valores = [
   },
 ];
 
-function TimelineItemComponent({
-  item,
+type Chapter = {
+  id: string;
+  label: string;
+  year: string;
+  title: string;
+  description: string;
+  image: string;
+  layout:
+    | 'split-left'
+    | 'split-right'
+    | 'manga-left'
+    | 'manga-right'
+    | 'full-bleed'
+    | 'hero';
+  quote?: string;
+};
+
+const chapters: Chapter[] = [
+  {
+    id: 'origem',
+    label: '01 — ORIGEM',
+    year: '2011',
+    title: 'Tudo começou aqui.',
+    description:
+      'Início das operações como uma agência focada em recrutamento e seleção de profissionais qualificados.',
+    image: HERO_ASSETS.bannerjs,
+    layout: 'hero',
+    quote: '2011',
+  },
+  {
+    id: 'primeiros-passos',
+    label: '02 — PRIMEIROS PASSOS',
+    year: '2015',
+    title: 'Primeiros Passos',
+    description:
+      'Iniciamos os serviços complementares de zeladoria, limpeza e segurança, ampliando nossa atuação em RH.',
+    image: SERVICE_IMAGES.facilities,
+    layout: 'split-left',
+  },
+  {
+    id: 'evolucao',
+    label: '03 — EVOLUÇÃO',
+    year: '2018',
+    title: 'Evolução',
+    description:
+      'Implementamos sistemas de monitoramento e controle de acesso, integrando tecnologia aos nossos processos.',
+    image: SERVICE_IMAGES.controleAcesso,
+    layout: 'manga-right',
+  },
+  {
+    id: 'expansao',
+    label: '04 — EXPANSÃO',
+    year: '2020',
+    title: '200 Clientes',
+    description:
+      'Atingimos a marca de 200 clientes empresariais satisfeitos com nossas soluções de RH.',
+    image: HERO_ASSETS.suporte,
+    layout: 'full-bleed',
+    quote: 'NOVOS DESAFIOS.\nNOVAS SOLUÇÕES.',
+  },
+  {
+    id: 'plataforma',
+    label: '05 — J&S HOJE',
+    year: '2022',
+    title: 'Plataforma Digital J&S',
+    description:
+      'Lançamento da plataforma digital para otimizar a gestão de vagas, candidatos e processos seletivos.',
+    image: SERVICE_IMAGES.servicosReal,
+    layout: 'split-right',
+  },
+  {
+    id: 'cobertura',
+    label: '06 — O FUTURO',
+    year: '2024',
+    title: '50 Cidades',
+    description:
+      'Expandimos nossa cobertura para 50 cidades do Brasil. A história ainda está sendo escrita.',
+    image: HERO_ASSETS.trabalheConosco,
+    layout: 'manga-left',
+  },
+];
+
+function useReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    const handler = (event: MediaQueryListEvent) =>
+      setPrefersReducedMotion(event.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  return prefersReducedMotion;
+}
+
+function CinematicChapter({
+  chapter,
   index,
 }: {
-  item: TimelineItem;
+  chapter: Chapter;
   index: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const isInView = useInView(ref, { once: true, margin: '-120px' });
   const shouldReduceMotion = useReducedMotion();
   const isEven = index % 2 === 0;
 
-  const hidden = shouldReduceMotion
+  const imageHidden = shouldReduceMotion
     ? { opacity: 1, x: 0, scale: 1 }
-    : {
-        opacity: 0,
-        x: isEven ? -60 : 60,
-        scale: 0.96,
-      };
+    : { opacity: 0, x: isEven ? -110 : 110, scale: 1.05 };
+
+  const textHidden = shouldReduceMotion
+    ? { opacity: 1, x: 0, y: 0 }
+    : { opacity: 0, x: isEven ? 80 : -80, y: 40 };
+
+  const yearHidden = shouldReduceMotion
+    ? { opacity: 1, scale: 1 }
+    : { opacity: 0, scale: 1.6 };
+
+  const panelHidden = shouldReduceMotion
+    ? { opacity: 1, y: 0 }
+    : { opacity: 0, y: 120 };
 
   return (
-    <motion.div
+    <motion.section
       ref={ref}
-      initial={hidden}
-      animate={isInView ? { opacity: 1, x: 0, scale: 1 } : hidden}
-      transition={
-        shouldReduceMotion
-          ? { duration: 0 }
-          : { duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }
-      }
-      className={`relative flex flex-col gap-4 sm:flex-row sm:items-center ${
-        isEven ? 'sm:flex-row' : 'sm:flex-row-reverse'
-      }`}
+      className={`relative min-h-screen w-full ${index > 0 ? 'mt-24' : ''}`}
     >
-      <div className={`flex-1 ${isEven ? 'sm:text-right' : 'sm:text-left'}`}>
-        <div className="bg-card border-border rounded-2xl border p-5 shadow-sm">
-          <span className="text-primary text-sm font-semibold">
-            {item.year}
-          </span>
-          <h3 className="text-foreground mt-1 text-lg font-semibold">
-            {item.event}
-          </h3>
-          <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
-            {item.description}
-          </p>
-          {item.image ? (
-            <div className="mt-4 overflow-hidden rounded-xl">
-              <SafeImage
-                src={item.image}
-                alt={item.event}
-                className="h-48 w-full object-cover"
-              />
-            </div>
-          ) : null}
-        </div>
-      </div>
+      <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
+        <motion.div
+          initial={imageHidden}
+          animate={isInView ? { opacity: 1, x: 0, scale: 1 } : imageHidden}
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { duration: 1.1, ease: [0.25, 0.4, 0.25, 1], delay: 0.1 }
+          }
+          className={`relative aspect-[16/10] w-full overflow-hidden rounded-3xl lg:w-1/2 ${
+            chapter.layout.includes('right') ? 'lg:order-2' : 'lg:order-1'
+          }`}
+        >
+          <SafeImage
+            src={chapter.image}
+            alt={chapter.title}
+            className="h-full w-full object-cover"
+          />
+          <div className="from-background/70 via-background/20 absolute inset-0 bg-gradient-to-t to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
+        </motion.div>
 
-      <div className="bg-primary text-primary-foreground absolute left-4 flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shadow-md sm:left-1/2 sm:-translate-x-1/2">
-        {item.year.slice(-2)}
+        <motion.div
+          initial={textHidden}
+          animate={isInView ? { opacity: 1, x: 0, y: 0 } : textHidden}
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { duration: 1, ease: [0.25, 0.4, 0.25, 1], delay: 0.25 }
+          }
+          className={`w-full lg:w-1/2 ${
+            chapter.layout.includes('right') ? 'lg:order-1' : 'lg:order-2'
+          }`}
+        >
+          <div className="max-w-xl">
+            <motion.span
+              initial={yearHidden}
+              animate={isInView ? { opacity: 1, scale: 1 } : yearHidden}
+              transition={
+                shouldReduceMotion
+                  ? { duration: 0 }
+                  : { duration: 0.9, ease: [0.25, 0.4, 0.25, 1], delay: 0.35 }
+              }
+              className="text-primary text-sm font-semibold tracking-widest"
+            >
+              {chapter.year}
+            </motion.span>
+            <motion.h3
+              initial={panelHidden}
+              animate={isInView ? { opacity: 1, y: 0 } : panelHidden}
+              transition={
+                shouldReduceMotion
+                  ? { duration: 0 }
+                  : { duration: 0.9, ease: [0.25, 0.4, 0.25, 1], delay: 0.45 }
+              }
+              className="text-foreground mt-2 text-3xl font-bold sm:text-4xl"
+            >
+              {chapter.title}
+            </motion.h3>
+            <motion.p
+              initial={panelHidden}
+              animate={isInView ? { opacity: 1, y: 0 } : panelHidden}
+              transition={
+                shouldReduceMotion
+                  ? { duration: 0 }
+                  : { duration: 0.9, ease: [0.25, 0.4, 0.25, 1], delay: 0.55 }
+              }
+              className="text-muted-foreground mt-4 text-lg leading-relaxed"
+            >
+              {chapter.description}
+            </motion.p>
+          </div>
+        </motion.div>
       </div>
-
-      <div className="hidden flex-1 sm:block" />
-    </motion.div>
+    </motion.section>
   );
 }
 
@@ -125,7 +267,8 @@ export default function Sobre() {
         ]}
         type="Organization"
       />
-      <Section>
+
+      <Section className="pb-0">
         <Container>
           <motion.div
             initial="hidden"
@@ -191,20 +334,70 @@ export default function Sobre() {
               </p>
             </motion.div>
           </motion.div>
+        </Container>
+      </Section>
 
+      <Section className="mt-24">
+        <Container>
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerReveal(0.2)}
-            className="mt-16"
+            className="mb-12 text-center"
           >
             <motion.h2
               variants={revealUp}
-              className="text-foreground mb-8 text-center text-3xl font-bold"
+              className="text-foreground text-3xl font-bold sm:text-4xl"
+            >
+              Nossa Trajetória
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Uma história construída com dedicação, inovação e parcerias.
+            </motion.p>
+          </motion.div>
+
+          <div className="relative space-y-32">
+            {COMPANY_TIMELINE.map((_item, index) => {
+              const chapter = chapters[index];
+              if (!chapter) return null;
+
+              return (
+                <CinematicChapter
+                  key={chapter.id}
+                  chapter={chapter}
+                  index={index}
+                />
+              );
+            })}
+          </div>
+        </Container>
+      </Section>
+
+      <Section className="mt-24">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="text-center"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground mb-4 text-3xl font-bold sm:text-4xl"
             >
               Nossos Valores
             </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mb-12 max-w-2xl text-lg"
+            >
+              Princípios que guiam cada decisão e cada entrega.
+            </motion.p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {valores.map((valor) => (
                 <motion.div
@@ -226,34 +419,11 @@ export default function Sobre() {
               ))}
             </div>
           </motion.div>
+        </Container>
+      </Section>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mt-16"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground mb-12 text-center text-3xl font-bold"
-            >
-              Nossa Trajetória
-            </motion.h2>
-            <div className="relative">
-              <div className="bg-border absolute top-0 left-4 h-full w-0.5 sm:left-1/2" />
-              <div className="space-y-12">
-                {COMPANY_TIMELINE.map((item, index) => (
-                  <TimelineItemComponent
-                    key={item.year}
-                    item={item}
-                    index={index}
-                  />
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
+      <Section className="mt-24">
+        <Container>
           <motion.div
             initial="hidden"
             whileInView="visible"
