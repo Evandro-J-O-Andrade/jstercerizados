@@ -3,10 +3,10 @@ import { COMPANY } from '@/config/company';
 export const WHATSAPP_MESSAGES = {
   home: {
     candidate: `Olá! Visitei o site da ${COMPANY.tradingName} e gostaria de me cadastrar como candidato. Pode me orientar?`,
-    company: `Olá! Visitei o site da ${COMPANY.tradingName} e gostaria de contratar profissionais para minha empresa. Como posso solicitar?`,
+    company: `Olá! Visitei o site da ${COMPANY.tradingName} e gostaria de contratar profissionais para minha empresa. Quero receber informações sobre as soluções de recrutamento e mão de obra disponíveis.`,
   },
   comercial:
-    'Olá! Gostaria de solicitar profissionais para minha empresa. Qual serviço de seu interesse?',
+    'Olá! Gostaria de contratar profissionais para minha empresa. Quero receber informações sobre as soluções de recrutamento e mão de obra disponíveis.',
   suporte: `Olá! Preciso de atendimento da ${COMPANY.tradingName}. Já sou cliente.`,
   recrutamento:
     'Olá! Tenho interesse no serviço de Recrutamento e Seleção e gostaria de uma proposta comercial.',
@@ -46,6 +46,10 @@ export const WHATSAPP_MESSAGES = {
   contactForm: `Olá! Preenchi o formulário de contato no site da ${COMPANY.tradingName} e gostaria de ser atendido.`,
   whatsappButton: `Olá! Vi o botão de WhatsApp no site da ${COMPANY.tradingName} e gostaria de conversar sobre recrutamento ou oportunidades.`,
   budgetForm:
-    'Olá! Preenchi o formulário no site e gostaria de solicitar profissionais para minha empresa.',
+    'Olá! Preenchi o formulário no site e gostaria de solicitar um orçamento para minha empresa. Quero receber informações sobre as soluções e serviços disponíveis.',
+  divulgarVaga:
+    'Olá! Gostaria de divulgar uma vaga para minha empresa. Quero receber orientação sobre o processo de divulgação e recrutamento.',
+  solicitarServico:
+    `Olá! Gostaria de receber informações sobre os serviços da ${COMPANY.tradingName} para minha empresa.`,
   candidateForm: `Olá! Acabei de enviar meu currículo pelo site da ${COMPANY.tradingName}. Gostaria de saber mais sobre o processo de recrutamento.`,
 } as const;
