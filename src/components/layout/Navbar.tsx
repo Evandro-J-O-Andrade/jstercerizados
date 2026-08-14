@@ -14,6 +14,11 @@ import {
   Youtube,
   Building2,
   Users,
+  Home,
+  BriefcaseBusiness,
+  Wrench,
+  Info,
+  Newspaper,
   ChevronDown,
   ChevronRight,
   MessageCircle,
@@ -45,18 +50,16 @@ const candidatesSubmenu = [
 
 const contactSubmenu = [
   { label: 'Fale Conosco', href: '/contato' },
-  { label: 'WhatsApp', href: '/contato' },
   { label: 'Suporte', href: '/suporte' },
   { label: 'FAQ', href: '/faq' },
 ];
 
 const topNavLinks = [
-  { label: 'Início', href: '/' },
-  { label: 'Vagas', href: '/vagas' },
-  { label: 'Serviços', href: '/servicos' },
-  { label: 'Sobre Nós', href: '/sobre' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Contato', href: '/contato' },
+  { label: 'Início', href: '/', icon: Home },
+  { label: 'Vagas', href: '/vagas', icon: BriefcaseBusiness },
+  { label: 'Serviços', href: '/servicos', icon: Wrench },
+  { label: 'Sobre Nós', href: '/sobre', icon: Info },
+  { label: 'Blog', href: '/blog', icon: Newspaper },
 ];
 
 const itemVariants = {
@@ -72,7 +75,7 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     height="1em"
     {...props}
   >
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.11v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.2a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.73a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.16z" />
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.11v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.2a6.34 6.34 0 0 0 6.34 6.34 6.34 0 0 0 6.34-6.34V8.73a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.16z" />
   </svg>
 );
 
@@ -110,9 +113,7 @@ export function Navbar() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-      }
+      if (e.key === 'Escape' && isOpen) setIsOpen(false);
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
@@ -132,20 +133,16 @@ export function Navbar() {
           e.preventDefault();
           last.focus();
         }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
+      } else if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
       }
     },
     [],
   );
 
   useEffect(() => {
-    const handleScroll = (): void => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = (): void => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -155,24 +152,13 @@ export function Navbar() {
   }, [location.pathname]);
 
   const drawerVariants = {
-    hidden: {
-      opacity: 0,
-      x: '100%',
-      transition: { duration: 0.3 },
-    },
+    hidden: { opacity: 0, x: '100%', transition: { duration: 0.3 } },
     visible: {
       opacity: 1,
       x: 0,
-      transition: {
-        duration: 0.4,
-        staggerChildren: 0.06,
-      },
+      transition: { duration: 0.4, staggerChildren: 0.06 },
     },
-    exit: {
-      opacity: 0,
-      x: '100%',
-      transition: { duration: 0.3 },
-    },
+    exit: { opacity: 0, x: '100%', transition: { duration: 0.3 } },
   };
 
   function Dropdown({
@@ -203,8 +189,8 @@ export function Navbar() {
           aria-expanded={open}
           aria-haspopup="true"
         >
-          <span className="flex items-center gap-1">
-            {Icon && <Icon className="h-4 w-4" />}
+          <span className="flex items-center gap-1.5">
+            <Icon className="h-4 w-4" />
             {label}
             <ChevronDown className="h-3.5 w-3.5" />
           </span>
@@ -266,37 +252,30 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
-          {topNavLinks.map((link) => (
+          {topNavLinks.map(({ label, href, icon: Icon }) => (
             <Link
-              key={link.href}
-              to={link.href}
+              key={href}
+              to={href}
               onClick={
-                link.href === '/'
+                href === '/'
                   ? () => window.scrollTo({ top: 0, behavior: 'smooth' })
                   : undefined
               }
               className={cn(
-                'text-sm font-medium transition-colors duration-200',
-                location.pathname === link.href
+                'flex items-center gap-1.5 text-sm font-medium transition-colors duration-200',
+                location.pathname === href
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-primary',
               )}
             >
-              {link.label}
+              <Icon className="h-4 w-4" />
+              {label}
             </Link>
           ))}
 
-          <Dropdown
-            label="Empresas"
-            icon={Building2}
-            items={companiesSubmenu}
-          />
+          <Dropdown label="Empresas" icon={Building2} items={companiesSubmenu} />
           <Dropdown label="Candidatos" icon={Users} items={candidatesSubmenu} />
-          <Dropdown
-            label="Contato"
-            icon={MessageCircle}
-            items={contactSubmenu}
-          />
+          <Dropdown label="Contato" icon={MessageCircle} items={contactSubmenu} />
 
           <Button
             variant="ghost"
@@ -320,15 +299,11 @@ export function Navbar() {
           </Button>
           {isAuthenticated ? (
             <Link to="/dashboard">
-              <Button variant="primary" size="sm">
-                Painel
-              </Button>
+              <Button variant="primary" size="sm">Painel</Button>
             </Link>
           ) : (
             <Link to="/empresas/divulgar-vaga">
-              <Button variant="primary" size="sm">
-                Divulgar Vaga
-              </Button>
+              <Button variant="primary" size="sm">Divulgar Vaga</Button>
             </Link>
           )}
         </nav>
@@ -392,9 +367,7 @@ export function Navbar() {
               style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
               <div className="flex items-center justify-between p-4">
-                <span className="text-foreground text-lg font-semibold">
-                  Menu
-                </span>
+                <span className="text-foreground text-lg font-semibold">Menu</span>
                 <Button
                   id="mobile-drawer-close"
                   variant="ghost"
@@ -414,24 +387,25 @@ export function Navbar() {
                   <p className="text-primary mb-2 text-xs font-bold tracking-wider uppercase">
                     Navegação
                   </p>
-                  {topNavLinks.map((link) => (
-                    <motion.div key={link.href} variants={itemVariants}>
+                  {topNavLinks.map(({ label, href, icon: Icon }) => (
+                    <motion.div key={href} variants={itemVariants}>
                       <Link
-                        to={link.href}
+                        to={href}
                         onClick={() => {
-                          if (link.href === '/') {
+                          if (href === '/') {
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                           }
                           setIsOpen(false);
                         }}
                         className={cn(
-                          'block rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200',
-                          location.pathname === link.href
+                          'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200',
+                          location.pathname === href
                             ? 'bg-primary/10 text-primary'
                             : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                         )}
                       >
-                        {link.label}
+                        <Icon className="h-4 w-4 shrink-0" />
+                        {label}
                       </Link>
                     </motion.div>
                   ))}
@@ -439,36 +413,33 @@ export function Navbar() {
 
                 <MobileAccordion
                   title="Empresas"
+                  icon={Building2}
                   links={companiesSubmenu}
                   isOpen={openAccordion === 'empresas'}
                   onToggle={() =>
-                    setOpenAccordion(
-                      openAccordion === 'empresas' ? null : 'empresas',
-                    )
+                    setOpenAccordion(openAccordion === 'empresas' ? null : 'empresas')
                   }
                   onClose={() => setIsOpen(false)}
                 />
 
                 <MobileAccordion
                   title="Candidatos"
+                  icon={Users}
                   links={candidatesSubmenu}
                   isOpen={openAccordion === 'candidatos'}
                   onToggle={() =>
-                    setOpenAccordion(
-                      openAccordion === 'candidatos' ? null : 'candidatos',
-                    )
+                    setOpenAccordion(openAccordion === 'candidatos' ? null : 'candidatos')
                   }
                   onClose={() => setIsOpen(false)}
                 />
 
                 <MobileAccordion
                   title="Contato"
+                  icon={MessageCircle}
                   links={contactSubmenu}
                   isOpen={openAccordion === 'contato'}
                   onToggle={() =>
-                    setOpenAccordion(
-                      openAccordion === 'contato' ? null : 'contato',
-                    )
+                    setOpenAccordion(openAccordion === 'contato' ? null : 'contato')
                   }
                   onClose={() => setIsOpen(false)}
                 />
@@ -488,11 +459,7 @@ export function Navbar() {
                   </motion.div>
                   <motion.div variants={itemVariants}>
                     <Link
-                      to={
-                        isAuthenticated
-                          ? '/dashboard'
-                          : '/empresas/divulgar-vaga'
-                      }
+                      to={isAuthenticated ? '/dashboard' : '/empresas/divulgar-vaga'}
                       onClick={() => setIsOpen(false)}
                       className="text-muted-foreground hover:bg-muted hover:text-foreground block rounded-lg px-3 py-2 text-sm font-medium transition-colors"
                     >
@@ -508,10 +475,7 @@ export function Navbar() {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <motion.a
-                    href={getWhatsAppUrl(
-                      COMPANY.whatsapp,
-                      WHATSAPP_MESSAGES.whatsappButton,
-                    )}
+                    href={getWhatsAppUrl(COMPANY.whatsapp, WHATSAPP_MESSAGES.whatsappButton)}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1 }}
@@ -521,58 +485,23 @@ export function Navbar() {
                     <Phone className="h-5 w-5" />
                     <span className="sr-only">WhatsApp</span>
                   </motion.a>
-                  <motion.a
-                    href={SOCIAL_LINKS.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1 }}
-                    className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-                    aria-label="Instagram"
-                  >
+                  <motion.a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.1 }} className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors" aria-label="Instagram">
                     <Instagram className="h-5 w-5" />
                     <span className="sr-only">Instagram</span>
                   </motion.a>
-                  <motion.a
-                    href={SOCIAL_LINKS.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1 }}
-                    className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-                    aria-label="Facebook"
-                  >
+                  <motion.a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.1 }} className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors" aria-label="Facebook">
                     <Facebook className="h-5 w-5" />
                     <span className="sr-only">Facebook</span>
                   </motion.a>
-                  <motion.a
-                    href={SOCIAL_LINKS.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1 }}
-                    className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-                    aria-label="LinkedIn"
-                  >
+                  <motion.a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.1 }} className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors" aria-label="LinkedIn">
                     <Linkedin className="h-5 w-5" />
                     <span className="sr-only">LinkedIn</span>
                   </motion.a>
-                  <motion.a
-                    href={SOCIAL_LINKS.youtube}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1 }}
-                    className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-                    aria-label="YouTube"
-                  >
+                  <motion.a href={SOCIAL_LINKS.youtube} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.1 }} className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors" aria-label="YouTube">
                     <Youtube className="h-5 w-5" />
                     <span className="sr-only">YouTube</span>
                   </motion.a>
-                  <motion.a
-                    href={SOCIAL_LINKS.tiktok}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1 }}
-                    className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-                    aria-label="TikTok"
-                  >
+                  <motion.a href={SOCIAL_LINKS.tiktok} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.1 }} className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors" aria-label="TikTok">
                     <TikTokIcon className="h-5 w-5" />
                     <span className="sr-only">TikTok</span>
                   </motion.a>
@@ -588,22 +517,21 @@ export function Navbar() {
 
 function MobileAccordion({
   title,
+  icon: Icon,
   links,
   isOpen,
   onToggle,
   onClose,
 }: {
   title: string;
+  icon: React.ComponentType<{ className?: string }>;
   links: Array<{ label: string; href: string }>;
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
 }) {
   return (
-    <motion.div
-      variants={itemVariants}
-      className="border-border/50 rounded-xl border p-1"
-    >
+    <motion.div variants={itemVariants} className="border-border/50 rounded-xl border p-1">
       <button
         type="button"
         onClick={onToggle}
@@ -611,8 +539,11 @@ function MobileAccordion({
         aria-expanded={isOpen}
         aria-controls={`accordion-${title}`}
       >
-        <span className="text-primary text-xs font-bold tracking-wider uppercase">
-          {title}
+        <span className="flex items-center gap-2">
+          <Icon className="text-primary h-4 w-4" />
+          <span className="text-primary text-xs font-bold tracking-wider uppercase">
+            {title}
+          </span>
         </span>
         <motion.span
           animate={{ rotate: isOpen ? 90 : 0 }}
