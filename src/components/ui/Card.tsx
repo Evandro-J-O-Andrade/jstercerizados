@@ -15,7 +15,7 @@ export function Card({
   return (
     <div
       className={cn(
-        'bg-card overflow-hidden rounded-xl',
+        'bg-card overflow-hidden rounded-xl transition-all duration-300',
         {
           'shadow-premium': variant === 'default',
           'shadow-elevated': variant === 'elevated',

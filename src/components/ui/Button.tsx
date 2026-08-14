@@ -33,11 +33,11 @@ export function Button({
         variant === 'primary',
       'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-secondary shadow-sm hover:shadow-md':
         variant === 'secondary',
-      'border-border text-foreground hover:bg-muted focus-visible:ring-ring border bg-transparent':
+      'border-border text-foreground hover:bg-muted focus-visible:ring-ring border bg-transparent focus-visible:ring-offset-background':
         variant === 'outline',
-      'text-muted-foreground hover:bg-muted focus-visible:ring-ring':
+      'text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background':
         variant === 'ghost',
-      'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive shadow-sm':
+      'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive shadow-sm focus-visible:ring-offset-background':
         variant === 'danger',
     },
     {
