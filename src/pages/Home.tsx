@@ -13,7 +13,6 @@ import {
   ArrowRight,
   MapPin,
   Phone,
-  Quote,
   Wrench,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -25,7 +24,6 @@ import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { mockGetVagas } from '@/services/mock/vagas';
 import { PARTNERS_LOGOS } from '@/mock/partners';
-import { CLIENT_TESTIMONIALS } from '@/mock/clients';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { HERO_SLIDES } from '@/content/homeHero';
 
@@ -770,68 +768,6 @@ export default function Home() {
                   className="max-h-12 max-w-full object-contain"
                   loading="lazy"
                 />
-              </motion.div>
-            ))}
-          </motion.div>
-        </Container>
-      </Section>
-
-      {/* 9. DEPOIMENTOS */}
-      <Section>
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-12 text-center"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              O que dizem nossos clientes
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Depoimentos de empresas e candidatos que fizeram parte da J&S.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-8 lg:grid-cols-2"
-          >
-            {CLIENT_TESTIMONIALS.map((testimonial) => (
-              <motion.div
-                key={testimonial.id}
-                variants={staggerItem('up')}
-                className="bg-card border-border shadow-premium rounded-2xl border p-8"
-              >
-                <Quote className="text-primary/20 h-10 w-10" />
-                <p className="text-muted-foreground mt-4 text-sm leading-relaxed">
-                  "{testimonial.quote}"
-                </p>
-                <div className="mt-6 flex items-center gap-4">
-                  <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
-                    <span className="text-primary text-xl font-bold">
-                      {testimonial.name.charAt(0)}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-foreground font-semibold">
-                      {testimonial.name}
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      {testimonial.role} — {testimonial.company}
-                    </p>
-                  </div>
-                </div>
               </motion.div>
             ))}
           </motion.div>
