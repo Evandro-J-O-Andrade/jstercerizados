@@ -167,9 +167,9 @@ function CinematicChapter({
   return (
     <motion.section
       ref={ref}
-      className={`relative min-h-screen w-full ${index > 0 ? 'mt-24' : ''}`}
+      className={`relative w-full ${index > 0 ? 'mt-12' : ''}`}
     >
-      <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-10">
         <motion.div
           initial={imageHidden}
           animate={isInView ? { opacity: 1, x: 0, scale: 1 } : imageHidden}
@@ -360,7 +360,7 @@ export default function Sobre() {
             </motion.p>
           </motion.div>
 
-          <div className="relative space-y-32">
+          <div className="relative space-y-20">
             {COMPANY_TIMELINE.map((_item, index) => {
               const chapter = chapters[index];
               if (!chapter) return null;
