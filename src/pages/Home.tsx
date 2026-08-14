@@ -24,9 +24,8 @@ import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { mockGetVagas } from '@/services/mock/vagas';
-import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
+import { COMPANY } from '@/config';
 import { HERO_SLIDES } from '@/content/homeHero';
-import { COMPANY_TIMELINE } from '@/mock/company';
 import { CLIENTS_LIST } from '@/mock/clients';
 import { SafeImage } from '@/components/ui/SafeImage';
 
@@ -76,56 +75,6 @@ const heroSlides = HERO_SLIDES.map((slide) => ({
     </>
   ),
 }));
-
-const steps = [
-  {
-    step: '01',
-    title: 'Cadastre seu currículo',
-    description: 'Preencha seus dados em poucos minutos.',
-  },
-  {
-    step: '02',
-    title: 'Candidate-se',
-    description: 'Escolha as vagas que combinam com seu perfil.',
-  },
-  {
-    step: '03',
-    title: 'Processo Seletivo',
-    description: 'Nossa equipe entra em contato quando houver compatibilidade.',
-  },
-  {
-    step: '04',
-    title: 'Contratação',
-    description: 'Você inicia sua nova oportunidade.',
-  },
-];
-
-const blogPosts = [
-  {
-    title: 'Como fazer um currículo vencedor',
-    href: '/blog',
-    category: 'Carreira',
-    date: '2026-07-15',
-  },
-  {
-    title: 'Como se preparar para entrevistas',
-    href: '/blog',
-    category: 'Entrevista',
-    date: '2026-07-10',
-  },
-  {
-    title: 'Tendências do mercado de trabalho',
-    href: '/blog',
-    category: 'Mercado',
-    date: '2026-07-05',
-  },
-  {
-    title: 'Dicas para conquistar seu primeiro emprego',
-    href: '/blog',
-    category: 'Carreira',
-    date: '2026-06-28',
-  },
-];
 
 const differentials = [
   {
@@ -217,13 +166,6 @@ const facilitiesSolutions = [
     icon: FileText,
   },
   {
-    title: 'Faxina diarista',
-    description:
-      'Serviço de faxina residencial e comercial com limpeza profunda e organização.',
-    href: '/servicos/faxina-diarista',
-    icon: FileText,
-  },
-  {
     title: 'Controlador de acesso',
     description:
       'Portaria 24h, recepção e controle de fluxo de pessoas para sua empresa ou condomínio.',
@@ -290,10 +232,10 @@ export default function Home() {
         type="WebSite"
       />
 
-      {/* 1. HERO */}
+      {/* 1. CINEMATIC HERO */}
       <HeroSplit slides={heroSlides} interval={6000} />
 
-      {/* 2. PARA EMPRESAS */}
+      {/* 2. CONSULTORIA EM RH / SOLUÇÕES PARA EMPRESAS */}
       <Section className="bg-surface-alt">
         <Container>
           <motion.div
@@ -307,7 +249,7 @@ export default function Home() {
               variants={revealUp}
               className="text-foreground text-3xl font-bold sm:text-4xl"
             >
-              Soluções para sua empresa
+              Consultoria em RH e soluções para empresas
             </motion.h2>
             <motion.p
               variants={revealUp}
@@ -366,7 +308,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 3. SOLUÇÕES EM FACILITIES */}
+      {/* 3. FACILITIES */}
       <Section>
         <Container>
           <motion.div
@@ -512,7 +454,7 @@ export default function Home() {
       </Section>
 
       {/* 5. VAGAS EM DESTAQUE */}
-      <Section className="bg-surface-alt">
+      <Section>
         <Container>
           <motion.div
             initial="hidden"
@@ -599,83 +541,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 5. COMO FUNCIONA */}
-      <Section>
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-12 text-center"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Como Funciona
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Cadastre seu currículo, candidate-se às vagas e conquiste sua nova
-              oportunidade.
-            </motion.p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-            {steps.map((step, index) => (
-              <motion.div
-                key={step.step}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15, duration: 0.6 }}
-                className="relative text-center"
-              >
-                {index < steps.length - 1 && (
-                  <div className="bg-border absolute top-8 right-[-3rem] left-[calc(50%+3rem)] hidden h-0.5 md:block" />
-                )}
-                <div className="bg-muted text-foreground mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold">
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      type: 'spring',
-                      stiffness: 200,
-                      damping: 15,
-                    }}
-                  >
-                    {step.step}
-                  </motion.span>
-                </div>
-                <motion.h3
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.15 + 0.1 }}
-                  className="text-foreground mb-2 text-lg font-semibold"
-                >
-                  {step.title}
-                </motion.h3>
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.15 + 0.15 }}
-                  className="text-muted-foreground text-sm"
-                >
-                  {step.description}
-                </motion.p>
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      {/* 6. POR QUE ESCOLHER A J&S */}
+      {/* 6. DIFERENCIAIS J&S */}
       <Section className="bg-surface-alt">
         <Container>
           <motion.div
@@ -728,7 +594,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 6. RELACIONAMENTOS */}
+      {/* 7. RELACIONAMENTOS */}
       <Section>
         <Container>
           <motion.div
@@ -849,229 +715,8 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 10. NÚMEROS */}
-      <Section className="bg-surface-alt">
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-12 text-center"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Resultados que comprovam nossa experiência
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Mais de uma década conectando empresas e profissionais.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerReveal(0.1)}
-            className="grid grid-cols-2 gap-6 sm:grid-cols-4"
-          >
-            <motion.div
-              variants={staggerItem('up')}
-              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
-            >
-              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                <span className="text-2xl font-bold">15+</span>
-              </div>
-              <p className="text-foreground font-semibold">
-                Anos de experiência
-              </p>
-            </motion.div>
-
-            <motion.div
-              variants={staggerItem('up')}
-              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
-            >
-              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                <span className="text-2xl font-bold">
-                  {COMPANY.clientsServed}+
-                </span>
-              </div>
-              <p className="text-foreground font-semibold">
-                Clientes atendidos
-              </p>
-            </motion.div>
-
-            <motion.div
-              variants={staggerItem('up')}
-              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
-            >
-              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                <span className="text-2xl font-bold">
-                  {COMPANY.professionals}+
-                </span>
-              </div>
-              <p className="text-foreground font-semibold">
-                Profissionais colocados
-              </p>
-            </motion.div>
-
-            <motion.div
-              variants={staggerItem('up')}
-              className="bg-card border-border flex flex-col items-center rounded-2xl border p-6 text-center"
-            >
-              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                <span className="text-2xl font-bold">
-                  {COMPANY.citiesCovered}+
-                </span>
-              </div>
-              <p className="text-foreground font-semibold">Cidades atendidas</p>
-            </motion.div>
-          </motion.div>
-        </Container>
-      </Section>
-
-      {/* 11. PARA EMPRESAS — seção comercial forte */}
-      <Section>
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-12 text-center"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Precisa contratar?
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Encontramos profissionais qualificados para sua necessidade.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative overflow-hidden rounded-3xl p-8 text-center sm:p-12"
-          >
-            <div className="bg-primary/5 animate-float-slow absolute -top-20 -right-20 h-60 w-60 rounded-full blur-3xl" />
-            <div className="bg-primary/5 animate-float-medium absolute -bottom-20 -left-20 h-60 w-60 rounded-full blur-3xl" />
-
-            <div className="relative">
-              <h3 className="text-foreground text-2xl font-bold sm:text-3xl">
-                Solicite um orçamento sem compromisso
-              </h3>
-              <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
-                Nossa equipe comercial entende sua necessidade e envia uma
-                proposta personalizada em até 24 horas.
-              </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <Link to="/empresas">
-                  <Button variant="secondary" size="lg">
-                    Solicitar Orçamento
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <a
-                  href={getWhatsAppUrl(
-                    COMPANY.whatsapp,
-                    WHATSAPP_MESSAGES.comercial,
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button variant="outline" size="lg">
-                    <Phone className="mr-2 h-5 w-5" />
-                    Falar no WhatsApp
-                  </Button>
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        </Container>
-      </Section>
-
-      {/* 7. LINHA DO TEMPO */}
-      <Section className="bg-surface-alt">
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-12 text-center"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              A Jornada J&S
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Mais de uma década construindo confiança e conectando pessoas.
-            </motion.p>
-          </motion.div>
-
-          <div className="relative">
-            <div className="bg-border absolute top-0 left-4 h-full w-0.5 md:left-1/2" />
-
-            <div className="space-y-12">
-              {COMPANY_TIMELINE.map((item, index) => (
-                <motion.div
-                  key={item.year}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`relative flex flex-col gap-4 md:flex-row md:items-center ${
-                    index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-                  }`}
-                >
-                  <div
-                    className={`ml-12 md:w-1/2 ${
-                      index % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12'
-                    }`}
-                  >
-                    <div className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300">
-                      <span className="text-primary text-4xl font-bold">
-                        {item.year}
-                      </span>
-                      <h3 className="text-foreground mt-2 text-xl font-semibold">
-                        {item.event}
-                      </h3>
-                      <p className="text-muted-foreground mt-2 text-sm">
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="bg-primary border-background absolute top-6 left-4 h-4 w-4 rounded-full border-4 md:left-1/2 md:-translate-x-1/2" />
-
-                  <div className="hidden md:block md:w-1/2" />
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </Container>
-      </Section>
-
       {/* 8. CLIENTES REAIS */}
-      <Section>
+      <Section className="bg-surface-alt">
         <Container>
           <motion.div
             initial="hidden"
@@ -1125,78 +770,7 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 9. BLOG */}
-      <Section className="bg-surface-alt">
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
-            className="mb-12 text-center"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Blog
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Últimos artigos sobre currículo, entrevistas, mercado de trabalho
-              e carreira.
-            </motion.p>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {blogPosts.map((post) => (
-              <motion.div
-                key={post.title}
-                variants={staggerItem('up')}
-                className="bg-card shadow-premium rounded-2xl p-6 transition-all duration-300"
-              >
-                <div className="text-primary mb-4 flex items-center justify-between text-xs font-medium">
-                  <span>{post.category}</span>
-                  <span>{post.date}</span>
-                </div>
-                <h3 className="text-foreground mb-2 text-base font-semibold">
-                  {post.title}
-                </h3>
-                <Link
-                  to={post.href}
-                  className="text-primary text-sm font-medium"
-                >
-                  Ler artigo <ArrowRight className="ml-1 inline h-4 w-4" />
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-10 text-center"
-          >
-            <Link to="/blog">
-              <Button variant="outline" size="lg">
-                Ver todos os artigos
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </motion.div>
-        </Container>
-      </Section>
-
-      {/* 13. CTA FINAL */}
+      {/* 9. CTA COMERCIAL FINAL */}
       <Section>
         <Container>
           <motion.div
@@ -1210,13 +784,7 @@ export default function Home() {
             <div className="bg-primary/5 animate-float-slow absolute -top-20 -right-20 h-60 w-60 rounded-full blur-3xl" />
             <div className="bg-primary/5 animate-float-medium absolute -bottom-20 -left-20 h-60 w-60 rounded-full blur-3xl" />
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="relative"
-            >
+            <div className="relative">
               <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
                 Pronto para dar o próximo passo?
               </h2>
@@ -1242,7 +810,7 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         </Container>
       </Section>
