@@ -967,7 +967,7 @@ export default function Home() {
                 proposta personalizada em até 24 horas.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <Link to="/clientes">
+                <Link to="/empresas">
                   <Button variant="secondary" size="lg">
                     Solicitar Orçamento
                     <ArrowRight className="ml-2 h-5 w-5" />
