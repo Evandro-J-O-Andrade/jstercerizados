@@ -375,6 +375,107 @@ export const mockVagas: Vaga[] = [
     status: 'ATIVA',
     dataPublicacao: '2026-08-15T08:00:00Z',
   },
+  {
+    id: '16',
+    slug: 'analista-de-sistemas-sr',
+    titulo: 'Analista de Sistemas Sênior',
+    empresa: 'J&S Empregos LTDA',
+    cidade: 'São Paulo',
+    estado: 'SP',
+    tipoContrato: 'CLT',
+    nivel: 'SENIOR',
+    salarioMin: 8000,
+    salarioMax: 12000,
+    modalidade: 'REMOTO',
+    area: 'Tecnologia da Informação',
+    workload: '44h',
+    workSchedule: '8h às 17h, segunda a sexta-feira',
+    beneficios: [
+      'Vale refeição',
+      'Vale transporte',
+      'Convênio Médico',
+      'Convênio Odontológico',
+      'Seguro de Vida',
+      'Plano de Saúde',
+      'Bônus por meta',
+      'Apoio a cursos e certificações',
+    ],
+    responsibilities:
+      'Desenvolver, manter e otimizar sistemas web e mobile. Realizar análise de requisitos, codificação, testes, depuração e documentação de software. Participar de reuniões de planejamento e sprint, colaborar com designers eproduct managers. Garantir a qualidade, segurança e performance das aplicações. Mentoria de desenvolvedores juniores.',
+    requisitos:
+      'Graduação em Ciência da Computação, Engenharia ou áreas afins. Experiência mínima de 5 anos em desenvolvimento full-stack. Sólidos conhecimentos em JavaScript, React, Node.js, SQL e arquitetura de software. Experiência com ambientes cloud (AWS ou Azure). Ingla intermediário.',
+    descricao:
+      'Vaga para Analista de Sistemas Sênior em regime de trabalho de casa (100% remoto). Óportunidade para atuar em projetos de alta complexidade e liderar o desenvolvimento de soluções escaláveis.',
+    vagas: 2,
+    status: 'ATIVA',
+    dataPublicacao: '2026-08-13T10:00:00Z',
+  },
+  {
+    id: '17',
+    slug: 'assistente-administrativo-remoto',
+    titulo: 'Assistente Administrativo',
+    empresa: 'J&S Empregos LTDA',
+    cidade: 'São Paulo',
+    estado: 'SP',
+    tipoContrato: 'CLT',
+    nivel: 'PLENO',
+    salarioMin: 3500,
+    salarioMax: 4500,
+    modalidade: 'REMOTO',
+    area: 'Administração',
+    workload: '44h',
+    workSchedule: 'Segunda a sexta, 8h às 17h, com 1h de almoço',
+    beneficios: [
+      'Vale refeição',
+      'Vale transporte',
+      'Convênio Médico',
+      'Convênio Odontológico',
+      'Seguro de Vida',
+      'Bônus por meta',
+    ],
+    responsibilities:
+      'Apoiar as atividades administrativas do dia a dia. Gerenciar e-mails, agendar reuniões, organizar arquivos, elaborar planilhas e relatórios. Atuar no atendimento a clientes e fornecedores. Controlar pagamentos e recebimentos, além de apoiar a rotina financeira. Tramitar correspondências e documentos.',
+    requisitos:
+      'Ensino Médio completo. Experiência mínima de 2 anos em atividades administrativas. Pacote Office avançado (Excel, Word e PowerPoint). Conhecimento em sistemas de gestão. Boa comunicação escrita e verbal.',
+    descricao:
+      'Vaga para Assistente Administrativo em regime de trabalho de casa (100% remoto). Oportunidade de atuar em empresa sólida com tecnologia e aprendizado contínuo.',
+    vagas: 3,
+    status: 'ATIVA',
+    dataPublicacao: '2026-08-14T09:00:00Z',
+  },
+  {
+    id: '18',
+    slug: 'consultor-de-vendas-hibrido',
+    titulo: 'Consultor de Vendas',
+    empresa: 'J&S Empregos LTDA',
+    cidade: 'São Paulo',
+    estado: 'SP',
+    tipoContrato: 'CLT',
+    nivel: 'PLENO',
+    salarioMin: 4000,
+    salarioMax: 7000,
+    modalidade: 'HIBRIDO',
+    area: 'Vendas',
+    workload: '44h',
+    workSchedule: 'Segunda a sexta, 8h às 17h, com 1h de almoço',
+    beneficios: [
+      'Vale refeição',
+      'Vale transporte',
+      'Convênio Médico',
+      'Participação dos lucros',
+      'Comissões sobre vendas',
+      'Bônus por meta',
+    ],
+    responsibilities:
+      'Prospectar, negociar e fidelizar clientes. Executar visitas presenciais e ligações de inside sales. Apresentar soluções e produtos, elaborar propostas comerciais, acompanhar o ciclo de vendas e registrar atividades no CRM. Atingir as metas estabelecidas pela diretoria.',
+    requisitos:
+      'Ensino Médio completo. Experiência mínima de 1 ano em vendas. Conhecimento em CRM. Boa comunicação e persuasão. Disponibilidade para viajar dentro do SP.',
+    descricao:
+      'Vaga para Consultor de Vendas em regime híbrido (trabalho de casa 3x por semana + presencial 2x por semana).',
+    vagas: 2,
+    status: 'ATIVA',
+    dataPublicacao: '2026-08-15T07:00:00Z',
+  },
 ];
 
 export function mockGetVagas(filtro?: {
@@ -384,6 +485,7 @@ export function mockGetVagas(filtro?: {
   search?: string;
   salarioMin?: number;
   dataDias?: number;
+  modalidade?: string;
 }): Vaga[] {
   let result = mockVagas.filter((v) => v.status === 'ATIVA');
 
@@ -397,6 +499,9 @@ export function mockGetVagas(filtro?: {
   }
   if (filtro?.tipoContrato) {
     result = result.filter((v) => v.tipoContrato === filtro.tipoContrato);
+  }
+  if (filtro?.modalidade) {
+    result = result.filter((v) => v.modalidade === filtro.modalidade);
   }
   if (filtro?.salarioMin) {
     result = result.filter(

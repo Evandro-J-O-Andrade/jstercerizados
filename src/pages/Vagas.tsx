@@ -26,6 +26,7 @@ export default function Vagas() {
   const [estadoFilter, setEstadoFilter] = useState('');
   const [areaFilter, setAreaFilter] = useState('');
   const [tipoFilter, setTipoFilter] = useState('');
+  const [modalidadeFilter, setModalidadeFilter] = useState('');
   const [salarioMin, setSalarioMin] = useState('');
   const [dataDias, setDataDias] = useState('');
   const [showMoreFilters, setShowMoreFilters] = useState(false);
@@ -36,6 +37,7 @@ export default function Vagas() {
       cidade: cidadeFilter || undefined,
       estado: estadoFilter || undefined,
       tipoContrato: tipoFilter || undefined,
+      modalidade: modalidadeFilter || undefined,
       salarioMin: salarioMin ? Number(salarioMin) : undefined,
       dataDias: dataDias ? Number(dataDias) : undefined,
     });
@@ -44,6 +46,7 @@ export default function Vagas() {
     cidadeFilter,
     estadoFilter,
     tipoFilter,
+    modalidadeFilter,
     salarioMin,
     dataDias,
   ]);
@@ -54,6 +57,7 @@ export default function Vagas() {
     setEstadoFilter('');
     setAreaFilter('');
     setTipoFilter('');
+    setModalidadeFilter('');
     setSalarioMin('');
     setDataDias('');
   };
@@ -62,7 +66,7 @@ export default function Vagas() {
     <div className="min-h-screen">
       <SEO
         title={`Vagas — ${COMPANY.name}`}
-        description={`Oportunidades de trabalho e vagas disponíveis na ${COMPANY.name}. Encontre sua próxima oportunidade profissional.`}
+        description={`Oportunidades de trabalho, vagas de emprego e trabalho de casa (remoto) na ${COMPANY.name}. Encontre sua próxima oportunidade profissional.`}
         keywords={[
           'vagas',
           'emprego',
@@ -72,6 +76,10 @@ export default function Vagas() {
           'seleção',
           'RH',
           'currículo',
+          'trabalho de casa',
+          'remoto',
+          'home office',
+          'trabalho remoto',
         ]}
         type="WebSite"
       />
@@ -104,7 +112,7 @@ export default function Vagas() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-5"
+            className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-6"
           >
             <div className="relative md:col-span-2">
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
@@ -136,6 +144,16 @@ export default function Vagas() {
               <option value="ESTAGIO">Estágio</option>
               <option value="TEMPORARIO">Temporário</option>
               <option value="TERCEIRIZADO">Terceirizado</option>
+            </select>
+            <select
+              value={modalidadeFilter}
+              onChange={(e) => setModalidadeFilter(e.target.value)}
+              className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
+            >
+              <option value="">Todas as modalidades</option>
+              <option value="PRESENCIAL">Presencial</option>
+              <option value="HIBRIDO">Híbrido</option>
+              <option value="REMOTO">Trabalho de Casa</option>
             </select>
             <Button
               variant="ghost"
@@ -232,6 +250,7 @@ export default function Vagas() {
                   !estadoFilter &&
                   !areaFilter &&
                   !tipoFilter &&
+                  !modalidadeFilter &&
                   !salarioMin &&
                   !dataDias
                 }
