@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -29,27 +29,27 @@ const faqData = [
   {
     question: 'Qual a cobertura de atendimento?',
     answer:
-      'Atendemos em mais de 50 cidades, com cobertura completa para garantir agilidade e presença onde você precisa.',
+      'Atendemos em mais de 50 cidades, com cobertura completa para garantir agilidade e presen�a onde voc� precisa.',
   },
   {
-    question: 'Como funciona o processo de contratação?',
+    question: 'Como funciona o processo de contrata��o?',
     answer:
-      'Solicite um orçamento pelo site ou pelo WhatsApp. Nossa equipe analisa suas necessidades e elabora uma proposta personalizada.',
+      'Solicite um or�amento pelo site ou pelo WhatsApp. Nossa equipe analisa suas necessidades e elabora uma proposta personalizada.',
   },
   {
-    question: 'Qual o prazo para início do serviço?',
+    question: 'Qual o prazo para in�cio do servi�o?',
     answer:
-      'Após a aprovação da proposta, iniciamos a operação em até 7 dias úteis, com profissionais treinados e equipados.',
+      'Ap�s a aprova��o da proposta, iniciamos a opera��o em at� 7 dias �teis, com profissionais treinados e equipados.',
   },
   {
-    question: 'Os profissionais são treinados e certificados?',
+    question: 'Os profissionais s�o treinados e certificados?',
     answer:
-      'Sim. Nossa equipe é selecionada, certificada e continuamente treinada para cada segmento de serviço.',
+      'Sim. Nossa equipe � selecionada, certificada e continuamente treinada para cada segmento de servi�o.',
   },
   {
-    question: 'Vocês oferecem garantia de qualidade?',
+    question: 'Voc�s oferecem garantia de qualidade?',
     answer:
-      'Sim. Trabalhamos com SLA, KPIs e compliance total das normas do setor, com gestão de performance em tempo real.',
+      'Sim. Trabalhamos com SLA, KPIs e compliance total das normas do setor, com gest�o de performance em tempo real.',
   },
 ];
 
@@ -63,10 +63,10 @@ export default function ServicoDetalhe() {
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
           <h2 className="text-foreground mb-4 text-2xl font-bold">
-            Serviço não encontrado
+            Servi�o n�o encontrado
           </h2>
           <Link to="/servicos">
-            <Button variant="primary">Voltar aos Serviços</Button>
+            <Button variant="primary">Voltar aos Servi�os</Button>
           </Link>
         </div>
       </div>
@@ -82,14 +82,14 @@ export default function ServicoDetalhe() {
   return (
     <div>
       <SEO
-        title={`${service.title} — ${COMPANY.name}`}
+        title={`${service.title} � ${COMPANY.name}`}
         description={service.shortDescription}
         keywords={[
           service.title,
-          'serviços',
+          'servi�os',
           COMPANY.name,
           'RH',
-          'terceirização',
+          'terceiriza��o',
           'facilities',
           'limpeza',
           'jardinagem',
@@ -169,7 +169,7 @@ export default function ServicoDetalhe() {
               className="text-primary hover:text-primary/80 mb-6 inline-flex items-center gap-2 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              Todos os Serviços
+              Todos os Servi�os
             </Link>
           </motion.div>
 
@@ -224,7 +224,7 @@ export default function ServicoDetalhe() {
                 >
                   <Button variant="secondary" size="lg">
                     <Phone className="mr-2 h-5 w-5" />
-                    Solicitar Orçamento
+                    Solicitar Or�amento
                   </Button>
                 </motion.a>
                 <Link to="/contato">
@@ -275,7 +275,7 @@ export default function ServicoDetalhe() {
                   </div>
                   <div>
                     <p className="text-foreground text-sm font-semibold">
-                      Excelência Operacional
+                      Excel�ncia Operacional
                     </p>
                     <p className="text-muted-foreground text-xs">
                       SLA + KPIs + Compliance
@@ -322,7 +322,7 @@ export default function ServicoDetalhe() {
                 icon: Shield,
               },
               {
-                label: 'Anos de Experiência',
+                label: 'Anos de Experi�ncia',
                 value: `${COMPANY.yearsOfExperience}+`,
                 icon: Clock,
               },
@@ -367,17 +367,17 @@ export default function ServicoDetalhe() {
             >
               <div className="bg-primary/10 text-primary mb-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
                 <Shield className="h-4 w-4" />
-                Sobre o Serviço
+                Sobre o Servi�o
               </div>
               <h2 className="text-foreground mb-6 text-3xl font-bold sm:text-4xl">
-                {service.title} com Excelência
+                {service.title} com Excel�ncia
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Nossa equipe de profissionais é altamente treinada e certificada
+                Nossa equipe de profissionais � altamente treinada e certificada
                 para entregar resultados excepcionais em{' '}
                 {service.title.toLowerCase()}. Utilizamos tecnologia de ponta e
-                processos rigorosos de gestão de qualidade para garantir a
-                segurança e a satisfação dos nossos clientes.
+                processos rigorosos de gest�o de qualidade para garantir a
+                seguran�a e a satisfa��o dos nossos clientes.
               </p>
 
               <div className="mt-8 space-y-4">
@@ -402,7 +402,7 @@ export default function ServicoDetalhe() {
                 >
                   <Button variant="secondary" size="lg">
                     <Phone className="mr-2 h-5 w-5" />
-                    Solicitar Orçamento
+                    Solicitar Or�amento
                   </Button>
                 </motion.a>
               </div>
@@ -416,7 +416,7 @@ export default function ServicoDetalhe() {
               className="bg-card shadow-premium rounded-3xl p-8"
             >
               <h3 className="text-foreground mb-6 text-xl font-semibold">
-                Informações de Contato
+                Informa��es de Contato
               </h3>
               <div className="space-y-4">
                 <div className="text-muted-foreground flex items-center gap-3">
@@ -429,12 +429,12 @@ export default function ServicoDetalhe() {
                 </div>
                 <div className="text-muted-foreground flex items-center gap-3">
                   <Clock className="text-primary h-5 w-5" />
-                  <span>Segunda a Sexta, 08h às 18h</span>
+                  <span>Segunda a Sexta, 08h �s 18h</span>
                 </div>
                 <div className="text-muted-foreground flex items-center gap-3">
                   <MapPin className="text-primary h-5 w-5" />
                   <span>
-                    {COMPANY.address.city}, {COMPANY.address.state} — Brasil
+                    {COMPANY.address.city}, {COMPANY.address.state} � Brasil
                   </span>
                 </div>
               </div>
@@ -464,7 +464,7 @@ export default function ServicoDetalhe() {
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
               Um processo estruturado para garantir a qualidade e a agilidade na
-              prestação do serviço.
+              presta��o do servi�o.
             </motion.p>
           </motion.div>
 
@@ -472,13 +472,13 @@ export default function ServicoDetalhe() {
             {[
               {
                 step: '01',
-                title: 'Solicitação',
+                title: 'Solicita��o',
                 description:
                   'Entre em contato pelo site ou WhatsApp com suas necessidades.',
               },
               {
                 step: '02',
-                title: 'Análise',
+                title: 'An�lise',
                 description:
                   'Nossa equipe avalia o perfil e prepara uma proposta personalizada.',
               },
@@ -486,13 +486,13 @@ export default function ServicoDetalhe() {
                 step: '03',
                 title: 'Proposta',
                 description:
-                  'Apresentamos a solução ideal com custos e prazos detalhados.',
+                  'Apresentamos a solu��o ideal com custos e prazos detalhados.',
               },
               {
                 step: '04',
-                title: 'Execução',
+                title: 'Execu��o',
                 description:
-                  'Iniciamos a operação com profissionais treinados e equipados.',
+                  'Iniciamos a opera��o com profissionais treinados e equipados.',
               },
             ].map((step, index) => (
               <motion.div
@@ -560,8 +560,8 @@ export default function ServicoDetalhe() {
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Nossos diferenciais garantem a melhor experiência para o seu
-              negócio.
+              Nossos diferenciais garantem a melhor experi�ncia para o seu
+              neg�cio.
             </motion.p>
           </motion.div>
 
@@ -582,13 +582,13 @@ export default function ServicoDetalhe() {
               {
                 title: 'Tecnologia Integrada',
                 description:
-                  'Monitoramento e gestão em tempo real para total controle.',
+                  'Monitoramento e gest�o em tempo real para total controle.',
                 icon: Zap,
               },
               {
                 title: 'Suporte 24/7',
                 description:
-                  'Atendimento contínuo para garantir a operação sem interrupções.',
+                  'Atendimento cont�nuo para garantir a opera��o sem interrup��es.',
                 icon: Clock,
               },
             ].map((item) => (
@@ -648,10 +648,10 @@ export default function ServicoDetalhe() {
             className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
           >
             {[
-              '/images/services/gallery-01.svg',
-              '/images/services/gallery-02.svg',
-              '/images/services/gallery-03.svg',
-              '/images/services/gallery-04.svg',
+              '/images/servicos/gallery-01.svg',
+              '/images/servicos/gallery-02.svg',
+              '/images/servicos/gallery-03.svg',
+              '/images/servicos/gallery-04.svg',
             ].map((img, index) => (
               <motion.div
                 key={index}
@@ -692,7 +692,7 @@ export default function ServicoDetalhe() {
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Respostas para as dúvidas mais comuns sobre nossos serviços.
+              Respostas para as d�vidas mais comuns sobre nossos servi�os.
             </motion.p>
           </motion.div>
 
@@ -770,7 +770,7 @@ export default function ServicoDetalhe() {
               </h2>
               <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
                 Solicite uma proposta gratuita e descubra como podemos elevar o
-                padrão dos seus serviços.
+                padr�o dos seus servi�os.
               </p>
 
               <div className="mt-8">

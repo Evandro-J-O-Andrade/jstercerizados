@@ -21,7 +21,7 @@ export const mockServices: Service[] = [
       'Suporte até a contratação',
     ],
     image:
-      IMAGES.services.recrutamento ?? '/images/services/recrutamento-alt.jfif',
+      IMAGES.services.recrutamento ?? '/images/servicos/recrutamento-alt.jfif',
     icon: 'users',
     category: 'rh',
   },
@@ -41,7 +41,7 @@ export const mockServices: Service[] = [
       'Compliance total com a Lei 6.019/74',
       'Gestão completa incluída',
     ],
-    image: IMAGES.services.maoDeObraReal ?? '/images/services/temporaria.svg',
+    image: IMAGES.services.maoDeObraReal ?? '/images/servicos/temporaria.svg',
     icon: 'clock',
     category: 'rh',
   },
@@ -60,7 +60,7 @@ export const mockServices: Service[] = [
       'Redução de turnover',
       'Alinhamento com a cultura da empresa',
     ],
-    image: IMAGES.services.maoDeObraReal ?? '/images/services/efetiva.svg',
+    image: IMAGES.services.maoDeObraReal ?? '/images/servicos/efetiva.svg',
     icon: 'award',
     category: 'rh',
   },
@@ -100,7 +100,7 @@ export const mockServices: Service[] = [
       'Recomendações personalizadas',
     ],
     image:
-      SERVICE_IMAGES.avaliacaoPerfil ?? '/images/services/avaliacao-perfil.svg',
+      SERVICE_IMAGES.avaliacaoPerfil ?? '/images/servicos/avaliacao-perfil.svg',
     icon: 'target',
     category: 'rh',
   },
@@ -120,7 +120,7 @@ export const mockServices: Service[] = [
       'Acesso a currículos qualificados',
     ],
     image:
-      SERVICE_IMAGES.bancoTalentoReal ?? '/images/services/banco-talentos.svg',
+      SERVICE_IMAGES.bancoTalentoReal ?? '/images/servicos/banco-talentos.svg',
     icon: 'users',
     category: 'rh',
   },
@@ -140,7 +140,7 @@ export const mockServices: Service[] = [
       'Relatórios de eficiência',
       'Melhoria contínua',
     ],
-    image: SERVICE_IMAGES.processoRh ?? '/images/services/solucao-rh.jfif',
+    image: SERVICE_IMAGES.processoRh ?? '/images/servicos/solucao-rh.jfif',
     icon: 'briefcase',
     category: 'rh',
   },
@@ -160,7 +160,7 @@ export const mockServices: Service[] = [
       'Oferta personalizada',
       'Garantia de resultado',
     ],
-    image: SERVICE_IMAGES.hunting ?? '/images/services/hunting.svg',
+    image: SERVICE_IMAGES.hunting ?? '/images/servicos/hunting.svg',
     icon: 'search',
     category: 'rh',
   },
@@ -183,7 +183,7 @@ export const mockServices: Service[] = [
       'Foco no seu core business',
     ],
     image:
-      IMAGES.services.facilitiesReal ?? '/images/services/facilities-alt.jfif',
+      IMAGES.services.facilitiesReal ?? '/images/servicos/facilities-alt.jfif',
     icon: 'building',
     category: 'facilities',
   },
@@ -204,7 +204,7 @@ export const mockServices: Service[] = [
       'Limpeza de áreas verdes',
       'Equipe especializada',
     ],
-    image: SERVICE_IMAGES.jardinagemReal ?? '/images/services/jardinagem.svg',
+    image: SERVICE_IMAGES.jardinagemReal ?? '/images/servicos/jardinagem.svg',
     icon: 'leaf',
     category: 'facilities',
   },
@@ -226,7 +226,7 @@ export const mockServices: Service[] = [
     ],
     image:
       SERVICE_IMAGES.limpezaFachadaReal ??
-      '/images/services/limpeza-fachada.svg',
+      '/images/servicos/limpeza-fachada.svg',
     icon: 'sparkles',
     category: 'facilities',
   },
@@ -247,7 +247,7 @@ export const mockServices: Service[] = [
       'Garantia de satisfação',
     ],
     image:
-      SERVICE_IMAGES.limpezaVidrosReal ?? '/images/services/limpeza-vidros.svg',
+      SERVICE_IMAGES.limpezaVidrosReal ?? '/images/servicos/limpeza-vidros.svg',
     icon: 'sparkles',
     category: 'facilities',
   },
@@ -267,7 +267,7 @@ export const mockServices: Service[] = [
       'Atendimento personalizado',
       'Flexibilidade de horário',
     ],
-    image: SERVICE_IMAGES.faxinaReal ?? '/images/services/faxina.svg',
+    image: SERVICE_IMAGES.faxinaReal ?? '/images/servicos/faxina.svg',
     icon: 'sparkles',
     category: 'facilities',
   },
@@ -289,7 +289,7 @@ export const mockServices: Service[] = [
     ],
     image:
       SERVICE_IMAGES.limpezaPosObraReal ??
-      '/images/services/limpeza-pos-obra.svg',
+      '/images/servicos/limpeza-pos-obra.svg',
     icon: 'sparkles',
     category: 'facilities',
   },
@@ -311,7 +311,7 @@ export const mockServices: Service[] = [
     ],
     image:
       SERVICE_IMAGES.limpezaPreMudancaReal ??
-      '/images/services/limpeza-pre-mudanca.svg',
+      '/images/servicos/limpeza-pre-mudanca.svg',
     icon: 'sparkles',
     category: 'facilities',
   },
@@ -333,7 +333,7 @@ export const mockServices: Service[] = [
     ],
     image:
       SERVICE_IMAGES.limpezaPosMudancaReal ??
-      '/images/services/limpeza-pos-mudanca.svg',
+      '/images/servicos/limpeza-pos-mudanca.svg',
     icon: 'sparkles',
     category: 'facilities',
   },
@@ -354,7 +354,7 @@ export const mockServices: Service[] = [
       'Foco no core business',
     ],
     image:
-      SERVICE_IMAGES.terceirizacaoReal ?? '/images/services/terceirizacao.svg',
+      SERVICE_IMAGES.terceirizacaoReal ?? '/images/servicos/terceirizacao.svg',
     icon: 'building',
     category: 'terceirizacao',
   },
@@ -374,7 +374,7 @@ export const mockServices: Service[] = [
       'Gestão de áreas comuns',
       'Inspeções regulares',
     ],
-    image: SERVICE_IMAGES.zeladoriaReal ?? '/images/services/zeladoria.svg',
+    image: SERVICE_IMAGES.zeladoriaReal ?? '/images/servicos/zeladoria.svg',
     icon: 'wrench',
     category: 'facilities',
   },
@@ -396,7 +396,7 @@ export const mockServices: Service[] = [
       'Acesso a currículos qualificados',
     ],
     image:
-      SERVICE_IMAGES.bancoTalentoReal ?? '/images/services/banco-talentos.svg',
+      SERVICE_IMAGES.bancoTalentoReal ?? '/images/servicos/banco-talentos.svg',
     icon: 'users',
     category: 'candidato',
   },
@@ -415,7 +415,7 @@ export const mockServices: Service[] = [
       'Candidatura simplificada',
       'Notificações via WhatsApp',
     ],
-    image: SERVICE_IMAGES.recrutamento ?? '/images/services/recrutamento.svg',
+    image: SERVICE_IMAGES.recrutamento ?? '/images/servicos/recrutamento.svg',
     icon: 'search',
     category: 'candidato',
   },
@@ -435,7 +435,7 @@ export const mockServices: Service[] = [
       'Sem spam',
     ],
     image:
-      SERVICE_IMAGES.bancoTalentoReal ?? '/images/services/banco-talentos.svg',
+      SERVICE_IMAGES.bancoTalentoReal ?? '/images/servicos/banco-talentos.svg',
     icon: 'phone',
     category: 'candidato',
   },
@@ -455,7 +455,7 @@ export const mockServices: Service[] = [
       'Equipe especializada',
     ],
     image:
-      SERVICE_IMAGES.avaliacaoPerfil ?? '/images/services/avaliacao-perfil.svg',
+      SERVICE_IMAGES.avaliacaoPerfil ?? '/images/servicos/avaliacao-perfil.svg',
     icon: 'award',
     category: 'candidato',
   },
@@ -475,7 +475,7 @@ export const mockServices: Service[] = [
       'Suporte da equipe',
     ],
     image:
-      SERVICE_IMAGES.bancoTalentoReal ?? '/images/services/banco-talentos.svg',
+      SERVICE_IMAGES.bancoTalentoReal ?? '/images/servicos/banco-talentos.svg',
     icon: 'clipboard-check',
     category: 'candidato',
   },
@@ -498,7 +498,7 @@ export const mockServices: Service[] = [
       'Equipe treinada',
     ],
     image:
-      SERVICE_IMAGES.terceirizacaoReal ?? '/images/services/facilities.svg',
+      SERVICE_IMAGES.terceirizacaoReal ?? '/images/servicos/facilities.svg',
     icon: 'shield',
     category: 'facilities',
   },
@@ -519,7 +519,7 @@ export const mockServices: Service[] = [
       'Horários flexíveis',
     ],
     image:
-      SERVICE_IMAGES.terceirizacaoReal ?? '/images/services/facilities.svg',
+      SERVICE_IMAGES.terceirizacaoReal ?? '/images/servicos/facilities.svg',
     icon: 'clipboard-check',
     category: 'facilities',
   },
