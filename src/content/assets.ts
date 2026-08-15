@@ -55,7 +55,7 @@ export const HERO_ASSETS = {
     '/images/home/banners/banner-terciario.png',
   ],
   servicos: '/images/home/sections/servicos-hero.webp',
-  suporte: '/images/suporte/suporte.webp',
+  suporte: '/images/suporte/hero/suporte.webp',
   trabalheConosco: '/images/trabalhe-conosco/trabalhe-conosco.webp',
 } as const;
 

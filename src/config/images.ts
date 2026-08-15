@@ -43,7 +43,7 @@ export const IMAGES = {
       fallback: '/images/home/sections/fallback.svg',
     },
     suporte: {
-      src: '/images/suporte/suporte.webp',
+      src: '/images/suporte/hero/suporte.webp',
       fallback: '/images/home/sections/fallback.svg',
     },
     contato: {
@@ -96,7 +96,7 @@ export const IMAGES = {
     cadastro: '/images/empresas/cadastro-empresas.png',
   },
   suporte: {
-    hero: '/images/suporte/suporte.webp',
+    hero: '/images/suporte/hero/suporte.webp',
   },
   trabalheConosco: {
     hero: '/images/trabalhe-conosco/trabalhe-conosco.webp',
