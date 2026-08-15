@@ -56,6 +56,7 @@ const contactSubmenu = [
 ];
 
 const loginSubmenu = [
+  { label: 'Admin', href: '/login?role=admin' },
   { label: 'Candidato', href: '/login?role=candidato' },
   { label: 'Empresa', href: '/login?role=empresa' },
 ];
@@ -313,6 +314,27 @@ export function Navbar() {
           >
             Cadastrar Currículo
           </Button>
+          {isAuthenticated ? (
+            <Link to="/dashboard">
+              <Button
+                variant="primary"
+                size="sm"
+                className="h-9 px-3 text-xs font-medium"
+              >
+                Painel
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/empresas/divulgar-vaga">
+              <Button
+                variant="primary"
+                size="sm"
+                className="h-9 px-3 text-xs font-medium"
+              >
+                Divulgar Vaga
+              </Button>
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
