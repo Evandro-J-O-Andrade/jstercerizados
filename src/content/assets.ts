@@ -36,8 +36,8 @@ export const SERVICE_IMAGES = {
 } as const;
 
 export const CANDIDATE_IMAGES = {
-  cadastroCurriculo: '/images/candidates/cadastro-curriculo.png',
-  buscaVagas: '/images/candidates/busca-vagas.png',
+  cadastroCurriculo: '/images/candidatos/hero/cadastro-curriculo.png',
+  buscaVagas: '/images/candidatos/hero/busca-vagas.png',
 } as const;
 
 export const FALLBACK_IMAGES = {

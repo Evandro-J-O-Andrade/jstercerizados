@@ -93,7 +93,7 @@ export const IMAGES = {
       '/images/parceiros/cadastro-empresas-pareceiras.png',
   },
   empresas: {
-    cadastro: '/images/empresas/cadastro-empresas.png',
+    cadastro: '/images/empresas/hero/cadastro-empresas.png',
   },
   suporte: {
     hero: '/images/suporte/hero/suporte.webp',
