@@ -22,6 +22,7 @@ import {
   ChevronDown,
   ChevronRight,
   MessageCircle,
+  LogIn,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui/Button';
@@ -52,6 +53,11 @@ const contactSubmenu = [
   { label: 'Fale Conosco', href: '/contato' },
   { label: 'Suporte', href: '/suporte' },
   { label: 'FAQ', href: '/faq' },
+];
+
+const loginSubmenu = [
+  { label: 'Candidato', href: '/login?role=candidato' },
+  { label: 'Empresa', href: '/login?role=empresa' },
 ];
 
 const topNavLinks = [
@@ -279,7 +285,12 @@ export function Navbar() {
             items={companiesSubmenu}
           />
           <Dropdown label="Candidatos" icon={Users} items={candidatesSubmenu} />
-          <Dropdown label="Mais" icon={MessageCircle} items={contactSubmenu} />
+          <Dropdown
+            label="Contato"
+            icon={MessageCircle}
+            items={contactSubmenu}
+          />
+          <Dropdown label="Entrar" icon={LogIn} items={loginSubmenu} />
 
           <Button
             variant="ghost"
@@ -302,27 +313,6 @@ export function Navbar() {
           >
             Cadastrar Currículo
           </Button>
-          {isAuthenticated ? (
-            <Link to="/dashboard">
-              <Button
-                variant="primary"
-                size="sm"
-                className="h-9 px-3 text-xs font-medium"
-              >
-                Painel
-              </Button>
-            </Link>
-          ) : (
-            <Link to="/empresas/divulgar-vaga">
-              <Button
-                variant="primary"
-                size="sm"
-                className="h-9 px-3 text-xs font-medium"
-              >
-                Divulgar Vaga
-              </Button>
-            </Link>
-          )}
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
