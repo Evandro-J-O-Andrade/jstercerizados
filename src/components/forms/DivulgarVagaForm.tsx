@@ -14,6 +14,7 @@ import { Section } from '@/components/sections/Section';
 import { Container } from '@/components/common/Container';
 import { COMPANY, getWhatsAppUrl, WHATSAPP_MESSAGES } from '@/config';
 import type { JobCreatePayload } from '@/types/common';
+import { normalizeError } from '@/lib/error-normalizer';
 import {
   sanitizeText,
   sanitizeName,
@@ -111,8 +112,9 @@ export function DivulgarVagaForm() {
       console.log('JobCreatePayload', payload);
       setSubmitted(true);
       reset();
-    } catch {
-      setSubmitError('Erro ao enviar solicitação. Tente novamente.');
+    } catch (err) {
+      const normalized = normalizeError(err);
+      setSubmitError(normalized.userMessage);
     }
   };
 

@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from 'react';
+import { normalizeError } from '@/lib/error-normalizer';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -24,7 +25,12 @@ export class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: { componentStack: string }) {
-    console.error('[ErrorBoundary]', error, errorInfo.componentStack);
+    const normalized = normalizeError(error);
+    console.error(
+      '[ErrorBoundary]',
+      normalized.technicalDetail,
+      errorInfo.componentStack,
+    );
   }
 
   render() {
@@ -40,7 +46,7 @@ export class ErrorBoundary extends Component<
               Algo deu errado
             </h1>
             <p className="text-muted-foreground mt-4">
-              Ocorreu um erro inesperado. A equipe foi notificada.
+              Não foi possível carregar esta página. Tente recarregar.
             </p>
             <button
               type="button"

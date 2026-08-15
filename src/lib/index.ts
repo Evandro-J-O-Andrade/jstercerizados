@@ -7,3 +7,6 @@ export const config = {
   smtpPort: Number(import.meta.env.VITE_SMTP_PORT ?? 587),
   gaTrackingId: import.meta.env.VITE_GA_TRACKING_ID ?? '',
 } as const;
+
+export { normalizeError, type NormalizedError } from './error-normalizer';
+export { log, debug, info, warn, error, setLogLevel } from './logger';
