@@ -34,7 +34,6 @@ export const SERVICE_IMAGES = {
   trabalhoFreeLanceReal: '/images/servicos/trabalho-freelance.png',
   avaliacaoPerfil: '/images/servicos/avaliacao-perfil/avaliacao-perfil.svg',
   hunting: '/images/servicos/hunting/hunting.svg',
-  segurancaPatrimonial: '/images/servicos/seguranca-patrimonial/seguranca.jpg',
   processoRh: '/images/servicos/solucao-rh.jfif',
   avaliacaoPerfilReal: '/images/servicos/avaliacao-perfil/avaliacao-perfil.jpg',
   huntingReal: '/images/servicos/hunting/executive-search.jpg',
