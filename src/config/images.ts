@@ -56,8 +56,8 @@ export const IMAGES = {
     },
   },
   services: {
-    seguranca: '/images/servicos/controle-acesso/Controle de Acesso.jpg',
-    acesso: '/images/servicos/controle-acesso/Controle de Acesso.jpg',
+    seguranca: '/images/servicos/seguranca-patrimonial/seguranca.jpg',
+    acesso: '/images/servicos/controle-acesso/controle-de-acesso.jpg',
     portaria: '/images/servicos/portaria.svg',
     limpeza: '/images/servicos/limpeza-real.webp',
     zeladoria: '/images/servicos/limpeza-de-manutencao.webp',
@@ -71,7 +71,8 @@ export const IMAGES = {
     facilitiesReal: '/images/servicos/facilities-real.webp',
     limpezaReal: '/images/servicos/limpeza-real.webp',
     jardinagemReal: '/images/servicos/jardinagem-real.webp',
-    maoDeObraReal: '/images/servicos/mao-de-obra-temporaria/Mão de Obra Temporaria.jpg',
+    maoDeObraReal:
+      '/images/servicos/mao-de-obra-temporaria/mao-de-obra-temporaria.jpg',
     terceirizacaoReal: '/images/servicos/terceirizacao-real.webp',
     servicosReal: '/images/hero/servicos-hero.webp',
     zeladoriaReal: '/images/servicos/limpeza-de-manutencao.webp',
