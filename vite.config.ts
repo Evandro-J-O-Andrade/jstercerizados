@@ -17,7 +17,6 @@ function devApiServer(): Plugin {
             stdio: 'inherit',
             env: {
               ...process.env,
-              OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY ?? '',
             },
           });
         }
