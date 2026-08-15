@@ -30,7 +30,6 @@ const serviceOptions = [
   { value: 'mao-de-obra-temporaria', label: 'Mão de Obra Temporária' },
   { value: 'mao-de-obra-efetiva', label: 'Mão de Obra Efetiva' },
   { value: 'facilities', label: 'Facilities' },
-  { value: 'limpeza-conservacao', label: 'Limpeza e Conservação' },
   { value: 'limpeza-de-fachada', label: 'Limpeza de Fachada' },
   { value: 'limpeza-de-vidros', label: 'Limpeza de Vidros' },
   { value: 'limpeza-pre-mudanca', label: 'Limpeza Pré-Mudança' },

@@ -162,7 +162,7 @@ const facilitiesSolutions = [
     title: 'Limpeza',
     description:
       'Limpeza profissional com produtos ecológicos e equipe treinada para sua empresa.',
-    href: '/servicos/limpeza',
+    href: '/servicos/facilities',
     icon: FileText,
   },
   {

@@ -52,7 +52,7 @@ const footerLinks = {
     },
     { label: 'Mão de Obra Efetiva', href: '/servicos/mao-de-obra-efetiva' },
     { label: 'Facilities', href: '/servicos/facilities' },
-    { label: 'Limpeza', href: '/servicos/limpeza' },
+    { label: 'Limpeza', href: '/servicos/facilities' },
     { label: 'Jardinagem', href: '/servicos/jardinagem' },
     { label: 'Terceirização', href: '/servicos/terceirizacao' },
   ],

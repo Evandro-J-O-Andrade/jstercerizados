@@ -69,7 +69,7 @@ export const HERO_SLIDES: HeroSlideData[] = [
     },
     secondaryCta: {
       label: 'Conhecer mais',
-      href: '/servicos/limpeza-conservacao',
+      href: '/servicos/facilities',
     },
     candidateCta: { label: 'Ver vagas', href: '/vagas' },
   },

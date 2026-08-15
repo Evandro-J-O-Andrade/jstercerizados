@@ -12,10 +12,5 @@ export const SERVICE_CATEGORIES = {
     'orientacao-profissional',
     'atualizacao-curriculo',
   ] as string[],
-  facilities: [
-    'seguranca-patrimonial',
-    'limpeza',
-    'portaria',
-    'zeladoria',
-  ] as string[],
+  facilities: ['limpeza', 'portaria', 'zeladoria'] as string[],
 } as const;
