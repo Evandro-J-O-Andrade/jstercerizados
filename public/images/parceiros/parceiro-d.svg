@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="80" rx="16" fill="hsl(0,0%,97%)" opacity="0.05"/>
+  <rect x="20" y="15" width="60" height="50" rx="8" fill="hsl(43,74%,40%)"/>
+  <text x="60" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="hsl(215,35%,10%)">D</text>
+  <text x="100" y="48" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="hsl(215,35%,20%)">elta Group</text>
+</svg>

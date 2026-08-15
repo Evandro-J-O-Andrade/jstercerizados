@@ -93,7 +93,7 @@ export const SHOWCASE_SLIDES = [
 ] as const;
 
 export const PARTNER_ASSETS = {
-  vectorEngenharia: '/images/partners/vector-engenharia.webp',
-  mistral: '/images/partners/mistral.webp',
-  cadrempresaspareceiras: '/images/partners/cadastro-empresas-pareceiras.png',
+  vectorEngenharia: '/images/parceiros/vector-engenharia.webp',
+  mistral: '/images/parceiros/mistral.webp',
+  cadrempresaspareceiras: '/images/parceiros/cadastro-empresas-pareceiras.png',
 } as const;

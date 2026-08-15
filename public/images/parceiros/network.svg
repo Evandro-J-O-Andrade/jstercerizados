@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="ct" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(43,74%,40%)" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="hsl(215,35%,10%)" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="16" fill="url(#ct)"/>
+  <rect x="30" y="30" width="140" height="140" rx="8" stroke="hsl(43,74%,40%)" stroke-width="2" fill="none" opacity="0.3"/>
+  <circle cx="100" cy="100" r="30" stroke="hsl(43,74%,40%)" stroke-width="2" fill="none" opacity="0.4"/>
+  <circle cx="100" cy="100" r="15" stroke="hsl(43,74%,40%)" stroke-width="1.5" fill="none" opacity="0.3"/>
+  <circle cx="100" cy="100" r="5" fill="hsl(43,74%,40%)" opacity="0.2"/>
+  <path d="M100 70 L100 40 M100 130 L100 160 M70 100 L40 100 M130 100 L160 100" stroke="hsl(43,74%,40%)" stroke-width="1.5" opacity="0.3"/>
+  <circle cx="40" cy="40" r="6" fill="hsl(43,74%,40%)" opacity="0.15"/>
+  <circle cx="160" cy="40" r="6" fill="hsl(43,74%,40%)" opacity="0.15"/>
+  <circle cx="40" cy="160" r="6" fill="hsl(43,74%,40%)" opacity="0.15"/>
+  <circle cx="160" cy="160" r="6" fill="hsl(43,74%,40%)" opacity="0.15"/>
+</svg>
