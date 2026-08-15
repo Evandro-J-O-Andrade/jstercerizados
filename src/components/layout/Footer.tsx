@@ -69,6 +69,7 @@ const footerLinks = {
     { label: 'Fale Conosco', href: '/contato' },
     { label: 'Suporte', href: '/suporte' },
     { label: 'FAQ', href: '/faq' },
+    { label: 'Entrar', href: '/login' },
   ],
 };
 
