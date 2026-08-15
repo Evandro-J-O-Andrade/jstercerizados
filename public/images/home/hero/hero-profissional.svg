@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="hero-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(215,35%,15%)"/>
+      <stop offset="30%" stop-color="hsl(215,40%,12%)"/>
+      <stop offset="70%" stop-color="hsl(215,35%,10%)"/>
+      <stop offset="100%" stop-color="hsl(215,35%,8%)"/>
+    </linearGradient>
+    <radialGradient id="building-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="hsla(43,74%,40%,0.15)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#hero-bg)"/>
+  <rect x="0" y="0" width="1920" height="1080" fill="url(#building-glow)"/>
+  <rect x="100" y="100" width="600" height="980" fill="hsl(215,35%,8%)"/>
+  <rect x="80" y="120" width="120" height="120" fill="hsl(215,35%,15%)" stroke="hsl(215,40%,20%)" stroke-width="1"/>
+  <rect x="220" y="140" width="100" height="100" fill="hsl(215,35%,18%)" stroke="hsl(215,40%,22%)" stroke-width="1"/>
+  <rect x="360" y="160" width="120" height="120" fill="hsl(215,35%,16%)" stroke="hsl(215,40%,20%)" stroke-width="1"/>
+  <rect x="500" y="150" width="180" height="180" fill="hsl(215,35%,20%)" stroke="hsl(215,40%,24%)" stroke-width="1"/>
+  <rect x="300" y="300" width="400" height="780" fill="hsl(215,35%,6%)"/>
+  <rect x="320" y="320" width="80" height="100" fill="hsl(215,35%,12%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.3"/>
+  <rect x="420" y="340" width="100" height="80" fill="hsl(215,35%,15%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.3"/>
+  <rect x="540" y="360" width="160" height="60" fill="hsl(215,35%,18%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.3"/>
+  <rect x="320" y="460" width="80" height="100" fill="hsl(215,35%,14%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.4"/>
+  <rect x="420" y="480" width="100" height="80" fill="hsl(215,35%,16%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.3"/>
+  <rect x="540" y="500" width="160" height="60" fill="hsl(215,35%,19%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.4"/>
+  <rect x="320" y="620" width="80" height="100" fill="hsl(215,35%,13%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.5"/>
+  <rect x="420" y="640" width="100" height="80" fill="hsl(215,35%,17%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.3"/>
+  <rect x="540" y="660" width="160" height="60" fill="hsl(215,35%,20%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.5"/>
+  <rect x="860" y="500" width="900" height="680" fill="hsl(215,35%,6%)"/>
+  <rect x="880" y="520" width="120" height="140" fill="hsl(215,35%,12%)" stroke="hsl(215,40%,18%)" stroke-width="1"/>
+  <rect x="1040" y="540" width="140" height="120" fill="hsl(215,35%,15%)" stroke="hsl(215,40%,20%)" stroke-width="1"/>
+  <rect x="1220" y="560" width="100" height="100" fill="hsl(215,35%,18%)" stroke="hsl(215,40%,22%)" stroke-width="1"/>
+  <rect x="1360" y="530" width="180" height="130" fill="hsl(215,35%,16%)" stroke="hsl(215,40%,20%)" stroke-width="1"/>
+  <rect x="880" y="680" width="120" height="140" fill="hsl(215,35%,14%)" stroke="hsl(215,40%,18%)" stroke-width="1"/>
+  <rect x="1040" y="700" width="140" height="120" fill="hsl(215,35%,17%)" stroke="hsl(215,40%,20%)" stroke-width="1"/>
+  <rect x="1220" y="720" width="100" height="100" fill="hsl(215,35%,19%)" stroke="hsl(215,40%,22%)" stroke-width="1"/>
+  <rect x="1360" y="690" width="180" height="130" fill="hsl(215,35%,16%)" stroke="hsl(215,40%,20%)" stroke-width="1"/>
+  <rect x="1580" y="500" width="200" height="700" fill="hsl(215,35%,4%)"/>
+  <rect x="1600" y="520" width="60" height="60" fill="hsl(215,35%,12%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.3"/>
+  <rect x="1700" y="580" width="50" height="50" fill="hsl(215,35%,15%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.4"/>
+  <rect x="1620" y="700" width="80" height="40" fill="hsl(215,35%,18%)" stroke="hsl(215,40%,22%)" stroke-width="1"/>
+  <rect x="1720" y="680" width="40" height="60" fill="hsl(215,35%,16%)" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.5"/>
+  <circle cx="500" cy="580" r="40" fill="hsl(43,74%,40%)" opacity="0.1"/>
+  <rect x="480" y="560" width="40" height="40" rx="20" fill="url(#goldGrad)" opacity="0.2"/>
+  <rect x="495" y="575" width="10" height="10" rx="5" fill="hsl(43,74%,40%)"/>
+  <rect x="515" y="575" width="10" height="10" rx="5" fill="hsl(43,74%,40%)"/>
+  <defs>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="hsl(43,90%,55%)"/>
+      <stop offset="100%" stop-color="hsl(43,74%,40%)"/>
+    </linearGradient>
+  </defs>
+  <path d="M130 220 L170 260 L190 220" stroke="hsl(43,74%,40%)" stroke-width="2" fill="none"/>
+  <path d="M150 220 L170 200 L190 220" stroke="hsl(43,74%,40%)" stroke-width="2" fill="none"/>
+  <circle cx="400" cy="260" r="20" fill="hsl(215,35%,20%)" stroke="hsl(43,74%,40%)" stroke-width="2"/>
+  <rect x="392" y="255" width="16" height="2" rx="1" fill="hsl(43,74%,40%)"/>
+  <rect x="396" y="248" width="8" height="2" rx="1" fill="hsl(43,74%,40%)"/>
+  <circle cx="800" cy="240" r="15" fill="hsl(215,35%,25%)"/>
+  <circle cx="800" cy="240" r="8" fill="hsl(43,74%,40%)"/>
+  <circle cx="800" cy="240" r="3" fill="hsl(215,35%,5%)"/>
+  <circle cx="1580" cy="240" r="30" fill="hsl(215,35%,30%)"/>
+  <circle cx="1580" cy="240" r="15" fill="hsl(43,74%,40%)"/>
+  <circle cx="1580" cy="240" r="5" fill="hsl(215,35%,5%)"/>
+  <rect x="1565" y="265" width="30" height="4" rx="2" fill="hsl(215,35%,40%)"/>
+  <path d="M1100 760 L1140 800 L1160 760" stroke="hsl(43,74%,40%)" stroke-width="2" fill="none"/>
+  <path d="M1120 760 L1140 740 L1160 760" stroke="hsl(43,74%,40%)" stroke-width="2" fill="none"/>
+</svg>

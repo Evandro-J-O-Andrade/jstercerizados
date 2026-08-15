@@ -47,14 +47,14 @@ export const FALLBACK_IMAGES = {
 } as const;
 
 export const HERO_ASSETS = {
-  cardheros: '/images/hero/home/cardheros.png',
-  bannerjs: '/images/hero/banner-js.png',
+  cardheros: '/images/home/cards/cardheros.png',
+  bannerjs: '/images/home/banners/banner-js.png',
   homeSlides: [
-    '/images/hero/home/banner-principal.webp',
-    '/images/hero/home/banner-secundario.webp',
-    '/images/hero/home/banner-terciario.png',
+    '/images/home/banners/banner-principal.webp',
+    '/images/home/banners/banner-secundario.webp',
+    '/images/home/banners/banner-terciario.png',
   ],
-  servicos: '/images/hero/servicos-hero.webp',
+  servicos: '/images/home/sections/servicos-hero.webp',
   suporte: '/images/suporte/suporte.webp',
   trabalheConosco: '/images/trabalhe-conosco/trabalhe-conosco.webp',
 } as const;

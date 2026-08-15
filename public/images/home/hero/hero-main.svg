@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(215,35%,12%)"/>
+      <stop offset="40%" stop-color="hsl(215,30%,20%)"/>
+      <stop offset="70%" stop-color="hsl(215,25%,28%)"/>
+      <stop offset="100%" stop-color="hsl(215,20%,35%)"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="0.3" cy="0.5" r="0.7">
+      <stop offset="0%" stop-color="hsl(43,74%,40%)" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="hsl(215,35%,10%)" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.7" cy="0.5" r="0.6">
+      <stop offset="0%" stop-color="hsl(215,35%,25%)" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="hsl(215,35%,10%)" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(43,74%,40%)" stroke-width="0.5" opacity="0.3"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect width="1200" height="800" fill="url(#glow1)"/>
+  <rect width="1200" height="800" fill="url(#glow2)"/>
+  <rect width="1200" height="800" fill="url(#grid)" opacity="0.08"/>
+  <circle cx="100" cy="100" r="250" fill="hsl(43,74%,40%)" opacity="0.04"/>
+  <circle cx="1100" cy="700" r="350" fill="hsl(43,74%,40%)" opacity="0.03"/>
+  <circle cx="600" cy="400" r="200" fill="hsl(43,74%,40%)" opacity="0.02"/>
+  <rect x="60" y="80" width="480" height="640" rx="16" fill="hsl(215,33%,18%)" opacity="0.5"/>
+  <rect x="660" y="120" width="480" height="560" rx="16" fill="hsl(215,33%,18%)" opacity="0.4"/>
+  <rect x="100" y="100" width="440" height="600" rx="12" fill="none" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.15"/>
+  <rect x="700" y="140" width="440" height="520" rx="12" fill="none" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.1"/>
+  <rect x="120" y="120" width="400" height="560" rx="10" fill="hsl(215,33%,22%)" opacity="0.3"/>
+  <rect x="720" y="160" width="400" height="480" rx="10" fill="hsl(215,33%,22%)" opacity="0.25"/>
+  <circle cx="320" cy="200" r="60" fill="hsl(43,74%,40%)" opacity="0.06"/>
+  <circle cx="920" cy="300" r="80" fill="hsl(43,74%,40%)" opacity="0.05"/>
+  <circle cx="300" cy="500" r="40" fill="hsl(43,74%,40%)" opacity="0.04"/>
+  <circle cx="900" cy="550" r="50" fill="hsl(43,74%,40%)" opacity="0.04"/>
+  <rect x="140" y="160" width="120" height="80" rx="8" fill="hsl(43,74%,40%)" opacity="0.08" stroke="hsl(43,74%,40%)" stroke-width="0.5" stroke-opacity="0.2"/>
+  <rect x="280" y="160" width="120" height="80" rx="8" fill="hsl(43,74%,40%)" opacity="0.06" stroke="hsl(43,74%,40%)" stroke-width="0.5" stroke-opacity="0.15"/>
+  <rect x="140" y="260" width="120" height="80" rx="8" fill="hsl(43,74%,40%)" opacity="0.07" stroke="hsl(43,74%,40%)" stroke-width="0.5" stroke-opacity="0.18"/>
+  <rect x="280" y="260" width="120" height="80" rx="8" fill="hsl(43,74%,40%)" opacity="0.05" stroke="hsl(43,74%,40%)" stroke-width="0.5" stroke-opacity="0.12"/>
+  <rect x="740" y="200" width="120" height="80" rx="8" fill="hsl(43,74%,40%)" opacity="0.08" stroke="hsl(43,74%,40%)" stroke-width="0.5" stroke-opacity="0.2"/>
+  <rect x="880" y="200" width="120" height="80" rx="8" fill="hsl(43,74%,40%)" opacity="0.06" stroke="hsl(43,74%,40%)" stroke-width="0.5" stroke-opacity="0.15"/>
+  <rect x="740" y="300" width="120" height="80" rx="8" fill="hsl(43,74%,40%)" opacity="0.07" stroke="hsl(43,74%,40%)" stroke-width="0.5" stroke-opacity="0.18"/>
+  <rect x="880" y="300" width="120" height="80" rx="8" fill="hsl(43,74%,40%)" opacity="0.05" stroke="hsl(43,74%,40%)" stroke-width="0.5" stroke-opacity="0.12"/>
+  <line x1="100" y1="400" x2="500" y2="400" stroke="hsl(43,74%,40%)" stroke-width="0.5" opacity="0.1"/>
+  <line x1="700" y1="450" x2="1100" y2="450" stroke="hsl(43,74%,40%)" stroke-width="0.5" opacity="0.1"/>
+  <rect x="50" y="700" width="1100" height="2" rx="1" fill="hsl(43,74%,40%)" opacity="0.08"/>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <linearGradient id="gf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050914" />
+      <stop offset="100%" stop-color="#0a0f23" />
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#gf)" />
+  <g opacity="0.12">
+    <circle cx="960" cy="540" r="200" fill="hsl(43,74%,40%)" />
+    <circle cx="300" cy="300" r="80" fill="hsl(43,74%,40%)" opacity="0.5" />
+    <circle cx="1620" cy="780" r="120" fill="hsl(43,74%,40%)" opacity="0.4" />
+  </g>
+  <g transform="translate(960 540)" text-anchor="middle">
+    <rect x="-300" y="-60" width="600" height="120" rx="24" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+    <text x="0" y="0" fill="rgba(255,255,255,0.6)" font-family="system-ui" font-size="32" font-weight="500">JR Agência de Empregos</text>
+    <text x="0" y="28" fill="rgba(255,255,255,0.15)" font-family="system-ui" font-size="16">Conectando talentos às melhores oportunidades</text>
+  </g>
+</svg>

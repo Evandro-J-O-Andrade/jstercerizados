@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" fill="none">
+  <rect width="600" height="450" fill="#1E293B"/>
+  <rect width="600" height="450" fill="url(#sec-grad)"/>
+  <defs>
+    <linearGradient id="sec-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+  </defs>
+  <circle cx="300" cy="225" r="120" fill="#F59E0B" opacity="0.08"/>
+  <text x="300" y="230" text-anchor="middle" fill="#F8FAFC" font-size="14" font-weight="600" font-family="Inter, sans-serif" opacity="0.5">SEGURANÇA</text>
+  <text x="300" y="255" text-anchor="middle" fill="#F8FAFC" font-size="12" font-family="Inter, sans-serif" opacity="0.3">600 × 450</text>
+</svg>

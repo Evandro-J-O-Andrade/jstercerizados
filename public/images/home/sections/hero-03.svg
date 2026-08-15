@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050914" />
+      <stop offset="100%" stop-color="#0a0f23" />
+    </linearGradient>
+    <linearGradient id="hl3" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="hsl(43,74%,40%)" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="hsl(43,74%,40%)" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#g3)" />
+  <rect x="0" y="0" width="1920" height="1080" fill="url(#hl3)" />
+  <g opacity="0.2">
+    <circle cx="960" cy="400" r="180" fill="hsl(43,74%,40%)" />
+    <circle cx="400" cy="750" r="150" fill="hsl(43,74%,40%)" opacity="0.5" />
+    <circle cx="1520" cy="700" r="120" fill="hsl(43,74%,40%)" opacity="0.4" />
+    <circle cx="1650" cy="300" r="60" fill="hsl(43,74%,40%)" opacity="0.3" />
+  </g>
+  <g transform="translate(960 540)" text-anchor="middle">
+    <rect x="-500" y="-100" width="1000" height="200" rx="32" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+    <text x="0" y="-20" fill="rgba(255,255,255,0.9)" font-family="system-ui" font-size="56" font-weight="700">CONTRATE PROFISSIONAIS</text>
+    <text x="0" y="25" fill="hsl(43,74%,60%)" font-family="system-ui" font-size="28" font-weight="400">Recrutamento, seleção e banco de talentos</text>
+    <text x="0" y="80" fill="rgba(255,255,255,0.15)" font-family="system-ui" font-size="16">JR Agência de Empregos</text>
+  </g>
+</svg>

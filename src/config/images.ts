@@ -7,52 +7,52 @@ export const IMAGES = {
     favicon: '/images/global/favicon/favicon.svg',
   },
   hero: {
-    background: '/images/hero/hero-profissional.svg',
-    security: '/images/hero/hero-security.svg',
-    overlay: '/images/hero/hero-overlay.svg',
+    background: '/images/home/hero/hero-profissional.svg',
+    security: '/images/home/hero/hero-security.svg',
+    overlay: '/images/home/hero/hero-overlay.svg',
     watermark: '/images/global/brand/watermark-logo.svg',
     grid: '/images/global/backgrounds/hero-grid.svg',
     lines: '/images/global/backgrounds/hero-lines.svg',
-    cardheros: '/images/hero/home/cardheros.png',
+    cardheros: '/images/home/cards/cardheros.png',
     home: {
       slides: [
-        '/images/hero/home/banner-principal.webp',
-        '/images/hero/home/banner-secundario.webp',
-        '/images/hero/home/banner-terciario.png',
+        '/images/home/banners/banner-principal.webp',
+        '/images/home/banners/banner-secundario.webp',
+        '/images/home/banners/banner-terciario.png',
       ],
-      fallback: '/images/hero/home/fallback.svg',
+      fallback: '/images/home/sections/fallback.svg',
     },
     servicos: {
-      src: '/images/hero/servicos-hero.webp',
-      fallback: '/images/hero/home/fallback.svg',
+      src: '/images/home/sections/servicos-hero.webp',
+      fallback: '/images/home/sections/fallback.svg',
     },
     sobre: {
       src: '/images/hero/sobre/hero.svg',
-      fallback: '/images/hero/home/fallback.svg',
+      fallback: '/images/home/sections/fallback.svg',
     },
     trabalheConosco: {
       src: '/images/trabalhe-conosco/trabalhe-conosco.webp',
-      fallback: '/images/hero/home/fallback.svg',
+      fallback: '/images/home/sections/fallback.svg',
     },
     parceiros: {
       src: '/images/hero/parceiros/hero.svg',
-      fallback: '/images/hero/home/fallback.svg',
+      fallback: '/images/home/sections/fallback.svg',
     },
     fornecedores: {
       src: '/images/hero/fornecedores/hero.svg',
-      fallback: '/images/hero/home/fallback.svg',
+      fallback: '/images/home/sections/fallback.svg',
     },
     suporte: {
       src: '/images/suporte/suporte.webp',
-      fallback: '/images/hero/home/fallback.svg',
+      fallback: '/images/home/sections/fallback.svg',
     },
     contato: {
       src: '/images/hero/contato/hero.svg',
-      fallback: '/images/hero/home/fallback.svg',
+      fallback: '/images/home/sections/fallback.svg',
     },
     login: {
       src: '/images/hero/login/hero.svg',
-      fallback: '/images/hero/home/fallback.svg',
+      fallback: '/images/home/sections/fallback.svg',
     },
   },
   services: {
@@ -110,6 +110,6 @@ export const IMAGES = {
 } as const;
 
 export const HERO_IMAGES = [
-  '/images/hero/hero-main.svg',
-  '/images/hero/hero-security.svg',
+  '/images/home/hero/hero-main.svg',
+  '/images/home/hero/hero-security.svg',
 ] as const;
