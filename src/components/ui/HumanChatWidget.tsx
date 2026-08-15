@@ -7,6 +7,7 @@ import { sendToN8n } from '@/lib/n8n';
 import { X, Send, User, Headphones, Bot, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils';
+import { normalizeChatResponse } from '@/lib/chat-response-normalizer';
 
 type ChatRole = 'user' | 'assistant' | 'system' | 'agent';
 
@@ -250,7 +251,7 @@ export function HumanChatWidget({
                               : 'bg-muted text-foreground',
                           )}
                         >
-                          <p>{message.content}</p>
+                          <p>{normalizeChatResponse(message.content)}</p>
                         </div>
                       </div>
                     ))

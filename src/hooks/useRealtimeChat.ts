@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getSupabaseClient } from '@/lib/supabase';
 import { normalizeError } from '@/lib/error-normalizer';
+import { normalizeChatResponse } from '@/lib/chat-response-normalizer';
 import type { ChatMessage, ChatRoom } from '@/types/chat';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -42,7 +43,11 @@ export function useRealtimeChat(roomId: string | null) {
           .order('created_at', { ascending: true });
 
         if (messagesData) {
-          setMessages(messagesData as ChatMessage[]);
+          const normalized = messagesData.map((msg) => ({
+            ...msg,
+            content: normalizeChatResponse(msg.content),
+          }));
+          setMessages(normalized as ChatMessage[]);
         }
       } catch (err) {
         const normalized = normalizeError(err);
@@ -66,7 +71,13 @@ export function useRealtimeChat(roomId: string | null) {
         },
         (payload: { new: ChatMessage }) => {
           const newMessage = payload.new;
-          setMessages((prev) => [...prev, newMessage]);
+          setMessages((prev) => [
+            ...prev,
+            {
+              ...newMessage,
+              content: normalizeChatResponse(newMessage.content),
+            },
+          ]);
         },
       )
       .subscribe();

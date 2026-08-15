@@ -5,6 +5,7 @@ import { X, Send, User, ChevronRight, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils';
 import { sendChatRequest } from '@/lib/chat-client';
+import { normalizeChatResponse } from '@/lib/chat-response-normalizer';
 
 type ChatRole = 'user' | 'assistant' | 'system';
 
@@ -81,7 +82,7 @@ export function ChatWidget({
     );
 
     if (result.ok && result.reply) {
-      return result.reply;
+      return normalizeChatResponse(result.reply);
     }
 
     return 'Obrigado pela sua mensagem! Em breve um atendente irá te responder. Enquanto isso, você pode escolher uma das opções abaixo:';
