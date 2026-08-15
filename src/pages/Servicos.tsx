@@ -81,7 +81,7 @@ export default function Servicos() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={staggerReveal(0.1)}
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
               {rhServices.map((service, index) => (
                 <ServiceCard key={service.id} service={service} index={index} />
@@ -116,7 +116,7 @@ export default function Servicos() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={staggerReveal(0.1)}
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
               {facilitiesServices.map((service, index) => (
                 <ServiceCard key={service.id} service={service} index={index} />

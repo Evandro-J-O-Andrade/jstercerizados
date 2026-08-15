@@ -48,8 +48,11 @@ const jobApplicationSchema = z.object({
   experience: z.string().max(2000, 'Experiência muito longa').optional(),
   message: z.string().max(2000, 'Mensagem muito longa').optional(),
   lgpd: z
-    .string()
-    .min(1, 'Você precisa autorizar o tratamento de dados para continuar'),
+    .boolean()
+    .refine(
+      (val) => val === true,
+      'Você precisa autorizar o tratamento de dados para continuar',
+    ),
 });
 
 type JobApplicationFormData = z.infer<typeof jobApplicationSchema>;
@@ -74,7 +77,7 @@ export function JobApplicationForm({
       contract: '',
       experience: '',
       message: '',
-      lgpd: '',
+      lgpd: false,
     },
   });
 

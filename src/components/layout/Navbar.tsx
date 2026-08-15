@@ -251,7 +251,7 @@ export function Navbar() {
           </h1>
         </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex">
+        <nav className="hidden items-center gap-6 lg:flex xl:gap-8">
           {topNavLinks.map(({ label, href, icon: Icon }) => (
             <Link
               key={href}
@@ -273,37 +273,54 @@ export function Navbar() {
             </Link>
           ))}
 
-          <Dropdown label="Empresas" icon={Building2} items={companiesSubmenu} />
+          <Dropdown
+            label="Empresas"
+            icon={Building2}
+            items={companiesSubmenu}
+          />
           <Dropdown label="Candidatos" icon={Users} items={candidatesSubmenu} />
-          <Dropdown label="Contato" icon={MessageCircle} items={contactSubmenu} />
+          <Dropdown label="Mais" icon={MessageCircle} items={contactSubmenu} />
 
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
             aria-label="Alternar tema"
+            className="h-9 w-9"
           >
             {resolvedTheme === 'light' ? (
-              <Moon className="h-5 w-5" />
+              <Moon className="h-4 w-4" />
             ) : (
-              <Sun className="h-5 w-5" />
+              <Sun className="h-4 w-4" />
             )}
           </Button>
           <Button
             to="/trabalhe-conosco"
             variant="outline"
             size="sm"
-            className="text-xs font-medium"
+            className="h-9 px-3 text-xs font-medium"
           >
             Cadastrar Currículo
           </Button>
           {isAuthenticated ? (
             <Link to="/dashboard">
-              <Button variant="primary" size="sm">Painel</Button>
+              <Button
+                variant="primary"
+                size="sm"
+                className="h-9 px-3 text-xs font-medium"
+              >
+                Painel
+              </Button>
             </Link>
           ) : (
             <Link to="/empresas/divulgar-vaga">
-              <Button variant="primary" size="sm">Divulgar Vaga</Button>
+              <Button
+                variant="primary"
+                size="sm"
+                className="h-9 px-3 text-xs font-medium"
+              >
+                Divulgar Vaga
+              </Button>
             </Link>
           )}
         </nav>
@@ -367,7 +384,9 @@ export function Navbar() {
               style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
               <div className="flex items-center justify-between p-4">
-                <span className="text-foreground text-lg font-semibold">Menu</span>
+                <span className="text-foreground text-lg font-semibold">
+                  Menu
+                </span>
                 <Button
                   id="mobile-drawer-close"
                   variant="ghost"
@@ -417,7 +436,9 @@ export function Navbar() {
                   links={companiesSubmenu}
                   isOpen={openAccordion === 'empresas'}
                   onToggle={() =>
-                    setOpenAccordion(openAccordion === 'empresas' ? null : 'empresas')
+                    setOpenAccordion(
+                      openAccordion === 'empresas' ? null : 'empresas',
+                    )
                   }
                   onClose={() => setIsOpen(false)}
                 />
@@ -428,7 +449,9 @@ export function Navbar() {
                   links={candidatesSubmenu}
                   isOpen={openAccordion === 'candidatos'}
                   onToggle={() =>
-                    setOpenAccordion(openAccordion === 'candidatos' ? null : 'candidatos')
+                    setOpenAccordion(
+                      openAccordion === 'candidatos' ? null : 'candidatos',
+                    )
                   }
                   onClose={() => setIsOpen(false)}
                 />
@@ -439,7 +462,9 @@ export function Navbar() {
                   links={contactSubmenu}
                   isOpen={openAccordion === 'contato'}
                   onToggle={() =>
-                    setOpenAccordion(openAccordion === 'contato' ? null : 'contato')
+                    setOpenAccordion(
+                      openAccordion === 'contato' ? null : 'contato',
+                    )
                   }
                   onClose={() => setIsOpen(false)}
                 />
@@ -459,11 +484,24 @@ export function Navbar() {
                   </motion.div>
                   <motion.div variants={itemVariants}>
                     <Link
-                      to={isAuthenticated ? '/dashboard' : '/empresas/divulgar-vaga'}
+                      to={
+                        isAuthenticated
+                          ? '/dashboard'
+                          : '/empresas/divulgar-vaga'
+                      }
                       onClick={() => setIsOpen(false)}
                       className="text-muted-foreground hover:bg-muted hover:text-foreground block rounded-lg px-3 py-2 text-sm font-medium transition-colors"
                     >
                       {isAuthenticated ? 'Painel' : 'Divulgar Vaga'}
+                    </Link>
+                  </motion.div>
+                  <motion.div variants={itemVariants}>
+                    <Link
+                      to="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="border-border hover:bg-muted block rounded-lg border px-3 py-2 text-center text-sm font-medium transition-colors"
+                    >
+                      Entrar
                     </Link>
                   </motion.div>
                 </div>
@@ -475,7 +513,10 @@ export function Navbar() {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <motion.a
-                    href={getWhatsAppUrl(COMPANY.whatsapp, WHATSAPP_MESSAGES.whatsappButton)}
+                    href={getWhatsAppUrl(
+                      COMPANY.whatsapp,
+                      WHATSAPP_MESSAGES.whatsappButton,
+                    )}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1 }}
@@ -485,23 +526,58 @@ export function Navbar() {
                     <Phone className="h-5 w-5" />
                     <span className="sr-only">WhatsApp</span>
                   </motion.a>
-                  <motion.a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.1 }} className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors" aria-label="Instagram">
+                  <motion.a
+                    href={SOCIAL_LINKS.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1 }}
+                    className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+                    aria-label="Instagram"
+                  >
                     <Instagram className="h-5 w-5" />
                     <span className="sr-only">Instagram</span>
                   </motion.a>
-                  <motion.a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.1 }} className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors" aria-label="Facebook">
+                  <motion.a
+                    href={SOCIAL_LINKS.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1 }}
+                    className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+                    aria-label="Facebook"
+                  >
                     <Facebook className="h-5 w-5" />
                     <span className="sr-only">Facebook</span>
                   </motion.a>
-                  <motion.a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.1 }} className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors" aria-label="LinkedIn">
+                  <motion.a
+                    href={SOCIAL_LINKS.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1 }}
+                    className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+                    aria-label="LinkedIn"
+                  >
                     <Linkedin className="h-5 w-5" />
                     <span className="sr-only">LinkedIn</span>
                   </motion.a>
-                  <motion.a href={SOCIAL_LINKS.youtube} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.1 }} className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors" aria-label="YouTube">
+                  <motion.a
+                    href={SOCIAL_LINKS.youtube}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1 }}
+                    className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+                    aria-label="YouTube"
+                  >
                     <Youtube className="h-5 w-5" />
                     <span className="sr-only">YouTube</span>
                   </motion.a>
-                  <motion.a href={SOCIAL_LINKS.tiktok} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.1 }} className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors" aria-label="TikTok">
+                  <motion.a
+                    href={SOCIAL_LINKS.tiktok}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1 }}
+                    className="bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+                    aria-label="TikTok"
+                  >
                     <TikTokIcon className="h-5 w-5" />
                     <span className="sr-only">TikTok</span>
                   </motion.a>
@@ -531,7 +607,10 @@ function MobileAccordion({
   onClose: () => void;
 }) {
   return (
-    <motion.div variants={itemVariants} className="border-border/50 rounded-xl border p-1">
+    <motion.div
+      variants={itemVariants}
+      className="border-border/50 rounded-xl border p-1"
+    >
       <button
         type="button"
         onClick={onToggle}
