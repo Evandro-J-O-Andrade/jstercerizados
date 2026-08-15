@@ -44,10 +44,33 @@ export function buildServiceRequestMessage(params: {
   ].join('\n');
 }
 
+function formatPhone(value: MaybeString): string {
+  const digits = safeString(value).replace(/\D/g, '');
+  if (digits.length === 11) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  }
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+  return optional(value);
+}
+
+function normalizeContract(value: MaybeString): string {
+  const cleaned = safeString(value).trim().toUpperCase();
+  const map: Record<string, string> = {
+    ESTAGIO: 'Estágio',
+    CLT: 'CLT',
+    PJ: 'PJ',
+    FREELANCE: 'Freelance',
+    TEMPORARIO: 'Temporário',
+    EFETIVO: 'Efetivo',
+    TRAINEE: 'Trainee',
+  };
+  return map[cleaned] || optional(value);
+}
+
 export function buildJobApplicationMessage(params: {
   jobTitle?: string;
-  vagaId?: string;
-  jobSlug?: string;
   name: MaybeString;
   email: MaybeString;
   phone: MaybeString;
@@ -56,20 +79,24 @@ export function buildJobApplicationMessage(params: {
   experience: MaybeString;
   message: MaybeString;
 }): string {
-  return [
+  const lines = [
     '*Nova candidatura*',
     '',
     line('Vaga', params.jobTitle),
-    line('ID da vaga', params.vagaId),
-    line('Slug', params.jobSlug),
     line('Nome', params.name),
     line('E-mail', params.email),
-    line('Telefone', params.phone),
+    line('Telefone', formatPhone(params.phone)),
     line('Cidade', params.city),
-    line('Tipo de contrato', params.contract),
+    line('Tipo de contrato', normalizeContract(params.contract)),
     line('Experiência', params.experience),
-    line('Mensagem', params.message),
-  ].join('\n');
+  ];
+
+  const messageText = optional(params.message);
+  if (messageText && messageText !== '-') {
+    lines.push(line('Mensagem', messageText));
+  }
+
+  return lines.join('\n');
 }
 
 export function buildContactMessage(params: {

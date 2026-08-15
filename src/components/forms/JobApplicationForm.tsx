@@ -20,8 +20,6 @@ import { buildJobApplicationMessage } from '@/utils/message-builder';
 
 type JobApplicationFormProps = {
   jobTitle?: string;
-  jobSlug?: string;
-  vagaId?: string;
 };
 
 const contractOptions = [
@@ -58,11 +56,7 @@ const jobApplicationSchema = z.object({
 
 type JobApplicationFormData = z.infer<typeof jobApplicationSchema>;
 
-export function JobApplicationForm({
-  jobTitle,
-  jobSlug,
-  vagaId,
-}: JobApplicationFormProps) {
+export function JobApplicationForm({ jobTitle }: JobApplicationFormProps) {
   const {
     register,
     handleSubmit,
@@ -87,8 +81,6 @@ export function JobApplicationForm({
   const onSubmit = async (data: JobApplicationFormData): Promise<void> => {
     const message = buildJobApplicationMessage({
       jobTitle,
-      vagaId,
-      jobSlug,
       name: sanitizeName(data.name),
       email: sanitizeEmail(data.email),
       phone: sanitizePhone(data.phone),

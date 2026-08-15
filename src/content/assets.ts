@@ -33,11 +33,10 @@ export const SERVICE_IMAGES = {
   hunting: '/images/servicos/hunting/hunting.svg',
   segurancaPatrimonial: '/images/servicos/controle-acesso/Controle de Acesso.jpg',
   processoRh: '/images/servicos/solucao-rh.jfif',
-  avaliacaoPerfilReal: '/images/servicos/avaliacao-perfil/Avaliacao de Perfi.jpg',
-  huntingReal: '/images/servicos/hunting/Executive Search (Hunting).jpg',
-  controleAcessoReal: '/images/servicos/controle-acesso/Controle de Acesso.jpg',
-  segurancaReal: '/images/servicos/controle-acesso/Controle de Acesso.jpg',
-  processoRhReal: '/images/servicos/solucao-rh.jfif',
+  avaliacaoPerfilReal: '/images/servicos/avaliacao-perfil/avaliacao-perfil.jpg',
+  huntingReal: '/images/servicos/hunting/executive-search.jpg',
+  controleAcessoReal: '/images/servicos/controle-acesso/controle-de-acesso.jpg',
+  processoRhReal: '/images/servicos/processo-de-rh/processo-de-rh.jpg',
   maoDeObraTemporariaReal:
     '/images/servicos/mao-de-obra-temporaria/Mão de Obra Temporaria.jpg',
   maoDeObraEfetivaReal:
