@@ -1,34 +1,38 @@
 export const SERVICE_IMAGES = {
   assessoriaRh: '/images/servicos/assessoria-rh.png',
-  facilities: '/images/servicos/facilities-real.webp',
-  facilitiesFallback: '/images/servicos/facilities-real.webp',
-  recrutamento: '/images/servicos/recrutamento-alt.jfif',
-  limpeza: '/images/servicos/limpeza-real.webp',
-  jardinagem: '/images/servicos/jardinagem-real.webp',
+  facilities: '/images/servicos/facilities/facilities-real.webp',
+  facilitiesFallback: '/images/servicos/facilities/facilities-real.webp',
+  recrutamento: '/images/servicos/recrutamento-selecao/recrutamento-alt.jfif',
+  limpeza: '/images/servicos/limpeza/limpeza.jpg',
+  jardinagem: '/images/servicos/jardinagem/jardinagem-real.webp',
   maoDeObraTemporaria:
     '/images/servicos/mao-de-obra-temporaria/mao-de-obra-temporaria.jpg',
   maoDeObraEfetiva:
     '/images/servicos/mao-de-obra-efetiva/mao-de-obra-efetiva.jpg',
-  terceirizacao: '/images/servicos/terceirizacao-real.webp',
+  terceirizacao: '/images/servicos/terceirizacao/terceirizacao-real.webp',
   controleAcesso: '/images/servicos/controle-acesso/controle-de-acesso.jpg',
   solucaoRh: '/images/servicos/solucao-rh.jfif',
   timeRh: '/images/servicos/solucao-rh.jfif',
   bancoTalentoReal: '/images/servicos/banco-talento.jfif',
-  facilitiesReal: '/images/servicos/facilities-real.webp',
-  limpezaReal: '/images/servicos/limpeza-real.webp',
-  jardinagemReal: '/images/servicos/jardinagem-real.webp',
+  facilitiesReal: '/images/servicos/facilities/facilities-real.webp',
+  limpezaReal: '/images/servicos/limpeza/limpeza.jpg',
+  jardinagemReal: '/images/servicos/jardinagem/jardinagem-real.webp',
   maoDeObraReal:
     '/images/servicos/mao-de-obra-temporaria/mao-de-obra-temporaria.jpg',
-  terceirizacaoReal: '/images/servicos/terceirizacao-real.webp',
+  terceirizacaoReal: '/images/servicos/terceirizacao/terceirizacao-real.webp',
   servicosReal: '/images/hero/servicos-hero.webp',
-  zeladoriaReal: '/images/servicos/zeladoria-real.png',
-  faxinaReal: '/images/servicos/faxina.webp',
-  limpezaPesadaReal: '/images/servicos/limpeza-pesada.webp',
-  limpezaFachadaReal: '/images/servicos/limpeza-de-fachada.webp',
-  limpezaVidrosReal: '/images/servicos/limpeza-de-vidros.webp',
-  limpezaPreMudancaReal: '/images/servicos/limpeza-pre-mudanca.webp',
-  limpezaPosMudancaReal: '/images/servicos/limpeza-pos-mudanca.webp',
-  limpezaPosObraReal: '/images/servicos/limpeza-pos-obra.webp',
+  zeladoriaReal: '/images/servicos/zeladoria/zeladoria.jpg',
+  faxinaReal: '/images/servicos/faxina-diarista/faxina.webp',
+  limpezaPesadaReal: '/images/servicos/limpeza-pesada/limpeza-pesada.webp',
+  limpezaFachadaReal:
+    '/images/servicos/limpeza-de-fachada/limpeza-de-fachada.webp',
+  limpezaVidrosReal:
+    '/images/servicos/limpeza-de-vidros/limpeza-de-vidros.webp',
+  limpezaPreMudancaReal:
+    '/images/servicos/limpeza-pre-mudanca/limpeza-pre-mudanca.webp',
+  limpezaPosMudancaReal:
+    '/images/servicos/limpeza-pos-mudanca/limpeza-pos-mudanca.webp',
+  limpezaPosObraReal: '/images/servicos/limpeza-pos-obra/limpeza-pos-obra.webp',
   limpezaDeManutencao: '/images/servicos/limpeza-de-manutencao.webp',
   trabalhoTemporizadoReal: '/images/servicos/trabalho-terceirizado.png',
   trabalhoFreeLanceReal: '/images/servicos/trabalho-freelance.png',
@@ -44,11 +48,12 @@ export const SERVICE_IMAGES = {
   maoDeObraEfetivaReal:
     '/images/servicos/mao-de-obra-efetiva/mao-de-obra-efetiva.jpg',
   bancoTalentoRealJpg: '/images/servicos/banco-talento.jfif',
-  terceirizacaoRealJpg: '/images/servicos/terceirizacao-real.webp',
-  zeladoriaRealJpg: '/images/servicos/zeladoria-real.png',
-  limpezaRealJpg: '/images/servicos/limpeza-real.webp',
-  limpezaAntes: '/images/servicos/limpeza-real.webp',
-  portariaReal: '/images/servicos/portaria.svg',
+  terceirizacaoRealJpg:
+    '/images/servicos/terceirizacao/terceirizacao-real.webp',
+  zeladoriaRealJpg: '/images/servicos/zeladoria/zeladoria.jpg',
+  limpezaRealJpg: '/images/servicos/limpeza/limpeza.jpg',
+  limpezaAntes: '/images/servicos/limpeza/limpeza.jpg',
+  portariaReal: '/images/servicos/portaria/recepcao-e-portaria.jpg',
 } as const;
 
 export const CANDIDATE_IMAGES = {
