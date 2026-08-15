@@ -33,6 +33,22 @@ export const SERVICE_IMAGES = {
   hunting: '/images/servicos/hunting.svg',
   segurancaPatrimonial: '/images/servicos/controle-acesso.jfif',
   processoRh: '/images/servicos/solucao-rh.jfif',
+  avaliacaoPerfilReal: '/images/servicos/avaliacao-perfil/avaliacao-perfil.jpg',
+  huntingReal: '/images/servicos/hunting/executive-search.jpg',
+  controleAcessoReal: '/images/servicos/controle-acesso/controle-de-acesso.jpg',
+  segurancaReal: '/images/servicos/seguranca-patrimonial/seguranca.jpg',
+  processoRhReal: '/images/servicos/processo-de-rh/processo-de-rh.jpg',
+  maoDeObraTemporariaReal:
+    '/images/servicos/mao-de-obra-temporaria/mao-de-obra-temporaria.jpg',
+  maoDeObraEfetivaReal:
+    '/images/servicos/mao-de-obra-efetiva/mao-de-obra-efetiva.jpg',
+  bancoTalentoRealJpg:
+    '/images/servicos/banco-de-talentos/banco-de-talentos.jpg',
+  terceirizacaoRealJpg: '/images/servicos/terceirizacao/terceirizacao.jpg',
+  zeladoriaRealJpg: '/images/servicos/zeladoria/zeladoria.jpg',
+  limpezaRealJpg: '/images/servicos/limpeza/limpeza.jpg',
+  limpezaAntes: '/images/servicos/limpeza/limpezaantes.jpg',
+  portariaReal: '/images/servicos/portaria/recepcao-e-portaria.jpg',
 } as const;
 
 export const CANDIDATE_IMAGES = {
