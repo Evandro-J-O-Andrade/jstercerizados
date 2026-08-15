@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" fill="none">
+  <line x1="0" y1="200" x2="1200" y2="200" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.15"/>
+  <line x1="0" y1="400" x2="1200" y2="400" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.1"/>
+  <line x1="0" y1="600" x2="1200" y2="600" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.08"/>
+  <line x1="300" y1="0" x2="300" y2="800" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.08"/>
+  <line x1="600" y1="0" x2="600" y2="800" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.1"/>
+  <line x1="900" y1="0" x2="900" y2="800" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.08"/>
+</svg>

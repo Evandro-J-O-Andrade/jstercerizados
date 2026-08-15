@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+  <style>
+    .bg{fill:hsl(215,35%,12%)}
+    .gold{fill:hsl(43,74%,40%)}
+    .text{fill:hsl(0,0%,97%)}
+  </style>
+  <rect x="0" y="0" width="48" height="48" rx="10" class="bg" stroke="hsl(43,74%,40%)" stroke-width="1"/>
+  <rect x="12" y="10" width="24" height="28" rx="4" class="gold"/>
+  <text x="24" y="29" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="22" font-weight="800" class="text" dy="0.35">J</text>
+  <text x="24" y="29" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="22" font-weight="800" class="text" dy="0.35">S</text>
+</svg>

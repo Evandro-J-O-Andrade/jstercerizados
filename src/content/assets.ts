@@ -10,7 +10,7 @@ export const SERVICE_IMAGES = {
   terceirizacao: '/images/services/terceirizacao-real.webp',
   controleAcesso: '/images/services/controle-acesso.jfif',
   solucaoRh: '/images/services/solucao-rh.jfif',
-  timeRh: '/images/services/time-rh.jfif',
+  timeRh: '/images/services/solucao-rh.jfif',
   bancoTalentoReal: '/images/services/banco-talento.jfif',
   facilitiesReal: '/images/services/facilities-real.webp',
   limpezaReal: '/images/services/limpeza-real.webp',

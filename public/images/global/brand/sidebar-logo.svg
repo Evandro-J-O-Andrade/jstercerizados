@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 220 48" xmlns="http://www.w3.org/2000/svg" width="220" height="48">
+  <style>
+    .bg{fill:hsl(215,35%,12%)}
+    .border{stroke:hsl(43,74%,40%)}
+    .gold{fill:hsl(43,74%,40%)}
+    .text{fill:hsl(0,0%,97%)}
+    .text-dim{fill:hsl(0,0%,97%)}
+  </style>
+  <rect x="0" y="0" width="48" height="48" rx="10" class="bg" stroke="hsl(43,74%,40%)" stroke-width="1"/>
+  <rect x="4" y="4" width="40" height="40" rx="8" fill="none"/>
+  <rect x="12" y="10" width="24" height="28" rx="4" class="gold"/>
+  <path d="M16 14h16v4H16z M16 30h16v4H16z M20 36h8v4h-8z"/>
+  <text x="17" y="29" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="22" font-weight="800" class="text" dy="0.35">J</text>
+  <text x="32" y="29" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="22" font-weight="800" class="text" dy="0.35">S</text>
+  <text x="68" y="19" font-family="Inter, -apple-system, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5" class="text-dim">JS</text>
+  <text x="68" y="37" font-family="Inter, -apple-system, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5" class="text-dim">Empregos</text>
+</svg>

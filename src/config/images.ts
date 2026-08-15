@@ -1,18 +1,18 @@
 export const IMAGES = {
   logo: {
-    light: '/images/brand/logo.svg',
-    dark: '/images/brand/logo.svg',
-    sidebar: '/images/logos/sidebar-logo.svg',
-    sidebarIcon: '/images/logos/sidebar-icon.svg',
-    favicon: '/images/favicons/favicon.svg',
+    light: '/images/global/brand/logo.svg',
+    dark: '/images/global/brand/logo.svg',
+    sidebar: '/images/global/brand/sidebar-logo.svg',
+    sidebarIcon: '/images/global/brand/sidebar-icon.svg',
+    favicon: '/images/global/favicon/favicon.svg',
   },
   hero: {
     background: '/images/hero/hero-profissional.svg',
     security: '/images/hero/hero-security.svg',
     overlay: '/images/hero/hero-overlay.svg',
-    watermark: '/images/brand/watermark-logo.svg',
-    grid: '/images/backgrounds/hero-grid.svg',
-    lines: '/images/backgrounds/hero-lines.svg',
+    watermark: '/images/global/brand/watermark-logo.svg',
+    grid: '/images/global/backgrounds/hero-grid.svg',
+    lines: '/images/global/backgrounds/hero-lines.svg',
     cardheros: '/images/hero/home/cardheros.png',
     home: {
       slides: [
@@ -101,11 +101,11 @@ export const IMAGES = {
     hero: '/images/trabalhe-conosco/trabalhe-conosco.webp',
   },
   backgrounds: {
-    hero: '/images/backgrounds/waves.svg',
-    pattern: '/images/backgrounds/pattern.svg',
-    texture: '/images/backgrounds/grid.svg',
-    heroGrid: '/images/backgrounds/hero-grid.svg',
-    heroLines: '/images/backgrounds/hero-lines.svg',
+    hero: '/images/global/backgrounds/waves.svg',
+    pattern: '/images/global/backgrounds/pattern.svg',
+    texture: '/images/global/backgrounds/grid.svg',
+    heroGrid: '/images/global/backgrounds/hero-grid.svg',
+    heroLines: '/images/global/backgrounds/hero-lines.svg',
   },
 } as const;
 

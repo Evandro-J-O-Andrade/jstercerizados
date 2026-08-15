@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050914" />
+      <stop offset="100%" stop-color="#0a0f23" />
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#heroGrad)" />
+  <path
+    d="M0 0 L1920 0 C1920 360 1560 540 1080 540 C600 540 0 360 0 0 Z"
+    fill="hsl(43,74%,40%)"
+    opacity="0.12"
+  />
+  <path
+    d="M0 1080 L1920 1080 C1920 720 1560 540 1080 540 C600 540 0 720 0 1080 Z"
+    fill="hsl(43,74%,40%)"
+    opacity="0.08"
+  />
+  <g transform="translate(960 540)" text-anchor="middle">
+    <rect x="-400" y="-80" width="800" height="160" rx="24" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+    <text x="0" y="-10" fill="rgba(255,255,255,0.3)" font-family="system-ui" font-size="36" font-weight="500">SUA IMAGEM AQUI</text>
+    <text x="0" y="22" fill="rgba(180,180,180,0.25)" font-family="system-ui" font-size="20">1920 × 1080 px · Formato recomendado</text>
+    <text x="0" y="52" fill="rgba(139,139,255,0.35)" font-family="system-ui" font-size="18">Envie uma foto em alta resolução para substituir este placeholder</text>
+  </g>
+  <g transform="translate(960 960)" text-anchor="middle">
+    <text x="0" y="0" fill="rgba(180,180,180,0.15)" font-family="system-ui" font-size="14">JS Empregos — Design System Placeholder</text>
+  </g>
+</svg>

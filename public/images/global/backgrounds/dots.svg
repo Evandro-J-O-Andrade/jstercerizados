@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <circle cx="100" cy="100" r="80" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.1"/>
+  <circle cx="100" cy="100" r="60" stroke="hsl(43,74%,40%)" stroke-width="0.5" opacity="0.08"/>
+  <circle cx="100" cy="100" r="40" stroke="hsl(43,74%,40%)" stroke-width="0.5" opacity="0.06"/>
+  <circle cx="100" cy="100" r="20" stroke="hsl(43,74%,40%)" stroke-width="0.5" opacity="0.04"/>
+</svg>

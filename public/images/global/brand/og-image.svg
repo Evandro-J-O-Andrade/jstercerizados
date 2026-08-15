@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="og" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(215,35%,10%)"/>
+      <stop offset="50%" stop-color="hsl(215,30%,20%)"/>
+      <stop offset="100%" stop-color="hsl(215,25%,30%)"/>
+    </linearGradient>
+    <linearGradient id="og2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="hsl(43,74%,40%)"/>
+      <stop offset="100%" stop-color="hsl(43,70%,33%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#og)"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#grid)" opacity="0.05"/>
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(43,74%,40%)" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <circle cx="100" cy="100" r="200" fill="hsl(43,74%,40%)" opacity="0.05"/>
+  <circle cx="1100" cy="530" r="300" fill="hsl(43,74%,40%)" opacity="0.04"/>
+  <rect x="80" y="80" width="1040" height="470" rx="16" fill="hsl(215,33%,20%)" opacity="0.4"/>
+  <path d="M600 80 L600 200 M300 80 L300 200 M900 80 L900 200" stroke="hsl(43,74%,40%)" stroke-width="1" opacity="0.15"/>
+  <rect x="100" y="100" width="1000" height="120" rx="12" fill="hsl(43,74%,40%)" opacity="0.1"/>
+  <text x="600" y="170" text-anchor="middle" fill="hsl(43,74%,40%)" font-size="48" font-weight="800" font-family="Inter, sans-serif">JSEmpregos</text>
+  <text x="600" y="220" text-anchor="middle" fill="hsl(0,0%,97%)" font-size="24" font-weight="400" font-family="Inter, sans-serif">Plataforma SaaS para Gestão de Terceirização</text>
+  <rect x="100" y="280" width="300" height="60" rx="8" fill="hsl(43,74%,40%)" opacity="0.15"/>
+  <text x="250" y="315" text-anchor="middle" fill="hsl(43,74%,40%)" font-size="16" font-weight="600" font-family="Inter, sans-serif">Segurança Patrimonial</text>
+  <rect x="450" y="280" width="300" height="60" rx="8" fill="hsl(43,74%,40%)" opacity="0.15"/>
+  <text x="600" y="315" text-anchor="middle" fill="hsl(43,74%,40%)" font-size="16" font-weight="600" font-family="Inter, sans-serif">Portaria &amp; Acesso</text>
+  <rect x="800" y="280" width="300" height="60" rx="8" fill="hsl(43,74%,40%)" opacity="0.15"/>
+  <text x="950" y="315" text-anchor="middle" fill="hsl(43,74%,40%)" font-size="16" font-weight="600" font-family="Inter, sans-serif">Limpeza &amp; Facilities</text>
+  <rect x="100" y="380" width="250" height="50" rx="8" fill="hsl(215,33%,20%)" opacity="0.6"/>
+  <text x="225" y="410" text-anchor="middle" fill="hsl(0,0%,97%)" font-size="14" font-family="Inter, sans-serif">15+ Anos de Experiência</text>
+  <rect x="380" y="380" width="250" height="50" rx="8" fill="hsl(215,33%,20%)" opacity="0.6"/>
+  <text x="505" y="410" text-anchor="middle" fill="hsl(0,0%,97%)" font-size="14" font-family="Inter, sans-serif">500+ Profissionais</text>
+  <rect x="660" y="380" width="250" height="50" rx="8" fill="hsl(215,33%,20%)" opacity="0.6"/>
+  <text x="785" y="410" text-anchor="middle" fill="hsl(0,0%,97%)" font-size="14" font-family="Inter, sans-serif">200+ Clientes</text>
+  <rect x="940" y="380" width="250" height="50" rx="8" fill="hsl(215,33%,20%)" opacity="0.6"/>
+  <text x="1065" y="410" text-anchor="middle" fill="hsl(0,0%,97%)" font-size="14" font-family="Inter, sans-serif">50+ Cidades</text>
+  <line x1="600" y1="470" x2="600" y2="530" stroke="hsl(43,74%,40%)" stroke-width="2" opacity="0.3"/>
+  <text x="600" y="560" text-anchor="middle" fill="hsl(43,74%,40%)" font-size="18" font-weight="700" font-family="Inter, sans-serif">Solicite um Orçamento Gratuito</text>
+  <text x="600" y="590" text-anchor="middle" fill="hsl(0,0%,60%)" font-size="14" font-family="Inter, sans-serif">WhatsApp: (11) 91066-9810</text>
+</svg>
