@@ -71,7 +71,9 @@ export function AccessibilityWidget({
     if (typeof window === 'undefined') return DEFAULT_STATE;
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? { ...DEFAULT_STATE, ...JSON.parse(stored) } : DEFAULT_STATE;
+      return stored
+        ? { ...DEFAULT_STATE, ...JSON.parse(stored) }
+        : DEFAULT_STATE;
     } catch {
       return DEFAULT_STATE;
     }
@@ -220,8 +222,10 @@ export function AccessibilityWidget({
   const accessibilityPanelRef = useFocusTrap(isOpen);
 
   const handleWhatsApp = () => {
-    const message = encodeURIComponent(WHATSAPP_MESSAGES.whatsappButton);
-    window.open(getWhatsAppUrl(COMPANY.whatsapp, message), '_blank');
+    window.open(
+      getWhatsAppUrl(COMPANY.whatsapp, WHATSAPP_MESSAGES.whatsappButton),
+      '_blank',
+    );
   };
 
   return (
@@ -466,9 +470,7 @@ export function AccessibilityWidget({
                     >
                       <span
                         className={`bg-background inline-block h-4 w-4 rounded-full transition-transform ${
-                          settings[item.key]
-                            ? 'translate-x-6'
-                            : 'translate-x-1'
+                          settings[item.key] ? 'translate-x-6' : 'translate-x-1'
                         }`}
                       />
                     </button>

@@ -16,6 +16,7 @@ import {
   sanitizePhone,
   sanitizeTextarea,
 } from '@/utils/sanitize';
+import { buildServiceRequestMessage } from '@/utils/message-builder';
 
 type ServiceRequestFormProps = {
   serviceSlug?: string;
@@ -102,18 +103,18 @@ export function ServiceRequestForm({
   }, [serviceSlug, reset]);
 
   const onSubmit = async (data: ServiceRequestFormData): Promise<void> => {
-    const message = encodeURIComponent(
-      `*Nova solicitação de serviço*\n\n` +
-        `*Serviço:* ${serviceName || sanitizeText(data.service) || 'Não informado'}\n` +
-        `*Nome:* ${sanitizeName(data.name)}\n` +
-        `*Empresa:* ${sanitizeText(data.company || '') || '-'}\n` +
-        `*E-mail:* ${sanitizeEmail(data.email)}\n` +
-        `*Telefone:* ${sanitizePhone(data.phone)}\n` +
-        `*Cidade:* ${sanitizeText(data.city)}\n` +
-        `*Ambiente:* ${sanitizeText(data.environment || '') || '-'}\n` +
-        `*Melhor horário:* ${sanitizeText(data.bestTime || '') || '-'}\n` +
-        `*Mensagem:* ${sanitizeTextarea(data.message || '') || '-'}`,
-    );
+    const message = buildServiceRequestMessage({
+      serviceName,
+      serviceSlug: data.service,
+      name: sanitizeName(data.name),
+      company: sanitizeText(data.company || ''),
+      email: sanitizeEmail(data.email),
+      phone: sanitizePhone(data.phone),
+      city: sanitizeText(data.city),
+      environment: sanitizeText(data.environment || ''),
+      bestTime: sanitizeText(data.bestTime || ''),
+      message: sanitizeTextarea(data.message || ''),
+    });
 
     window.open(getWhatsAppUrl(COMPANY.whatsapp, message), '_blank');
 

@@ -16,6 +16,7 @@ import {
   sanitizePhone,
   sanitizeTextarea,
 } from '@/utils/sanitize';
+import { buildJobApplicationMessage } from '@/utils/message-builder';
 
 type JobApplicationFormProps = {
   jobTitle?: string;
@@ -84,19 +85,18 @@ export function JobApplicationForm({
   const [success, setSuccess] = useState(false);
 
   const onSubmit = async (data: JobApplicationFormData): Promise<void> => {
-    const message = encodeURIComponent(
-      `*Nova candidatura*\n\n` +
-        `*Vaga:* ${jobTitle || 'Não informada'}\n` +
-        `*ID da vaga:* ${vagaId || '-'}\n` +
-        `*Slug:* ${jobSlug || '-'}\n` +
-        `*Nome:* ${sanitizeName(data.name)}\n` +
-        `*E-mail:* ${sanitizeEmail(data.email)}\n` +
-        `*Telefone:* ${sanitizePhone(data.phone)}\n` +
-        `*Cidade:* ${sanitizeText(data.city)}\n` +
-        `*Tipo de contrato:* ${sanitizeText(data.contract || '') || '-'}\n` +
-        `*Experiência:* ${sanitizeTextarea(data.experience || '') || '-'}\n` +
-        `*Mensagem:* ${sanitizeTextarea(data.message || '') || '-'}`,
-    );
+    const message = buildJobApplicationMessage({
+      jobTitle,
+      vagaId,
+      jobSlug,
+      name: sanitizeName(data.name),
+      email: sanitizeEmail(data.email),
+      phone: sanitizePhone(data.phone),
+      city: sanitizeText(data.city),
+      contract: sanitizeText(data.contract || ''),
+      experience: sanitizeTextarea(data.experience || ''),
+      message: sanitizeTextarea(data.message || ''),
+    });
 
     window.open(getWhatsAppUrl(COMPANY.whatsapp, message), '_blank');
 
