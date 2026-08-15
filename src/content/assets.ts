@@ -41,9 +41,9 @@ export const CANDIDATE_IMAGES = {
 } as const;
 
 export const FALLBACK_IMAGES = {
-  servicos: '/images/fallbacks/servicos.png',
+  servicos: '/images/servicos/fallbacks/servicos.png',
   vagas: '/images/fallbacks/vagas.png',
-  contato: '/images/fallbacks/contato.png',
+  contato: '/images/contato/fallbacks/contato.png',
 } as const;
 
 export const HERO_ASSETS = {
