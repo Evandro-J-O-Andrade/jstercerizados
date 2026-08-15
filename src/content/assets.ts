@@ -18,7 +18,7 @@ export const SERVICE_IMAGES = {
   maoDeObraReal: '/images/services/mao-de-obra-real.webp',
   terceirizacaoReal: '/images/services/terceirizacao-real.webp',
   servicosReal: '/images/hero/servicos-hero.webp',
-  zeladoriaReal: '/images/services/limpeza-de-manutencao.webp',
+  zeladoriaReal: '/images/services/zeladoria-real.png',
   faxinaReal: '/images/services/faxina.webp',
   limpezaPesadaReal: '/images/services/limpeza-pesada.webp',
   limpezaFachadaReal: '/images/services/limpeza-de-fachada.webp',
@@ -32,6 +32,7 @@ export const SERVICE_IMAGES = {
   avaliacaoPerfil: '/images/services/avaliacao-perfil.svg',
   hunting: '/images/services/hunting.svg',
   segurancaPatrimonial: '/images/services/controle-acesso.jfif',
+  processoRh: '/images/services/solucao-rh.jfif',
 } as const;
 
 export const CANDIDATE_IMAGES = {

@@ -140,8 +140,7 @@ export const mockServices: Service[] = [
       'Relatórios de eficiência',
       'Melhoria contínua',
     ],
-    image:
-      SERVICE_IMAGES.avaliacaoPerfil ?? '/images/services/avaliacao-perfil.svg',
+    image: SERVICE_IMAGES.processoRh ?? '/images/services/solucao-rh.jfif',
     icon: 'briefcase',
     category: 'rh',
   },
