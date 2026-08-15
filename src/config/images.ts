@@ -67,7 +67,7 @@ export const IMAGES = {
     recrutamento: '/images/servicos/recrutamento-alt.jfif',
     'assessoria-rh': '/images/servicos/assessoria-rh.png',
     'solucao-rh': '/images/servicos/solucao-rh.jfif',
-    'time-rh': '/images/team/time-rh.jfif',
+    'time-rh': '/images/sobre/equipe/time-rh.jfif',
     facilitiesReal: '/images/servicos/facilities-real.webp',
     limpezaReal: '/images/servicos/limpeza-real.webp',
     jardinagemReal: '/images/servicos/jardinagem-real.webp',

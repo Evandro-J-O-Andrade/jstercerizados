@@ -4,7 +4,7 @@ export const TESTIMONIALS_DEMO = [
     name: 'Roberta Santos',
     role: 'Analista de Recrutamento',
     company: 'Tech Solutions Ltda',
-    image: '/images/team/carlos-silva.svg',
+    image: '/images/sobre/equipe/carlos-silva.svg',
     quote:
       'A J&S Empregos LTDA entregou 3 profissionais qualificados em uma semana. Nossa equipe cresceu 40% mais rápido.',
     rating: 5,
@@ -14,7 +14,7 @@ export const TESTIMONIALS_DEMO = [
     name: 'Marcos Oliveira',
     role: 'Candidato colocado',
     company: 'J&S Empregos LTDA',
-    image: '/images/team/ana-costa.svg',
+    image: '/images/sobre/equipe/ana-costa.svg',
     quote:
       'Cadastrei meu currículo e fui contatado em 3 dias. Hoje trabalho na empresa dos meus sonhos.',
     rating: 5,
@@ -24,7 +24,7 @@ export const TESTIMONIALS_DEMO = [
     name: 'Fernanda Lima',
     role: 'Coordenadora de RH',
     company: 'Grupo Alpha',
-    image: '/images/team/marcos-lima.svg',
+    image: '/images/sobre/equipe/marcos-lima.svg',
     quote:
       'A J&S nos entregou profissionais qualificados em poucos dias. Nossa equipe cresceu 40% mais rápido.',
     rating: 5,
@@ -34,7 +34,7 @@ export const TESTIMONIALS_DEMO = [
     name: 'Juliano Costa',
     role: 'Auxiliar de Produção',
     company: 'Conectada ao processo',
-    image: '/images/team/patricia-rocha.svg',
+    image: '/images/sobre/equipe/patricia-rocha.svg',
     quote:
       'Processo seletivo simples e ágil. Fui bem atendido pelo WhatsApp e contratado rapidinho.',
     rating: 5,
