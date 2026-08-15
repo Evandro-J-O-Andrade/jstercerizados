@@ -84,15 +84,6 @@ function normalizeErrorDetail(input: unknown): string {
 }
 
 function categorizeError(input: unknown): ErrorCategory {
-  if (isValidationError(input)) {
-    return 'validation';
-  }
-  if (isNetworkError(input)) {
-    return 'network';
-  }
-  if (isTimeoutError(input)) {
-    return 'timeout';
-  }
   if (isAuthError(input)) {
     return 'auth';
   }
@@ -104,6 +95,15 @@ function categorizeError(input: unknown): ErrorCategory {
   }
   if (isRateLimitError(input)) {
     return 'rate_limit';
+  }
+  if (isValidationError(input)) {
+    return 'validation';
+  }
+  if (isNetworkError(input)) {
+    return 'network';
+  }
+  if (isTimeoutError(input)) {
+    return 'timeout';
   }
   if (isUpstreamError(input)) {
     return 'upstream';

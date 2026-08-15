@@ -4,6 +4,7 @@ import { PageLoader } from '@/components/ui/PageLoader';
 import { Button } from '@/components/ui/Button';
 import { Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { normalizeError } from '@/lib/error-normalizer';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -43,7 +44,9 @@ export function ProtectedRoute({
           <h2 className="text-foreground mb-4 text-2xl font-bold">
             Autenticação indisponível
           </h2>
-          <p className="text-muted-foreground mb-6">{authError}</p>
+          <p className="text-muted-foreground mb-6">
+            {normalizeError(authError).userMessage}
+          </p>
           <Button
             variant="primary"
             size="lg"

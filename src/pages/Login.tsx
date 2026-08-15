@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config/images';
 import { cn } from '@/utils';
+import { normalizeError } from '@/lib/error-normalizer';
 
 const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -64,7 +65,7 @@ export default function Login() {
       const result = await login(data.email, data.password);
 
       if (result.error) {
-        setError(result.error);
+        setError(normalizeError(result.error).userMessage);
       }
     } finally {
       setIsSubmitting(false);
@@ -73,7 +74,7 @@ export default function Login() {
 
   useEffect(() => {
     if (authError) {
-      setError(authError);
+      setError(normalizeError(authError).userMessage);
     }
   }, [authError]);
 

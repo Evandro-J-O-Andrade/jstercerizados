@@ -1,3 +1,5 @@
+import { normalizeError } from './error-normalizer';
+
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant' | 'developer';
   content: string;
@@ -26,8 +28,11 @@ export async function sendChatRequest(
     const data = (await response.json()) as ChatResponse;
 
     if (!response.ok) {
-      console.error('Chat API error:', response.status, data.error);
-      return { ok: false, error: data.error ?? 'api_error' };
+      const normalized = normalizeError({
+        status: response.status,
+        error: data.error,
+      });
+      return { ok: false, error: normalized.userMessage };
     }
 
     if (!data.reply) {
@@ -36,7 +41,7 @@ export async function sendChatRequest(
 
     return { ok: true, reply: data.reply };
   } catch (error) {
-    console.error('Error sending chat request:', error);
-    return { ok: false, error: 'network_error' };
+    const normalized = normalizeError(error);
+    return { ok: false, error: normalized.userMessage };
   }
 }

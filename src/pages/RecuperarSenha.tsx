@@ -9,6 +9,7 @@ import { SEO } from '@/components/ui/SEO';
 import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config/images';
+import { normalizeError } from '@/lib/error-normalizer';
 
 export default function RecuperarSenha() {
   const [email, setEmail] = useState('');
@@ -26,12 +27,15 @@ export default function RecuperarSenha() {
     try {
       const result = await resetPassword(email);
       if (result.error) {
-        setError(result.error);
+        setError(normalizeError(result.error).userMessage);
       } else {
         setSuccess(true);
       }
     } catch {
-      setError('Erro ao enviar e-mail de recuperação.');
+      setError(
+        normalizeError(new Error('Erro ao enviar e-mail de recuperação.'))
+          .userMessage,
+      );
     } finally {
       setIsSubmitting(false);
     }

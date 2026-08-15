@@ -1,3 +1,5 @@
+import { normalizeError } from './error-normalizer';
+
 export async function sendToN8n(payload: Record<string, unknown>) {
   try {
     const response = await fetch('/api/handoff', {
@@ -22,7 +24,7 @@ export async function sendToN8n(payload: Record<string, unknown>) {
 
     return { ok: true };
   } catch (error) {
-    console.error('Error sending to n8n:', error);
-    return { ok: false, reason: 'network_error' as const };
+    const normalized = normalizeError(error);
+    return { ok: false, reason: normalized.userMessage };
   }
 }

@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { getSupabaseClient } from '@/lib/supabase';
 import type { User, Session } from '@supabase/supabase-js';
+import { normalizeError } from '@/lib/error-normalizer';
 
 interface Profile {
   id: string;
@@ -83,7 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!supabase) {
           if (isMounted) {
             setAuthError(
-              'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.',
+              normalizeError(
+                new Error(
+                  'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.',
+                ),
+              ).userMessage,
             );
             setIsLoading(false);
           }
@@ -166,8 +171,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = getSupabaseClient();
     if (!supabase) {
       return {
-        error:
-          'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+        error: normalizeError(
+          new Error(
+            'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+          ),
+        ).userMessage,
       };
     }
 
@@ -178,7 +186,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
-        return { error: error.message };
+        return { error: normalizeError(error).userMessage };
       }
 
       if (data.user) {
@@ -188,7 +196,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return {};
     } catch (error) {
       return {
-        error: error instanceof Error ? error.message : 'Erro ao fazer login',
+        error: normalizeError(error).userMessage,
       };
     }
   };
@@ -217,8 +225,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = getSupabaseClient();
     if (!supabase) {
       return {
-        error:
-          'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+        error: normalizeError(
+          new Error(
+            'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+          ),
+        ).userMessage,
       };
     }
 
@@ -229,7 +240,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
-        return { error: error.message };
+        return { error: normalizeError(error).userMessage };
       }
 
       if (data.user) {
@@ -273,7 +284,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return {};
     } catch (error) {
       return {
-        error: error instanceof Error ? error.message : 'Erro ao criar conta',
+        error: normalizeError(error).userMessage,
       };
     }
   };
@@ -282,8 +293,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = getSupabaseClient();
     if (!supabase) {
       return {
-        error:
-          'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+        error: normalizeError(
+          new Error(
+            'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+          ),
+        ).userMessage,
       };
     }
 
@@ -293,16 +307,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
-        return { error: error.message };
+        return { error: normalizeError(error).userMessage };
       }
 
       return {};
     } catch (error) {
       return {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Erro ao solicitar recuperação de senha',
+        error: normalizeError(error).userMessage,
       };
     }
   };
@@ -313,8 +324,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = getSupabaseClient();
     if (!supabase) {
       return {
-        error:
-          'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+        error: normalizeError(
+          new Error(
+            'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+          ),
+        ).userMessage,
       };
     }
 
@@ -329,15 +343,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('id', user.id);
 
       if (error) {
-        return { error: error.message };
+        return { error: normalizeError(error).userMessage };
       }
 
       setProfile((prev) => (prev ? { ...prev, ...data } : null));
       return {};
     } catch (error) {
       return {
-        error:
-          error instanceof Error ? error.message : 'Erro ao atualizar perfil',
+        error: normalizeError(error).userMessage,
       };
     }
   };

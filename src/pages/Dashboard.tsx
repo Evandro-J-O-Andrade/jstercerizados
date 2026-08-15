@@ -36,6 +36,7 @@ import { STATUS_COLORS, type StatusColorKey } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/utils';
+import { normalizeError } from '@/lib/error-normalizer';
 
 type Tab =
   | 'dashboard'
@@ -384,7 +385,9 @@ export default function Dashboard() {
     <div className="min-h-screen">
       {authError && (
         <div className="bg-warning/10 text-warning mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
-          <div className="rounded-xl p-4 text-sm">{authError}</div>
+          <div className="rounded-xl p-4 text-sm">
+            {normalizeError(authError).userMessage}
+          </div>
         </div>
       )}
       {/* Header */}

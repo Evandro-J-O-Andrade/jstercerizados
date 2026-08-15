@@ -12,6 +12,7 @@ import { SEO } from '@/components/ui/SEO';
 import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config/images';
+import { normalizeError } from '@/lib/error-normalizer';
 
 const candidateSchema = z
   .object({
@@ -53,12 +54,12 @@ export default function CandidateRegister() {
       });
 
       if (result.error) {
-        setError(result.error);
+        setError(normalizeError(result.error).userMessage);
       } else {
         navigate('/dashboard/candidato');
       }
     } catch (err) {
-      setError('Erro ao criar conta. Tente novamente.');
+      setError(normalizeError(err).userMessage);
     }
   };
 

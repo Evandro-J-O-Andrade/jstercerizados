@@ -38,6 +38,7 @@ import {
   sanitizePhone,
   sanitizeTextarea,
 } from '@/utils/sanitize';
+import { normalizeError } from '@/lib/error-normalizer';
 
 const SUPPORT_CARDS = [
   {
@@ -194,8 +195,8 @@ export default function Suporte() {
     try {
       await sendToN8n(payload);
       setSubmitted(true);
-    } catch {
-      setError('Erro ao enviar solicitação. Tente novamente.');
+    } catch (err) {
+      setError(normalizeError(err).userMessage);
     } finally {
       setIsSubmitting(false);
     }
