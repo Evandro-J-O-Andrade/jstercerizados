@@ -106,6 +106,7 @@ export interface Vaga {
   nivel?: 'ESTAGIO' | 'JUNIOR' | 'PLENO' | 'SENIOR' | 'MASTER' | 'LIDERANCA';
   salarioMin?: number;
   salarioMax?: number;
+  salarioTipo?: 'mensal' | 'hora';
   modalidade?: 'PRESENCIAL' | 'HIBRIDO' | 'REMOTO';
   beneficios?: string[];
   requisitos?: string;

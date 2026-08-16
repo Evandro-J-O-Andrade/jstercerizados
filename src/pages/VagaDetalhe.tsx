@@ -166,7 +166,8 @@ export default function VagaDetalhe() {
                   <DollarSign className="text-primary h-5 w-5" />
                   <span className="text-sm">
                     {formatCurrency(vaga.salarioMin)}
-                    {vaga.salarioMax
+                    {vaga.salarioTipo === 'hora' && ' / hora'}
+                    {vaga.salarioTipo !== 'hora' && vaga.salarioMax
                       ? ' – ' + formatCurrency(vaga.salarioMax)
                       : ''}
                   </span>
