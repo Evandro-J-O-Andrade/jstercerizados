@@ -14,14 +14,7 @@ import { Container } from '@/components/common/Container';
 import { submitCandidateApplication } from '@/services/candidates';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { cn } from '@/utils';
-import {
-  sanitizeText,
-  sanitizeName,
-  sanitizeEmail,
-  sanitizePhone,
-  sanitizeTextarea,
-  sanitizeFileName,
-} from '@/utils/sanitize';
+import { sanitizeFileName } from '@/utils/sanitize';
 
 const LGPD_CONSENT_VERSION = '1.0';
 
@@ -84,9 +77,7 @@ const candidateSchema = z.object({
   }),
 });
 
-type CandidateFormData = z.infer<typeof candidateSchema>;
-
-type CandidateFormData = z.infer<typeof candidateSchema>;
+export type CandidateFormData = z.infer<typeof candidateSchema>;
 
 export default function TrabalheConosco() {
   const [submitted, setSubmitted] = useState(false);
@@ -99,6 +90,7 @@ export default function TrabalheConosco() {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting: formIsSubmitting },
   } = useForm<CandidateFormData>({
     resolver: zodResolver(candidateSchema),
@@ -108,6 +100,14 @@ export default function TrabalheConosco() {
   });
 
   const isLoading = isSubmitting || formIsSubmitting;
+
+  const handlePositionChange = (value: string, checked: boolean) => {
+    setSelectedPositions((prev) => {
+      const next = checked ? [...prev, value] : prev.filter((v) => v !== value);
+      setValue('positions', next);
+      return next;
+    });
+  };
 
   const onSubmit = async (data: CandidateFormData): Promise<void> => {
     setSubmitError(null);
@@ -243,13 +243,9 @@ export default function TrabalheConosco() {
                         type="checkbox"
                         value={opt.value}
                         checked={selectedPositions.includes(opt.value)}
-                        onChange={(e) => {
-                          setSelectedPositions((prev) =>
-                            e.target.checked
-                              ? [...prev, opt.value]
-                              : prev.filter((v) => v !== opt.value),
-                          );
-                        }}
+                        onChange={(e) =>
+                          handlePositionChange(opt.value, e.target.checked)
+                        }
                         className="text-primary focus:ring-primary h-4 w-4 rounded"
                       />
                       <span className="text-muted-foreground text-sm font-medium">

@@ -62,9 +62,12 @@ export async function submitCandidateApplication(
     documentId = filePath;
   }
 
+  const tenantId = await getTenantId();
+
   const { data: candidate, error: candidateError } = await supabase
     .from('candidates')
     .insert({
+      tenant_id: tenantId,
       name: data.name.trim(),
       cpf: data.cpf?.trim() || null,
       rg: data.rg?.trim() || null,
@@ -88,6 +91,7 @@ export async function submitCandidateApplication(
 
   const { error: curriculumError } = await supabase.from('curricula').insert({
     candidate_id: candidate.id,
+    tenant_id: tenantId,
     objective: data.resume.trim(),
     availability: data.availability?.trim() || null,
     cv_storage_path: documentId || null,
@@ -102,12 +106,12 @@ export async function submitCandidateApplication(
     throw new Error(`Erro ao salvar currículo: ${curriculumError.message}`);
   }
 
-  if (documentId) {
+  if (documentId && selectedFile) {
     const { error: documentError } = await supabase
       .from('candidate_documents')
       .insert({
         candidate_id: candidate.id,
-        tenant_id: (await getTenantId()) ?? null,
+        tenant_id: tenantId,
         storage_path: documentId,
         file_name: selectedFile.name,
         mime_type: selectedFile.type,
@@ -122,7 +126,7 @@ export async function submitCandidateApplication(
 
   const { error: consentError } = await supabase.from('consents').insert({
     candidate_id: candidate.id,
-    tenant_id: (await getTenantId()) ?? null,
+    tenant_id: tenantId,
     purpose: 'banco_de_talentos',
     status: 'granted',
     version: consentVersion,
