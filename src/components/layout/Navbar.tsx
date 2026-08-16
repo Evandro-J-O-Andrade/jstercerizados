@@ -218,10 +218,10 @@ export function Navbar() {
           aria-haspopup="true"
           aria-controls={'dropdown-' + label}
         >
-          <span className="flex items-center gap-1.5">
-            <Icon className="h-4 w-4" />
+          <span className="flex items-center gap-1">
+            <Icon className="h-3.5 w-3.5" />
             {label}
-            <ChevronDown className="h-3.5 w-3.5" />
+            <ChevronDown className="h-3 w-3" />
           </span>
         </button>
         <AnimatePresence>
@@ -233,7 +233,7 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
               transition={{ duration: 0.2 }}
-              className="border-border bg-background/95 absolute top-full left-0 z-50 mt-2 min-w-[220px] rounded-xl border p-1 shadow-xl backdrop-blur-xl"
+              className="border-border bg-background/95 absolute top-full left-0 z-50 mt-2 min-w-[180px] rounded-xl border p-1 shadow-xl backdrop-blur-xl"
             >
               {items.map((item) => (
                 <Link
@@ -242,7 +242,7 @@ export function Navbar() {
                   role="menuitem"
                   onClick={() => setOpen(false)}
                   className={cn(
-                    'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors duration-200',
+                    'flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs transition-colors duration-200',
                     location.pathname === item.href
                       ? 'bg-primary/10 text-primary'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -283,83 +283,90 @@ export function Navbar() {
           </h1>
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex xl:gap-8">
-          {topNavLinks.map(({ label, href, icon: Icon }) => (
-            <Link
-              key={href}
-              to={href}
-              onClick={
-                href === '/'
-                  ? () => window.scrollTo({ top: 0, behavior: 'smooth' })
-                  : undefined
-              }
-              className={cn(
-                'flex items-center gap-1.5 text-sm font-medium transition-colors duration-200',
-                location.pathname === href
-                  ? 'text-primary'
-                  : 'text-muted-foreground hover:text-primary',
-              )}
+        <nav className="hidden items-center gap-4 lg:flex xl:gap-5">
+          <div className="flex items-center gap-4 xl:gap-5">
+            {topNavLinks.map(({ label, href }) => (
+              <Link
+                key={href}
+                to={href}
+                onClick={
+                  href === '/'
+                    ? () => window.scrollTo({ top: 0, behavior: 'smooth' })
+                    : undefined
+                }
+                className={cn(
+                  'text-sm font-medium transition-colors duration-200',
+                  location.pathname === href
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-primary',
+                )}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+          <div className="flex items-center gap-3 xl:gap-4">
+            <Dropdown
+              label="Empresas"
+              icon={Building2}
+              items={companiesSubmenu}
+            />
+            <Dropdown
+              label="Candidatos"
+              icon={Users}
+              items={candidatesSubmenu}
+            />
+            <Dropdown
+              label="Contato"
+              icon={MessageCircle}
+              items={contactSubmenu}
+            />
+            <Dropdown label="Entrar" icon={LogIn} items={loginSubmenu} />
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label="Alternar tema"
+              className="h-9 w-9"
             >
-              <Icon className="h-4 w-4" />
-              {label}
-            </Link>
-          ))}
-
-          <Dropdown
-            label="Empresas"
-            icon={Building2}
-            items={companiesSubmenu}
-          />
-          <Dropdown label="Candidatos" icon={Users} items={candidatesSubmenu} />
-          <Dropdown
-            label="Contato"
-            icon={MessageCircle}
-            items={contactSubmenu}
-          />
-          <Dropdown label="Entrar" icon={LogIn} items={loginSubmenu} />
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            aria-label="Alternar tema"
-            className="h-9 w-9"
-          >
-            {resolvedTheme === 'light' ? (
-              <Moon className="h-4 w-4" />
+              {resolvedTheme === 'light' ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              to="/trabalhe-conosco"
+              variant="outline"
+              size="sm"
+              className="h-9 px-3 text-xs font-medium"
+            >
+              Cadastrar Currículo
+            </Button>
+            {isAuthenticated ? (
+              <Link to="/dashboard">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="h-9 px-3 text-xs font-medium"
+                >
+                  Painel
+                </Button>
+              </Link>
             ) : (
-              <Sun className="h-4 w-4" />
+              <Link to="/empresas/divulgar-vaga">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="h-9 px-3 text-xs font-medium"
+                >
+                  Divulgar Vaga
+                </Button>
+              </Link>
             )}
-          </Button>
-          <Button
-            to="/trabalhe-conosco"
-            variant="outline"
-            size="sm"
-            className="h-9 px-3 text-xs font-medium"
-          >
-            Cadastrar Currículo
-          </Button>
-          {isAuthenticated ? (
-            <Link to="/dashboard">
-              <Button
-                variant="primary"
-                size="sm"
-                className="h-9 px-3 text-xs font-medium"
-              >
-                Painel
-              </Button>
-            </Link>
-          ) : (
-            <Link to="/empresas/divulgar-vaga">
-              <Button
-                variant="primary"
-                size="sm"
-                className="h-9 px-3 text-xs font-medium"
-              >
-                Divulgar Vaga
-              </Button>
-            </Link>
-          )}
+          </div>
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
