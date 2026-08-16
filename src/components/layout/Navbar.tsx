@@ -178,25 +178,6 @@ export function Navbar() {
     items: Array<{ label: string; href: string }>;
   }) {
     const [open, setOpen] = useState(false);
-    const buttonRef = useRef<HTMLButtonElement>(null);
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        setOpen((prev) => !prev);
-      } else if (e.key === 'Escape') {
-        setOpen(false);
-      } else if (e.key === 'ArrowDown' && open) {
-        e.preventDefault();
-        const firstLink = document.querySelector(
-          '[aria-labelledby="dropdown-' + label + '"] a',
-        );
-        if (firstLink instanceof HTMLElement) {
-          firstLink.focus();
-        }
-      }
-    };
-
     return (
       <div
         className="relative"
@@ -204,10 +185,8 @@ export function Navbar() {
         onMouseLeave={() => setOpen(false)}
       >
         <button
-          ref={buttonRef}
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          onKeyDown={handleKeyDown}
           className={cn(
             'text-sm font-medium transition-colors duration-200',
             items.some((item) => location.pathname === item.href)
@@ -216,33 +195,29 @@ export function Navbar() {
           )}
           aria-expanded={open}
           aria-haspopup="true"
-          aria-controls={'dropdown-' + label}
         >
-          <span className="flex items-center gap-1">
-            <Icon className="h-3.5 w-3.5" />
+          <span className="flex items-center gap-1.5">
+            <Icon className="h-4 w-4" />
             {label}
-            <ChevronDown className="h-3 w-3" />
+            <ChevronDown className="h-3.5 w-3.5" />
           </span>
         </button>
         <AnimatePresence>
           {open && (
             <motion.div
-              id={'dropdown-' + label}
-              role="menu"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
               transition={{ duration: 0.2 }}
-              className="border-border bg-background/95 absolute top-full left-0 z-50 mt-2 min-w-[180px] rounded-xl border p-1 shadow-xl backdrop-blur-xl"
+              className="border-border bg-background/95 absolute top-full left-0 z-50 mt-2 min-w-[220px] rounded-xl border p-1 shadow-xl backdrop-blur-xl"
             >
               {items.map((item) => (
                 <Link
                   key={`${item.label}-${item.href}`}
                   to={item.href}
-                  role="menuitem"
                   onClick={() => setOpen(false)}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs transition-colors duration-200',
+                    'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors duration-200',
                     location.pathname === item.href
                       ? 'bg-primary/10 text-primary'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -283,9 +258,9 @@ export function Navbar() {
           </h1>
         </Link>
 
-        <nav className="hidden items-center gap-4 lg:flex xl:gap-5">
-          <div className="flex items-center gap-4 xl:gap-5">
-            {topNavLinks.map(({ label, href }) => (
+        <nav className="hidden items-center gap-3 lg:flex xl:gap-4">
+          <div className="flex items-center gap-3 xl:gap-4">
+            {topNavLinks.map(({ label, href, icon: Icon }) => (
               <Link
                 key={href}
                 to={href}
@@ -295,12 +270,13 @@ export function Navbar() {
                     : undefined
                 }
                 className={cn(
-                  'text-sm font-medium transition-colors duration-200',
+                  'flex items-center gap-1.5 text-sm font-medium transition-colors duration-200',
                   location.pathname === href
                     ? 'text-primary'
                     : 'text-muted-foreground hover:text-primary',
                 )}
               >
+                <Icon className="h-4 w-4" />
                 {label}
               </Link>
             ))}

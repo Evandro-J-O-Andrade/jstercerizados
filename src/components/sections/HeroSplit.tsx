@@ -129,7 +129,7 @@ export function HeroSplit({
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
+      <div className="relative mx-auto grid w-full max-w-[1600px] grid-cols-1 gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
         <div className="flex flex-col justify-center">
           {slideEyebrow && (
             <motion.div
