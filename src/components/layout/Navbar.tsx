@@ -178,6 +178,25 @@ export function Navbar() {
     items: Array<{ label: string; href: string }>;
   }) {
     const [open, setOpen] = useState(false);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        setOpen((prev) => !prev);
+      } else if (e.key === 'Escape') {
+        setOpen(false);
+      } else if (e.key === 'ArrowDown' && open) {
+        e.preventDefault();
+        const firstLink = document.querySelector(
+          '[aria-labelledby="dropdown-' + label + '"] a',
+        );
+        if (firstLink instanceof HTMLElement) {
+          firstLink.focus();
+        }
+      }
+    };
+
     return (
       <div
         className="relative"
@@ -185,8 +204,10 @@ export function Navbar() {
         onMouseLeave={() => setOpen(false)}
       >
         <button
+          ref={buttonRef}
           type="button"
           onClick={() => setOpen((prev) => !prev)}
+          onKeyDown={handleKeyDown}
           className={cn(
             'text-sm font-medium transition-colors duration-200',
             items.some((item) => location.pathname === item.href)
@@ -195,6 +216,7 @@ export function Navbar() {
           )}
           aria-expanded={open}
           aria-haspopup="true"
+          aria-controls={'dropdown-' + label}
         >
           <span className="flex items-center gap-1.5">
             <Icon className="h-4 w-4" />
@@ -205,6 +227,8 @@ export function Navbar() {
         <AnimatePresence>
           {open && (
             <motion.div
+              id={'dropdown-' + label}
+              role="menu"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
@@ -215,6 +239,7 @@ export function Navbar() {
                 <Link
                   key={`${item.label}-${item.href}`}
                   to={item.href}
+                  role="menuitem"
                   onClick={() => setOpen(false)}
                   className={cn(
                     'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors duration-200',

@@ -292,11 +292,12 @@ export function ChatWidget({
                         <p>{message.content}</p>
                         {message.options && (
                           <div className="mt-3 space-y-2">
-                            {message.options.map((option) => (
+                            {message.options?.map((option) => (
                               <button
                                 key={option.value}
                                 onClick={() => handleOptionClick(option.value)}
                                 className="bg-background hover:bg-primary/10 flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs transition-colors"
+                                aria-label={option.label}
                               >
                                 <span>{option.label}</span>
                                 <ChevronRight className="text-muted-foreground h-3 w-3" />
@@ -340,6 +341,7 @@ export function ChatWidget({
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                       placeholder="Digite sua mensagem..."
+                      aria-label="Mensagem para assistente virtual"
                       className="bg-background border-border focus:border-primary flex-1 rounded-lg border px-3 py-2 text-sm outline-none"
                     />
                     <Button
