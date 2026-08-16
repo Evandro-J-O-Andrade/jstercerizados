@@ -139,16 +139,11 @@ function useReducedMotion() {
 function TimelineWebConnector() {
   return (
     <div
-      className="pointer-events-none relative hidden h-28 w-full lg:block"
+      className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 lg:block"
       aria-hidden="true"
     >
-      <div className="bg-border/60 absolute inset-x-0 top-0 h-full w-px" />
-      <div className="bg-primary/50 absolute top-1/2 left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full" />
-      <div className="border-primary/30 absolute top-1/2 left-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full border" />
-      <div className="border-border/40 absolute top-[18%] left-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full border" />
-      <div className="border-border/30 absolute top-[25%] left-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full border" />
-      <div className="border-border/40 absolute top-[82%] left-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full border" />
-      <div className="border-border/30 absolute top-[75%] left-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full border" />
+      <div className="from-primary/40 via-primary/20 to-primary/40 h-full w-full bg-gradient-to-b" />
+      <div className="bg-primary absolute top-1/2 left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-[0_0_12px_hsl(var(--primary)/0.6)]" />
     </div>
   );
 }
@@ -186,7 +181,7 @@ function CinematicChapter({
       ref={ref}
       className={`relative w-full ${index > 0 ? 'mt-12' : ''}`}
     >
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-10">
+      <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-10">
         <motion.div
           initial={imageHidden}
           animate={isInView ? { opacity: 1, x: 0, scale: 1 } : imageHidden}
@@ -260,6 +255,11 @@ function CinematicChapter({
           </div>
         </motion.div>
       </div>
+
+      <div className="pointer-events-none relative hidden h-24 w-full lg:block">
+        <div className="bg-primary/50 absolute inset-x-0 top-0 h-full w-px" />
+        <div className="bg-primary absolute top-1/2 left-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-[0_0_10px_hsl(var(--primary)/0.7)]" />
+      </div>
     </motion.section>
   );
 }
@@ -320,7 +320,7 @@ export default function Sobre() {
             <motion.div variants={staggerItem('left')}>
               <div className="bg-card shadow-glass border-border/40 relative overflow-hidden rounded-3xl border">
                 <SafeImage
-                  src={HERO_ASSETS.bannerjs}
+                  src="/images/sobre/about-team.webp"
                   fallbackSrc={IMAGES.hero.sobre.fallback}
                   alt={`Equipe ${COMPANY.tradingName}`}
                   className="h-full w-full object-cover opacity-80"

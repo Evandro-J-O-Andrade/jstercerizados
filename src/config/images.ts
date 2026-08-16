@@ -47,7 +47,7 @@ export const IMAGES = {
       fallback: '/images/home/sections/fallback.svg',
     },
     contato: {
-      src: '/images/hero/contato/hero.svg',
+      src: '/images/contato/contato.webp',
       fallback: '/images/home/sections/fallback.svg',
     },
     login: {
