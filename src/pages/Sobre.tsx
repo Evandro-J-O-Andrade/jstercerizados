@@ -320,7 +320,7 @@ export default function Sobre() {
             <motion.div variants={staggerItem('left')}>
               <div className="bg-card shadow-glass border-border/40 relative overflow-hidden rounded-3xl border">
                 <SafeImage
-                  src="/images/sobre/about-team.webp"
+                  src="/images/sobre/bannersobre.jpg"
                   fallbackSrc={IMAGES.hero.sobre.fallback}
                   alt={`Equipe ${COMPANY.tradingName}`}
                   className="h-full w-full object-cover opacity-80"

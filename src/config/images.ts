@@ -51,7 +51,7 @@ export const IMAGES = {
       fallback: '/images/home/sections/fallback.svg',
     },
     login: {
-      src: '/images/hero/login/hero.svg',
+      src: '/images/login/herologin.jpg',
       fallback: '/images/home/sections/fallback.svg',
     },
   },
