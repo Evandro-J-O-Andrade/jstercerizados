@@ -133,7 +133,7 @@ function App() {
               </Routes>
             </Suspense>
           </main>
-          <div className="lg:pb-0">
+          <div className="pb-56 lg:pb-0">
             <Footer
               onOpenAccessibility={() => setIsAccessibilityOpen(true)}
               onOpenChat={() => {
