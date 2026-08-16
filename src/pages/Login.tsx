@@ -147,9 +147,45 @@ export default function Login() {
       <SafeImage
         src={IMAGES.hero.login.src}
         fallbackSrc={IMAGES.hero.login.fallback}
-        className="absolute inset-0 h-full w-full"
+        className="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+        decoding="async"
       />
-      <div className="bg-background/85 absolute inset-0 backdrop-blur-sm" />
+      <img
+        src="/images/hero/hero-overlay.svg"
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover opacity-65"
+        aria-hidden="true"
+      />
+
+      <div className="from-background/95 via-background/70 absolute inset-0 bg-gradient-to-r to-transparent" />
+      <div className="from-background via-background/30 to-background/10 absolute inset-0 bg-gradient-to-t" />
+
+      <img
+        src="/images/backgrounds/hero-grid.svg"
+        alt=""
+        className="absolute inset-0 h-full w-full opacity-80"
+        aria-hidden="true"
+      />
+
+      <motion.div
+        className="bg-primary/10 animate-pulse-glow absolute top-1/4 left-1/4 hidden h-2 w-2 rounded-full md:block"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+      />
+      <motion.div
+        className="bg-primary/10 animate-pulse-glow absolute top-1/3 right-1/4 hidden h-3 w-3 rounded-full md:block"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.8 }}
+      />
+      <motion.div
+        className="bg-primary/15 animate-float-slow absolute right-1/3 bottom-1/3 hidden h-5 w-5 rounded-full opacity-70 md:block"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 0.8 }}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
