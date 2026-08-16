@@ -89,6 +89,7 @@ export interface Service {
   shortDescription: string;
   benefits: string[];
   image: string;
+  gallery?: string[];
   icon: string;
   category: 'rh' | 'facilities' | 'terceirizacao' | 'candidato';
 }

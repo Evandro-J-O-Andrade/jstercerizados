@@ -647,12 +647,14 @@ export default function ServicoDetalhe() {
             variants={staggerReveal(0.1)}
             className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
           >
-            {[
-              '/images/servicos/gallery-01.svg',
-              '/images/servicos/gallery-02.svg',
-              '/images/servicos/gallery-03.svg',
-              '/images/servicos/gallery-04.svg',
-            ].map((img, index) => (
+            {(
+              service.gallery ?? [
+                '/images/servicos/gallery-01.svg',
+                '/images/servicos/gallery-02.svg',
+                '/images/servicos/gallery-03.svg',
+                '/images/servicos/gallery-04.svg',
+              ]
+            ).map((img, index) => (
               <motion.div
                 key={index}
                 variants={staggerItem('up')}
