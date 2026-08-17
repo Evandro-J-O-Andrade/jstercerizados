@@ -21,9 +21,32 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import fs from 'fs';
+
+// Carrega .env.local manualmente (sem depender de dotenv)
+function loadEnvFile(path: string) {
+  try {
+    const content = fs.readFileSync(path, 'utf8');
+    for (const line of content.split('\n')) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#') || !trimmed.includes('='))
+        continue;
+      const [key, ...rest] = trimmed.split('=');
+      const value = rest.join('=').trim();
+      if (!process.env[key.trim()]) {
+        process.env[key.trim()] = value;
+      }
+    }
+  } catch {
+    // .env.local optional
+  }
+}
+
+loadEnvFile('.env.local');
+loadEnvFile('.env.provision');
 
 // Validações de ambiente
-const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -48,7 +71,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, {
 });
 
 const ADMIN_NAME = 'Evandro Andrade';
-const TENANT_ID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'; // J&S Empregos LTDA
+const TENANT_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'; // J&S Empregos LTDA (match 001 seed)
 const ROLE_ADMIN_MASTER = 'aaaaaaaa-0000-0000-0000-000000000001';
 
 async function provision() {
@@ -96,49 +119,51 @@ async function provision() {
   }
 
   // 2. Ensure person exists (trigger 002 handles auth.users -> people)
-  const { data: personData, error: personError } = await supabase
+  const personIdResponse = await supabase
     .from('people')
     .select('id, auth_user_id, full_name, email')
     .eq('auth_user_id', adminUserId)
     .maybeSingle();
 
-  if (personError) {
-    console.error('❌ Failed to fetch person:', personError.message);
+  let personId = personIdResponse.data?.id;
+
+  if (personIdResponse.error) {
+    console.error('❌ Failed to fetch person:', personIdResponse.error.message);
     process.exit(1);
   }
 
-  if (personData) {
-    console.log('✅ Person record exists:', personData.id);
+  if (personIdResponse.data) {
+    personId = personIdResponse.data.id;
+    console.log('✅ Person record exists:', personId);
   } else {
     console.log(
-      'ℹ️ Person record not found — trigger 002 should create it. Retrying...',
+      'ℹ️ Person record not found via trigger — creating manually...',
     );
-    // Wait then retry
-    await new Promise((r) => setTimeout(r, 2000));
-    const { data: retryPerson, error: retryError } = await supabase
+    const { data: newPerson, error: createPersonError } = await supabase
       .from('people')
+      .upsert(
+        {
+          auth_user_id: adminUserId,
+          email: ADMIN_EMAIL,
+          full_name: ADMIN_NAME,
+        },
+        {
+          onConflict: 'auth_user_id',
+        },
+      )
       .select('id')
-      .eq('auth_user_id', adminUserId)
       .maybeSingle();
 
-    if (retryError || !retryPerson) {
+    if (createPersonError || !newPerson) {
       console.error(
-        '❌ Person record still not found after retry. Ensure trigger 002 is active.',
+        '❌ Failed to create person record:',
+        createPersonError?.message || 'unknown error',
       );
       process.exit(1);
     }
-    console.log('✅ Person record created via trigger:', retryPerson.id);
+    personId = newPerson.id;
+    console.log('✅ Person record created manually:', personId);
   }
-
-  const personId = personData
-    ? personData.id
-    : (
-        await supabase
-          .from('people')
-          .select('id')
-          .eq('auth_user_id', adminUserId)
-          .maybeSingle()
-      ).data?.id;
 
   if (!personId) {
     console.error('❌ Could not resolve person_id for admin user.');
@@ -152,6 +177,7 @@ async function provision() {
       {
         person_id: personId,
         tenant_id: TENANT_ID,
+        membership_role: 'owner',
         status: 'active',
         joined_at: new Date().toISOString(),
       },
@@ -169,25 +195,17 @@ async function provision() {
   }
   console.log('✅ Tenant membership verified (J&S Empregos LTDA)');
 
-  // 4. Get tenant_membership id for role assignment
-  const { data: membershipRecord } = await supabase
-    .from('tenant_memberships')
-    .select('id')
-    .eq('person_id', personId)
-    .eq('tenant_id', TENANT_ID)
-    .maybeSingle();
-
   // 5. Assign admin_master role (global — is_global = true)
   const { error: roleError } = await supabase.from('role_assignments').upsert(
     {
-      actor_person_id: personId,
+      person_id: personId,
       role_id: ROLE_ADMIN_MASTER,
-      tenant_membership_id: membershipRecord?.id || null,
+      tenant_id: TENANT_ID,
       granted_by: personId,
       granted_at: new Date().toISOString(),
     },
     {
-      onConflict: 'actor_person_id,role_id',
+      onConflict: 'person_id,role_id,tenant_id',
     },
   );
 

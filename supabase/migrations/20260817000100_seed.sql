@@ -34,53 +34,41 @@
 -- Tenant canônico: J&S Empregos LTDA
 -- WHY:  NÃO mudar nome da empresa — regra de AGENTS.md
 
-insert into public.tenants (id, name, slug, created_by)
+-- WHAT:
+-- Tenant canônico: J&S Empregos LTDA
+-- WHY:  NÃO mudar nome da empresa — regra de AGENTS.md
+-- REF:  UUID alinhado com migration 001 seed (canonical tenant)
+
+-- -----------------------------------------------------------------------------
+-- 1. TENANTS (seed — canonical tenant, idempotent)
+-- -----------------------------------------------------------------------------
+-- Note: tenant principal is already seeded in 001_core_people_tenants.sql
+-- Keeping ON CONFLICT (slug) DO NOTHING for safety in fresh environments
+insert into public.tenants (id, name, slug)
 values
-  ('aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', 'J&S Empregos LTDA', 'js-empregos', null)
+  ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'J&S Empregos LTDA', 'js-empregos')
 on conflict (slug) do nothing;
 
 -- -----------------------------------------------------------------------------
--- 2. ROLES (seed — from 007)
+-- 2. ROLES (already seeded in 007_rbac.sql — no additional seed needed)
 -- -----------------------------------------------------------------------------
-
--- Global roles
-insert into public.roles (id, name, is_global, is_active, description) values
-  ('aaaaaaaa-0000-0000-0000-000000000001', 'admin_master', true, true,
-    'Global administrator with full platform access. Manages tenants, RBAC, and infrastructure.'),
-  on conflict (name) do update set description = excluded.description;
-
--- Tenant roles
-insert into public.roles (id, name, is_global, is_active, description) values
-  ('aaaaaaaa-0000-0000-0000-000000000002', 'tenant_admin', false, true,
-    'Admin of a specific tenant. Manages tenant operations.'),
-  ('aaaaaaaa-0000-0000-0000-000000000003', 'rh_manager', false, true,
-    'Human Resources manager. Manages candidates, jobs, and recruitment process.'),
-  ('aaaaaaaa-0000-0000-0000-000000000004', 'recruiter', false, true,
-    'Recruiter. Reviews candidates and processes applications.'),
-  ('aaaaaaaa-0000-0000-0000-000000000005', 'finance', false, true,
-    'Finance access. Views financial reports and billing data.'),
-  ('aaaaaaaa-0000-0000-0000-000000000006', 'viewer', false, true,
-    'Read-only access to tenant data.'),
-  ('aaaaaaaa-0000-0000-0000-000000000007', 'member', false, true,
-    'Standard user. Limited to their own candidate data and public jobs.');
+-- Roles like admin_master, tenant_admin, rh_manager, recruiter, finance,
+-- viewer, and member are created in migration 007. Skipping re-insertion
+-- to avoid duplicate key conflicts.
 
 -- -----------------------------------------------------------------------------
-
-3. PERMISSIONS & role_resource_permissions (seed — consolidated in 012)
+-- 3. PERMISSIONS & role_resource_permissions (seed — consolidated in 012)
 -- -----------------------------------------------------------------------------
 -- These are already defined in 012_rls_consolidation.sql
 -- No additional inserts needed here.
 
 -- -----------------------------------------------------------------------------
-
 -- 4. COMPANY TYPES (seed for companies reference)
 -- -----------------------------------------------------------------------------
-
 -- Already in 003_companies.sql as an enum
 -- No additional seed needed.
 
 -- -----------------------------------------------------------------------------
-
 -- 5. SKILLS (seed — global catalog)
 -- -----------------------------------------------------------------------------
 
@@ -187,16 +175,14 @@ insert into public.skills (id, name, category) values
   -- IT support (additional)
   ('aaaaaaaa-0000-0000-0001-000000000059', 'Suporte ao usuário', 'IT'),
   ('aaaaaaaa-0000-0000-0000-000000000060', 'Análise de sistemas', 'IT')
-on conflict (name) do update set category = excluded.category;
+on conflict (id) do update set category = excluded.category;
 
 -- -----------------------------------------------------------------------------
-
-6. JOB TYPES / CONTRACT TYPES / WORK MODES (seed enums)
+-- 6. JOB TYPES / CONTRACT TYPES / WORK MODES (seed enums)
 -- -----------------------------------------------------------------------------
 -- These are enums in 005_jobs.sql — no additional seed needed.
 
 -- -----------------------------------------------------------------------------
-
 -- 7. NOTIFICATION TYPES (seed — via 010_notifications)
 -- -----------------------------------------------------------------------------
 -- These are created dynamically as domain events fire.
