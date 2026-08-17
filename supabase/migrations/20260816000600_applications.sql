@@ -22,7 +22,45 @@
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- 1. applications — Relação candidato ↔ vaga
+-- 2. application_profile_snapshots — Snapshot imutável do candidato na candidatura
+-- -----------------------------------------------------------------------------
+
+-- WHAT:
+-- Captura o perfil do candidato no momento da candidatura.
+
+-- WHY:
+-- Preservar o estado do candidato como naquele momento — regra obrigatória
+-- (GATE-DATA-03 §4 Snapshot da candidatura).
+
+-- ARCHITECTURE:
+-- - Capturado via trigger BEFORE INSERT em applications
+-- - JSON imutável — nunca atualizado após criação
+-- - Contém: identity, contact, headline, skills, experiences, education, courses
+-- - LGPD compliant: only necessary professional data
+create table public.application_profile_snapshots (
+  id              uuid primary key default gen_random_uuid(),
+
+  -- WHAT: Candidatura à qual este snapshot pertence
+  -- WHY:  Relacionamento
+  application_id  uuid not null
+    references public.applications(id)
+    on delete cascade,
+
+  -- WHAT: Dados capturados
+  -- WHY:  Estado do candidato naquele momento
+  -- ARCH: JSONB — contém {name, headline, email, skills[], experiences[], education[], ...}
+  snapshot_data   jsonb,
+
+  -- WHAT: Quando capturado
+  -- WHY:  Timeline
+  -- ARCH: DEFAULT NOW()
+  captured_at     timestamptz not null default now()
+);
+
+create index idx_app_snapshots_application on public.application_profile_snapshots(application_id);
+
+-- -----------------------------------------------------------------------------
+-- 3. applications — Relação candidato ↔ vaga
 -- -----------------------------------------------------------------------------
 
 -- WHAT:
@@ -445,3 +483,46 @@ create trigger prevent_history_delete
 -- -----------------------------------------------------------------------------
 -- Seed: No seed data for applications — created via candidatura process
 -- -----------------------------------------------------------------------------
+
+-- -----------------------------------------------------------------------------
+-- 7. RLS for application_profile_snapshots (inherits from applications)
+-- -----------------------------------------------------------------------------
+alter table public.application_profile_snapshots enable row level security;
+
+create policy "Application snapshots visible to tenant members"
+  on public.application_profile_snapshots for select
+  using (
+    EXISTS (
+      SELECT 1 FROM public.applications a
+      JOIN public.tenant_memberships tm ON tm.tenant_id = a.tenant_id
+      JOIN public.people p ON tm.person_id = p.id
+      WHERE p.auth_user_id = auth.uid()
+        AND a.id = application_profile_snapshots.application_id
+    )
+    OR auth.role() = 'service_role'
+  );
+
+create policy "Application snapshots manageable by tenant recruiters"
+  on public.application_profile_snapshots for all
+  using (
+    EXISTS (
+      SELECT 1 FROM public.applications a
+      JOIN public.tenant_memberships tm ON tm.tenant_id = a.tenant_id
+      JOIN public.people p ON tm.person_id = p.id
+      WHERE p.auth_user_id = auth.uid()
+        AND a.id = application_profile_snapshots.application_id
+        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
+    )
+    OR auth.role() = 'service_role'
+  )
+  with check (
+    EXISTS (
+      SELECT 1 FROM public.applications a
+      JOIN public.tenant_memberships tm ON tm.tenant_id = a.tenant_id
+      JOIN public.people p ON tm.person_id = p.id
+      WHERE p.auth_user_id = auth.uid()
+        AND a.id = application_profile_snapshots.application_id
+        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
+    )
+    OR auth.role() = 'service_role'
+  );
