@@ -728,13 +728,21 @@ public.people WHERE auth_user_id = auth.uid())
 -- Security hardening: revoke public access
 -- -----------------------------------------------------------------------------
 -- WHAT:
--- By default, REVOKE all access from PUBLIC schema.
+-- By default, revoke all access from PUBLIC schema.
 -- Everything is granted via explicit policies.
 
-revoke default on schema public from public;
+-- WHY:
+-- Defense-in-depth: restrict schema access to authenticated/service_role only.
 revoke all on schema public from public;
 
--- Table-level grants to authenticated and service_role
+-- -----------------------------------------------------------------------------
+-- Security hardening: table-level grants
+-- -----------------------------------------------------------------------------
+-- WHAT:
+-- Grant explicit access to authenticated and service_role only.
+
+-- WHY:
+-- Prevent anonymous/PG public access to data — all filtering happens via RLS.
 grant usage on schema public to authenticated, service_role;
 grant all on all tables in schema public to authenticated, service_role;
 grant all on all sequences in schema public to authenticated, service_role;
