@@ -31,6 +31,29 @@ Exemplos de infraestrutura proprietária (Supabase):
 
 Isso permite migrar futuramente de Supabase para hosting próprio sem reconstruir o SaaS.
 
+### 1.0.1 Regra de segurança: identidade isolada de domínio
+
+> **Nenhuma migration nova será considerada "pronta" apenas porque o schema funciona. Ela precisa respeitar o modelo de segurança da plataforma: identidade → sessão → autorização → tenant isolation → RLS → constraints → aplicação segura.**
+
+| Camada       | Responsável         | Implementação                                             |
+| ------------ | ------------------- | --------------------------------------------------------- |
+| Autenticação | Supabase Auth / IdP | JWT em HttpOnly cookie, `auth.users` técnico              |
+| Sessão       | Browser/HTTPS       | HttpOnly + Secure + SameSite                              |
+| Autorização  | People-First        | `auth.uid() → people.auth_user_id → tenant_memberships`   |
+| Isolamento   | Multi-tenant        | `tenant_id` em relacionamentos, não em entidades globais  |
+| RLS          | PostgreSQL          | Policies scoped via cadeia people → memberships → tenants |
+| Constraints  | PostgreSQL          | NOT NULL, UNIQUE, CHECK, FK com ON DELETE apropriado      |
+| Aplicação    | Frontend/API        | Validação server-side, rate limiting, input sanitization  |
+
+Proteções que **não** pertencem ao PostgreSQL:
+
+❌ HTTP → HTTPS (infraestrutura/CDN)
+❌ Rate limiting (WAF/CDN/edge)
+❌ DDoS protection (CDN/WAF)
+❌ SQL Injection (queries parametrizadas em aplicação, não no schema)
+❌ XSS/CSRF (HttpOnly cookie + backend validation, não no banco)
+❌ `service_role` exposta (credencial server-side exclusivamente)
+
 ### 1.1 Pessoas é a entidade de negócio
 
 ```text
@@ -87,19 +110,19 @@ Nunca sobrescrever status — sempre append.
 
 ## 2. Reconciliação com Schema MySQL Existente
 
-| MySQL existente   | Modelo canônico                      | Ação                                      |
-| ----------------- | ------------------------------------ | ----------------------------------------- |
-| `empresa`         | `tenants`                            | Renomear + adicionar `tenant_type`        |
-| `usuarios`        | `people` + `auth.users`              | Desacoplar — `people` é entidade          |
-| `usuarios.perfil` | `tenant_memberships.membership_role` | Migrar role → membership                  |
-| `candidatos`      | `candidate_profiles`                 | Adicionar `people_id`, `tenant_id`        |
-| `colaboradores`   | `people` (contexto interno)          | Unificar                                  |
-| `clientes`        | `companies` (tipo: client)           | Adicionar `tenant_id`                     |
-| `parceiros`       | `companies` (tipo: partner)          | Unificar com `companies`                  |
-| `fornecedores`    | `companies` (tipo: supplier)         | Unificar com `companies`                  |
-| `leads`           | `leads`                              | Manter — mas `person_id` opcional         |
-| `vagas`           | `jobs`                               | Adicionar `tenant_id`                     |
-| `candidaturas`    | `applications`                       | Adicionar `tenant_id`, histórico imutável |
+| MySQL existente   | Modelo canônico                                                     | Ação                                      |
+| ----------------- | ------------------------------------------------------------------- | ----------------------------------------- |
+| `empresa`         | `tenants`                                                           | Renomear + adicionar `tenant_type`        |
+| `usuarios`        | `people` + `auth.users`                                             | Desacoplar — `people` é entidade          |
+| `usuarios.perfil` | `tenant_memberships.membership_role`                                | Migrar role → membership                  |
+| `candidatos`      | `candidate_profiles`                                                | Adicionar `people_id`, `tenant_id`        |
+| `colaboradores`   | `people` (contexto interno)                                         | Unificar                                  |
+| `clientes`        | `companies` + `company_relationships` (relationship_type: client)   | Unificar em arquitetura de relacionamento |
+| `parceiros`       | `companies` + `company_relationships` (relationship_type: partner)  | Unificar em arquitetura de relacionamento |
+| `fornecedores`    | `companies` + `company_relationships` (relationship_type: supplier) | Unificar em arquitetura de relacionamento |
+| `leads`           | `leads`                                                             | Manter — mas `person_id` opcional         |
+| `vagas`           | `jobs`                                                              | Adicionar `tenant_id`                     |
+| `candidaturas`    | `applications`                                                      | Adicionar `tenant_id`, histórico imutável |
 
 ---
 
@@ -209,30 +232,153 @@ CREATE TABLE people_consents (
 );
 ```
 
-### 3.7 Companies (Clientes / Parceiros / Fornecedores)
+### 3.7 Companies Architecture
 
-Unificação de `clientes`, `parceiros`, `fornecedores` em uma única tabela:
+Unificação de `clientes`, `parceiros`, `fornecedores` em uma arquitetura de três níveis:
+
+```text
+                    companies          (entidade jurídica/comercial)
+                       │
+          ┌────────────┼────────────┐
+          │            │            │
+          ▼            ▼            ▼
+   company_types  company_relationship_types  company_contacts
+   (natureza)     (CLIENT/PARTNER/SUPPLIER)    (contatos via people)
+```
+
+#### Decisões arquiteturais
+
+| #   | Decisão                                                                                 | Justificativa                                                                                  |
+| --- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| 1   | `companies` não possui `tenant_id` obrigatório                                          | Empresa é entidade global — pode ser reutilizada por múltiplos tenants                         |
+| 2   | `company_type` ≠ `company_relationship_type`                                            | Tipo da empresa (corporation, epp, MEI) ≠ relacionamento comercial (CLIENT, PARTNER, SUPPLIER) |
+| 3   | Relacionamento comercial é scoped por `tenant_id`                                       | Mesma empresa pode ser CLIENT de um tenant e PARTNER de outro                                  |
+| 4   | `client/partner/supplier` são _relacionamentos_, não _atributos intrínsecos_ da empresa | Uma empresa pode exercer múltiplos papéis simultaneamente                                      |
+| 5   | `company_contacts → people`                                                             | Respeita arquitetura People-First — contatos são pessoas do domínio                            |
+| 6   | Unicidade: `company + tenant + relationship_type`                                       | Evita duplicação de relacionamento sem limitar papéis múltiplos                                |
+| 7   | CNPJ único globalmente                                                                  | Empresa jurídica única — CNPJ não muda por tenant                                              |
+| 8   | `cnpj_root` apenas dado técnico                                                         | Matriz/filiaais modelados futuramente se necessário                                            |
+| 9   | `internal` não pertence a relationship types                                            | É um contexto organizacional, não um relacionamento comercial                                  |
+
+#### `companies` Table
 
 ```sql
 CREATE TABLE companies (
     id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id       UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-    person_id       UUID          REFERENCES people(id) ON DELETE SET NULL,
+
+    -- Identidade jurídica (global)
     legal_name      VARCHAR(200)  NOT NULL,
     trading_name    VARCHAR(100),
     cnpj            VARCHAR(18)   UNIQUE,
+    cnpj_root       VARCHAR(15),
+    state_registration  VARCHAR(20),
+    municipal_registration VARCHAR(20),
+    company_type    VARCHAR(20)   NOT NULL CHECK (company_type IN ('corporation','limited_company','epp','mei','nonprofit','government')),
+    industry        VARCHAR(100),
+
+    -- Dados comerciais (global)
     phone           VARCHAR(20),
     email           VARCHAR(255),
     website         VARCHAR(255),
+    linkedin_url    VARCHAR(255),
     logo_url        TEXT,
     address         JSONB,
-    company_type    VARCHAR(20)   NOT NULL CHECK (company_type IN ('client', 'partner', 'supplier', 'prospect')),
-    status          VARCHAR(20)   DEFAULT 'lead'
-                                   CHECK (status IN ('lead', 'prospect', 'negotiation', 'active', 'inactive', 'churned')),
-    origin          VARCHAR(50)   DEFAULT 'site',
-    created_at      TIMESTAMP     DEFAULT NOW(),
-    updated_at      TIMESTAMP     DEFAULT NOW()
+    size            VARCHAR(20)   CHECK (size IN ('micro','small','medium','large','enterprise')),
+
+    -- Status da empresa (não é status do relacionamento)
+    status          VARCHAR(20)   NOT NULL DEFAULT 'active'
+                                   CHECK (status IN ('active','inactive','suspended','pending')),
+    is_active       BOOLEAN       NOT NULL DEFAULT TRUE,
+
+    -- Extensibilidade
+    metadata        JSONB         NOT NULL DEFAULT '{}'::jsonb,
+
+    -- Auditoria
+    created_at      TIMESTAMP     NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMP     NOT NULL DEFAULT NOW(),
+    created_by      UUID          REFERENCES people(id)
 );
+```
+
+#### `company_relationship_types` Table
+
+```sql
+CREATE TABLE company_relationship_types (
+    id          UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+    code        VARCHAR(20)   NOT NULL UNIQUE,  -- 'client', 'partner', 'supplier'
+    name        VARCHAR(100)  NOT NULL,
+    description TEXT,
+    created_at  TIMESTAMP     NOT NULL DEFAULT NOW()
+);
+```
+
+#### `company_relationships` Table
+
+```sql
+CREATE TABLE company_relationships (
+    id                  UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+    company_id          UUID          NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    tenant_id           UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    relationship_type_id UUID         NOT NULL REFERENCES company_relationship_types(id),
+
+    -- Status do relacionamento (não da empresa)
+    status              VARCHAR(20)   NOT NULL DEFAULT 'active'
+                                       CHECK (status IN ('active','inactive','pending','suspended')),
+
+    -- Período do relacionamento
+    started_at          TIMESTAMP,
+    ended_at            TIMESTAMP,
+
+    -- Contexto
+    metadata            JSONB         NOT NULL DEFAULT '{}'::jsonb,
+    created_by          UUID          REFERENCES people(id),
+
+    -- Timestamps
+    created_at          TIMESTAMP     NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMP     NOT NULL DEFAULT NOW(),
+
+    -- Unicidade: uma empresa não pode ter dois relacionamentos do mesmo tipo no mesmo tenant
+    UNIQUE (company_id, tenant_id, relationship_type_id)
+);
+
+CREATE INDEX idx_company_relationships_company ON company_relationships(company_id);
+CREATE INDEX idx_company_relationships_tenant ON company_relationships(tenant_id);
+CREATE INDEX idx_company_relationships_type ON company_relationships(relationship_type_id);
+```
+
+#### `company_contacts` Table
+
+```sql
+CREATE TABLE company_contacts (
+    id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+    company_id      UUID          NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    person_id       UUID          NOT NULL REFERENCES people(id) ON DELETE CASCADE,
+    tenant_id       UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    role            VARCHAR(100),              -- 'Financeiro', 'Comercial', 'RH', etc.
+    is_primary      BOOLEAN       NOT NULL DEFAULT FALSE,
+    created_at      TIMESTAMP     NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMP     NOT NULL DEFAULT NOW(),
+
+    -- Uma pessoa pode ser contato de uma empresa apenas uma vez por tenant
+    UNIQUE (company_id, person_id, tenant_id)
+);
+
+CREATE INDEX idx_company_contacts_company ON company_contacts(company_id);
+CREATE INDEX idx_company_contacts_person ON company_contacts(person_id);
+```
+
+#### RLS — Companies scoped via tenant membership
+
+```text
+auth.uid()
+    ↓
+people.auth_user_id (1:1)
+    ↓
+tenant_memberships (person belongs to tenant?)
+    ↓
+company_relationships.tenant_id
+    ↓
+companies (via company_id)
 ```
 
 ### 3.8 Candidate Profiles
