@@ -1414,10 +1414,164 @@ Exemplos:
 - `contract.created`
 - `file.uploaded`
 - `file.deleted`
+- `talent_pool.added`
+- `talent_pool.removed`
+- `profile.snapshot_created`
 
 ---
 
-## 16. Calendário (n8n + Google Calendar)
+## 15.1. Eventos do candidato
+
+```text
+candidate.created
+      ├─ application.created
+      ├─ job.published (match)
+      ├─ notification.sent
+      │
+      └── application.rejected
+              └── talent_pool.added ──┐
+                                      ▼
+                               BANCO DE TALENTOS
+
+application.approved
+      └── contract.sent
+      └── onboarding.started
+```
+
+---
+
+## 15.2. Eventos de matching
+
+```text
+job.skills_changed
+      │
+      ▼
+matching_engine.run
+      │
+      ├── candidate.job_match.created
+      ├── notification.sent (email/whatsapp)
+      └── talent_pool.update_priority
+```
+
+---
+
+## 16. Product-Led Growth: Acesso sem cadastro
+
+### Regra de negócio
+
+> Candidatura não exige conta por padrão. Conta é uma camada de relacionamento e benefícios.
+
+### Três portas de entrada
+
+```text
+                    VISITANTE
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+       VAGA         CURRÍCULO      TALENT POOL
+        │              │              │
+        ▼              ▼              ▼
+   CANDIDATURA       PERFIL        PERFIL
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+                    PEOPLE
+                       │
+                       ▼
+                   CANDIDATE
+```
+
+### Fluxo sem login
+
+```text
+1. Visitante vê vaga em /vagas/:slug
+2. Clica "Candidatar-se"
+3. Preenche formulário mínimo:
+   - Nome
+   - Email
+   - Telefone
+   - Currículo PDF (opcional)
+4. Sistema cria:
+   - people (auth_user_id = NULL)
+   - candidate
+   - application → job
+5. Após envio: oferta de "Acompanhar candidatura"
+```
+
+### Fluxo com login
+
+```text
+Visitante já tem conta J&S
+       ↓
+Login (auth.users)
+       ↓
+people.auth_user_id = UUID
+       ↓
+candidate (já existe?)
+       ├── SIM → reutiliza
+       └── NÃO → cria candidate
+       ↓
+application
+```
+
+---
+
+## 16.1. Perfil Profissional Canônico
+
+> **Não teremos currículo separado, currículo premium, perfil separado ou banco de talentos separado.**
+
+Um único perfil canônico alimenta todos os recursos:
+
+```text
+PEOPLE
+  │
+  ▼
+CANDIDATE
+  │
+  ├── experiences
+  ├── education
+  ├── courses
+  ├── candidate_skills → skills (global)
+  ├── documents
+  ├── availability
+  │
+  ├── talent_pool_membership ──► Banco de Talentos
+  │
+  ├── applications ─────────────► Candidaturas
+  │       │
+  │       └── profile_snapshot
+  │
+  └── recommendations ──────────► Vagas compatíveis
+```
+
+---
+
+## 16.2. Matching Engine
+
+### Inputs
+
+```text
+candidate_skills ↔ job_skills
+candidate.location ↔ job.location
+candidate.availability ↔ job.work_mode
+candidate.experience ↔ job.requirements
+```
+
+### Output
+
+```text
+job_match_score: 92%
+compatibility_factors:
+  ✓ Skills: 8/10
+  ✓ Location: match
+  ✓ Availability: match
+  ✓ Experience: 7/10
+  ✓ Education: match
+```
+
+---
+
+## 17. Arquivo
 
 ```sql
 CREATE TABLE calendar_integrations (
