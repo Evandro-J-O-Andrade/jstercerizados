@@ -485,7 +485,7 @@ create policy "Applications: candidate sees own"
   on public.applications for select
   using (
     candidate_id IN (
-      SELECT id FROM public.candidates c
+      SELECT c.id FROM public.candidates c
       JOIN public.people p ON c.person_id = p.id
       WHERE p.auth_user_id = auth.uid()
     )
