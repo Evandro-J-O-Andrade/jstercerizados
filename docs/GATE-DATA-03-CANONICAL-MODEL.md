@@ -1898,4 +1898,92 @@ Frontend começa a consumir Supabase
 
 ---
 
+## 18. Storage Architecture — Provider Agnostic
+
+### Regra canônica
+
+> **`files` é domínio. Storage provider é infraestrutura.**
+
+O banco registra o arquivo como entidade. O storage físico é abstraído via `provider`, `bucket` e `object_key`.
+
+```text
+files (domínio)
+   ├── provider    ← "supabase" | "s3" | "r2" | "local"
+   ├── bucket      ← nome do bucket/container
+   └── object_key  ← chave dentro do bucket
+```
+
+### Arquivos privados por padrão
+
+Documentos pessoais (currículos, certificados) são `visibility = private`.
+
+Acesso via **signed URL temporária**, não bucket público.
+
+### Chave de storage segura
+
+```text
+✅ candidates/{uuid}/{hash}.pdf
+❌ uploads/Joao-Curriculo.pdf
+```
+
+Nome original preservado apenas em `original_name`.
+
+### Entidade canônica
+
+```sql
+CREATE TABLE files (
+    id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id       UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    owner_person_id UUID          REFERENCES people(id) ON DELETE SET NULL,
+    provider        VARCHAR(20)   NOT NULL CHECK (provider IN ('supabase','s3','r2','local')),
+    bucket          VARCHAR(100)  NOT NULL,
+    object_key      VARCHAR(500)  NOT NULL,
+    original_name   VARCHAR(255),
+    mime_type       VARCHAR(100),
+    size_bytes      BIGINT,
+    checksum        VARCHAR(64),
+    visibility      VARCHAR(20)   NOT NULL DEFAULT 'private'
+                                   CHECK (visibility IN ('public','private','tenant')),
+    status          VARCHAR(20)   NOT NULL DEFAULT 'active'
+                                   CHECK (status IN ('active','deleted','quarantined')),
+    metadata        JSONB         NOT NULL DEFAULT '{}'::jsonb,
+    created_by      UUID          REFERENCES people(id),
+    created_at      TIMESTAMP     DEFAULT NOW(),
+    updated_at      TIMESTAMP     DEFAULT NOW(),
+    UNIQUE(provider, bucket, object_key)
+);
+```
+
+### Relacionamento com domínios
+
+```text
+files
+   │
+   ├── candidate_documents
+   ├── company_documents
+   └── application_documents
+```
+
+**Não usamos attachments genéricos** (polimórficos). Preferimos referências fortes para integridade referencial.
+
+### Lifecycle
+
+```text
+upload
+   ↓
+active
+   │
+   ├── view via signed URL
+   ├── download
+   └── delete
+           ↓
+       deleted
+           ↓
+      retention period
+           ↓
+    storage deletion (background)
+```
+
+---
+
 _Documento criado em 16/08/2026. Fonte única para arquitetura de dados do J&S Empregos. Atualizado com módulos de integração, comunicação, storage, calendário, product-led growth, matching engine e regras de produto consolidadas._
