@@ -56,7 +56,7 @@ async function provision() {
 
   // 1. Check if user already exists in Auth
   // Use listUsers with filter since getUserByEmail is not available in JS client
-  const { data: users, error: listError } =
+  const { data: usersData, error: listError } =
     await supabase.auth.admin.listUsers();
 
   let adminUserId: string | null = null;
@@ -66,7 +66,10 @@ async function provision() {
     process.exit(1);
   }
 
-  const foundUser = (users || []).find((u) => u.email === ADMIN_EMAIL);
+  const userList = usersData?.users || usersData || [];
+  const foundUser = (userList || []).find(
+    (u: { email?: string }) => u.email === ADMIN_EMAIL,
+  );
 
   if (foundUser) {
     adminUserId = foundUser.id;
