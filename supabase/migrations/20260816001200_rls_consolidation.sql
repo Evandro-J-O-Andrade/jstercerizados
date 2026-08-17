@@ -43,8 +43,8 @@ create table public.role_resource_permissions (
   role_id         uuid not null
     references public.roles(id)
     on delete cascade,
-  resource        varchar(100) not in ('1'),
-  action          varchar(20) not in ('1'),
+  resource        varchar(100) not null,
+  action          varchar(20) not null,
   allowed         boolean not null default true,
   created_at      timestamptz not null default now(),
   constraint uk_role_resource_action
