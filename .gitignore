@@ -8,6 +8,13 @@ dist/
 .DS_Store
 Thumbs.db
 *.swp
+scripts/test-*
+scripts/debug-*
+scripts/check-*
+scripts/validate-*
+scripts/force-*
+scripts/reset-*
+scripts/apply-*
 *.swo
 *~
 .vscode/
