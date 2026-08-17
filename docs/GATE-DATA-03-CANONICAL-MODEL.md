@@ -668,19 +668,141 @@ CREATE TABLE applications (
 
 ### 3.13 Application Status History (Imutável)
 
+#### Regra canônica
+
+> **Histórico de processo seletivo é imutável.**
+>
+> ```sql
+> INSERT  ✅
+> UPDATE  ❌
+> DELETE  ❌
+> ```
+
 ```sql
 CREATE TABLE application_status_history (
-    id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
-    application_id  UUID          NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
-    stage           VARCHAR(50)   NOT NULL,
-    previous_stage  VARCHAR(50),
-    changed_by      UUID,  -- person_id do recrutador
-    reason          TEXT,
-    changed_at      TIMESTAMP     DEFAULT NOW()
+    id                  UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+    application_id      UUID          NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+    stage               VARCHAR(50)   NOT NULL,
+                        CHECK (stage IN (
+                          'submitted', 'screening', 'qualified', 'interview',
+                          'technical_interview', 'presentation', 'reference_check',
+                          'offer', 'hired', 'rejected', 'withdrawn', 'on_hold'
+                        )),
+    previous_stage      VARCHAR(50),
+    changed_by          UUID,  -- person_id do responsável
+    reason              TEXT,
+    changed_at          TIMESTAMP     DEFAULT NOW()
 );
 ```
 
-### 3.14 Recruitment Processes
+#### Imutabilidade por design
+
+A tabela `application_status_history` **nunca permite UPDATE ou DELETE**:
+
+```sql
+-- Triggers que BLOQUEIAM modificação
+create trigger prevent_history_update
+  before update on public.application_status_history
+  for each row execute function public.prevent_history_modification();
+
+create trigger prevent_history_delete
+  before delete on public.application_status_history
+  for each row execute function public.prevent_history_modification();
+```
+
+#### Aplicação imutável (snapshot)
+
+No momento da candidatura, capturamos o perfil do candidato:
+
+```sql
+CREATE TABLE application_profile_snapshots (
+    id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+    application_id  UUID          NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+    snapshot_data   JSONB,       -- {name, headline, skills, experiences, ...}
+    captured_at     TIMESTAMP     DEFAULT NOW()
+);
+```
+
+**Regra:** Se o candidato atualiza seu perfil amanhã, a candidatura antiga preserva o `profile_snapshot` como naquele momento.
+
+---
+
+### 3.14 Applications (Candidaturas)
+
+```sql
+CREATE TABLE applications (
+    id                  UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    -- WHAT: Tenant da candidatura
+    -- WHY:  Registro histórico — não confiar apenas em candidate/job
+    -- ARCH: validated: candidate.tenant_id = job.tenant_id = application.tenant_id
+    tenant_id           UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+
+    -- WHAT: Vaga candidatada
+    -- WHY:  Relaciona candidato com oportunidade
+    -- ARCH: job é tenant-scoped
+    job_id              UUID          NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
+
+    -- WHAT: Candidato (contexto, não pessoa direta)
+    -- WHY:  Preserva snapshot e histórico do contexto
+    candidate_id        UUID          NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
+
+    -- WHAT: Estado atual — sempre derivado de application_status_history
+    -- WHY:  Performance: não precita scanear histórico para exibir status
+    -- ARCH: Atualizado via trigger sync_application_current_stage
+    current_stage       VARCHAR(50)   NOT NULL DEFAULT 'submitted',
+                    CHECK (current_stage IN ('submitted', 'screening', 'qualified', 'interview', 'technical_interview', 'presentation', 'reference_check', 'offer', 'hired', 'rejected', 'withdrawn', 'on_hold')),
+
+    -- WHAT: Compatibilidade/matching score
+    -- WHY:  Registrar o quanto o candidato combinava naquele momento
+    -- ARCH: Calculado pelo matching engine
+    match_score         NUMERIC(5,2),
+    match_details       JSONB,
+
+    -- WHAT: Fonte da candidatura
+    source              VARCHAR(50)   CHECK (source IN ('website', 'whatsapp', 'email', 'indication', 'talent_pool', 'api', 'other')),
+
+    -- WHAT: Observações do recrutador
+    notes               TEXT,
+
+    -- WHAT: Quando foi candidatado
+    applied_at          TIMESTAMP     DEFAULT NOW(),
+
+    -- WHAT: Quando foi desistido/desativado
+    withdrawn_at        TIMESTAMP,
+
+    -- WHAT: Auditoria
+    created_by          UUID          REFERENCES people(id),
+    created_at          TIMESTAMP     DEFAULT NOW(),
+    updated_at          TIMESTAMP     DEFAULT NOW(),
+
+    -- WHAT: Unicidade
+    -- WHY:  Não duas candidaturas para a mesma vaga
+    -- ARCH: Um candidato = uma candidatura por vaga
+    UNIQUE (candidate_id, job_id)
+);
+```
+
+#### Regra de idempotência de candidatura
+
+```sql
+UNIQUE (candidate_id, job_id)
+```
+
+Garante que o mesmo candidato não crie múltiplas candidaturas para a mesma vaga.
+
+#### Validação de tenant cross-boundary
+
+```text
+candidate.tenant_id   = application.tenant_id ✓
+job.tenant_id         = application.tenant_id ✓
+```
+
+Validado por constraint function ou trigger.
+
+---
+
+### 3.15 Recruitment Processes
 
 ```sql
 CREATE TABLE recruitment_processes (
