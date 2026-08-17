@@ -16,7 +16,7 @@ create extension if not exists "pgcrypto";
 -- TENANTS: Tenant / organization (SaaS scope)
 -- -----------------------------------------------------------------------------
 create table public.tenants (
-  id          uuid primary key default uuid_generate_v4(),
+  id          uuid primary key default gen_random_uuid(),
   name        varchar(200) not null,
   slug        varchar(100) not null unique,
   plan        varchar(20) not null default 'free'
@@ -32,9 +32,10 @@ create table public.tenants (
 -- PEOPLE: Business entity — NOT auth.users
 -- -----------------------------------------------------------------------------
 create table public.people (
-  id              uuid primary key default uuid_generate_v4(),
+  id              uuid primary key default gen_random_uuid(),
   auth_user_id    uuid unique,    -- optional FK to auth.users (set when user registers)
   full_name       varchar(150) not null,
+  email           varchar(255) unique,
   social_name     varchar(150),
   cpf             varchar(14) unique,
   birth_date      date,
@@ -51,7 +52,7 @@ create table public.people (
 -- TENANT_MEMBERSHIPS: Person ↔ Tenant (many-to-many)
 -- -----------------------------------------------------------------------------
 create table public.tenant_memberships (
-  id              uuid primary key default uuid_generate_v4(),
+  id              uuid primary key default gen_random_uuid(),
   tenant_id       uuid not null references public.tenants(id) on delete cascade,
   person_id       uuid not null references public.people(id) on delete cascade,
   membership_role varchar(20) not null
