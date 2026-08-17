@@ -92,14 +92,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select('id, name, is_global')
         .in('id', roleIds);
 
+      // Prioridade: admin_master global primeiro
       const isAdminMaster = (roles || []).some(
         (r: { name: string; is_global: boolean }) =>
           r.name === 'admin_master' && r.is_global === true,
       );
 
-      const primaryRole =
-        (roles || []).find((r: { is_global: boolean }) => !r.is_global)?.name ||
-        'member';
+      const primaryRole = isAdminMaster
+        ? 'admin_master'
+        : (roles || []).find((r: { is_global: boolean }) => !r.is_global)
+            ?.name || 'member';
 
       setProfile({
         id: personData.id,
