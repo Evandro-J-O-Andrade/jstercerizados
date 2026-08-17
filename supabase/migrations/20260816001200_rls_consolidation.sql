@@ -548,7 +548,7 @@ create policy "Files: visible to tenant members"
       JOIN public.people p ON tm.person_id = p.id
       WHERE p.auth_user_id = auth.uid()
     )
-    OR uploaded_by = (
+    OR owner_person_id = (
       SELECT id FROM public.people WHERE auth_user_id = auth.uid()
     )
     OR auth.role() = 'service_role'
@@ -564,7 +564,7 @@ create policy "Files: tenant members can upload"
       JOIN public.people p ON tm.person_id = p.id
       WHERE p.auth_user_id = auth.uid()
     )
-    OR uploaded_by = (
+    OR owner_person_id = (
       SELECT id FROM public.people WHERE auth_user_id = auth.uid()
     )
     OR auth.role() = 'service_role'
