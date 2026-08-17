@@ -2,7 +2,7 @@
 -- GATE-DATA-04.006 — APPLICATIONS: Candidaturas + Histórico Imutável
 -- =============================================================================
 -- Entity: applications (relação candidato ↔ vaga dentro de um tenant)
--- Related: application_status_history
+-- Related: application_status_history, application_profile_snapshots
 -- Schema: public
 -- Order: 6
 -- Dependencies: 001_core, 002_identity, 003_companies, 004_candidates, 005_jobs
@@ -22,45 +22,7 @@
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- 2. application_profile_snapshots — Snapshot imutável do candidato na candidatura
--- -----------------------------------------------------------------------------
-
--- WHAT:
--- Captura o perfil do candidato no momento da candidatura.
-
--- WHY:
--- Preservar o estado do candidato como naquele momento — regra obrigatória
--- (GATE-DATA-03 §4 Snapshot da candidatura).
-
--- ARCHITECTURE:
--- - Capturado via trigger BEFORE INSERT em applications
--- - JSON imutável — nunca atualizado após criação
--- - Contém: identity, contact, headline, skills, experiences, education, courses
--- - LGPD compliant: only necessary professional data
-create table public.application_profile_snapshots (
-  id              uuid primary key default gen_random_uuid(),
-
-  -- WHAT: Candidatura à qual este snapshot pertence
-  -- WHY:  Relacionamento
-  application_id  uuid not null
-    references public.applications(id)
-    on delete cascade,
-
-  -- WHAT: Dados capturados
-  -- WHY:  Estado do candidato naquele momento
-  -- ARCH: JSONB — contém {name, headline, email, skills[], experiences[], education[], ...}
-  snapshot_data   jsonb,
-
-  -- WHAT: Quando capturado
-  -- WHY:  Timeline
-  -- ARCH: DEFAULT NOW()
-  captured_at     timestamptz not null default now()
-);
-
-create index idx_app_snapshots_application on public.application_profile_snapshots(application_id);
-
--- -----------------------------------------------------------------------------
--- 3. applications — Relação candidato ↔ vaga
+-- 1. applications — Relação candidato ↔ vaga (criada PRIMEIRO)
 -- -----------------------------------------------------------------------------
 
 -- WHAT:
@@ -108,7 +70,7 @@ create table public.applications (
 
   -- WHAT: Resumo da compatibilidade no momento da candidatura
   -- WHY:  Registrar o matching score apresentado ao candidato
-  -- ARCH: Calculado pelo matching engine (006_jobs.skills vs candidate_skills)
+  -- ARCH: Calculado pelo matching engine (005_jobs.skills vs candidate_skills)
   match_score         numeric(5,2),
   match_details       jsonb,
 
@@ -162,14 +124,15 @@ create table public.applications (
   unique (candidate_id, job_id)
 );
 
--- -----------------------------------------------------------------------------
--- Indexes
--- -----------------------------------------------------------------------------
 create index idx_applications_tenant on public.applications(tenant_id);
 create index idx_applications_job on public.applications(job_id);
 create index idx_applications_candidate on public.applications(candidate_id);
 create index idx_applications_status on public.applications(current_stage);
 create index idx_applications_applied_at on public.applications(applied_at desc);
+
+create trigger update_applications_updated_at
+  before update on public.applications
+  for each row execute procedure public.update_updated_at();
 
 -- -----------------------------------------------------------------------------
 -- 2. application_status_history — Histórico imutável de mudanças de status
@@ -236,9 +199,6 @@ create table public.application_status_history (
   changed_at          timestamptz not null default now()
 );
 
--- -----------------------------------------------------------------------------
--- Indexes
--- -----------------------------------------------------------------------------
 create index idx_app_history_application on public.application_status_history(application_id);
 create index idx_app_history_changed_at on public.application_status_history(changed_at desc);
 create index idx_app_history_stage on public.application_status_history(stage);
@@ -276,6 +236,44 @@ create trigger sync_application_current_stage
   after insert on public.application_status_history
   for each row
   execute function public.sync_application_current_stage();
+
+-- -----------------------------------------------------------------------------
+-- 3. application_profile_snapshots — Snapshot imutável do candidato na candidatura
+-- -----------------------------------------------------------------------------
+
+-- WHAT:
+-- Captura o perfil do candidato no momento da candidatura.
+
+-- WHY:
+-- Preservar o estado do candidato como naquele momento — regra obrigatória
+-- (GATE-DATA-03 §4 Snapshot da candidatura).
+
+-- ARCHITECTURE:
+-- - Capturado via trigger BEFORE INSERT em applications
+-- - JSON imutável — nunca atualizado após criação
+-- - Contém: identity, contact, headline, skills, experiences, education, courses
+-- - LGPD compliant: only necessary professional data
+create table public.application_profile_snapshots (
+  id              uuid primary key default gen_random_uuid(),
+
+  -- WHAT: Candidatura à qual este snapshot pertence
+  -- WHY:  Relacionamento
+  application_id  uuid not null
+    references public.applications(id)
+    on delete cascade,
+
+  -- WHAT: Dados capturados
+  -- WHY:  Estado do candidato naquele momento
+  -- ARCH: JSONB — contém {name, headline, email, skills[], experiences[], education[], ...}
+  snapshot_data   jsonb,
+
+  -- WHAT: Quando capturado
+  -- WHY:  Timeline
+  -- ARCH: DEFAULT NOW()
+  captured_at     timestamptz not null default now()
+);
+
+create index idx_app_snapshots_application on public.application_profile_snapshots(application_id);
 
 -- -----------------------------------------------------------------------------
 -- Trigger: captura profile_snapshot na inserção da aplicação
@@ -374,79 +372,36 @@ alter table public.applications enable row level security;
 create policy "Applications visible to tenant members"
   on public.applications for select
   using (
-    tenant_id IN (
-      SELECT tm.tenant_id
-      FROM public.tenant_memberships tm
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
+    tenant_id in (
+      select tm.tenant_id
+      from public.tenant_memberships tm
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   );
 
 create policy "Applications manageable by tenant recruiters"
   on public.applications for all
   using (
-    tenant_id IN (
-      SELECT tm.tenant_id
-      FROM public.tenant_memberships tm
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
+    tenant_id in (
+      select tm.tenant_id
+      from public.tenant_memberships tm
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and tm.membership_role in ('owner','admin','manager','recruiter')
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   )
   with check (
-    tenant_id IN (
-      SELECT tm.tenant_id
-      FROM public.tenant_memberships tm
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
+    tenant_id in (
+      select tm.tenant_id
+      from public.tenant_memberships tm
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and tm.membership_role in ('owner','admin','manager','recruiter')
     )
-    OR auth.role() = 'service_role
-  );
-
--- -----------------------------------------------------------------------------
--- RLS for application_status_history (inherits from applications via application_id)
--- -----------------------------------------------------------------------------
-alter table public.application_status_history enable row level security;
-
-create policy "Application history visible to tenant members"
-  on public.application_status_history for select
-  using (
-    EXISTS (
-      SELECT 1 FROM public.applications a
-      JOIN public.tenant_memberships tm ON tm.tenant_id = a.tenant_id
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND a.id = application_status_history.application_id
-    )
-    OR auth.role() = 'service_role'
-  );
-
-create policy "Application history manageable by tenant recruiters"
-  on public.application_status_history for all
-  using (
-    EXISTS (
-      SELECT 1 FROM public.applications a
-      JOIN public.tenant_memberships tm ON tm.tenant_id = a.tenant_id
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND a.id = application_status_history.application_id
-        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
-    )
-    OR auth.role() = 'service_role'
-  )
-  with check (
-    EXISTS (
-      SELECT 1 FROM public.applications a
-      JOIN public.tenant_memberships tm ON tm.tenant_id = a.tenant_id
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND a.id = application_status_history.application_id
-        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
-    )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   );
 
 -- -----------------------------------------------------------------------------
@@ -485,7 +440,7 @@ create trigger prevent_history_delete
 -- -----------------------------------------------------------------------------
 
 -- -----------------------------------------------------------------------------
--- 7. RLS for application_profile_snapshots (inherits from applications)
+-- 4. RLS for application_profile_snapshots (inherits from applications)
 -- -----------------------------------------------------------------------------
 alter table public.application_profile_snapshots enable row level security;
 
@@ -493,36 +448,79 @@ create policy "Application snapshots visible to tenant members"
   on public.application_profile_snapshots for select
   using (
     EXISTS (
-      SELECT 1 FROM public.applications a
-      JOIN public.tenant_memberships tm ON tm.tenant_id = a.tenant_id
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND a.id = application_profile_snapshots.application_id
+      select 1 from public.applications a
+      join public.tenant_memberships tm on tm.tenant_id = a.tenant_id
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and a.id = application_profile_snapshots.application_id
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   );
 
 create policy "Application snapshots manageable by tenant recruiters"
   on public.application_profile_snapshots for all
   using (
     EXISTS (
-      SELECT 1 FROM public.applications a
-      JOIN public.tenant_memberships tm ON tm.tenant_id = a.tenant_id
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND a.id = application_profile_snapshots.application_id
-        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
+      select 1 from public.applications a
+      join public.tenant_memberships tm on tm.tenant_id = a.tenant_id
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and a.id = application_profile_snapshots.application_id
+        and tm.membership_role in ('owner','admin','manager','recruiter')
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   )
   with check (
     EXISTS (
-      SELECT 1 FROM public.applications a
-      JOIN public.tenant_memberships tm ON tm.tenant_id = a.tenant_id
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND a.id = application_profile_snapshots.application_id
-        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
+      select 1 from public.applications a
+      join public.tenant_memberships tm on tm.tenant_id = a.tenant_id
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and a.id = application_profile_snapshots.application_id
+        and tm.membership_role in ('owner','admin','manager','recruiter')
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
+  );
+
+-- -----------------------------------------------------------------------------
+-- RLS for application_status_history (inherits from applications via application_id)
+-- -----------------------------------------------------------------------------
+alter table public.application_status_history enable row level security;
+
+create policy "Application history visible to tenant members"
+  on public.application_status_history for select
+  using (
+    EXISTS (
+      select 1 from public.applications a
+      join public.tenant_memberships tm on tm.tenant_id = a.tenant_id
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and a.id = application_status_history.application_id
+    )
+    or auth.role() = 'service_role'
+  );
+
+create policy "Application history manageable by tenant recruiters"
+  on public.application_status_history for all
+  using (
+    EXISTS (
+      select 1 from public.applications a
+      join public.tenant_memberships tm on tm.tenant_id = a.tenant_id
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and a.id = application_status_history.application_id
+        and tm.membership_role in ('owner','admin','manager','recruiter')
+    )
+    or auth.role() = 'service_role'
+  )
+  with check (
+    EXISTS (
+      select 1 from public.applications a
+      join public.tenant_memberships tm on tm.tenant_id = a.tenant_id
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and a.id = application_status_history.application_id
+        and tm.membership_role in ('owner','admin','manager','recruiter')
+    )
+    or auth.role() = 'service_role'
   );

@@ -136,46 +136,23 @@ create table public.role_permissions (
 
 -- WHAT:
 -- Associa uma pessoa a um papel, dentro de um escopo (global ou tenant).
-
 -- WHY:
 -- Uma pessoa pode ser admin_master (global) e tenant_admin (em outro tenant).
-
 -- ARCHITECTURE:
 -- - tenant_id NULL → global role (admin_master)
 -- - tenant_id preenchido → tenant-scoped role
--- - UNIQUE(person_id, role_id, tenant_id) — com COALESCE para globais
+-- - Índices parciais garantem unicidade tanto para global quanto tenant
 -- - Exemplo: evandro → admin_master (global) + tenant_admin (J&S)
 create table public.role_assignments (
   id              uuid primary key default gen_random_uuid(),
-
-  -- WHAT: Pessoa que recebe o papel
-  person_id       uuid not null
-    references public.people(id)
-    on delete cascade,
-
-  -- WHAT: Papel atribuído
-  role_id         uuid not null
-    references public.roles(id)
-    on delete cascade,
-
-  -- WHAT: Tenant de escopo (NULL para global)
-  -- WHY:  Distingue admin_master de tenant_admin
-  -- ARCH: NULL = global, preenchido = tenant
+  person_id       uuid not null references public.people(id) on delete cascade,
+  role_id         uuid not null references public.roles(id) on delete cascade,
   tenant_id       uuid references public.tenants(id) on delete cascade,
-
-  -- WHAT: Quem atribuiu
   assigned_by     uuid references public.people(id),
-
-  -- WHAT: Quando atribuído
   assigned_at     timestamptz not null default now(),
-  expires_at      timestamptz,
-
-  -- WHAT: Unicidade
-  -- WHY:  Evita duplicação de role assignment
-  -- ARCH: COALESCE(tenant_id, '00000000-0000-0000-0000-000000000000'::uuid)
-  -- para tratar NULL como escopo único para globais
-  unique (person_id, role_id, coalesce(tenant_id, '00000000-0000-0000-0000-000000000000'::uuid))
+  expires_at      timestamptz
 );
+
 
 -- -----------------------------------------------------------------------------
 -- Triggers: updated_at
@@ -200,6 +177,17 @@ create index idx_role_permissions_permission on public.role_permissions(permissi
 create index idx_role_assignments_person on public.role_assignments(person_id);
 create index idx_role_assignments_role on public.role_assignments(role_id);
 create index idx_role_assignments_tenant on public.role_assignments(tenant_id);
+
+-- Unique indexes using partial filters to replace COALESCE constraint
+-- Prevents duplicate global role assignments (tenant_id IS NULL)
+create unique index uq_role_assignments_global
+  on public.role_assignments (person_id, role_id)
+  where tenant_id is null;
+
+-- Prevents duplicate tenant-scoped role assignments
+create unique index uq_role_assignments_tenant
+  on public.role_assignments (person_id, role_id, tenant_id)
+  where tenant_id is not null;
 
 -- -----------------------------------------------------------------------------
 -- RLS (Row-Level Security)
@@ -284,7 +272,7 @@ create policy "Role assignments visible to self or admin"
         AND r.name = 'admin_master'
         AND ra2.tenant_id IS NULL
     )
-    OR auth.role() = 'service_role
+    OR auth.role() = 'service_role'
   );
 
 create policy "Role assignments manageable by global admin or tenant admin"

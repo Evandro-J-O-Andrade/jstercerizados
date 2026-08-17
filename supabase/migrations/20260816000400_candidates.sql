@@ -2,16 +2,14 @@
 -- GATE-DATA-04.004 — CANDIDATES: Profissionais em contexto de recrutamento
 -- =============================================================================
 -- Entity: candidates (contexto de recrutamento dentro de um tenant)
--- Related: candidate_experiences, candidate_education, candidate_skills,
---          candidate_languages, candidate_courses, candidate_documents,
---          candidate_availability
+-- Related: candidate_skills, skills (global)
 -- Schema: public
 -- Order: 4
--- Dependencies: 001_core (people), 002_identity, 003_companies (skills)
+-- Dependencies: 001_core (people, tenants), 002_identity
 -- =============================================================================
 -- Purpose:
 --   Representar o contexto de uma pessoa como candidata dentro de um tenant,
---   juntamente com seu currículo estruturado.
+--   juntamente com seu currículo estruturado e habilidades.
 --
 -- Rules (per GATE-DATA-03 §1.0 Portability + §1.0.1 Security + §1.0 Regra de IDs):
 --   - people is the canonical identity — candidates is a TENANT-SCOPED context
@@ -68,37 +66,7 @@ create trigger update_skills_updated_at
   for each row execute procedure public.update_updated_at();
 
 -- -----------------------------------------------------------------------------
--- 2. candidate_skills — Relação candidato → habilidade (global)
--- -----------------------------------------------------------------------------
-
--- WHAT:
--- Habilidades associadas a um candidato dentro de um contexto.
-
--- WHY:
--- Precisamos saber quais habilidades cada candidato possui.
-
--- ARCHITECTURE:
--- TENANT scope: o candidato é contextual. Associamos skills canônicas (global)
--- ao contexto de candidato (tenant) com proficiência e experiência.
-create table public.candidate_skills (
-  id                  uuid primary key default gen_random_uuid(),
-  candidate_id        uuid not null references public.candidates(id) on delete cascade,
-  skill_id            uuid not null references public.skills(id),
-  proficiency         varchar(20)
-                        check (proficiency in ('basic','intermediate','advanced','expert')),
-  years_experience    numeric(3,1),
-  last_used_at        timestamptz,
-  created_at          timestamptz not null default now(),
-
-  -- Uma habilidade não pode ser cadastrada duas vezes para o mesmo candidato
-  unique (candidate_id, skill_id)
-);
-
-create index idx_candidate_skills_candidate on public.candidate_skills(candidate_id);
-create index idx_candidate_skills_skill on public.candidate_skills(skill_id);
-
--- -----------------------------------------------------------------------------
--- 3. candidates — Contexto de recrutamento dentro de um tenant
+-- 2. candidates — Contexto de recrutamento dentro de um tenant
 --    A entidade de pessoa continua em `people`
 -- -----------------------------------------------------------------------------
 
@@ -140,14 +108,14 @@ create table public.candidates (
   salary_expectation_min numeric(10,2),
   salary_expectation_max numeric(10,2),
   salary_type          varchar(20)
-                           check (salary_type in ('range','monthly','negotiate'))
-                           default 'negotiate',
+                            check (salary_type in ('range','monthly','negotiate'))
+                            default 'negotiate',
 
   -- WHAT: Quando o candidato está disponível para iniciar
   -- WHY:  Informação crucial para triagem de processos
-  -- ARCH: JSONB permite estrutura flexível sem schema rigid
+  -- ARCH: JSONB permite estrutura flexível sem schema rigido
   availability           jsonb
-                           default '{"type":"immediate","notice_period_days":0}'::jsonb,
+                            default '{"type":"immediate","notice_period_days":0}'::jsonb,
 
   -- WHAT: Como o candidato chegou (site, indicação, WhatsApp)
   -- WHY:  Métrica de aquisição de talentos
@@ -158,7 +126,7 @@ create table public.candidates (
   -- WHY:  Permite arquivamento sem deletar dados
   -- ARCH: TENANT-scoped — outro tenant vê status próprio
   status                 varchar(20) not null default 'active'
-                           check (status in ('active','inactive','archived','blacklisted')),
+                         check (status in ('active','inactive','archived','blacklisted')),
 
   -- WHAT: Metadados para customizações sem migrations
   -- WHY:  Extensibilidade sem alterar schema
@@ -195,6 +163,36 @@ create trigger update_candidates_updated_at
   for each row execute procedure public.update_updated_at();
 
 -- -----------------------------------------------------------------------------
+-- 3. candidate_skills — Relação candidato → habilidade (global)
+-- -----------------------------------------------------------------------------
+
+-- WHAT:
+-- Habilidades associadas a um candidato dentro de um contexto.
+
+-- WHY:
+-- Precisamos saber quais habilidades cada candidato possui.
+
+-- ARCHITECTURE:
+-- TENANT scope: o candidato é contextual. Associamos skills canônicas (global)
+-- ao contexto de candidato (tenant) com proficiência e experiência.
+create table public.candidate_skills (
+  id                  uuid primary key default gen_random_uuid(),
+  candidate_id        uuid not null references public.candidates(id) on delete cascade,
+  skill_id            uuid not null references public.skills(id),
+  proficiency         varchar(20)
+                        check (proficiency in ('basic','intermediate','advanced','expert')),
+  years_experience    numeric(3,1),
+  last_used_at        timestamptz,
+  created_at          timestamptz not null default now(),
+
+  -- Uma habilidade não pode ser cadastrada duas vezes para o mesmo candidato
+  unique (candidate_id, skill_id)
+);
+
+create index idx_candidate_skills_candidate on public.candidate_skills(candidate_id);
+create index idx_candidate_skills_skill on public.candidate_skills(skill_id);
+
+-- -----------------------------------------------------------------------------
 -- RLS (Row-Level Security)
 -- -----------------------------------------------------------------------------
 
@@ -202,7 +200,7 @@ create trigger update_candidates_updated_at
 -- Candidates são scoped ao tenant via cadeia people → tenant_memberships.
 
 -- WHY:
--- Previne acesso a candidatos de outro tenant, mesmo que o cliente envie
+-- Previne acesso a candidatos de outro tenant, mesmo queo cliente envie
 -- o ID correto.
 
 -- ARCH:
@@ -222,36 +220,36 @@ alter table public.candidates enable row level security;
 create policy "Candidates visible to tenant members"
   on public.candidates for select
   using (
-    tenant_id IN (
-      SELECT tm.tenant_id
-      FROM public.tenant_memberships tm
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
+    tenant_id in (
+      select tm.tenant_id
+      from public.tenant_memberships tm
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   );
 
 create policy "Candidates manageable by tenant admins"
   on public.candidates for all
   using (
-    tenant_id IN (
-      SELECT tm.tenant_id
-      FROM public.tenant_memberships tm
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
+    tenant_id in (
+      select tm.tenant_id
+      from public.tenant_memberships tm
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and tm.membership_role in ('owner','admin','manager','recruiter')
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   )
   with check (
-    tenant_id IN (
-      SELECT tm.tenant_id
-      FROM public.tenant_memberships tm
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
+    tenant_id in (
+      select tm.tenant_id
+      from public.tenant_memberships tm
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and tm.membership_role in ('owner','admin','manager','recruiter')
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   );
 
 -- -----------------------------------------------------------------------------
@@ -262,39 +260,39 @@ alter table public.candidate_skills enable row level security;
 create policy "Candidate skills visible to tenant members"
   on public.candidate_skills for select
   using (
-    EXISTS (
-      SELECT 1 FROM public.candidates c
-      JOIN public.tenant_memberships tm ON tm.tenant_id = c.tenant_id
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND c.id = candidate_skills.candidate_id
+    exists (
+      select 1 from public.candidates c
+      join public.tenant_memberships tm on tm.tenant_id = c.tenant_id
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and c.id = candidate_skills.candidate_id
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   );
 
 create policy "Candidate skills manageable by tenant admins"
   on public.candidate_skills for all
   using (
-    EXISTS (
-      SELECT 1 FROM public.candidates c
-      JOIN public.tenant_memberships tm ON tm.tenant_id = c.tenant_id
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND c.id = candidate_skills.candidate_id
-        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
+    exists (
+      select 1 from public.candidates c
+      join public.tenant_memberships tm on tm.tenant_id = c.tenant_id
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and c.id = candidate_skills.candidate_id
+        and tm.membership_role in ('owner','admin','manager','recruiter')
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   )
   with check (
-    EXISTS (
-      SELECT 1 FROM public.candidates c
-      JOIN public.tenant_memberships tm ON tm.tenant_id = c.tenant_id
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
-        AND c.id = candidate_skills.candidate_id
-        AND tm.membership_role IN ('owner', 'admin', 'manager', 'recruiter')
+    exists (
+      select 1 from public.candidates c
+      join public.tenant_memberships tm on tm.tenant_id = c.tenant_id
+      join public.people p on tm.person_id = p.id
+      where p.auth_user_id = auth.uid()
+        and c.id = candidate_skills.candidate_id
+        and tm.membership_role in ('owner','admin','manager','recruiter')
     )
-    OR auth.role() = 'service_role'
+    or auth.role() = 'service_role'
   );
 
 -- -----------------------------------------------------------------------------
@@ -302,11 +300,11 @@ create policy "Candidate skills manageable by tenant admins"
 -- -----------------------------------------------------------------------------
 alter table public.skills enable row level security;
 
-create policy "Skills visible to authenticated"
+create policy "skills visible to authenticated"
   on public.skills for select
   using (auth.role() = 'authenticated');
 
-create policy "Skills manageable by admins"
+create policy "skills manageable by admins"
   on public.skills for all
   using (auth.role() = 'service_role')
   with check (auth.role() = 'service_role');

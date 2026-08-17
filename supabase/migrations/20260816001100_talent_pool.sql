@@ -135,7 +135,7 @@ begin
   if new.status = 'removed' and new.removed_at is null then
     new.removed_at := now();
   end if;
-  if new.status = 'active' and new.conset_status = 'revoked' then
+  if new.status = 'active' and new.consent_status = 'revoked' then
     raise exception 'Cannot set active with revoked consent';
   end if;
   return new;
@@ -215,7 +215,7 @@ create table public.candidate_preferences (
   -- WHAT: Versão do algoritmo usado no último matching
   last_match_version  varchar(20),
 
-  preferences_version varchar(20) not in ('1.0'),
+  preferences_version varchar(20) check (preferences_version in ('1.0')),
 
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now()
@@ -306,7 +306,7 @@ create table public.job_matches (
   reasons             jsonb not null default '{}'::jsonb,
 
   -- WHAT: Algoritmo version
-  algorithm_version   varchar(20) not in ('1.0'),
+  algorithm_version   varchar(20) check (algorithm_version in ('1.0')),
 
   -- WHAT: Estado do match
   is_eligible         boolean not null default true,
