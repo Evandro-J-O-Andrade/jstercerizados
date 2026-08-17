@@ -8,6 +8,29 @@
 
 ## 1. Princípios Fundamentais
 
+### 1.0 Portabilidade: domínio separado de infraestrutura
+
+> **Nenhuma tabela de domínio pode depender diretamente de uma implementação proprietária de infraestrutura quando existir uma abstração de domínio equivalente.**
+
+Exemplos de domínio (portáveis):
+
+- `people`, `tenants`, `companies`, `jobs`, `applications`, `recruitment_processes`, `leads`, `communication_channels`, `automation_queue`, `files`, `audit_logs`, `tickets`, `services`, `notifications`
+
+Exemplos de infraestrutura proprietária (Supabase):
+
+- `auth.users` — substituível por Keycloak, Auth.js, Firebase Auth, etc.
+- `Supabase Storage` — substituível por S3, R2, MinIO, etc.
+- `Supabase Edge Functions` — substituível por workers próprios
+
+**Implicações:**
+
+1. Tabelas de domínio usam `tenant_id` para escopo multi-tenant (não usuário global)
+2. `auth.users` é referenciado via `people.auth_user_id` (FK opcional, UNIQUE)
+3. `files` armazena metadados + referência do objeto (provider, bucket, object_key), não depende da estrutura interna do Supabase Storage
+4. Integrações (WhatsApp, e-mail, SMS, Google, LinkedIn) são modeladas como `communication_channels` e `integrations` — não acopladas ao provedor
+
+Isso permite migrar futuramente de Supabase para hosting próprio sem reconstruir o SaaS.
+
 ### 1.1 Pessoas é a entidade de negócio
 
 ```text
