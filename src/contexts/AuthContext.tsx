@@ -54,7 +54,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // 1. Get person from auth.users.id
       const { data: personData, error: personError } = await supabase
         .from('people')
         .select('*')
@@ -67,7 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // 2. Get primary tenant membership
       const { data: membershipData } = await supabase
         .from('tenant_memberships')
         .select('tenant_id')
@@ -77,18 +75,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .limit(1)
         .maybeSingle();
 
-      // 3. Get roles
-      const { data: roleData } = await supabase.rpc('get_user_roles', {
-        auth_uid: authUserId,
-      });
+      const { data: roleAssignments } = await supabase
+        .from('role_assignments')
+        .select('role_id, expires_at')
+        .eq('person_id', personData.id)
+        .or('expires_at.is.null,expires_at.gt.now()');
 
-      const isAdminMaster = roleData?.some(
+      const roleIds = Array.from(
+        new Set(
+          (roleAssignments || []).map((ra: any) => ra.role_id).filter(Boolean),
+        ),
+      );
+
+      const { data: roles } = await supabase
+        .from('roles')
+        .select('id, name, is_global')
+        .in('id', roleIds);
+
+      const isAdminMaster = (roles || []).some(
         (r: { name: string; is_global: boolean }) =>
           r.name === 'admin_master' && r.is_global === true,
       );
 
       const primaryRole =
-        roleData?.find((r: { is_global: boolean }) => !r.is_global)?.name ||
+        (roles || []).find((r: { is_global: boolean }) => !r.is_global)?.name ||
         'member';
 
       setProfile({
