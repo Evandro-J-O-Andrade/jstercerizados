@@ -227,7 +227,7 @@ begin
     from public.role_assignments ra
     join public.roles r on r.id = ra.role_id
     join public.role_resource_permissions rrp on rrp.role_id = r.id
-    where ra.actor_person_id = v_person_id
+    where ra.person_id = v_person_id
       and r.is_global = true
       and r.is_active = true
       and rrp.resource = p_resource
@@ -245,8 +245,8 @@ begin
       from public.role_assignments ra
       join public.roles r on r.id = ra.role_id
       join public.role_resource_permissions rrp on rrp.role_id = r.id
-      join public.tenant_memberships tm on tm.id = ra.tenant_membership_id
-      where ra.actor_person_id = v_person_id
+      join public.tenant_memberships tm on tm.tenant_id = ra.tenant_id
+      where ra.person_id = v_person_id
         and r.is_global = false
         and r.is_active = true
         and rrp.resource = p_resource
@@ -334,12 +334,16 @@ create policy "People: tenant_admin can manage within tenant"
     and (
       select p.id from public.people p where p.auth_user_id = auth.uid()
     ) in (
-      select ra.actor_person_id
+      select ra.person_id
       from public.role_assignments ra
       join public.roles r on r.id = ra.role_id
-      join public.tenant_memberships tm on tm.id = ra.tenant_membership_id
       where r.name = 'tenant_admin'
         and r.is_global = false
+        and ra.tenant_id in (
+          select tm.tenant_id from public.tenant_memberships tm
+          join public.people p on p.id = tm.person_id
+          where p.auth_user_id = auth.uid()
+        )
         and (ra.expires_at is null or ra.expires_at > now())
     )
   );
@@ -669,7 +673,8 @@ create policy "Roles: admin_master only"
     AND EXISTS (
       SELECT 1 FROM public.role_assignments ra
       JOIN public.roles r ON r.id = ra.role_id
-      WHERE ra.actor_person_id = (SELECT id FROM public.people WHERE auth_user_id = auth.uid())
+      WHERE ra.person_id = (SELECT id FROM 
+public.people WHERE auth_user_id = auth.uid())
         AND r.name = 'admin_master'
         AND r.is_global = true
         AND (ra.expires_at IS NULL OR ra.expires_at > now())
@@ -680,7 +685,8 @@ create policy "Roles: admin_master only"
     AND EXISTS (
       SELECT 1 FROM public.role_assignments ra
       JOIN public.roles r ON r.id = ra.role_id
-      WHERE ra.actor_person_id = (SELECT id FROM public.people WHERE auth_user_id = auth.uid())
+      WHERE ra.person_id = (SELECT id FROM 
+public.people WHERE auth_user_id = auth.uid())
         AND r.name = 'admin_master'
         AND r.is_global = true
         AND (ra.expires_at IS NULL OR ra.expires_at > now())
@@ -694,7 +700,8 @@ create policy "Role resource permissions: admin_master only"
     AND EXISTS (
       SELECT 1 FROM public.role_assignments ra
       JOIN public.roles r ON r.id = ra.role_id
-      WHERE ra.actor_person_id = (SELECT id FROM public.people WHERE auth_user_id = auth.uid())
+      WHERE ra.person_id = (SELECT id FROM 
+public.people WHERE auth_user_id = auth.uid())
         AND r.name = 'admin_master'
         AND r.is_global = true
         AND (ra.expires_at IS NULL OR ra.expires_at > now())
@@ -705,7 +712,8 @@ create policy "Role resource permissions: admin_master only"
     AND EXISTS (
       SELECT 1 FROM public.role_assignments ra
       JOIN public.roles r ON r.id = ra.role_id
-      WHERE ra.actor_person_id = (SELECT id FROM public.people WHERE auth_user_id = auth.uid())
+      WHERE ra.person_id = (SELECT id FROM 
+public.people WHERE auth_user_id = auth.uid())
         AND r.name = 'admin_master'
         AND r.is_global = true
         AND (ra.expires_at IS NULL OR ra.expires_at > now())
