@@ -1651,4 +1651,4 @@ Frontend começa a consumir Supabase
 
 ---
 
-*Documento criado em 16/08/2026. Fonte única para arquitectura de dados do J&S Empregos. Atualizado com módulos de integração, comunicação, storage e calendário.
+_Documento criado em 16/08/2026. Fonte única para arquitetura de dados do J&S Empregos. Atualizado com módulos de integração, comunicação, storage, calendário, product-led growth, matching engine e regras de produto consolidadas._
