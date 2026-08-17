@@ -509,38 +509,121 @@ CREATE TABLE candidate_skills (
 
 ### 3.10 Jobs
 
+**Regra arquitetural:** Uma vaga pertence a um tenant e referencia o relacionamento comercial com a empresa contratante.
+
+```text
+jobs
+   │
+   ├── tenant_id        ← escopo do SaaS
+   └── company_relationship_id → company_relationships
+                                    │
+                                    ├── company
+                                    └── tenant
+```
+
+**Decisões importantes:**
+
+1. `jobs.company_id` **não deve existir** — usar `company_relationship_id` para garantir escopo comercial
+2. `slug` é `UNIQUE (tenant_id, slug)` — não global (cada tenant tem sua namespace de vagas)
+3. `salary_type` usa enum canônico (`range`, `monthly`, `negotiate`) — preserva editorial dos mocks
+4. `work_mode` usa enum (`onsite`, `hybrid`, `remote`) — compatível com `PRESENCIAL`/`HIBRIDO`/`REMOTO` do mock
+5. `contract_type` usa snake_case (`clt`, `internship`, etc.) — normalizado do modelo legacy
+6. `status` inclui `draft` como estado inicial — vaga não visível até publicada
+
 ```sql
 CREATE TABLE jobs (
-    id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id       UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-    company_id      UUID          REFERENCES companies(id),
-    title           VARCHAR(200)  NOT NULL,
-    slug            VARCHAR(200)  UNIQUE NOT NULL,
-    description     TEXT,
-    responsibilities TEXT,
-    requirements    TEXT,
-    benefits        TEXT,
-    salary_min      NUMERIC(10,2),
-    salary_max      NUMERIC(10,2),
-    salary_type     VARCHAR(20)   CHECK (salary_type IN ('range', 'monthly', 'negotiate')) DEFAULT 'negotiate',
-    contract_type   VARCHAR(20)   CHECK (contract_type IN ('clt', 'internship', 'temporary', 'freelance', 'contracted', 'cd')) DEFAULT 'clt',
-    seniority       VARCHAR(20)   CHECK (seniority IN ('internship', 'junior', 'mid', 'senior', 'master', 'leadership')),
-    work_hours      VARCHAR(50),
-    work_mode       VARCHAR(20)   CHECK (work_mode IN ('onsite', 'hybrid', 'remote')) DEFAULT 'onsite',
-    city            VARCHAR(100),
-    state           VARCHAR(2),
-    location_detail VARCHAR(255),
-    status          VARCHAR(20)   DEFAULT 'draft'
-                                   CHECK (status IN ('draft', 'published', 'archived', 'hired', 'expired')),
-    views_count     INTEGER       DEFAULT 0,
-    applications_count INTEGER    DEFAULT 0,
-    published_at    TIMESTAMP,
-    expires_at      TIMESTAMP,
-    created_at      TIMESTAMP     DEFAULT NOW(),
-    updated_at      TIMESTAMP     DEFAULT NOW(),
+    id                  UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    -- WHAT: Escopo do tenant que está divulgando a vaga
+    -- WHY:  Vaga é contexto de recrutamento, não entidade global
+    -- ARCH: RLS chain: auth.uid → people → tenant_memberships → tenant
+    tenant_id           UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+
+    -- WHAT: Relacionamento comercial com a empresa contratante
+    -- WHY:  Garante que a empresa possua tipo de relacionamento válido
+    -- ARCH: NÃO usar company_id diretamente — evita vaga para empresa sem relacionamento
+    company_relationship_id UUID REFERENCES company_relationships(id),
+
+    -- WHAT: Identidade canônica da vaga
+    -- WHY:  URL amigável e SEO-friendly
+    -- ARCH: UNIQUE(tenant_id, slug) — tenant tem seu próprio namespace
+    title               VARCHAR(200)  NOT NULL,
+    slug                VARCHAR(200)  NOT NULL,
+    description         TEXT,
+    responsibilities    TEXT,
+    requirements        TEXT,
+    benefits            TEXT,
+
+    -- WHAT: Dados de remuneração
+    -- WHY:  Preservar valores editoriais (R$ 10.56/h, R$ 15.56/h, etc.)
+    -- ARCH: salary_type permite range (min/max) ou monthly (fixo)
+    salary_min          NUMERIC(10,2),
+    salary_max          NUMERIC(10,2),
+    salary_type         VARCHAR(20)   CHECK (salary_type IN ('range', 'monthly', 'negotiate')) DEFAULT 'negotiate',
+
+    -- WHAT: Tipo de contrato
+    -- WHY:  Mapear legado: CLT → clt, ESTAGIO → internship, etc.
+    contract_type       VARCHAR(20)   CHECK (contract_type IN ('clt', 'internship', 'temporary', 'freelance', 'contracted', 'cd')) DEFAULT 'clt',
+
+    -- WHAT: Nível de senioridade
+    seniority           VARCHAR(20)   CHECK (seniority IN ('internship', 'junior', 'mid', 'senior', 'master', 'leadership')),
+
+    -- WHAT: Jornada e local
+    work_hours          VARCHAR(50),
+    work_mode           VARCHAR(20)   CHECK (work_mode IN ('onsite', 'hybrid', 'remote')) DEFAULT 'onsite',
+    city                VARCHAR(100),
+    state               VARCHAR(2),
+    location_detail     VARCHAR(255),
+
+    -- WHAT: Ciclo de vida da vaga
+    -- WHY:  draft → published → hired/expired (nunca deletar)
+    status              VARCHAR(20)   DEFAULT 'draft'
+                                       CHECK (status IN ('draft', 'published', 'archived', 'hired', 'expired')),
+
+    -- WHAT: Métricas
+    views_count         INTEGER       DEFAULT 0,
+    applications_count  INTEGER       DEFAULT 0,
+
+    -- WHAT: Timeline
+    published_at        TIMESTAMP,
+    expires_at          TIMESTAMP,
+
+    -- WHAT: Auditoria
+    created_by          UUID          REFERENCES people(id),
+    created_at          TIMESTAMP     DEFAULT NOW(),
+    updated_at          TIMESTAMP     DEFAULT NOW(),
+
+    -- What: Unicidade do slug dentro do tenant
     UNIQUE(tenant_id, slug)
 );
 ```
+
+#### Mapeando campos do mock legacy
+
+| Campo Legacy (`mock/vagas.ts`) | Campo Core (`jobs`)                              | Observação                                                 |
+| ------------------------------ | ------------------------------------------------ | ---------------------------------------------------------- |
+| `titulo`                       | `title`                                          |                                                            |
+| `slug`                         | `slug`                                           | Unique por tenant                                          |
+| `empresa`                      | `company_relationship_id → company.trading_name` | Via relacionamento                                         |
+| `cidade` / `estado`            | `city` / `state`                                 |                                                            |
+| `tipoContrato`                 | `contract_type`                                  | Map: CLT→clt, FREELA→freelance, etc.                       |
+| `nivel`                        | `seniority`                                      | Map: JUNIOR→junior, SENIOR→senior, etc.                    |
+| `salarioMin` / `salarioMax`    | `salary_min` / `salary_max`                      | Preservar valores editoriais                               |
+| `modalidade`                   | `work_mode`                                      | Map: PRESENCIAL→onsite, REMOTO→remote, HIBRIDO→hybrid      |
+| `beneficios`                   | `benefits`                                       | TEXT ou JSONB                                              |
+| `responsibilities`             | `responsibilities`                               |                                                            |
+| `requisitos`                   | `requirements`                                   |                                                            |
+| `descricao`                    | `description`                                    |                                                            |
+| `area`                         | `metadata->area`                                 | Campo livre                                                |
+| `workload`                     | `work_hours`                                     |                                                            |
+| `workSchedule`                 | `metadata->schedule`                             | Campo livre                                                |
+| `vagas`                        | `metadata->quantity`                             | Campo livre                                                |
+| `status`                       | `status`                                         | Map: ATIVA→published, ARQUIVADA→archived, CONTRATADA→hired |
+| `dataPublicacao`               | `published_at`                                   |                                                            |
+
+#### Preservação de vagas editoriais
+
+As **15 vagas da J&S Empregos LTDA** e seus valores salariais (R$ 10,56/h, R$ 15,56/h, etc.) estão preservados no `004_seed` ou migration de seed. **Nenhum valor editorial será simplificado ou substituído.**
 
 ### 3.11 Job Skills
 
@@ -558,14 +641,24 @@ CREATE TABLE job_skills (
 
 ### 3.12 Applications (Candidaturas)
 
+**Regra arquitetural:** Candidatura é a relação entre `candidate`, `job`, e `tenant`.
+
+```text
+applications
+   │
+   ├── tenant_id
+   ├── candidate_id → candidates (contexto de recrutamento)
+   └── job_id → jobs
+```
+
 ```sql
 CREATE TABLE applications (
     id                  UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id           UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     job_id              UUID          NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
-    candidate_id        UUID          NOT NULL REFERENCES candidate_profiles(id) ON DELETE CASCADE,
+    candidate_id        UUID          NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
     current_stage       VARCHAR(50)   DEFAULT 'submitted'
-                                   CHECK (current_stage IN ('submitted', 'screening', 'interview', 'offer', 'hired', 'rejected', 'withdrawn')),
+                                       CHECK (current_stage IN ('submitted', 'screening', 'interview', 'offer', 'hired', 'rejected', 'withdrawn')),
     notes               TEXT,
     applied_at          TIMESTAMP     DEFAULT NOW(),
     updated_at          TIMESTAMP     DEFAULT NOW(),
