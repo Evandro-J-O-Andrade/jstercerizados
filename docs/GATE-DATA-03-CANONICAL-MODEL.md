@@ -1000,44 +1000,167 @@ CREATE TABLE automation_queue (
 );
 ```
 
-### 3.21 Roles & Permissions (RBAC por tenant)
+### 3.21 Roles & Permissions (RBAC canônico — Global + Tenant)
+
+#### Modelo de dois níveis
+
+```text
+GLOBAL ROLES
+    │
+    └── admin_master
+            │
+            ├── platform_administrator
+            ├── support_engineer
+            └── tenant_owner
+
+TENANT ROLES
+    │
+    ├── tenant_admin
+    ├── rh_manager
+    ├── recruiter
+    ├── finance
+    ├── support
+    ├── content_manager
+    └── viewer
+```
+
+#### Decisões arquitetônicas
+
+| #   | Decisão                                                | Justificativa                                     |
+| --- | ------------------------------------------------------ | ------------------------------------------------- |
+| 1   | RBAC com dois níveis (global + tenant)                 | Permite crescimento sem coleção de exceções       |
+| 2   | `roles` tem `is_global` boolean                        | Distingue admin_master de tenant roles            |
+| 3   | `permissions` são canônicas/global                     | Mesmo namespace de permissões em todos os tenants |
+| 4   | `role_permissions` scoped por role                     | Cada role herda conjunto de permissões            |
+| 5   | `role_assignments` scoped por tenant                   | Uma pessoa pode ter roles diferentes por tenant   |
+| 6   | `admin_master` não acessa dados privados sem auditoria | Todo acesso gera `audit_log`                      |
+| 7   | Credenciais de seed via secret manager, não no Git     | Nenhum password em migration/seed versionado      |
+| 8   | Todos usuários podem trocar senha                      | Regra global de segurança                         |
+
+#### Relacionamento com tenant_memberships
+
+```text
+auth.uid()
+    ↓
+people
+    │
+    ├── auth_user_id (1:1 com auth.users)
+    │
+    ▼
+tenant_memberships
+    │
+    ├── person_id
+    ├── role_id (via role_assignments)
+    └── tenant_id
+```
+
+#### Credenciais de admin master
+
+**NÃO** em migrations/seed.
+
+Devem ser provisionadas via:
+
+```text
+Secret Manager / Environment Variables
+    ↓
+Supabase CLI / API
+    ↓
+bootstrap_admin.sql (one-time, non-versioned)
+```
+
+Com fluxo:
+
+```text
+1. Password temporária
+2. Força troca no primeiro login
+3. Obrigatório 2FA para admin_master
+```
+
+#### Tabela de roles (revisada)
 
 ```sql
 CREATE TABLE roles (
     id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id       UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     name            VARCHAR(50)   NOT NULL,
     description     VARCHAR(255),
+    is_global       BOOLEAN       NOT NULL DEFAULT FALSE,
     created_at      TIMESTAMP     DEFAULT NOW(),
-    UNIQUE(tenant_id, name)
+    UNIQUE(name, is_global)
 );
 
+-- Global roles
+INSERT INTO roles (name, is_global, description) VALUES
+  ('admin_master', TRUE, 'Plataforma — acesso global com auditoria'),
+  ('platform_admin', TRUE, 'Administração da plataforma'),
+  ('support_engineer', TRUE, 'Suporte técnico global');
+
+-- Tenant roles (default template)
+INSERT INTO roles (name, is_global, description) VALUES
+  ('tenant_admin', FALSE, 'Administração do tenant'),
+  ('rh_manager', FALSE, 'Gestão de RH'),
+  ('recruiter', FALSE, 'Recrutamento e triagem'),
+  ('finance', FALSE, 'Financeiro'),
+  ('support', FALSE, 'Atendimento ao cliente'),
+  ('content_manager', FALSE, 'Conteúdo do site'),
+  ('viewer', FALSE, 'Apenas leitura');
+```
+
+#### Tabela de permissions (global namespace)
+
+```sql
 CREATE TABLE permissions (
     id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id       UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-    name            VARCHAR(100)  NOT NULL,
+    name            VARCHAR(100)  NOT NULL UNIQUE,
     module          VARCHAR(50),
     description     VARCHAR(255),
-    created_at      TIMESTAMP     DEFAULT NOW(),
-    UNIQUE(tenant_id, name)
+    created_at      TIMESTAMP     DEFAULT NOW()
 );
 
+-- Exemplos canônicos
+INSERT INTO permissions (name, module, description) VALUES
+  ('people.read', 'core', 'Visualizar pessoas'),
+  ('people.update', 'core', 'Atualizar pessoas'),
+  ('candidates.read', 'recruitment', 'Visualizar candidatos'),
+  ('candidates.create', 'recruitment', 'Criar candidatos'),
+  ('jobs.read', 'recruitment', 'Visualizar vagas'),
+  ('jobs.create', 'recruitment', 'Criar vagas'),
+  ('jobs.publish', 'recruitment', 'Publicar vagas'),
+  ('applications.read', 'recruitment', 'Visualizar candidaturas'),
+  ('applications.update', 'recruitment', 'Atualizar candidaturas'),
+  ('applications.reject', 'recruitment', 'Rejeitar candidaturas'),
+  ('companies.read', 'core', 'Visualizar empresas'),
+  ('companies.create', 'core', 'Criar empresas'),
+  ('finance.read', 'finance', 'Acessar dados financeiros'),
+  ('finance.create', 'finance', 'Criar lançamentos'),
+  ('audit.read', 'platform', 'Visualizar logs de auditoria'),
+  ('roles.manage', 'platform', 'Gerenciar papéis'),
+  ('tenant.manage', 'platform', 'Administrar tenant');
+```
+
+#### Tabela de role_permissions
+
+```sql
 CREATE TABLE role_permissions (
     id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id       UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     role_id         UUID          NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
     permission_id   UUID          NOT NULL REFERENCES permissions(id) ON DELETE CASCADE,
     granted_at      TIMESTAMP     DEFAULT NOW(),
-    UNIQUE(tenant_id, role_id, permission_id)
+    UNIQUE(role_id, permission_id)
 );
+```
 
-CREATE TABLE role_user (
+#### Tabela de role_assignments (scoped por tenant)
+
+```sql
+CREATE TABLE role_assignments (
     id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id       UUID          NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    tenant_id       UUID          REFERENCES tenants(id) ON DELETE CASCADE,
     person_id       UUID          NOT NULL REFERENCES people(id) ON DELETE CASCADE,
-    role_id         UUID          NOT NULL REFERENCES roles(id),
-    assigned_by     UUID,  -- person_id
+    role_id         UUID          NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+    assigned_by     UUID          REFERENCES people(id),
     assigned_at     TIMESTAMP     DEFAULT NOW(),
+    -- UNIQUE por (person_id, role_id) quando global role
+    -- UNIQUE por (person_id, role_id, tenant_id) quando tenant role
     UNIQUE(tenant_id, person_id, role_id)
 );
 ```
@@ -1172,19 +1295,21 @@ WITH CHECK (
 ## 7. Próximos Passos
 
 1. **Aplicar migrations no Supabase** seguindo a ordem:
-   - `01_core.sql` (tenants, people, memberships, documents, consents)
-   - `02_candidate.sql` (candidate_profiles, education, experience, courses, languages, skills)
-   - `03_company.sql` (companies, company_services, contracts)
-   - `04_jobs.sql` (jobs, job_skills, applications, application_status_history)
-   - `05_recruitment.sql` (recruitment_processes, interviews, evaluations)
-   - `06_crm.sql` (leads, work_with_us_submissions, candidate_favorite_jobs)
-   - `07_communication.sql` (whatsapp_messages, email_messages)
-   - `08_automation.sql` (automation_events, automation_flows, automation_queue)
-   - `09_rbac.sql` (roles, permissions, role_permissions, role_user)
-   - `10_audit.sql` (audit_logs)
-   - `11_views.sql` (dashboard views)
-   - `12_rls.sql` (políticas de row-level security)
-
+   - `001_core.sql` (tenants, people, memberships, documents, consents)
+   - `002_identity.sql` (auth.users ↔ people trigger)
+   - `003_companies.sql` (companies, company_relationships, company_contacts)
+   - `004_candidates.sql` (candidates + skills GLOBAL + currículo estruturado)
+   - `005_jobs.sql` (jobs + job_skills, editorial vagas preservadas)
+   - `006_applications.sql` (applications + immutable status history + profile snapshot)
+   - `007_talent_pool.sql` (talent_pool_memberships + consentimento)
+   - `008_notifications.sql` (notifications system)
+   - `009_domain_events.sql` (domain_events queue — bridge para n8n)
+   - `010_storage.sql` (files metadata + references)
+   - `011_rbac.sql` (roles / permissions / role_permissions — prioridade máxima)
+   - `012_rls_policies.sql` (políticas consolidadas)
+   - `013_views.sql` (dashboard views)
+   - `014_seed.sql` (seed inicial — vagas editoriais preservadas)
+   - `017_migrate_mysql.sql` (migração de dados do MySQL legado)
 2. **Atualizar AuthContext** para usar `people_id` em vez de `user.id` direto
 
 3. **Migrar dados do MySQL** (se houver produção ativa)
