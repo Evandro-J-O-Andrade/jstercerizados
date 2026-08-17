@@ -212,9 +212,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string,
   ): Promise<{ error?: string }> => {
     setAuthError(null);
+    setIsLoading(true);
 
     const supabase = getSupabaseClient();
     if (!supabase) {
+      setIsLoading(false);
       return {
         error: normalizeError(
           new Error(
@@ -231,6 +233,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
+        setIsLoading(false);
         return { error: normalizeError(error).userMessage };
       }
 
@@ -243,6 +246,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return {
         error: normalizeError(error).userMessage,
       };
+    } finally {
+      setIsLoading(false);
     }
   };
 
