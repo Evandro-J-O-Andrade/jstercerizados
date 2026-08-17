@@ -11,20 +11,14 @@ import type { User, Session } from '@supabase/supabase-js';
 import { normalizeError } from '@/lib/error-normalizer';
 
 interface Profile {
-  id: string;
-  email: string;
+  id?: string;
+  auth_user_id?: string;
   full_name: string;
-  role:
-    | 'admin'
-    | 'candidato'
-    | 'empresa'
-    | 'rh'
-    | 'comercial'
-    | 'financeiro'
-    | 'atendimento';
+  email: string;
   phone?: string;
-  company_name?: string;
+  role: string;
   tenant_id?: string;
+  is_admin_master?: boolean;
 }
 
 interface AuthContextType {
@@ -53,21 +47,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  const loadProfile = useCallback(async (userId: string) => {
+  const loadProfile = useCallback(async (authUserId: string) => {
     try {
       const supabase = getSupabaseClient();
       if (!supabase) {
         return;
       }
 
-      const { data, error } = await supabase
-        .from('profiles')
+      // 1. Get person from auth.users.id
+      const { data: personData, error: personError } = await supabase
+        .from('people')
         .select('*')
-        .eq('id', userId)
+        .eq('auth_user_id', authUserId)
         .maybeSingle();
 
-      if (error) throw error;
-      setProfile(data);
+      if (personError) throw personError;
+      if (!personData) {
+        setProfile(null);
+        return;
+      }
+
+      // 2. Get primary tenant membership
+      const { data: membershipData } = await supabase
+        .from('tenant_memberships')
+        .select('tenant_id')
+        .eq('person_id', personData.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      // 3. Get roles
+      const { data: roleData } = await supabase.rpc('get_user_roles', {
+        auth_uid: authUserId,
+      });
+
+      const isAdminMaster = roleData?.some(
+        (r: { name: string; is_global: boolean }) =>
+          r.name === 'admin_master' && r.is_global === true,
+      );
+
+      const primaryRole =
+        roleData?.find((r: { is_global: boolean }) => !r.is_global)?.name ||
+        'member';
+
+      setProfile({
+        id: personData.id,
+        auth_user_id: personData.auth_user_id,
+        full_name: personData.full_name || '',
+        email: personData.email || '',
+        phone: personData.phone,
+        role: primaryRole,
+        tenant_id: membershipData?.tenant_id,
+        is_admin_master: isAdminMaster,
+      });
     } catch (error) {
       console.error('Erro ao carregar perfil:', error);
       setProfile(null);
@@ -86,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setAuthError(
               normalizeError(
                 new Error(
-                  'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.',
+                  'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY.',
                 ),
               ).userMessage,
             );
@@ -237,48 +270,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: profileData.full_name,
+            phone: profileData.phone ?? '',
+          },
+        },
       });
 
       if (error) {
         return { error: normalizeError(error).userMessage };
       }
 
-      if (data.user) {
-        const { data: profileRow, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user.id)
-          .maybeSingle();
-
-        if (profileError) {
-          console.error('Erro ao buscar perfil:', profileError);
-          setProfile(null);
-        } else {
-          setProfile(profileRow);
-        }
-
-        if (profileRow && !profileError) {
-          if (profileData.role === 'candidato') {
-            await supabase.from('candidates').insert({
-              tenant_id: profileRow.tenant_id,
-              profile_id: data.user.id,
-              name: profileData.full_name,
-              phone: profileData.phone ?? '',
-              email: profileData.email,
-              status: 'new',
-            });
-          } else if (profileData.role === 'empresa') {
-            await supabase.from('companies').insert({
-              tenant_id: profileRow.tenant_id,
-              name: profileData.company_name ?? profileData.full_name,
-              trading_name: profileData.company_name ?? profileData.full_name,
-              phone: profileData.phone ?? '',
-              email: profileData.email,
-              type: 'client',
-              status: 'active',
-            });
-          }
-        }
+      // Person creation is handled via DB trigger (002_identity_people_auth)
+      // Just wait for auth user to be confirmed
+      if (data.user && !data.user.email_confirmed_at) {
+        return { error: 'Verifique seu e-mail para confirmar a conta.' };
       }
 
       return {};
@@ -337,13 +344,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: 'Usuário não autenticado' };
       }
 
-      const { error } = await supabase
-        .from('profiles')
-        .update(data)
-        .eq('id', user.id);
+      const { error: updateError } = await supabase
+        .from('people')
+        .update({
+          full_name: data.full_name,
+          phone: data.phone,
+          email: data.email,
+        })
+        .eq('auth_user_id', user.id);
 
-      if (error) {
-        return { error: normalizeError(error).userMessage };
+      if (updateError) {
+        return { error: normalizeError(updateError).userMessage };
       }
 
       setProfile((prev) => (prev ? { ...prev, ...data } : null));

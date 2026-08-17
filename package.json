@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "provision:admin": "tsx scripts/provision-admin.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

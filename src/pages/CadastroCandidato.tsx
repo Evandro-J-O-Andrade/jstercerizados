@@ -49,7 +49,7 @@ export default function CandidateRegister() {
       const result = await registerUser(data.email, data.password, {
         email: data.email,
         full_name: data.full_name,
-        role: 'candidato',
+        role: 'candidato' as string,
         phone: data.phone,
       });
 
