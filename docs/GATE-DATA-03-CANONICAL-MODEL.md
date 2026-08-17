@@ -31,6 +31,42 @@ Exemplos de infraestrutura proprietária (Supabase):
 
 Isso permite migrar futuramente de Supabase para hosting próprio sem reconstruir o SaaS.
 
+### 1.0 Regra Canônica de IDs
+
+> **Toda entidade de domínio possui seu próprio UUID; `auth.users.id` não vira primary key de nenhuma tabela de negócio.**
+
+| Contexto          | Gerador do ID                    | Exemplo                 |
+| ----------------- | -------------------------------- | ----------------------- |
+| `auth.users.id`   | Supabase Auth                    | `a81d...` (técnico)     |
+| `people.id`       | PostgreSQL (`gen_random_uuid()`) | `7f2c...` (domínio)     |
+| `candidates.id`   | PostgreSQL                       | UUID próprio (contexto) |
+| `companies.id`    | PostgreSQL                       | UUID próprio (jurídica) |
+| `jobs.id`         | PostgreSQL                       | UUID próprio (vaga)     |
+| `applications.id` | PostgreSQL                       | UUID próprio (relação)  |
+
+**Princípio:**
+
+```text
+auth.users.id      ← técnico (autenticação)
+     │
+     │ auth_user_id (FK opcional, UNIQUE)
+     ▼
+people.id          ← domínio (identidade canônica)
+     │
+     ├── people.id → candidates.person_id
+     ├── people.id → company_contacts.person_id
+     └── etc.
+```
+
+**Regras:**
+
+1. `auth.users.id` não é primary key de nenhuma tabela de negócio
+2. `people.auth_user_id` é FK opcional (uma pessoa pode não ter login)
+3. Cada entidade de domínio (`candidates`, `jobs`, `applications`) possui seu próprio `id` UUID
+4. FKs representam relações; elas **não substituem** a identidade da entidade
+5. Exemplo proibido: `candidates.id = auth.users.id` ❌
+6. Exemplo correto: `candidates.person_id → people.id` ✅
+
 ### 1.0.1 Regra de segurança: identidade isolada de domínio
 
 > **Nenhuma migration nova será considerada "pronta" apenas porque o schema funciona. Ela precisa respeitar o modelo de segurança da plataforma: identidade → sessão → autorização → tenant isolation → RLS → constraints → aplicação segura.**
