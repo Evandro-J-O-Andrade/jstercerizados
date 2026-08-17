@@ -521,11 +521,15 @@ create policy "Status history: tenant members can see"
 create policy "Profile snapshots: tenant members can see"
   on public.application_profile_snapshots for select
   using (
-    tenant_id IN (
-      SELECT tm.tenant_id
-      FROM public.tenant_memberships tm
-      JOIN public.people p ON tm.person_id = p.id
-      WHERE p.auth_user_id = auth.uid()
+    EXISTS (
+      SELECT 1
+      FROM public.applications a
+      JOIN public.tenant_memberships tm
+        ON tm.tenant_id = a.tenant_id
+      JOIN public.people p
+        ON tm.person_id = p.id
+      WHERE a.id = application_profile_snapshots.application_id
+        AND p.auth_user_id = auth.uid()
     )
     OR auth.role() = 'service_role'
   );
