@@ -83,7 +83,8 @@ cross join (
     ('role_assignments', 'create'), ('role_assignments', 'read'), ('role_assignments', 'update'), ('role_assignments', 'delete'),
     ('roles', 'read')
 ) as res(resource, action)
-where r.name = 'admin_master';
+where r.name = 'admin_master'
+on conflict (role_id, resource, action) do nothing;
 
 -- tenant_admin: tenant-scoped access (no tenant creation/deletion)
 insert into public.role_resource_permissions (role_id, resource, action)
@@ -100,9 +101,10 @@ cross join (
     ('notification_deliveries', 'read'), ('notification_deliveries', 'create'), ('notification_deliveries', 'update'),
     ('domain_events', 'read'),
     ('skills', 'read'),
-    ('candidates', 'create'), ('candidate_skills', 'create'), ('candidate_skills', 'read')
+    ('candidate_skills', 'create'), ('candidate_skills', 'read')
 ) as res(resource, action)
-where r.name = 'tenant_admin';
+where r.name = 'tenant_admin'
+on conflict (role_id, resource, action) do nothing;
 
 -- rh_manager: HR management within tenant
 insert into public.role_resource_permissions (role_id, resource, action)
@@ -119,7 +121,8 @@ cross join (
     ('skills', 'read'),
     ('candidate_skills', 'read')
 ) as res(resource, action)
-where r.name = 'rh_manager';
+where r.name = 'rh_manager'
+on conflict (role_id, resource, action) do nothing;
 
 -- recruiter: read + application management
 insert into public.role_resource_permissions (role_id, resource, action)
@@ -133,7 +136,8 @@ cross join (
     ('notifications', 'read'),
     ('notification_deliveries', 'read')
 ) as res(resource, action)
-where r.name = 'recruiter';
+where r.name = 'recruiter'
+on conflict (role_id, resource, action) do nothing;
 
 -- finance: read finance-related, no PII
 insert into public.role_resource_permissions (role_id, resource, action)
@@ -146,7 +150,8 @@ cross join (
     ('applications', 'read'),
     ('notifications', 'read')
 ) as res(resource, action)
-where r.name = 'finance';
+where r.name = 'finance'
+on conflict (role_id, resource, action) do nothing;
 
 -- viewer: read-only within tenant
 insert into public.role_resource_permissions (role_id, resource, action)
@@ -160,7 +165,8 @@ cross join (
     ('notifications', 'read'),
     ('skills', 'read')
 ) as res(resource, action)
-where r.name = 'viewer';
+where r.name = 'viewer'
+on conflict (role_id, resource, action) do nothing;
 
 -- member: own candidate data
 insert into public.role_resource_permissions (role_id, resource, action)
@@ -173,7 +179,8 @@ cross join (
     ('applications', 'read'),
     ('notifications', 'read')
 ) as res(resource, action)
-where r.name = 'member';
+where r.name = 'member'
+on conflict (role_id, resource, action) do nothing;
 
 -- -----------------------------------------------------------------------------
 -- Function: user_has_permission()
