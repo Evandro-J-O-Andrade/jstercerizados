@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Sitemap: https://jrtelempregos.com.br/sitemap.xml
+Sitemap: https://jsempregos.com/sitemap.xml
 
 User-agent: Googlebot
 Allow: /
