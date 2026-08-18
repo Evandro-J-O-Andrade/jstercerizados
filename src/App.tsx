@@ -101,9 +101,21 @@ function App() {
                 <Route path="/cadastro" element={<Cadastro />} />
                 <Route path="/recuperar-senha" element={<RecuperarSenha />} />
                 <Route
-                  path="/dashboard"
+                  path="/dashboard/*"
                   element={
-                    <ProtectedRoute allowedRoles={['admin']}>
+                    <ProtectedRoute
+                      allowedRoles={[
+                        'admin_master',
+                        'tenant_admin',
+                        'rh_manager',
+                        'recruiter',
+                        'finance',
+                        'support',
+                        'content_manager',
+                        'viewer',
+                        'member',
+                      ]}
+                    >
                       <Dashboard />
                     </ProtectedRoute>
                   }
@@ -133,7 +145,7 @@ function App() {
               </Routes>
             </Suspense>
           </main>
-          <div className="lg:pb-0">
+          <div className="pb-56 lg:pb-0">
             <Footer
               onOpenAccessibility={() => setIsAccessibilityOpen(true)}
               onOpenChat={() => {

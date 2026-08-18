@@ -8,20 +8,16 @@ import { normalizeError } from '@/lib/error-normalizer';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: Array<
-    | 'admin'
-    | 'candidato'
-    | 'empresa'
-    | 'rh'
-    | 'comercial'
-    | 'financeiro'
-    | 'atendimento'
-  >;
+  allowedRoles?: string[];
+  requireAdminMaster?: boolean;
+  requireTenantAccess?: boolean;
 }
 
 export function ProtectedRoute({
   children,
   allowedRoles,
+  requireAdminMaster,
+  requireTenantAccess,
 }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading, profile, authError } = useAuth();
   const location = useLocation();
@@ -66,8 +62,17 @@ export function ProtectedRoute({
   }
 
   if (allowedRoles && profile && !allowedRoles.includes(profile.role)) {
-    const fallback = profile.role === 'admin' ? '/dashboard' : '/dashboard';
+    const fallback = profile.is_admin_master ? '/admin' : '/dashboard';
     return <Navigate to={fallback} replace />;
+  }
+
+  if (requireAdminMaster && profile && !profile.is_admin_master) {
+    const fallback = profile.is_admin_master ? '/admin' : '/dashboard';
+    return <Navigate to={fallback} replace />;
+  }
+
+  if (requireTenantAccess && profile && !profile.tenant_id) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   if (allowedRoles && !profile) {

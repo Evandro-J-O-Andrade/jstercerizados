@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 const migrationSql = readFileSync(
-  join(__dirname, '../../supabase/migrations/20250101_chat.sql'),
+  join(__dirname, '../../supabase/migrations/_legacy/20250101_chat.sql'),
   'utf-8',
 );
 
