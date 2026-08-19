@@ -85,9 +85,6 @@ export default function Dashboard() {
   const { profile, logout, authError } = useAuth();
   const navigate = useNavigate();
   const role = profile?.role ?? 'member';
-  const isMaster = role === 'admin_master';
-  const isTenantAdmin = role === 'tenant_admin';
-  const showAdminTabs = isMaster || isTenantAdmin;
 
   const budgets = mockGetBudgets();
   const partners = mockGetPartners();
@@ -381,6 +378,8 @@ export default function Dashboard() {
     }
   }
 
+  const isAdminMaster = role === 'admin_master';
+
   return (
     <div className="min-h-screen">
       {authError && (
@@ -398,12 +397,12 @@ export default function Dashboard() {
               <Shield className="text-primary h-8 w-8" />
               <div>
                 <h1 className="text-foreground text-3xl font-bold">
-                  {isMaster ? 'Painel Administrativo' : 'Painel'}
+                  {isAdminMaster ? 'Painel Administrativo' : 'Área do Usuário'}
                 </h1>
                 <p className="text-muted-foreground">
-                  {isMaster
+                  {isAdminMaster
                     ? 'Gerencie clientes, parceiros, fornecedores e currículos.'
-                    : 'Acompanhe suas atividades e informações cadastrais.'}
+                    : 'Acompanhe suas informações e atividades.'}
                 </p>
               </div>
             </div>
@@ -449,7 +448,7 @@ export default function Dashboard() {
       </section>
 
       {/* Tabs */}
-      {showAdminTabs && (
+      {isAdminMaster && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="border-border mb-6 border-b">
             <nav className="flex gap-6 overflow-x-auto" aria-label="Tabs">
