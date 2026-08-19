@@ -33,10 +33,11 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
         delay: index * 0.08,
       }}
       whileHover={{ y: -6, scale: 1.01 }}
+      className="min-h-[420px]"
     >
       <Link
         to={`/servicos/${service.slug}`}
-        className="group bg-card shadow-premium hover:shadow-glow border-border hover:border-primary/30 focus-visible:ring-primary relative block h-full overflow-hidden rounded-3xl border transition-all duration-300 focus-visible:ring-2 focus-visible:outline-none"
+        className="group bg-card shadow-premium hover:shadow-glow border-border hover:border-primary/30 focus-visible:ring-primary relative flex h-full flex-col overflow-hidden rounded-3xl border transition-all duration-300 focus-visible:ring-2 focus-visible:outline-none"
       >
         {/* Top gradient accent */}
         <div className="bg-primary/10 absolute inset-x-0 top-0 h-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
@@ -60,7 +61,7 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-5 sm:p-6">
+        <div className="flex flex-1 flex-col p-5 sm:p-6">
           <span className="text-primary text-xs font-semibold tracking-wider uppercase">
             {CATEGORY_LABELS[service.category]}
           </span>
@@ -72,7 +73,7 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
           </p>
 
           {/* CTA */}
-          <div className="text-primary mt-6 flex items-center gap-2 text-sm font-medium transition-transform group-hover:translate-x-1">
+          <div className="text-primary mt-auto flex items-center gap-2 pt-4 text-sm font-medium transition-transform group-hover:translate-x-1">
             <span>Saiba mais</span>
             <ArrowRight className="h-4 w-4" />
           </div>

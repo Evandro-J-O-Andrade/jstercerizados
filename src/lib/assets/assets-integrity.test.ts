@@ -8,6 +8,7 @@ import {
 } from '@/content/assets';
 import { IMAGES } from '@/config/images';
 import { IMAGE_FALLBACKS } from '@/config/imageFallbacks';
+import { mockServices } from '@/services/mock/services';
 import fs from 'fs';
 import path from 'path';
 
@@ -231,6 +232,159 @@ describe('GATE-ASSETS-02: Asset Runtime Integrity', () => {
       expect(
         missing,
         `Assets registrados faltando: ${missing.join(', ')}`,
+      ).toHaveLength(0);
+    });
+  });
+
+  describe('GATE-ASSETS-03: regras de domínio e caminhos canônicos', () => {
+    it('Controle de Acesso não pode apontar para imagem de Terceirização', () => {
+      const service = mockServices.find((s) => s.slug === 'controle-acesso');
+      expect(service, 'Serviço controle-acesso não encontrado').toBeDefined();
+      expect(service!.image).toMatch(
+        /\/images\/servicos\/controle-acesso\//,
+        'Controle de Acesso deve usar caminho canônico /images/servicos/controle-acesso/',
+      );
+    });
+
+    it('Portaria não pode apontar para imagem de Terceirização', () => {
+      const service = mockServices.find((s) => s.slug === 'portaria');
+      expect(service, 'Serviço portaria não encontrado').toBeDefined();
+      expect(service!.image).toMatch(
+        /\/images\/servicos\/portaria\//,
+        'Portaria deve usar caminho canônico /images/servicos/portaria/',
+      );
+    });
+
+    it('referências canônicas de serviços devem existir fisicamente', () => {
+      const canonicalPaths = [
+        SERVICE_IMAGES.controleAcessoReal,
+        SERVICE_IMAGES.portariaReal,
+        SERVICE_IMAGES.assessoriaRh,
+        SERVICE_IMAGES.jardinagemReal,
+        SERVICE_IMAGES.limpezaReal,
+        SERVICE_IMAGES.zeladoriaReal,
+        SERVICE_IMAGES.terceirizacaoReal,
+        SERVICE_IMAGES.maoDeObraTemporariaReal,
+        SERVICE_IMAGES.maoDeObraEfetivaReal,
+        SERVICE_IMAGES.huntingReal,
+        SERVICE_IMAGES.avaliacaoPerfilReal,
+      ];
+
+      const missing = canonicalPaths.filter((p) => !assetExists(p));
+      expect(
+        missing,
+        `Assets canônicos faltando: ${missing.join(', ')}`,
+      ).toHaveLength(0);
+    });
+
+    it('não devem existir referências legadas /images/services/ em código ativo', () => {
+      const srcDir = path.join(PROJECT_ROOT, 'src');
+      const activeFiles = [
+        path.join(srcDir, 'services', 'mock', 'services.ts'),
+        path.join(srcDir, 'content', 'homeHero.ts'),
+        path.join(srcDir, 'pages', 'Servicos.tsx'),
+        path.join(srcDir, 'pages', 'ServicoDetalhe.tsx'),
+        path.join(srcDir, 'components', 'sections', 'ServiceCard.tsx'),
+      ];
+
+      const broken: string[] = [];
+
+      for (const file of activeFiles) {
+        if (!fs.existsSync(file)) continue;
+        const content = fs.readFileSync(file, 'utf-8');
+        const matches = content.matchAll(/\/images\/services\//g);
+        for (const match of matches) {
+          broken.push(`${file}: ${match[0]}`);
+        }
+      }
+
+      expect(
+        broken,
+        `Referências legadas /images/services/ encontradas: ${broken.join(', ')}`,
+      ).toHaveLength(0);
+    });
+  });
+
+  describe('GATE-ASSETS-04: mapeamento canônico dos cards', () => {
+    it('Mão de Obra Temporária e Efetiva não compartilham a mesma imagem', () => {
+      const temporaria = mockServices.find(
+        (s) => s.slug === 'mao-de-obra-temporaria',
+      );
+      const efetiva = mockServices.find(
+        (s) => s.slug === 'mao-de-obra-efetiva',
+      );
+
+      expect(
+        temporaria,
+        'Serviço mao-de-obra-temporaria não encontrado',
+      ).toBeDefined();
+      expect(
+        efetiva,
+        'Serviço mao-de-obra-efetiva não encontrado',
+      ).toBeDefined();
+
+      expect(temporaria!.image).toBe(SERVICE_IMAGES.maoDeObraTemporariaReal);
+      expect(efetiva!.image).toBe(SERVICE_IMAGES.maoDeObraEfetivaReal);
+      expect(temporaria!.image).not.toBe(efetiva!.image);
+    });
+
+    it('Avaliação de Perfil usa imagem fotográfica canônica .jpg', () => {
+      const service = mockServices.find((s) => s.slug === 'avaliacao-perfil');
+      expect(service, 'Serviço avaliacao-perfil não encontrado').toBeDefined();
+      expect(service!.image).toBe(SERVICE_IMAGES.avaliacaoPerfilReal);
+      expect(service!.image).not.toContain('.svg');
+    });
+
+    it('Banco de Talentos usa imagem fotográfica canônica .jpg', () => {
+      const service = mockServices.find((s) => s.slug === 'banco-de-talentos');
+      expect(service, 'Serviço banco-de-talentos não encontrado').toBeDefined();
+      expect(service!.image).toBe(SERVICE_IMAGES.bancoTalentoReal);
+      expect(service!.image).toMatch(
+        /banco-de-talentos\/banco-de-talentos\.jpg$/,
+      );
+    });
+
+    it('Executive Search (Hunting) usa executive-search.jpg', () => {
+      const service = mockServices.find((s) => s.slug === 'hunting');
+      expect(service, 'Serviço hunting não encontrado').toBeDefined();
+      expect(service!.image).toBe(SERVICE_IMAGES.huntingReal);
+      expect(service!.image).not.toContain('.svg');
+    });
+
+    it('nenhum card usa fallback quando existe asset canônico', () => {
+      const canonicalSlugs = [
+        'assessoria-rh',
+        'recrutamento-selecao',
+        'mao-de-obra-temporaria',
+        'mao-de-obra-efetiva',
+        'hunting',
+        'avaliacao-perfil',
+        'banco-de-talentos',
+        'processo-de-rh',
+        'facilities',
+        'jardinagem',
+        'limpeza-de-fachada',
+        'limpeza-de-vidros',
+        'faxina-diarista',
+        'limpeza-pos-obra',
+        'limpeza-pre-mudanca',
+        'limpeza-pos-mudanca',
+        'terceirizacao',
+        'zeladoria-manutencao',
+        'controle-acesso',
+        'portaria',
+      ];
+
+      const bad = canonicalSlugs
+        .map((slug) => mockServices.find((s) => s.slug === slug))
+        .filter((service): service is NonNullable<typeof service> =>
+          Boolean(service),
+        )
+        .filter((service) => service.image.includes('fallback'));
+
+      expect(
+        bad,
+        `Cards usando fallback indevido: ${bad.map((s) => s.slug).join(', ')}`,
       ).toHaveLength(0);
     });
   });

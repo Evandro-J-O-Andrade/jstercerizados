@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Send, Briefcase, Upload } from 'lucide-react';
+import { CheckCircle2, Send, Briefcase, Upload, FileText } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,17 +11,12 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
-import { mockSubmitCandidate } from '@/services/mock/curriculos';
+import { submitCandidateApplication } from '@/services/candidates';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { cn } from '@/utils';
-import {
-  sanitizeText,
-  sanitizeName,
-  sanitizeEmail,
-  sanitizePhone,
-  sanitizeTextarea,
-  sanitizeFileName,
-} from '@/utils/sanitize';
+import { sanitizeFileName } from '@/utils/sanitize';
+
+const LGPD_CONSENT_VERSION = '1.0';
 
 const positionOptions = [
   { value: 'auxiliar-de-embalagens', label: 'Auxiliar de embalagens' },
@@ -77,20 +72,26 @@ const candidateSchema = z.object({
       },
       { message: 'O arquivo deve ter no máximo 10 MB' },
     ),
+  lgpdConsent: z.boolean().refine((val) => val === true, {
+    message: 'Você precisa aceitar o consentimento LGPD',
+  }),
 });
 
-type CandidateFormData = z.infer<typeof candidateSchema>;
+export type CandidateFormData = z.infer<typeof candidateSchema>;
 
 export default function TrabalheConosco() {
   const [submitted, setSubmitted] = useState(false);
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    setValue,
+    formState: { errors, isSubmitting: formIsSubmitting },
   } = useForm<CandidateFormData>({
     resolver: zodResolver(candidateSchema),
     defaultValues: {
@@ -98,28 +99,42 @@ export default function TrabalheConosco() {
     },
   });
 
-  const onSubmit = async (data: CandidateFormData): Promise<void> => {
-    const resumeFile = data.resumeFile?.[0] ?? null;
+  const isLoading = isSubmitting || formIsSubmitting;
 
-    mockSubmitCandidate({
-      name: sanitizeName(data.name),
-      cpf: data.cpf ? sanitizeText(data.cpf) : '',
-      rg: data.rg ? sanitizeText(data.rg) : '',
-      phone: sanitizePhone(data.phone),
-      email: sanitizeEmail(data.email),
-      city: sanitizeText(data.city),
-      experience: sanitizeTextarea(data.experience),
-      position: data.positions.join(', '),
-      resume: sanitizeTextarea(data.resume),
-      availability: data.availability ? sanitizeText(data.availability) : '',
-      courses: data.courses ? sanitizeText(data.courses) : '',
-      status: 'received',
-      resumeFileName: resumeFile ? sanitizeFileName(resumeFile.name) : '',
+  const handlePositionChange = (value: string, checked: boolean) => {
+    setSelectedPositions((prev) => {
+      const next = checked ? [...prev, value] : prev.filter((v) => v !== value);
+      setValue('positions', next);
+      return next;
     });
-    setSubmitted(true);
-    reset();
-    setSelectedPositions([]);
-    setSelectedFile(null);
+  };
+
+  const onSubmit = async (data: CandidateFormData): Promise<void> => {
+    setSubmitError(null);
+    setIsSubmitting(true);
+
+    try {
+      const result = await submitCandidateApplication(
+        data,
+        selectedFile,
+        LGPD_CONSENT_VERSION,
+      );
+
+      if (result.status === 'received') {
+        setSubmitted(true);
+        reset();
+        setSelectedPositions([]);
+        setSelectedFile(null);
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Erro inesperado. Tente novamente.';
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -228,13 +243,9 @@ export default function TrabalheConosco() {
                         type="checkbox"
                         value={opt.value}
                         checked={selectedPositions.includes(opt.value)}
-                        onChange={(e) => {
-                          setSelectedPositions((prev) =>
-                            e.target.checked
-                              ? [...prev, opt.value]
-                              : prev.filter((v) => v !== opt.value),
-                          );
-                        }}
+                        onChange={(e) =>
+                          handlePositionChange(opt.value, e.target.checked)
+                        }
                         className="text-primary focus:ring-primary h-4 w-4 rounded"
                       />
                       <span className="text-muted-foreground text-sm font-medium">
@@ -397,15 +408,28 @@ export default function TrabalheConosco() {
                           aria-label="Selecionar arquivo de currículo"
                         />
                         <div className="pointer-events-none text-center">
-                          <Upload className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
-                          <p className="text-muted-foreground text-sm">
-                            {selectedFile
-                              ? selectedFile.name
-                              : 'Arraste o arquivo ou clique para selecionar'}
-                          </p>
-                          <p className="text-muted-foreground/60 mt-1 text-xs">
-                            PDF, DOC ou DOCX — até 10 MB
-                          </p>
+                          {selectedFile ? (
+                            <div className="flex flex-col items-center gap-2">
+                              <FileText className="text-primary h-8 w-8" />
+                              <p className="text-foreground text-sm font-medium">
+                                {selectedFile.name}
+                              </p>
+                              <p className="text-muted-foreground text-xs">
+                                {(selectedFile.size / 1024 / 1024).toFixed(1)}{' '}
+                                MB
+                              </p>
+                            </div>
+                          ) : (
+                            <>
+                              <Upload className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
+                              <p className="text-muted-foreground text-sm">
+                                Arraste o arquivo ou clique para selecionar
+                              </p>
+                              <p className="text-muted-foreground/60 mt-1 text-xs">
+                                PDF, DOC ou DOCX — até 10 MB
+                              </p>
+                            </>
+                          )}
                         </div>
                       </div>
                       {errors.resumeFile && (
@@ -414,9 +438,36 @@ export default function TrabalheConosco() {
                         </p>
                       )}
                     </div>
+
+                    <div className="md:col-span-2">
+                      <label className="flex items-start gap-3 rounded-lg border p-4">
+                        <input
+                          type="checkbox"
+                          {...register('lgpdConsent')}
+                          className="mt-0.5 h-4 w-4 rounded"
+                        />
+                        <span className="text-muted-foreground text-sm leading-relaxed">
+                          Autorizo o tratamento dos meus dados pessoais para
+                          fins de recrutamento e seleção, conforme a Lei Geral
+                          de Proteção de Dados (LGPD). Li e aceito a Política de
+                          Privacidade.
+                        </span>
+                      </label>
+                      {errors.lgpdConsent && (
+                        <p className="text-destructive mt-1 text-sm">
+                          {errors.lgpdConsent.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   <input type="hidden" {...register('positions')} />
+
+                  {submitError && (
+                    <div className="bg-destructive/10 text-destructive rounded-xl p-4 text-sm">
+                      {submitError}
+                    </div>
+                  )}
 
                   <div className="mt-8">
                     <Button
@@ -424,11 +475,13 @@ export default function TrabalheConosco() {
                       variant="secondary"
                       size="lg"
                       className="w-full"
-                      loading={isSubmitting}
-                      disabled={isSubmitting}
+                      loading={isLoading}
+                      disabled={isLoading}
                       leftIcon={<Send className="h-5 w-5" />}
                     >
-                      Enviar Currículo para o Banco de Talentos
+                      {isLoading
+                        ? 'Enviando...'
+                        : 'Enviar Currículo para o Banco de Talentos'}
                     </Button>
                   </div>
                 </motion.form>

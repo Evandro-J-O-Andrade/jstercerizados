@@ -13,7 +13,7 @@ export const SERVICE_IMAGES = {
   controleAcesso: '/images/servicos/controle-acesso/controle-de-acesso.jpg',
   solucaoRh: '/images/servicos/solucao-rh.jfif',
   timeRh: '/images/servicos/solucao-rh.jfif',
-  bancoTalentoReal: '/images/servicos/banco-talento.jfif',
+  bancoTalentoReal: '/images/servicos/banco-de-talentos/banco-de-talentos.jpg',
   facilitiesReal: '/images/servicos/facilities/facilities-real.webp',
   limpezaReal: '/images/servicos/limpeza/limpeza.jpg',
   jardinagemReal: '/images/servicos/jardinagem/jardinagem-real.webp',

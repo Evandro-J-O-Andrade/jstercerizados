@@ -2,9 +2,12 @@ import { useEffect, useRef } from 'react';
 
 export function useFocusTrap(active: boolean) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!active || !containerRef.current) return;
+
+    previousFocusRef.current = document.activeElement as HTMLElement;
 
     const container = containerRef.current;
     const focusableSelector = [
@@ -57,6 +60,7 @@ export function useFocusTrap(active: boolean) {
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      previousFocusRef.current?.focus();
     };
   }, [active]);
 

@@ -16,7 +16,7 @@ interface Profile {
   full_name: string;
   email: string;
   phone?: string;
-  role: string;
+  role?: string;
   tenant_id?: string;
   is_admin_master?: boolean;
 }
@@ -131,7 +131,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setAuthError(
               normalizeError(
                 new Error(
-                  'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY.',
+                  'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.',
                 ),
               ).userMessage,
             );

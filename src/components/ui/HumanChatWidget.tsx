@@ -267,6 +267,7 @@ export function HumanChatWidget({
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                       placeholder="Mensagem para atendente..."
+                      aria-label="Mensagem para atendimento humano"
                       disabled={connecting || loading}
                       className="bg-background border-border focus:border-primary flex-1 rounded-lg border px-3 py-2 text-sm outline-none disabled:opacity-50"
                     />

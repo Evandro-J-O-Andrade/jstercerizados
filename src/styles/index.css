@@ -163,6 +163,8 @@
 
     --surface: 215 33% 20%;
     --surface-alt: 215 28% 28%;
+
+    color-scheme: dark;
   }
 
   * {
@@ -193,6 +195,18 @@
 
   button {
     font-family: inherit;
+  }
+
+  select,
+  option {
+    color: inherit;
+    background-color: hsl(var(--surface));
+  }
+
+  .dark select,
+  .dark option {
+    background-color: hsl(var(--surface));
+    color: hsl(var(--foreground));
   }
 }
 
