@@ -16,7 +16,7 @@ interface Profile {
   full_name: string;
   email: string;
   phone?: string;
-  role: string;
+  role?: string;
   tenant_id?: string;
   is_admin_master?: boolean;
 }

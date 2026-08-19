@@ -84,7 +84,7 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const { profile, logout, authError } = useAuth();
   const navigate = useNavigate();
-  const role = profile?.role ?? 'admin';
+  const role = profile?.role ?? 'member';
 
   const budgets = mockGetBudgets();
   const partners = mockGetPartners();
@@ -378,8 +378,7 @@ export default function Dashboard() {
     }
   }
 
-  const isCandidate = role === 'candidato';
-  const isCompany = role === 'empresa';
+  const isAdminMaster = role === 'admin_master';
 
   return (
     <div className="min-h-screen">
@@ -398,18 +397,14 @@ export default function Dashboard() {
               <Shield className="text-primary h-8 w-8" />
               <div>
                 <h1 className="text-foreground text-3xl font-bold">
-                  {isCandidate
-                    ? 'Área do Candidato'
-                    : isCompany
-                      ? 'Área da Empresa'
-                      : 'Painel Administrativo'}
+                  {isAdminMaster
+                    ? 'Painel Administrativo'
+                    : 'Área do Usuário'}
                 </h1>
                 <p className="text-muted-foreground">
-                  {isCandidate
-                    ? 'Gerencie seu currículo e candidaturas.'
-                    : isCompany
-                      ? 'Publique vagas e acompanhe candidaturas.'
-                      : 'Gerencie clientes, parceiros, fornecedores e currículos.'}
+                  {isAdminMaster
+                    ? 'Gerencie clientes, parceiros, fornecedores e currículos.'
+                    : 'Acompanhe suas informações e atividades.'}
                 </p>
               </div>
             </div>
@@ -455,7 +450,7 @@ export default function Dashboard() {
       </section>
 
       {/* Tabs */}
-      {role === 'admin' && (
+      {isAdminMaster && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="border-border mb-6 border-b">
             <nav className="flex gap-6 overflow-x-auto" aria-label="Tabs">
@@ -547,20 +542,6 @@ export default function Dashboard() {
         </section>
       )}
 
-      {(isCandidate || isCompany) && (
-        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="bg-card shadow-premium rounded-2xl p-8">
-            <h3 className="text-foreground mb-4 text-lg font-semibold">
-              {isCandidate ? 'Meu Perfil' : 'Minha Empresa'}
-            </h3>
-            <p className="text-muted-foreground">
-              {isCandidate
-                ? 'Gerencie seu currículo e acompanhe suas candidaturas.'
-                : 'Gerencie as vagas da sua empresa e acompanhe os candidatos.'}
-            </p>
-          </div>
-        </section>
-      )}
     </div>
   );
 }

@@ -37,12 +37,6 @@ const candidateNavItems: NavItem[] = [
   { label: 'Currículo', href: '/dashboard/candidato', icon: FileText },
 ];
 
-const companyNavItems: NavItem[] = [
-  { label: 'Início', href: '/', icon: Home },
-  { label: 'Vagas', href: '/vagas', icon: Briefcase },
-  { label: 'Candidatos', href: '/candidatos', icon: Users },
-];
-
 const adminNavItems: NavItem[] = [
   { label: 'Painel', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Leads', href: '#', icon: FileText },
@@ -55,11 +49,9 @@ export function BottomNavigation() {
   const { isAuthenticated, profile } = useAuth();
 
   const navItems = isAuthenticated
-    ? profile?.role === 'admin'
+    ? profile?.role === 'admin_master'
       ? adminNavItems
-      : profile?.role === 'empresa'
-        ? companyNavItems
-        : candidateNavItems
+      : candidateNavItems
     : publicNavItems;
 
   return (
