@@ -50,7 +50,6 @@ export default function CompanyRegister() {
       const result = await registerUser(data.email, data.password, {
         email: data.email,
         full_name: data.full_name,
-        role: 'empresa' as string,
         phone: data.phone,
       });
 

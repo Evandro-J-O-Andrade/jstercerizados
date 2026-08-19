@@ -22,14 +22,14 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-type ProfileType = 'admin' | 'candidato' | 'empresa';
+type AccessFlow = 'admin' | 'candidate' | 'company';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [profile, setProfile] = useState<ProfileType>('admin');
+  const [accessFlow, setAccessFlow] = useState<AccessFlow>('admin');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login, isAuthenticated, profile: userProfile, authError } = useAuth();
+  const { login, isAuthenticated, authError } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -46,16 +46,10 @@ export default function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const target = from || getDashboardPath(userProfile?.role);
+      const target = from || '/dashboard';
       navigate(target, { replace: true });
     }
-  }, [isAuthenticated, userProfile, navigate, from]);
-
-  const getDashboardPath = (role?: string | null): string => {
-    if (role === 'candidato') return '/dashboard/candidato';
-    if (role === 'empresa') return '/dashboard/empresa';
-    return '/dashboard';
-  };
+  }, [isAuthenticated, navigate, from]);
 
   const onSubmit = async (data: LoginFormData): Promise<void> => {
     setError('');
@@ -96,7 +90,7 @@ export default function Login() {
           <p className="text-muted-foreground mb-8">
             Redirecionando para o painel...
           </p>
-          <Link to={getDashboardPath(userProfile?.role)}>
+          <Link to="/dashboard">
             <Button variant="primary" size="lg">
               Ir para o Painel
             </Button>
@@ -106,20 +100,20 @@ export default function Login() {
     );
   }
 
-  const profileConfig = {
+  const flowConfig = {
     admin: {
       title: 'Painel Administrativo',
       subtitle: 'Acesse sua conta para gerenciar cadastros e relatórios.',
       icon: <Shield className="h-8 w-8" />,
       placeholderEmail: 'admin@exemplo.com',
     },
-    candidato: {
+    candidate: {
       title: 'Área do Candidato',
       subtitle: 'Acesse seu perfil para gerenciar candidaturas e currículos.',
       icon: <Briefcase className="h-8 w-8" />,
       placeholderEmail: 'candidato@exemplo.com',
     },
-    empresa: {
+    company: {
       title: 'Área da Empresa',
       subtitle: 'Publique vagas e acesse sua área de recrutamento.',
       icon: <Building2 className="h-8 w-8" />,
@@ -194,24 +188,24 @@ export default function Login() {
         className="relative z-10 w-full max-w-md"
       >
         <div className="border-border/40 bg-card shadow-glass rounded-3xl border p-8">
-          {/* Profile selector */}
+          {/* Access flow selector */}
           <div className="mb-6 flex justify-center gap-2">
-            {(['admin', 'candidato', 'empresa'] as const).map((p) => (
+            {(['admin', 'candidate', 'company'] as const).map((flow) => (
               <button
-                key={p}
+                key={flow}
                 type="button"
-                onClick={() => setProfile(p)}
+                onClick={() => setAccessFlow(flow)}
                 className={cn(
                   'flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200',
-                  profile === p
+                  accessFlow === flow
                     ? 'bg-primary text-primary-foreground shadow-md'
                     : 'text-muted-foreground hover:bg-muted',
                 )}
               >
-                {profileConfig[p].icon}
-                {p === 'admin'
+                {flowConfig[flow].icon}
+                {flow === 'admin'
                   ? 'Admin'
-                  : p === 'candidato'
+                  : flow === 'candidate'
                     ? 'Candidato'
                     : 'Empresa'}
               </button>
@@ -220,7 +214,7 @@ export default function Login() {
 
           <AnimatePresence mode="wait">
             <motion.div
-              key={profile}
+              key={accessFlow}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
@@ -228,21 +222,21 @@ export default function Login() {
             >
               <div className="mb-8 text-center">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl backdrop-blur-sm">
-                  {profile !== 'admin' ? (
+                  {accessFlow !== 'admin' ? (
                     <div className="text-primary">
-                      {profileConfig[profile].icon}
+                      {flowConfig[accessFlow].icon}
                     </div>
                   ) : (
                     <div className="bg-primary/20 text-primary">
-                      {profileConfig[profile].icon}
+                      {flowConfig[accessFlow].icon}
                     </div>
                   )}
                 </div>
                 <h1 className="text-foreground text-3xl font-bold">
-                  {profileConfig[profile].title}
+                  {flowConfig[accessFlow].title}
                 </h1>
                 <p className="text-muted-foreground mt-2 text-sm">
-                  {profileConfig[profile].subtitle}
+                  {flowConfig[accessFlow].subtitle}
                 </p>
               </div>
 
@@ -256,7 +250,7 @@ export default function Login() {
                 <Input
                   label="E-mail"
                   type="email"
-                  placeholder={profileConfig[profile].placeholderEmail}
+                  placeholder={flowConfig[accessFlow].placeholderEmail}
                   error={errors.email?.message}
                   {...register('email')}
                 />
@@ -314,27 +308,6 @@ export default function Login() {
                   Entrar
                 </Button>
               </form>
-
-              {profile === 'candidato' && (
-                <div className="mt-4 text-center">
-                  <Link
-                    to="/cadastro/candidato"
-                    className="text-muted-foreground hover:text-primary text-sm transition-colors"
-                  >
-                    Ainda não tem conta? Cadastre seu currículo
-                  </Link>
-                </div>
-              )}
-              {profile === 'empresa' && (
-                <div className="mt-4 text-center">
-                  <Link
-                    to="/cadastro/empresa"
-                    className="text-muted-foreground hover:text-primary text-sm transition-colors"
-                  >
-                    Ainda não tem conta? Publique sua primeira vaga
-                  </Link>
-                </div>
-              )}
             </motion.div>
           </AnimatePresence>
 

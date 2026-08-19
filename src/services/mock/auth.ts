@@ -14,7 +14,7 @@ export function mockLogin(
             id: '1',
             name: 'Administrador',
             email,
-            role: 'admin',
+            role: 'admin_master',
           },
         });
       } else {
