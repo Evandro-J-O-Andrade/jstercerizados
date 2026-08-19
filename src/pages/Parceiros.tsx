@@ -65,7 +65,7 @@ export default function Parceiros() {
 
   if (submitted) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center">
+      <div className="flex min-h-[70dvh] items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}

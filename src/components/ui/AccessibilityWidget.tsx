@@ -248,7 +248,7 @@ export function AccessibilityWidget({
               role="dialog"
               aria-modal="true"
               aria-labelledby="accessibility-title"
-              className="overlay-panel relative z-50 max-h-[calc(100vh-6rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl p-5 shadow-xl sm:max-h-[calc(100vh-4rem)] sm:w-96"
+              className="overlay-panel relative z-50 max-h-[calc(100dvh-6rem)] w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl p-5 shadow-xl sm:max-h-[calc(100dvh-4rem)] sm:w-96"
             >
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
