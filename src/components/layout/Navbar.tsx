@@ -56,9 +56,9 @@ const contactSubmenu = [
 ];
 
 const loginSubmenu = [
-  { label: 'Admin', href: '/login?role=admin' },
-  { label: 'Candidato', href: '/login?role=candidato' },
-  { label: 'Empresa', href: '/login?role=empresa' },
+  { label: 'Admin', href: '/login' },
+  { label: 'Candidato', href: '/login' },
+  { label: 'Empresa', href: '/login' },
 ];
 
 const topNavLinks = [
@@ -244,7 +244,7 @@ export function Navbar() {
         scrolled ? 'bg-card/85 shadow-lg backdrop-blur-xl' : 'bg-transparent',
       )}
     >
-      <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-3 sm:px-8 lg:px-12">
+      <div className="flex items-center justify-between px-6 py-3 sm:px-8 lg:px-12">
         <Link to="/" className="flex items-center gap-4 pl-2">
           <motion.img
             src={IMAGES.logo.dark}

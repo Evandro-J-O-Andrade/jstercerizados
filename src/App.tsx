@@ -64,7 +64,7 @@ function App() {
   return (
     <ErrorBoundary>
       <ToastProvider>
-        <div className="flex min-h-screen flex-col overflow-x-hidden">
+        <div className="flex min-h-dvh flex-col overflow-x-hidden">
           <ScrollToTop />
           <Navbar />
           <main className="flex-1 pt-16 pb-24 lg:pt-20 lg:pb-0">
