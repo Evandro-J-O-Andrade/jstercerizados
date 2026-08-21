@@ -20,128 +20,154 @@ Este documento é **planejamento**. Nenhum SQL será implementado até aprovaç�
 ### PHASE 02 — CRM/Organizations
 
 4. `03_crm.sql`
+5. `03b_crm_commercial.sql` (leads, customers, quotes, quote_items, sales, sale_items)
 
 ### PHASE 03 — Recruitment Base
 
 5. `04_rh_recruitment.sql`
 
-### PHASE 04 — Services/Contracts
+### PHASE 04 — Service Orders (NEW)
 
-6. `05_services_contracts.sql`
+6. `04b_service_orders.sql` (service_orders, service_order_items, service_acceptances, service_executions, service_attachments, service_order_status_history)
 
-### PHASE 05 — Suppliers/Purchasing
+### PHASE 05 — Services/Contracts
 
-7. `06b_products.sql` (products movido para resolver dependency)
-8. `06_suppliers_purchasing.sql`
+7. `05_services_contracts.sql` (services, contracts, contract_status_history)
 
-### PHASE 06 — Inventory/Custody
+### PHASE 06 — Products
 
-9. `07_inventory_custody.sql` (sem products)
+8. `06_products.sql` (products)
 
-### PHASE 07 — Chat/Notifications/Events
+### PHASE 07 — Suppliers/Purchasing
 
-10. `09_chat.sql`
-11. `10_notifications_events.sql`
+9. `06_suppliers_purchasing.sql`
 
-### PHASE 08 — Audit/Security
+### PHASE 08 — Inventory/Custody
 
-12. `11_audit_security.sql`
+10. `07_inventory_custody.sql` (sem products)
 
-### PHASE 09 — Custody
+### PHASE 09 — Chat/Notifications/Events
 
-13. `12_custody.sql`
+11. `09_chat.sql`
+12. `10_notifications_events.sql`
 
-### PHASE 10 — Tasks
+### PHASE 10 — Audit/Security
 
-14. `14_tasks.sql`
+13. `11_audit_security.sql`
 
-### PHASE 11 — Support Base
+### PHASE 11 — Custody
 
-15. `15_support.sql` (sem support_tickets)
+14. `12_custody.sql`
 
-### PHASE 12 — Storage/Documents
+### PHASE 12 — Tasks
 
-16. `18_storage_documents.sql`
+15. `14_tasks.sql`
 
-### PHASE 13 — LGPD
+### PHASE 13 — Support Tickets (NEW)
 
-17. `20_lgpd.sql`
+16. `14b_support_tickets.sql` (support_ticket_categories, support_tickets, support_ticket_messages, support_ticket_assignments, support_ticket_status_history)
 
-### PHASE 14 — Functions/Triggers/RLS
+### PHASE 14 — Support Base
 
-18. `21_functions_triggers.sql`
-19. `22_rls.sql`
-20. `23_indexes.sql`
+17. `15_support.sql` (reservado para extensões futuras)
 
-### PHASE 15 — Validation/Errors
+### PHASE 15 — Storage/Documents
 
-21. `25_validation.sql`
-22. `26_error_codes.sql`
+18. `18_storage_documents.sql`
 
-### PHASE 16 — Finance
+### PHASE 16 — LGPD
 
-23. `27_finance.sql`
+19. `20_lgpd.sql`
 
-### PHASE 17 — Fiscal Base
+### PHASE 17 — Functions/Triggers
 
-24. `28_fiscal.sql`
+20. `21_functions_triggers.sql`
 
-### PHASE 18 — POS
+### PHASE 18 — RLS Base
 
-25. `29_pos.sql`
+21. `22_rls.sql` (políticas para tabelas criadas antes deste arquivo)
 
-### PHASE 19 — Recruitment/Talent Pool
+### PHASE 19 — Indexes Base
 
-26. `30_recruitment.sql`
-27. `35_recruitment_talent_pool.sql`
+22. `23_indexes.sql` (índices para tabelas criadas antes deste arquivo)
 
-### PHASE 20 — Automation
+### PHASE 20 — RLS Remaining (NEW)
 
-28. `31_automation.sql`
+23. `45_rls_remaining.sql` (políticas para tabelas criadas após 22_rls.sql)
 
-### PHASE 21 — Seed
+### PHASE 21 — Indexes Remaining (NEW)
 
-29. `32_seed.sql`
+24. `45_indexes.sql` (índices para tabelas criadas após 23_indexes.sql)
 
-### PHASE 22 — Employees
+### PHASE 22 — Validation/Errors
 
-30. `33_employees.sql`
+25. `25_validation.sql`
+26. `26_error_codes.sql`
 
-### PHASE 23 — CRM Services Extended
+### PHASE 23 — Finance
 
-31. `34_crm_services.sql` (service_orders canônico)
+27. `27_finance.sql`
 
-### PHASE 24 — Inventory Extended
+### PHASE 24 — Fiscal Base
 
-32. `36_inventory.sql`
+28. `28_fiscal.sql`
 
-### PHASE 25 — Purchasing Extended
+### PHASE 25 — POS
 
-33. `37_purchasing.sql`
+29. `29_pos.sql`
 
-### PHASE 26 — Fiscal RPCs
+### PHASE 26 — Recruitment/Talent Pool
 
-34. `39_fiscal.sql`
+30. `30_recruitment.sql`
+31. `35_recruitment_talent_pool.sql`
 
-### PHASE 27 — Tasks/Support Extended
+### PHASE 27 — Automation
 
-35. `40_tasks_support.sql` (support_tickets canônico)
+32. `31_automation.sql`
 
-### PHASE 28 — Chat/Security Extended
+### PHASE 28 — Seed
 
-36. `41_chat_security.sql`
+33. `32_seed.sql`
 
-### PHASE 29 — Automation Extended
+### PHASE 29 — Employees
 
-37. `42_automation.sql`
+34. `33_employees.sql`
 
-### PHASE 30 — Notifications Extended
+### PHASE 30 — CRM Services Extended
 
-38. `43_notifications.sql`
+35. `34_crm_services.sql` (company_services, interactions, recruitment_demands)
 
-### PHASE 31 — Reports/Views
+### PHASE 31 — Inventory Extended
 
-39. `44_reports_views.sql`
+36. `36_inventory.sql`
+
+### PHASE 32 — Purchasing Extended
+
+37. `37_purchasing.sql`
+
+### PHASE 33 — Fiscal RPCs
+
+38. `39_fiscal.sql`
+
+### PHASE 34 — Tasks Extended
+
+39. `40_tasks_support.sql` (task_comments, task_attachments, task_status_history)
+
+### PHASE 35 — Chat/Security Extended
+
+40. `41_chat_security.sql`
+
+### PHASE 36 — Automation Extended
+
+41. `42_automation.sql`
+
+### PHASE 37 — Notifications Extended
+
+42. `43_notifications.sql`
+
+### PHASE 38 — Reports/Views
+
+43. `44_reports_views.sql`
 
 ---
 
@@ -156,11 +182,15 @@ Este documento é **planejamento**. Nenhum SQL será implementado até aprovaç�
     ↓
 03_crm (companies, company_relationships, company_contacts)
     ↓
+03b_crm_commercial (leads, customers, quotes, quote_items, sales, sale_items)
+    ↓
 04_rh_recruitment (candidates, jobs, applications, interviews)
     ↓
-05_services_contracts (services, service_order_status_history, contracts, contract_status_history)
+04b_service_orders (service_orders, service_order_items, service_acceptances, service_executions, service_attachments, service_order_status_history)
     ↓
-06b_products (products)
+05_services_contracts (services, contracts, contract_status_history)
+    ↓
+06_products (products)
     ↓
 06_suppliers_purchasing (suppliers, purchase_orders, purchase_order_items)
     ↓
@@ -176,7 +206,9 @@ Este documento é **planejamento**. Nenhum SQL será implementado até aprovaç�
     ↓
 14_tasks (tasks)
     ↓
-15_support (support_ticket_status_history)
+14b_support_tickets (support_ticket_categories, support_tickets, support_ticket_messages, support_ticket_assignments, support_ticket_status_history)
+    ↓
+15_support (reservado)
     ↓
 18_storage_documents (files, file_access_logs, document_versions, document_links, administrative_*)
     ↓
@@ -184,9 +216,9 @@ Este documento é **planejamento**. Nenhum SQL será implementado até aprovaç�
     ↓
 21_functions_triggers (stock_balances, stock_entries, purchase_receipts, purchase_receipt_items, functions, triggers)
     ↓
-22_rls (RLS policies para todas as tabelas acima)
+22_rls (RLS policies para tabelas até 21)
     ↓
-23_indexes (indexes)
+23_indexes (indexes para tabelas até 21)
     ↓
 25_validation (validation_results)
     ↓
@@ -208,7 +240,7 @@ Este documento é **planejamento**. Nenhum SQL será implementado até aprovaç�
     ↓
 33_employees (departments, positions, employees, employee_positions, employee_contracts, employee_documents, employee_status_history)
     ↓
-34_crm_services (company_services, service_orders canônico, service_order_items, service_acceptances, service_executions, service_attachments, interactions, recruitment_demands)
+34_crm_services (company_services, interactions, recruitment_demands)
     ↓
 36_inventory (warehouses, warehouse_locations, product_categories, stock_lots, stock_inventory, stock_inventory_items)
     ↓
@@ -216,7 +248,7 @@ Este documento é **planejamento**. Nenhum SQL será implementado até aprovaç�
     ↓
 39_fiscal (fiscal_integrations, fiscal_emit_invoice, fiscal_cancel_invoice)
     ↓
-40_tasks_support (task_comments, task_attachments, task_status_history, support_ticket_categories, support_tickets canônico, support_ticket_messages, support_ticket_assignments)
+40_tasks_support (task_comments, task_attachments, task_status_history)
     ↓
 41_chat_security (ai_usage, sessions, password_policies)
     ↓
@@ -225,6 +257,10 @@ Este documento é **planejamento**. Nenhum SQL será implementado até aprovaç�
 43_notifications (notification_preferences)
     ↓
 44_reports_views (report_definitions, report_executions, report_schedules, dashboard_widgets, dashboard_layouts)
+    ↓
+45_rls_remaining (RLS policies para tabelas 27-44)
+    ↓
+45_indexes (indexes para tabelas 27-44)
 ```
 
 ---
@@ -232,6 +268,29 @@ Este documento é **planejamento**. Nenhum SQL será implementado até aprovaç�
 ## Arquivos ausentes
 
 Os arquivos `08`, `13`, `16`, `17`, `19`, `24`, `38` permanecem ausentes. Sua ausência deve ser confirmada como intencional ou providenciada.
+
+---
+
+## Alterações Fase 1A/1B/2 Aplicadas
+
+1. `06_products.sql` criado, `06b_products.sql` removido
+2. `04b_service_orders.sql` criado, tabelas de service_orders movidas de `34_crm_services.sql`
+3. `14b_support_tickets.sql` criado, tabelas de support_tickets movidas de `40_tasks_support.sql`
+4. `05_services_contracts.sql` ajustado (removido service_order_status_history)
+5. `15_support.sql` ajustado (removido support_ticket_status_history)
+6. `34_crm_services.sql` ajustado (removidas tabelas de service_orders)
+7. `40_tasks_support.sql` ajustado (removidas tabelas de support_tickets)
+8. `22_rls.sql` reestruturado (removidas policies para tabelas 27-44 e segundo lote duplicado)
+9. `45_rls_remaining.sql` criado com RLS para todas as tabelas 27-44
+10. `23_indexes.sql` reestruturado (removidos índices para tabelas 27-44)
+11. `45_indexes.sql` criado com índices para tabelas 27-44
+12. `27_finance.sql` ajustado (FK accounts_receivable.invoice_id, proteção financial_reversal())
+13. `35_recruitment_talent_pool.sql` ajustado (proteção match_candidates_to_demand())
+14. Trigger `trg_set_updated_at_support_tickets` movido para `14b_support_tickets.sql`
+15. `03b_crm_commercial.sql` criado (leads, customers, quotes, quote_items, sales, sale_items)
+16. `45_rls_remaining.sql` ajustado (adicionadas RLS para tabelas comerciais)
+17. `45_indexes.sql` ajustado (adicionados índices para tabelas comerciais)
+18. `39_fiscal.sql` ajustado (fiscal_emit_invoice e fiscal_cancel_invoice com validação de tenant e permissão)
 
 ---
 
@@ -245,3 +304,5 @@ Os arquivos `08`, `13`, `16`, `17`, `19`, `24`, `38` permanecem ausentes. Sua au
 
 - Revisão e aprovação da matriz de gap closure
 - Confirmação de que nenhuma tabela adicional é necessária
+- Re-auditoria completa pós-fix
+- Validação de runtime no Supabase

@@ -44,7 +44,7 @@ create table if not exists public.accounts_receivable (
   company_id uuid references public.companies(id),
   contract_id uuid references public.contracts(id),
   service_order_id uuid references public.service_orders(id),
-  invoice_id uuid,
+  invoice_id uuid references public.invoices(id) on delete set null,
   description text not null,
   amount numeric not null,
   discount numeric not null default 0,
@@ -284,7 +284,18 @@ create or replace function public.financial_reversal(
 returns void as $$
 declare
   v_transaction public.financial_transactions%rowtype;
+  v_actor uuid;
 begin
+  select auth.uid() into v_actor;
+
+  if not public.is_tenant_member((select tenant_id from public.financial_transactions where id = p_transaction_id)) then
+    raise exception 'not allowed';
+  end if;
+
+  if not public.user_has_permission(v_actor, 'financial_transactions.update') then
+    raise exception 'not allowed';
+  end if;
+
   select * into v_transaction from public.financial_transactions where id = p_transaction_id;
   if not found then
     raise exception 'transaction not found';
@@ -301,7 +312,7 @@ begin
     v_transaction.amount, v_transaction.competence_date, v_transaction.payment_date,
     v_transaction.bank_account, v_transaction.description || ' (reversal)',
     v_transaction.reference, v_transaction.origin_document_type, v_transaction.origin_document_id,
-    auth.uid(), gen_random_uuid()
+    v_actor, gen_random_uuid()
   );
 end;
 $$ language plpgsql security definer;

@@ -49,13 +49,28 @@ returns table (
   candidate_id uuid,
   score numeric
 ) as $$
+declare
+  v_actor uuid;
+  v_demand public.recruitment_demands%rowtype;
 begin
+  select auth.uid() into v_actor;
+
+  if not public.is_tenant_member((select tenant_id from public.recruitment_demands where id = p_demand_id)) then
+    raise exception 'not allowed';
+  end if;
+
+  if not public.user_has_permission(v_actor, 'recruitment.read') then
+    raise exception 'not allowed';
+  end if;
+
+  select * into v_demand from public.recruitment_demands where id = p_demand_id;
+
   return query
   select
     tp.person_id as candidate_id,
     0 as score
   from public.talent_pool_memberships tp
-  where tp.tenant_id = (select tenant_id from public.recruitment_demands where id = p_demand_id)
+  where tp.tenant_id = v_demand.tenant_id
     and tp.status = 'active'
   order by tp.created_at desc;
 end;
