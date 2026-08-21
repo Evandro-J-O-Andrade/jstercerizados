@@ -49,6 +49,9 @@ create table if not exists public.support_tickets (
   title text not null,
   description text not null,
   status text not null default 'open',
+  priority text not null default 'medium',
+  assignee_person_id uuid references public.people(id),
+  sla_due_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

@@ -2209,3 +2209,682 @@ create policy dashboard_layouts_member_update on public.dashboard_layouts
   using (is_tenant_member(tenant_id))
   with check (is_tenant_member(tenant_id));
 
+-- ============================================================
+-- FINANCEIRO
+-- ============================================================
+
+alter table public.financial_transactions enable row level security;
+alter table public.bank_reconciliations enable row level security;
+alter table public.financial_installments enable row level security;
+alter table public.financial_installment_payments enable row level security;
+alter table public.financial_installment_cancellations enable row level security;
+
+create policy financial_transactions_member_read on public.financial_transactions
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy financial_transactions_member_write on public.financial_transactions
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy financial_transactions_member_update on public.financial_transactions
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy bank_reconciliations_member_read on public.bank_reconciliations
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy bank_reconciliations_member_write on public.bank_reconciliations
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy bank_reconciliations_member_update on public.bank_reconciliations
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy financial_installments_member_read on public.financial_installments
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy financial_installments_member_write on public.financial_installments
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy financial_installments_member_update on public.financial_installments
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy financial_installment_payments_member_read on public.financial_installment_payments
+  for select
+  using (exists (select 1 from public.financial_installments fi where fi.id = installment_id and is_tenant_member(fi.tenant_id)));
+
+create policy financial_installment_payments_member_write on public.financial_installment_payments
+  for insert
+  with check (exists (select 1 from public.financial_installments fi where fi.id = installment_id and is_tenant_member(fi.tenant_id)));
+
+create policy financial_installment_cancellations_member_read on public.financial_installment_cancellations
+  for select
+  using (exists (select 1 from public.financial_installments fi where fi.id = installment_id and is_tenant_member(fi.tenant_id)));
+
+create policy financial_installment_cancellations_member_write on public.financial_installment_cancellations
+  for insert
+  with check (exists (select 1 from public.financial_installments fi where fi.id = installment_id and is_tenant_member(fi.tenant_id)));
+
+-- ============================================================
+-- FISCAL
+-- ============================================================
+
+alter table public.fiscal_configurations enable row level security;
+alter table public.tax_rates enable row level security;
+alter table public.tax_calculations enable row level security;
+alter table public.fiscal_documents enable row level security;
+alter table public.fiscal_document_items enable row level security;
+alter table public.fiscal_document_status_history enable row level security;
+alter table public.fiscal_api_requests enable row level security;
+alter table public.fiscal_api_responses enable row level security;
+alter table public.fiscal_document_events enable row level security;
+
+create policy fiscal_configurations_member_read on public.fiscal_configurations
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy fiscal_configurations_member_write on public.fiscal_configurations
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy fiscal_configurations_member_update on public.fiscal_configurations
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy tax_rates_member_read on public.tax_rates
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy tax_rates_member_write on public.tax_rates
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy tax_rates_member_update on public.tax_rates
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy tax_calculations_member_read on public.tax_calculations
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy tax_calculations_member_write on public.tax_calculations
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy tax_calculations_member_update on public.tax_calculations
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy fiscal_documents_member_read on public.fiscal_documents
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy fiscal_documents_member_write on public.fiscal_documents
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy fiscal_documents_member_update on public.fiscal_documents
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy fiscal_document_items_member_read on public.fiscal_document_items
+  for select
+  using (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)));
+
+create policy fiscal_document_items_member_write on public.fiscal_document_items
+  for insert
+  with check (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)));
+
+create policy fiscal_document_items_member_update on public.fiscal_document_items
+  for update
+  using (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)))
+  with check (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)));
+
+create policy fiscal_document_status_history_member_read on public.fiscal_document_status_history
+  for select
+  using (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)));
+
+create policy fiscal_document_status_history_member_write on public.fiscal_document_status_history
+  for insert
+  with check (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)));
+
+create policy fiscal_api_requests_member_read on public.fiscal_api_requests
+  for select
+  using (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)));
+
+create policy fiscal_api_requests_member_write on public.fiscal_api_requests
+  for insert
+  with check (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)));
+
+create policy fiscal_api_requests_member_update on public.fiscal_api_requests
+  for update
+  using (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)))
+  with check (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)));
+
+create policy fiscal_api_responses_member_read on public.fiscal_api_responses
+  for select
+  using (exists (select 1 from public.fiscal_api_requests far where far.id = fiscal_api_request_id and exists (select 1 from public.fiscal_documents fd where fd.id = far.fiscal_document_id and is_tenant_member(fd.tenant_id))));
+
+create policy fiscal_api_responses_member_write on public.fiscal_api_responses
+  for insert
+  with check (exists (select 1 from public.fiscal_api_requests far where far.id = fiscal_api_request_id and exists (select 1 from public.fiscal_documents fd where fd.id = far.fiscal_document_id and is_tenant_member(fd.tenant_id))));
+
+create policy fiscal_document_events_member_read on public.fiscal_document_events
+  for select
+  using (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)));
+
+create policy fiscal_document_events_member_write on public.fiscal_document_events
+  for insert
+  with check (exists (select 1 from public.fiscal_documents fd where fd.id = fiscal_document_id and is_tenant_member(fd.tenant_id)));
+
+-- ============================================================
+-- POS
+-- ============================================================
+
+alter table public.pos_terminals enable row level security;
+alter table public.pos_cashiers enable row level security;
+alter table public.pos_cashier_sessions enable row level security;
+alter table public.pos_sales enable row level security;
+alter table public.pos_sale_items enable row level security;
+alter table public.pos_payments enable row level security;
+alter table public.pos_cancellations enable row level security;
+alter table public.pos_returns enable row level security;
+alter table public.pos_cash_movements enable row level security;
+alter table public.pos_daily_closures enable row level security;
+
+create policy pos_terminals_member_read on public.pos_terminals
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy pos_terminals_member_write on public.pos_terminals
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy pos_terminals_member_update on public.pos_terminals
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy pos_cashiers_member_read on public.pos_cashiers
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy pos_cashiers_member_write on public.pos_cashiers
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy pos_cashiers_member_update on public.pos_cashiers
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy pos_cashier_sessions_member_read on public.pos_cashier_sessions
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy pos_cashier_sessions_member_write on public.pos_cashier_sessions
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy pos_cashier_sessions_member_update on public.pos_cashier_sessions
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy pos_sales_member_read on public.pos_sales
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy pos_sales_member_write on public.pos_sales
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy pos_sales_member_update on public.pos_sales
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy pos_sale_items_member_read on public.pos_sale_items
+  for select
+  using (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)));
+
+create policy pos_sale_items_member_write on public.pos_sale_items
+  for insert
+  with check (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)));
+
+create policy pos_sale_items_member_update on public.pos_sale_items
+  for update
+  using (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)))
+  with check (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)));
+
+create policy pos_payments_member_read on public.pos_payments
+  for select
+  using (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)));
+
+create policy pos_payments_member_write on public.pos_payments
+  for insert
+  with check (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)));
+
+create policy pos_payments_member_update on public.pos_payments
+  for update
+  using (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)))
+  with check (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)));
+
+create policy pos_cancellations_member_read on public.pos_cancellations
+  for select
+  using (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)));
+
+create policy pos_cancellations_member_write on public.pos_cancellations
+  for insert
+  with check (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)));
+
+create policy pos_returns_member_read on public.pos_returns
+  for select
+  using (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)));
+
+create policy pos_returns_member_write on public.pos_returns
+  for insert
+  with check (exists (select 1 from public.pos_sales ps where ps.id = sale_id and is_tenant_member(ps.tenant_id)));
+
+create policy pos_cash_movements_member_read on public.pos_cash_movements
+  for select
+  using (exists (select 1 from public.pos_cashier_sessions pcs where pcs.id = session_id and is_tenant_member(pcs.tenant_id)));
+
+create policy pos_cash_movements_member_write on public.pos_cash_movements
+  for insert
+  with check (exists (select 1 from public.pos_cashier_sessions pcs where pcs.id = session_id and is_tenant_member(pcs.tenant_id)));
+
+create policy pos_daily_closures_member_read on public.pos_daily_closures
+  for select
+  using (exists (select 1 from public.pos_cashier_sessions pcs where pcs.id = session_id and is_tenant_member(pcs.tenant_id)));
+
+create policy pos_daily_closures_member_write on public.pos_daily_closures
+  for insert
+  with check (exists (select 1 from public.pos_cashier_sessions pcs where pcs.id = session_id and is_tenant_member(pcs.tenant_id)));
+
+create policy pos_daily_closures_member_update on public.pos_daily_closures
+  for update
+  using (exists (select 1 from public.pos_cashier_sessions pcs where pcs.id = session_id and is_tenant_member(pcs.tenant_id)))
+  with check (exists (select 1 from public.pos_cashier_sessions pcs where pcs.id = session_id and is_tenant_member(pcs.tenant_id)));
+
+-- ============================================================
+-- RECRUITMENT / EMPLOYEES
+-- ============================================================
+
+alter table public.skills enable row level security;
+alter table public.candidate_documents enable row level security;
+alter table public.candidate_experiences enable row level security;
+alter table public.candidate_education enable row level security;
+alter table public.candidate_courses enable row level security;
+alter table public.candidate_languages enable row level security;
+alter table public.candidate_skills enable row level security;
+alter table public.job_skills enable row level security;
+alter table public.stage_templates enable row level security;
+alter table public.recruitment_processes enable row level security;
+alter table public.recruitment_stages enable row level security;
+alter table public.candidate_processes enable row level security;
+alter table public.application_profile_snapshots enable row level security;
+alter table public.interview_participants enable row level security;
+alter table public.interview_feedback enable row level security;
+alter table public.employee_positions enable row level security;
+alter table public.employee_contracts enable row level security;
+alter table public.employee_documents enable row level security;
+alter table public.employee_status_history enable row level security;
+alter table public.company_relationships enable row level security;
+alter table public.company_contacts enable row level security;
+alter table public.applications enable row level security;
+alter table public.application_status_history enable row level security;
+alter table public.interviews enable row level security;
+alter table public.chat_rooms enable row level security;
+alter table public.chat_participants enable row level security;
+alter table public.chat_messages enable row level security;
+alter table public.ai_messages enable row level security;
+alter table public.chat_handoffs enable row level security;
+
+create policy skills_member_read on public.skills
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy skills_member_write on public.skills
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy skills_member_update on public.skills
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy candidate_documents_member_read on public.candidate_documents
+  for select
+  using (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_documents_member_write on public.candidate_documents
+  for insert
+  with check (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_experiences_member_read on public.candidate_experiences
+  for select
+  using (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_experiences_member_write on public.candidate_experiences
+  for insert
+  with check (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_education_member_read on public.candidate_education
+  for select
+  using (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_education_member_write on public.candidate_education
+  for insert
+  with check (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_courses_member_read on public.candidate_courses
+  for select
+  using (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_courses_member_write on public.candidate_courses
+  for insert
+  with check (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_languages_member_read on public.candidate_languages
+  for select
+  using (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_languages_member_write on public.candidate_languages
+  for insert
+  with check (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_skills_member_read on public.candidate_skills
+  for select
+  using (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy candidate_skills_member_write on public.candidate_skills
+  for insert
+  with check (exists (select 1 from public.candidates c where c.id = candidate_id and is_tenant_member(c.tenant_id)));
+
+create policy job_skills_member_read on public.job_skills
+  for select
+  using (exists (select 1 from public.jobs j where j.id = job_id and is_tenant_member(j.tenant_id)));
+
+create policy job_skills_member_write on public.job_skills
+  for insert
+  with check (exists (select 1 from public.jobs j where j.id = job_id and is_tenant_member(j.tenant_id)));
+
+create policy stage_templates_member_read on public.stage_templates
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy stage_templates_member_write on public.stage_templates
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy stage_templates_member_update on public.stage_templates
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy recruitment_processes_member_read on public.recruitment_processes
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy recruitment_processes_member_write on public.recruitment_processes
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy recruitment_processes_member_update on public.recruitment_processes
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy recruitment_stages_member_read on public.recruitment_stages
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy recruitment_stages_member_write on public.recruitment_stages
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy recruitment_stages_member_update on public.recruitment_stages
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy candidate_processes_member_read on public.candidate_processes
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy candidate_processes_member_write on public.candidate_processes
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy candidate_processes_member_update on public.candidate_processes
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy application_profile_snapshots_member_read on public.application_profile_snapshots
+  for select
+  using (exists (select 1 from public.applications a where a.id = application_id and is_tenant_member(a.tenant_id)));
+
+create policy application_profile_snapshots_member_write on public.application_profile_snapshots
+  for insert
+  with check (exists (select 1 from public.applications a where a.id = application_id and is_tenant_member(a.tenant_id)));
+
+create policy interview_participants_member_read on public.interview_participants
+  for select
+  using (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)));
+
+create policy interview_participants_member_write on public.interview_participants
+  for insert
+  with check (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)));
+
+create policy interview_feedback_member_read on public.interview_feedback
+  for select
+  using (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)));
+
+create policy interview_feedback_member_write on public.interview_feedback
+  for insert
+  with check (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)));
+
+create policy employee_positions_member_read on public.employee_positions
+  for select
+  using (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_positions_member_write on public.employee_positions
+  for insert
+  with check (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_positions_member_update on public.employee_positions
+  for update
+  using (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)))
+  with check (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_contracts_member_read on public.employee_contracts
+  for select
+  using (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_contracts_member_write on public.employee_contracts
+  for insert
+  with check (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_contracts_member_update on public.employee_contracts
+  for update
+  using (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)))
+  with check (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_documents_member_read on public.employee_documents
+  for select
+  using (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_documents_member_write on public.employee_documents
+  for insert
+  with check (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_documents_member_update on public.employee_documents
+  for update
+  using (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)))
+  with check (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_status_history_member_read on public.employee_status_history
+  for select
+  using (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_status_history_member_write on public.employee_status_history
+  for insert
+  with check (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy employee_status_history_member_update on public.employee_status_history
+  for update
+  using (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)))
+  with check (exists (select 1 from public.employees e where e.id = employee_id and is_tenant_member(e.tenant_id)));
+
+create policy company_relationships_member_read on public.company_relationships
+  for select
+  using (exists (select 1 from public.companies c where c.id = company_id and is_tenant_member(c.tenant_id)));
+
+create policy company_relationships_member_write on public.company_relationships
+  for insert
+  with check (exists (select 1 from public.companies c where c.id = company_id and is_tenant_member(c.tenant_id)));
+
+create policy company_relationships_member_update on public.company_relationships
+  for update
+  using (exists (select 1 from public.companies c where c.id = company_id and is_tenant_member(c.tenant_id)))
+  with check (exists (select 1 from public.companies c where c.id = company_id and is_tenant_member(c.tenant_id)));
+
+create policy company_contacts_member_read on public.company_contacts
+  for select
+  using (exists (select 1 from public.companies c where c.id = company_id and is_tenant_member(c.tenant_id)));
+
+create policy company_contacts_member_write on public.company_contacts
+  for insert
+  with check (exists (select 1 from public.companies c where c.id = company_id and is_tenant_member(c.tenant_id)));
+
+create policy company_contacts_member_update on public.company_contacts
+  for update
+  using (exists (select 1 from public.companies c where c.id = company_id and is_tenant_member(c.tenant_id)))
+  with check (exists (select 1 from public.companies c where c.id = company_id and is_tenant_member(c.tenant_id)));
+
+create policy applications_member_read on public.applications
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy applications_member_write on public.applications
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy applications_member_update on public.applications
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy application_status_history_member_read on public.application_status_history
+  for select
+  using (exists (select 1 from public.applications a where a.id = application_id and is_tenant_member(a.tenant_id)));
+
+create policy application_status_history_member_write on public.application_status_history
+  for insert
+  with check (exists (select 1 from public.applications a where a.id = application_id and is_tenant_member(a.tenant_id)));
+
+create policy interviews_member_read on public.interviews
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy interviews_member_write on public.interviews
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy interviews_member_update on public.interviews
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy chat_rooms_member_read on public.chat_rooms
+  for select
+  using (exists (select 1 from public.ai_conversations ac where ac.id = ai_conversation_id and is_tenant_member(ac.tenant_id)));
+
+create policy chat_rooms_member_write on public.chat_rooms
+  for insert
+  with check (exists (select 1 from public.ai_conversations ac where ac.id = ai_conversation_id and is_tenant_member(ac.tenant_id)));
+
+create policy chat_participants_member_read on public.chat_participants
+  for select
+  using (exists (select 1 from public.chat_rooms cr where cr.id = room_id and exists (select 1 from public.ai_conversations ac where ac.id = cr.ai_conversation_id and is_tenant_member(ac.tenant_id))));
+
+create policy chat_participants_member_write on public.chat_participants
+  for insert
+  with check (exists (select 1 from public.chat_rooms cr where cr.id = room_id and exists (select 1 from public.ai_conversations ac where ac.id = cr.ai_conversation_id and is_tenant_member(ac.tenant_id))));
+
+create policy chat_messages_member_read on public.chat_messages
+  for select
+  using (exists (select 1 from public.chat_rooms cr where cr.id = room_id and exists (select 1 from public.ai_conversations ac where ac.id = cr.ai_conversation_id and is_tenant_member(ac.tenant_id))));
+
+create policy chat_messages_member_write on public.chat_messages
+  for insert
+  with check (exists (select 1 from public.chat_rooms cr where cr.id = room_id and exists (select 1 from public.ai_conversations ac where ac.id = cr.ai_conversation_id and is_tenant_member(ac.tenant_id))));
+
+create policy ai_messages_member_read on public.ai_messages
+  for select
+  using (exists (select 1 from public.ai_conversations ac where ac.id = conversation_id and is_tenant_member(ac.tenant_id)));
+
+create policy ai_messages_member_write on public.ai_messages
+  for insert
+  with check (exists (select 1 from public.ai_conversations ac where ac.id = conversation_id and is_tenant_member(ac.tenant_id)));
+
+create policy chat_handoffs_member_read on public.chat_handoffs
+  for select
+  using (exists (select 1 from public.ai_conversations ac where ac.id = conversation_id and is_tenant_member(ac.tenant_id)));
+
+create policy chat_handoffs_member_write on public.chat_handoffs
+  for insert
+  with check (exists (select 1 from public.ai_conversations ac where ac.id = conversation_id and is_tenant_member(ac.tenant_id)));
+
+-- ============================================================
+-- AUTOMATION
+-- ============================================================
+
+alter table public.webhook_deliveries enable row level security;
+alter table public.automation_jobs enable row level security;
+alter table public.automation_executions enable row level security;
+
+create policy webhook_deliveries_member_read on public.webhook_deliveries
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy webhook_deliveries_member_write on public.webhook_deliveries
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy automation_jobs_member_read on public.automation_jobs
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy automation_jobs_member_write on public.automation_jobs
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy automation_jobs_member_update on public.automation_jobs
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy automation_executions_member_read on public.automation_executions
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy automation_executions_member_write on public.automation_executions
+  for insert
+  with check (is_tenant_member(tenant_id));
+

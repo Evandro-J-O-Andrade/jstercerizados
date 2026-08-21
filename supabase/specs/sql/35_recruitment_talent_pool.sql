@@ -39,6 +39,7 @@ select
   count(*) filter (where status = 'closed') as closed_demands,
   count(*) as total_demands
 from public.recruitment_demands
+where tenant_id in (select public.user_tenant_ids())
 group by tenant_id;
 
 create or replace function public.match_candidates_to_demand(

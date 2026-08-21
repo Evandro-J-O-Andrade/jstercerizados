@@ -314,4 +314,5 @@ select
   sum(amount) filter (where type = 'debit') as total_debit,
   sum(amount) filter (where type = 'credit') - sum(amount) filter (where type = 'debit') as balance
 from public.financial_transactions
+where tenant_id in (select public.user_tenant_ids())
 group by tenant_id;

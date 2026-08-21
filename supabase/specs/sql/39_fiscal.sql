@@ -15,7 +15,25 @@ create or replace function public.fiscal_emit_invoice(
   p_invoice_id uuid
 )
 returns void as $$
+declare
+  v_invoice public.invoices%rowtype;
+  v_tenant_id uuid;
 begin
+  select * into v_invoice from public.invoices where id = p_invoice_id;
+  if not found then
+    raise exception 'invoice not found';
+  end if;
+
+  v_tenant_id := v_invoice.tenant_id;
+
+  if not public.is_tenant_member(v_tenant_id) then
+    raise exception 'not a member of the invoice tenant';
+  end if;
+
+  if not public.user_has_permission(auth.uid(), 'invoices', 'update', v_tenant_id) then
+    raise exception 'permission denied: invoices.update required';
+  end if;
+
   update public.invoices
   set status = 'emitted'
   where id = p_invoice_id;
@@ -27,7 +45,25 @@ create or replace function public.fiscal_cancel_invoice(
   p_invoice_id uuid
 )
 returns void as $$
+declare
+  v_invoice public.invoices%rowtype;
+  v_tenant_id uuid;
 begin
+  select * into v_invoice from public.invoices where id = p_invoice_id;
+  if not found then
+    raise exception 'invoice not found';
+  end if;
+
+  v_tenant_id := v_invoice.tenant_id;
+
+  if not public.is_tenant_member(v_tenant_id) then
+    raise exception 'not a member of the invoice tenant';
+  end if;
+
+  if not public.user_has_permission(auth.uid(), 'invoices', 'update', v_tenant_id) then
+    raise exception 'permission denied: invoices.update required';
+  end if;
+
   update public.invoices
   set status = 'cancelled'
   where id = p_invoice_id;

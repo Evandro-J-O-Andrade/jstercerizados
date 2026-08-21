@@ -19,6 +19,12 @@ create table if not exists public.service_orders (
   status text not null default 'pending',
   scheduled_at timestamptz,
   completed_at timestamptz,
+  quantity numeric,
+  value numeric,
+  period_start date,
+  period_end date,
+  location text,
+  notes text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
