@@ -198,3 +198,17 @@ create table if not exists public.pos_daily_closures (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+create or replace function public.pos_daily_closure_validate()
+returns trigger as $$
+begin
+  if new.status = 'approved' and new.difference <> 0 then
+    raise exception 'daily closure with non-zero difference cannot be approved';
+  end if;
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger trg_pos_daily_closure_validate
+  before update on public.pos_daily_closures
+  for each row execute function public.pos_daily_closure_validate();

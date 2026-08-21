@@ -225,3 +225,93 @@ create table if not exists public.financial_installment_cancellations (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- ============================================================
+-- INVOICES
+-- ============================================================
+
+create table if not exists public.invoices (
+  id uuid primary key default uuid_generate_v4(),
+  tenant_id uuid not null references public.tenants(id),
+  number text not null,
+  company_id uuid references public.companies(id),
+  customer_id uuid references public.companies(id),
+  issue_date date not null,
+  due_date date not null,
+  amount numeric not null,
+  status text not null default 'draft',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint uq_invoices_tenant_number unique (tenant_id, number)
+);
+
+create table if not exists public.invoice_items (
+  id uuid primary key default uuid_generate_v4(),
+  tenant_id uuid not null references public.tenants(id),
+  invoice_id uuid not null references public.invoices(id),
+  description text not null,
+  quantity numeric not null default 1,
+  unit_price numeric not null,
+  total numeric not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.financial_accounts (
+  id uuid primary key default uuid_generate_v4(),
+  tenant_id uuid not null references public.tenants(id),
+  name text not null,
+  bank text,
+  agency text,
+  account_number text,
+  account_type text not null default 'checking',
+  status text not null default 'active',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint uq_financial_accounts_tenant_name unique (tenant_id, name)
+);
+
+-- EXTEND financial_transactions
+alter table public.financial_transactions alter column cost_center_id set not null;
+
+-- ============================================================
+-- FUNCTIONS
+-- ============================================================
+
+create or replace function public.financial_reversal(
+  p_transaction_id uuid
+)
+returns void as $$
+declare
+  v_transaction public.financial_transactions%rowtype;
+begin
+  select * into v_transaction from public.financial_transactions where id = p_transaction_id;
+  if not found then
+    raise exception 'transaction not found';
+  end if;
+
+  insert into public.financial_transactions (
+    tenant_id, cost_center_id, category_id, type, amount, competence_date, payment_date,
+    bank_account, description, reference, origin_document_type, origin_document_id,
+    actor_person_id, correlation_id
+  )
+  values (
+    v_transaction.tenant_id, v_transaction.cost_center_id, v_transaction.category_id,
+    case when v_transaction.type = 'debit' then 'credit' else 'debit' end,
+    v_transaction.amount, v_transaction.competence_date, v_transaction.payment_date,
+    v_transaction.bank_account, v_transaction.description || ' (reversal)',
+    v_transaction.reference, v_transaction.origin_document_type, v_transaction.origin_document_id,
+    auth.uid(), gen_random_uuid()
+  );
+end;
+$$ language plpgsql security definer;
+set search_path = public, pg_temp;
+
+create or replace view public.financial_kpis as
+select
+  tenant_id,
+  sum(amount) filter (where type = 'credit') as total_credit,
+  sum(amount) filter (where type = 'debit') as total_debit,
+  sum(amount) filter (where type = 'credit') - sum(amount) filter (where type = 'debit') as balance
+from public.financial_transactions
+group by tenant_id;
