@@ -115,8 +115,20 @@
 \echo 'Applying 22_rls.sql...'
 \i supabase/specs/sql/22_rls.sql
 
--- 23 Indexes
-\echo 'Applying 23_indexes.sql...'
-\i supabase/specs/sql/23_indexes.sql
+-- 45b Scheduling/Integrations
+\echo 'Applying 45b_scheduling_integrations.sql...'
+\i supabase/specs/sql/45b_scheduling_integrations.sql
+
+-- 46 Operations Field Service
+\echo 'Applying 46_operations_field_service.sql...'
+\i supabase/specs/sql/46_operations_field_service.sql
+
+-- 45 RLS Remaining
+\echo 'Applying 45_rls_remaining.sql...'
+\i supabase/specs/sql/45_rls_remaining.sql
+
+-- 45 Indexes
+\echo 'Applying 45_indexes.sql...'
+\i supabase/specs/sql/45_indexes.sql
 
 \echo '=== Migration Dry-Run Complete ==='
