@@ -7,6 +7,7 @@
 
 create table if not exists public.validation_results (
   id uuid primary key default uuid_generate_v4(),
+  tenant_id uuid not null references public.tenants(id),
   gate text not null,
   suite text not null,
   test_name text not null,
@@ -30,7 +31,6 @@ begin
   on conflict do nothing;
 end;
 $$ language plpgsql security definer;
-set search_path = public, pg_temp;
 
 -- ============================================================
 -- HELPER: ASSERT
@@ -52,7 +52,6 @@ begin
   end if;
 end;
 $$ language plpgsql security definer;
-set search_path = public, pg_temp;
 
 -- ============================================================
 -- 1. STRUCTURAL INTEGRITY

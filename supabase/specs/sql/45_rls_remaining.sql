@@ -646,37 +646,37 @@ create policy candidate_processes_member_update on public.candidate_processes
 
 create policy application_profile_snapshots_member_read on public.application_profile_snapshots
   for select
-  using (exists (select 1 from public.applications a where a.id = application_id and is_tenant_member(a.tenant_id)));
+  using (is_tenant_member(tenant_id));
 
 create policy application_profile_snapshots_member_write on public.application_profile_snapshots
   for insert
-  with check (exists (select 1 from public.applications a where a.id = application_id and is_tenant_member(a.tenant_id)));
+  with check (is_tenant_member(tenant_id));
 
 create policy interview_participants_member_read on public.interview_participants
   for select
-  using (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)));
+  using (is_tenant_member(tenant_id));
 
 create policy interview_participants_member_write on public.interview_participants
   for insert
-  with check (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)));
+  with check (is_tenant_member(tenant_id));
 
 create policy interview_participants_member_update on public.interview_participants
   for update
-  using (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)))
-  with check (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)));
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
 
 create policy interview_feedback_member_read on public.interview_feedback
   for select
-  using (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)));
+  using (is_tenant_member(tenant_id));
 
 create policy interview_feedback_member_write on public.interview_feedback
   for insert
-  with check (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)));
+  with check (is_tenant_member(tenant_id));
 
 create policy interview_feedback_member_update on public.interview_feedback
   for update
-  using (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)))
-  with check (exists (select 1 from public.interviews i where i.id = interview_id and is_tenant_member(i.tenant_id)));
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
 
 -- ============================================================
 -- EMPLOYEES
@@ -1042,16 +1042,16 @@ create policy stock_inventory_member_update on public.stock_inventory
 
 create policy stock_inventory_items_member_read on public.stock_inventory_items
   for select
-  using (exists (select 1 from public.stock_inventory si where si.id = stock_inventory_id and is_tenant_member(si.tenant_id)));
+  using (is_tenant_member(tenant_id));
 
 create policy stock_inventory_items_member_write on public.stock_inventory_items
   for insert
-  with check (exists (select 1 from public.stock_inventory si where si.id = stock_inventory_id and is_tenant_member(si.tenant_id)));
+  with check (is_tenant_member(tenant_id));
 
 create policy stock_inventory_items_member_update on public.stock_inventory_items
   for update
-  using (exists (select 1 from public.stock_inventory si where si.id = stock_inventory_id and is_tenant_member(si.tenant_id)))
-  with check (exists (select 1 from public.stock_inventory si where si.id = stock_inventory_id and is_tenant_member(si.tenant_id)));
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
 
 -- ============================================================
 -- PURCHASING
@@ -1079,16 +1079,16 @@ create policy purchase_requests_member_update on public.purchase_requests
 
 create policy purchase_request_items_member_read on public.purchase_request_items
   for select
-  using (exists (select 1 from public.purchase_requests pr where pr.id = purchase_request_id and is_tenant_member(pr.tenant_id)));
+  using (exists (select 1 from public.purchase_requests pr where pr.id = request_id and is_tenant_member(pr.tenant_id)));
 
 create policy purchase_request_items_member_write on public.purchase_request_items
   for insert
-  with check (exists (select 1 from public.purchase_requests pr where pr.id = purchase_request_id and is_tenant_member(pr.tenant_id)));
+  with check (exists (select 1 from public.purchase_requests pr where pr.id = request_id and is_tenant_member(pr.tenant_id)));
 
 create policy purchase_request_items_member_update on public.purchase_request_items
   for update
-  using (exists (select 1 from public.purchase_requests pr where pr.id = purchase_request_id and is_tenant_member(pr.tenant_id)))
-  with check (exists (select 1 from public.purchase_requests pr where pr.id = purchase_request_id and is_tenant_member(pr.tenant_id)));
+  using (exists (select 1 from public.purchase_requests pr where pr.id = request_id and is_tenant_member(pr.tenant_id)))
+  with check (exists (select 1 from public.purchase_requests pr where pr.id = request_id and is_tenant_member(pr.tenant_id)));
 
 create policy purchase_quotations_member_read on public.purchase_quotations
   for select
@@ -1113,11 +1113,11 @@ create policy purchase_quotation_items_member_write on public.purchase_quotation
 
 create policy purchase_status_history_member_read on public.purchase_status_history
   for select
-  using (exists (select 1 from public.purchase_requests pr where pr.id = purchase_request_id and is_tenant_member(pr.tenant_id)));
+  using (exists (select 1 from public.purchase_orders po where po.id = purchase_order_id and is_tenant_member(po.tenant_id)));
 
 create policy purchase_status_history_member_write on public.purchase_status_history
   for insert
-  with check (exists (select 1 from public.purchase_requests pr where pr.id = purchase_request_id and is_tenant_member(pr.tenant_id)));
+  with check (exists (select 1 from public.purchase_orders po where po.id = purchase_order_id and is_tenant_member(po.tenant_id)));
 
 create policy purchase_receipt_divergences_member_read on public.purchase_receipt_divergences
   for select
@@ -1397,4 +1397,125 @@ create policy fiscal_integrations_member_write on public.fiscal_integrations
 create policy fiscal_integrations_member_update on public.fiscal_integrations
   for update
   using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+-- ============================================================
+-- SCHEDULING / CALENDAR / EMAIL
+-- ============================================================
+
+alter table public.calendar_integrations enable row level security;
+alter table public.calendars enable row level security;
+alter table public.calendar_events enable row level security;
+alter table public.event_participants enable row level security;
+alter table public.meeting_rooms enable row level security;
+alter table public.meeting_room_reservations enable row level security;
+alter table public.email_templates enable row level security;
+alter table public.email_messages enable row level security;
+alter table public.integration_sync_jobs enable row level security;
+
+create policy calendar_integrations_member_read on public.calendar_integrations
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy calendar_integrations_member_write on public.calendar_integrations
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy calendar_integrations_member_update on public.calendar_integrations
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy calendars_member_read on public.calendars
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy calendars_member_write on public.calendars
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy calendars_member_update on public.calendars
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy calendar_events_member_read on public.calendar_events
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy calendar_events_member_write on public.calendar_events
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy calendar_events_member_update on public.calendar_events
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy event_participants_member_read on public.event_participants
+  for select
+  using (exists (select 1 from public.calendar_events ce where ce.id = event_id and is_tenant_member(ce.tenant_id)));
+
+create policy event_participants_member_write on public.event_participants
+  for insert
+  with check (exists (select 1 from public.calendar_events ce where ce.id = event_id and is_tenant_member(ce.tenant_id)));
+
+create policy event_participants_member_update on public.event_participants
+  for update
+  using (exists (select 1 from public.calendar_events ce where ce.id = event_id and is_tenant_member(ce.tenant_id)))
+  with check (exists (select 1 from public.calendar_events ce where ce.id = event_id and is_tenant_member(ce.tenant_id)));
+
+create policy meeting_rooms_member_read on public.meeting_rooms
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy meeting_rooms_member_write on public.meeting_rooms
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy meeting_rooms_member_update on public.meeting_rooms
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy meeting_room_reservations_member_read on public.meeting_room_reservations
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy meeting_room_reservations_member_write on public.meeting_room_reservations
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy meeting_room_reservations_member_update on public.meeting_room_reservations
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy email_templates_member_read on public.email_templates
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy email_templates_member_write on public.email_templates
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy email_templates_member_update on public.email_templates
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy email_messages_member_read on public.email_messages
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy email_messages_member_write on public.email_messages
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy integration_sync_jobs_member_read on public.integration_sync_jobs
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy integration_sync_jobs_member_write on public.integration_sync_jobs
+  for insert
   with check (is_tenant_member(tenant_id));
