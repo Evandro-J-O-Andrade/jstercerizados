@@ -15,7 +15,7 @@
 -- DRY-RUN MIGRATION
 -- ============================================================
 
--- Order: 00 -> 01 -> 02 -> 03 -> 07 -> 04 -> 05 -> 06 -> 09 -> 10 -> 11 -> 12 -> 14 -> 15 -> 18 -> 20 -> 21 -> 22 -> 23
+-- Order: 00 -> 01 -> 02 -> 03 -> 07 -> 04 -> 05 -> 06 -> 09 -> 10 -> 11 -> 12 -> 14 -> 15 -> 18 -> 20 -> 26 -> 27 -> 28 -> 29 -> 30 -> 31 -> 21 -> 22 -> 23
 
 \echo '=== Starting V2.1 Migration Dry-Run ==='
 
@@ -82,6 +82,30 @@
 -- 20 LGPD
 \echo 'Applying 20_lgpd.sql...'
 \i supabase/specs/sql/20_lgpd.sql
+
+-- 26 Error Codes
+\echo 'Applying 26_error_codes.sql...'
+\i supabase/specs/sql/26_error_codes.sql
+
+-- 27 Finance
+\echo 'Applying 27_finance.sql...'
+\i supabase/specs/sql/27_finance.sql
+
+-- 28 Fiscal
+\echo 'Applying 28_fiscal.sql...'
+\i supabase/specs/sql/28_fiscal.sql
+
+-- 29 POS
+\echo 'Applying 29_pos.sql...'
+\i supabase/specs/sql/29_pos.sql
+
+-- 30 Recruitment
+\echo 'Applying 30_recruitment.sql...'
+\i supabase/specs/sql/30_recruitment.sql
+
+-- 31 Automation
+\echo 'Applying 31_automation.sql...'
+\i supabase/specs/sql/31_automation.sql
 
 -- 21 Functions/Triggers
 \echo 'Applying 21_functions_triggers.sql...'
