@@ -15,7 +15,7 @@
 -- DRY-RUN MIGRATION
 -- ============================================================
 
--- Order: 00 -> 01 -> 02 -> 03 -> 04 -> 05 -> 06 -> 07 -> 09 -> 10 -> 11 -> 12 -> 14 -> 15 -> 18 -> 20 -> 21 -> 22 -> 23
+-- Order: 00 -> 01 -> 02 -> 03 -> 07 -> 04 -> 05 -> 06 -> 09 -> 10 -> 11 -> 12 -> 14 -> 15 -> 18 -> 20 -> 21 -> 22 -> 23
 
 \echo '=== Starting V2.1 Migration Dry-Run ==='
 
@@ -35,6 +35,10 @@
 \echo 'Applying 03_crm.sql...'
 \i supabase/specs/sql/03_crm.sql
 
+-- 07 Inventory
+\echo 'Applying 07_inventory_custody.sql...'
+\i supabase/specs/sql/07_inventory_custody.sql
+
 -- 04 RH/Recruitment
 \echo 'Applying 04_rh_recruitment.sql...'
 \i supabase/specs/sql/04_rh_recruitment.sql
@@ -46,10 +50,6 @@
 -- 06 Suppliers/Purchasing
 \echo 'Applying 06_suppliers_purchasing.sql...'
 \i supabase/specs/sql/06_suppliers_purchasing.sql
-
--- 07 Inventory
-\echo 'Applying 07_inventory_custody.sql...'
-\i supabase/specs/sql/07_inventory_custody.sql
 
 -- 09 Chat
 \echo 'Applying 09_chat.sql...'
