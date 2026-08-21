@@ -1,0 +1,167 @@
+{
+  "timestamp": "2026-08-20T09:02:18.113Z",
+  "project": "okxqfyoqbhcmflpurfrw",
+  "tables": {
+    "application_profile_snapshots": {
+      "columns": 4,
+      "rows": 0,
+      "constraints": 5
+    },
+    "application_status_history": {
+      "columns": 8,
+      "rows": 0,
+      "constraints": 8
+    },
+    "applications": {
+      "columns": 13,
+      "rows": 0,
+      "constraints": 16
+    },
+    "candidate_preferences": {
+      "columns": 18,
+      "rows": 0,
+      "constraints": 9
+    },
+    "candidate_profile_views": {
+      "columns": 7,
+      "rows": 0,
+      "constraints": 9
+    },
+    "candidate_skills": {
+      "columns": 7,
+      "rows": 0,
+      "constraints": 10
+    },
+    "candidates": {
+      "columns": 14,
+      "rows": 0,
+      "constraints": 15
+    },
+    "companies": {
+      "columns": 22,
+      "rows": 0,
+      "constraints": 13
+    },
+    "company_contacts": {
+      "columns": 8,
+      "rows": 0,
+      "constraints": 14
+    },
+    "company_relationship_types": {
+      "columns": 5,
+      "rows": 3,
+      "constraints": 6
+    },
+    "company_relationships": {
+      "columns": 11,
+      "rows": 0,
+      "constraints": 17
+    },
+    "company_types": {
+      "columns": 5,
+      "rows": 6,
+      "constraints": 6
+    },
+    "domain_events": {
+      "columns": 17,
+      "rows": 0,
+      "constraints": 12
+    },
+    "file_access_logs": {
+      "columns": 9,
+      "rows": 0,
+      "constraints": 11
+    },
+    "files": {
+      "columns": 16,
+      "rows": 0,
+      "constraints": 20
+    },
+    "job_matches": {
+      "columns": 13,
+      "rows": 0,
+      "constraints": 16
+    },
+    "job_skills": {
+      "columns": 6,
+      "rows": 0,
+      "constraints": 11
+    },
+    "jobs": {
+      "columns": 28,
+      "rows": 0,
+      "constraints": 21
+    },
+    "notification_deliveries": {
+      "columns": 19,
+      "rows": 0,
+      "constraints": 11
+    },
+    "notification_preferences": {
+      "columns": 9,
+      "rows": 0,
+      "constraints": 13
+    },
+    "notifications": {
+      "columns": 18,
+      "rows": 0,
+      "constraints": 16
+    },
+    "people": {
+      "columns": 12,
+      "rows": 1,
+      "constraints": 12
+    },
+    "permissions": {
+      "columns": 6,
+      "rows": 26,
+      "constraints": 6
+    },
+    "role_assignments": {
+      "columns": 7,
+      "rows": 1,
+      "constraints": 9
+    },
+    "role_permissions": {
+      "columns": 5,
+      "rows": 0,
+      "constraints": 10
+    },
+    "role_resource_permissions": {
+      "columns": 6,
+      "rows": 114,
+      "constraints": 11
+    },
+    "roles": {
+      "columns": 6,
+      "rows": 10,
+      "constraints": 8
+    },
+    "skills": {
+      "columns": 9,
+      "rows": 68,
+      "constraints": 8
+    },
+    "talent_pool_memberships": {
+      "columns": 16,
+      "rows": 0,
+      "constraints": 15
+    },
+    "tenant_memberships": {
+      "columns": 10,
+      "rows": 1,
+      "constraints": 16
+    },
+    "tenants": {
+      "columns": 8,
+      "rows": 1,
+      "constraints": 12
+    }
+  },
+  "objects": {
+    "functions": 40,
+    "triggers": 38,
+    "policies": 84,
+    "indexes": 173
+  }
+}

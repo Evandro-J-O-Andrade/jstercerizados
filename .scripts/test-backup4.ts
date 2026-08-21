@@ -1,0 +1,39 @@
+import { readFileSync } from 'fs';
+import { createClient } from '@supabase/supabase-js';
+
+function loadEnvFile() {
+  try {
+    const contents = readFileSync('.env.local', 'utf-8');
+    for (const line of contents.split('\n')) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const [key, ...rest] = trimmed.split('=');
+      const val = rest.join('=').trim().replace(/^["']|["']$/g, '');
+      if (!(key in process.env)) {
+        process.env[key] = val;
+      }
+    }
+  } catch {}
+}
+loadEnvFile();
+
+const SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9reHFmeW9xYmhjbWZscHVyZnJ3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjkxNDg3MSwiZXhwIjoyMTAyNDkwODcxfQ.rIkHyqktJebgu8fqJc6s0e2ilFFO_nRh-mH-tohHIEo';
+
+const c = createClient(process.env.VITE_SUPABASE_URL!, SERVICE_ROLE_KEY, {
+  auth: { persistSession: false },
+});
+
+async function main() {
+  // Try pg_catalog
+  const tables = ['pg_tables', 'pg_class', 'pg_index', 'pg_description'];
+  for (const t of tables) {
+    try {
+      const { data, error } = await c.from(t).select('*').limit(1);
+      console.log(`\n${t}:`, error?.message || `OK (${data?.length} rows)`);
+    } catch (e) {
+      console.log(`\n${t}: EXCEPTION - ${(e as Error).message}`);
+    }
+  }
+}
+
+main();
