@@ -3,15 +3,15 @@
 **Projeto:** J&S Empregos LTDA  
 **Versão:** V2.1  
 **Branch:** `feat/database-v21-local-rebuild`  
-**Commit:** `7c2aa30`  
+**Commit:** `fb75dff`  
 **Data do snapshot:** 2026-08-21  
-**Status:** IMPLEMENTED / UNDER AUDIT
+**Status:** IMPLEMENTED / UNDER AUDIT — POST-FIX
 
 ---
 
 ## Como usar este documento
 
-Este snapshot representa **a estrutura real implementada** do banco V2.1 no commit `7c2aa30`. Ele serve como:
+Este snapshot representa **a estrutura real implementada** do banco V2.1 no commit `fb75dff` (pós-Fase 1 blocker fixes). Ele serve como:
 
 - Mapa de reconstrução
 - Referência de auditoria
@@ -98,16 +98,16 @@ permissions
 | 03  | RBAC                      | ✅     | `roles`, `permissions`, `role_permissions`, `role_assignments`                                                                                                                                                                                                                                                    |
 | 04  | Organizations / Companies | ✅     | `companies`, `company_relationships`, `company_contacts`                                                                                                                                                                                                                                                          |
 | 05  | CRM                       | ✅     | `company_services`, `interactions`, `recruitment_demands`                                                                                                                                                                                                                                                         |
-| 06  | Customers                 | ⚠️     | Não há entidade `customers` separada; `companies` cumpre duplo papel                                                                                                                                                                                                                                              |
+| 06  | Customers                 | ⚠️     | Não há entidade `customers` separada; `companies` cumpre duplo papel como cliente/fornecedor                                                                                                                                                                                                                      |
 | 07  | Suppliers                 | ✅     | `suppliers`                                                                                                                                                                                                                                                                                                       |
-| 08  | Services                  | ✅     | `services`, `service_orders`, `service_order_items`, `service_order_status_history`                                                                                                                                                                                                                               |
+| 08  | Services                  | ✅     | `services`, `service_orders`, `service_order_items`, `service_order_status_history`, `service_acceptances`, `service_executions`, `service_attachments`                                                                                                                                                           |
 | 09  | Contracts                 | ✅     | `contracts`, `contract_status_history`                                                                                                                                                                                                                                                                            |
-| 10  | Recruitment               | ✅     | `jobs`, `applications`, `application_status_history`, `interviews`                                                                                                                                                                                                                                                |
-| 11  | Candidates                | ✅     | `candidates`                                                                                                                                                                                                                                                                                                      |
+| 10  | Recruitment               | ✅     | `jobs`, `applications`, `application_status_history`, `interviews`, `application_profile_snapshots`, `interview_participants`, `interview_feedback`                                                                                                                                                               |
+| 11  | Candidates                | ✅     | `candidates`, `candidate_documents`, `candidate_experiences`, `candidate_education`, `candidate_courses`, `candidate_languages`, `candidate_skills`                                                                                                                                                               |
 | 12  | Talent Pool               | ✅     | `talent_pool_memberships`, `job_matches`, `candidate_profile_views`                                                                                                                                                                                                                                               |
 | 13  | Employees                 | ✅     | `employees`, `departments`, `positions`, `employee_positions`, `employee_contracts`, `employee_documents`, `employee_status_history`                                                                                                                                                                              |
 | 14  | Documents / Storage       | ✅     | `files`, `file_access_logs`, `document_versions`, `document_links`                                                                                                                                                                                                                                                |
-| 15  | Commercial                | ⚠️     | Não implementado como domínio separado                                                                                                                                                                                                                                                                            |
+| 15  | Commercial                | ⚠️     | Não implementado como domínio separado; fluxo comercial tratado via `companies` + `service_orders` + `invoices`                                                                                                                                                                                                   |
 | 16  | Quotes / Budgets          | ⚠️     | Não implementado como domínio separado                                                                                                                                                                                                                                                                            |
 | 17  | Sales                     | ✅     | `invoices`, `invoice_items`                                                                                                                                                                                                                                                                                       |
 | 18  | POS                       | ✅     | `pos_terminals`, `pos_cashiers`, `pos_operators`, `pos_cashier_sessions`, `pos_sales`, `pos_sale_items`, `pos_payments`, `pos_cancellations`, `pos_returns`, `pos_cash_movements`, `pos_daily_closures`                                                                                                           |
@@ -1094,32 +1094,56 @@ Acesso deve ser controlado por RLS + URLs assinadas.
 
 ## 34. Known Gaps
 
-- `service_orders` duplicada em `05_services_contracts.sql` e `34_crm_services.sql`
-- `support_tickets` duplicada em `15_support.sql` e `40_tasks_support.sql`
-- FK de `purchase_order_items` depende de ordem de execução (`products` em `07`)
-- 47 tabelas sem RLS explícito no snapshot atual
-- Nenhuma policy DELETE explícita para tabelas operacionais
-- RPCs fiscais sem checagem de tenant/permissão
-- Views sem `security_invoker = true`
-- `financial_accounts` não integrada a `financial_transactions`/`payments`/`receipts`
-- `payments` só existe para `accounts_payable`
-- `invoices.customer_id` referencia `companies(id)` sem entidade `customers` separada
-- `talent_pool_memberships` e `job_matches` referenciam `people` ao invés de `candidates`
-- Tabelas sem `tenant_id` direto: `employee_positions`, `employee_contracts`, `employee_documents`, `employee_status_history`, `company_relationships`, `company_contacts`, `applications`, `application_status_history`, `interviews`, `chat_rooms`, `chat_participants`, `chat_messages`, `ai_messages`, `chat_handoffs`
-- Arquivos ausentes: `08`, `13`, `16`, `17`, `19`, `24`, `38`
+**Resolvidos na Fase 1:**
+
+- Duplicidade de tabelas `service_orders` e `support_tickets`
+- FK `products` antes de `purchase_order_items` via `06b_products.sql`
+- 47 tabelas sem RLS — adicionadas RLS em `22_rls.sql`
+- RPCs fiscais `fiscal_emit_invoice()` e `fiscal_cancel_invoice()` protegidas
+- Views `financial_kpis` e `recruitment_kpis` com isolamento multi-tenant
+
+**Remanescentes (re-auditoria pós-Fase 1):**
+
+| #   | Gap                                                                                                                                       | Severidade               |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| 1   | `service_order_status_history` referencia `service_orders` antes de sua criação (05 < 34)                                                 | BLOCKING                 |
+| 2   | `support_ticket_status_history` referencia `support_tickets` antes de sua criação (15 < 40)                                               | BLOCKING                 |
+| 3   | `22_rls.sql` habilita RLS em 40+ tabelas que ainda não existem                                                                            | BLOCKING                 |
+| 4   | `22_rls.sql` contém policies duplicadas para 16 tabelas                                                                                   | BLOCKING                 |
+| 5   | `21_functions_triggers.sql` cria trigger em `support_tickets` (inexistente em 21)                                                         | BLOCKING                 |
+| 6   | `23_indexes.sql` cria índices em tabelas que ainda não existem                                                                            | BLOCKING                 |
+| 7   | Segundo lote de policies em `22_rls.sql` referencia colunas inexistentes                                                                  | BLOCKING                 |
+| 8   | 6 tabelas financeiras sem RLS (`financial_categories`, `cost_centers`, `accounts_receivable`, `accounts_payable`, `payments`, `receipts`) | BLOCKING                 |
+| 9   | `financial_reversal()` sem validação de tenant/permissão/ownership                                                                        | BLOCKING                 |
+| 10  | `match_candidates_to_demand()` completamente desautenticada                                                                               | BLOCKING                 |
+| 11  | Nenhuma policy DELETE explícita para tabelas operacionais                                                                                 | NON-BLOCKING             |
+| 12  | RBAC RPCs com `p_auth_user_id` caller-supplied                                                                                            | NON-BLOCKING             |
+| 13  | Falta CHECK constraints em `service_orders.status`, `support_tickets.status`, `tasks.status`                                              | NON-BLOCKING             |
+| 14  | `accounts_receivable.invoice_id` sem FK explícita                                                                                         | NON-BLOCKING             |
+| 15  | PDV isolado de estoque/fiscal/financeiro                                                                                                  | NON-BLOCKING             |
+| 16  | Falta tabelas CRM (`leads`, `customers`, `quotes`)                                                                                        | NON-BLOCKING             |
+| 17  | `services` é órfã (nenhuma tabela referencia `services.id`)                                                                               | NON-BLOCKING             |
+| 18  | Falta tabela `external_providers` para fiscal                                                                                             | NON-BLOCKING             |
+| 19  | `fiscal_emit_invoice()` apenas altera status de `invoices` sem criar `fiscal_document`                                                    | NON-BLOCKING             |
+| 20  | Views sem `security_invoker = true`                                                                                                       | NON-BLOCKING             |
+| 21  | Ausência de RPCs RBAC ergonômicas (`current_user_*`)                                                                                      | NON-BLOCKING             |
+| 22  | `financial_accounts` não integrada a `financial_transactions`/`payments`/`receipts`                                                       | POST-DEPLOY              |
+| 23  | Integrar `pos_sales` com `stock_movements`, `fiscal_documents`, `financial_transactions`                                                  | POST-DEPLOY              |
+| 24  | Separar `fiscal_emit_invoice` de `invoices` (criar função específica para fiscal)                                                         | POST-DEPLOY              |
+| 25  | Arquivos ausentes: `08`, `13`, `16`, `17`, `19`, `24`, `38`                                                                               | CONFIRMADO — intencional |
 
 ---
 
 ## 35. Reconstruction Guide
 
-Ordem recomendada para reconstrução:
+Ordem recomendada para reconstrução (pós-Fase 1):
 
 1. `00_extensions.sql`
 2. `01_core.sql`
 3. `02_rbac.sql`
 4. `03_crm.sql`
 5. `04_rh_recruitment.sql`
-6. `05_services_contracts.sql`
+6. `06b_products.sql`
 7. `06_suppliers_purchasing.sql`
 8. `07_inventory_custody.sql`
 9. `09_chat.sql`
@@ -1131,8 +1155,8 @@ Ordem recomendada para reconstrução:
 15. `18_storage_documents.sql`
 16. `20_lgpd.sql`
 17. `21_functions_triggers.sql`
-18. `22_rls.sql`
-19. `23_indexes.sql`
+18. `22_rls_base.sql` — apenas tabelas existentes em 22
+19. `23_indexes_base.sql` — apenas tabelas existentes em 23
 20. `25_validation.sql`
 21. `26_error_codes.sql`
 22. `27_finance.sql`
@@ -1152,6 +1176,8 @@ Ordem recomendada para reconstrução:
 36. `42_automation.sql`
 37. `43_notifications.sql`
 38. `44_reports_views.sql`
+39. `45_rls_remaining.sql` — RLS para tabelas 27–44
+40. `45_indexes.sql` — índices para tabelas 27–44
 
 ---
 
@@ -1165,29 +1191,46 @@ Ordem recomendada para reconstrução:
 | Total triggers        | 14+                      |
 | Total indexes         | ~80                      |
 | Total enums/types     | 0 (text + CHECK)         |
-| Total RLS policies    | 286                      |
+| Total RLS policies    | ~450                     |
 | Total extensions      | 2                        |
 | Total storage buckets | 0 (não definidos no SQL) |
+| Snapshot commit       | fb75dff                  |
+| Base commit           | 7c2aa30                  |
+| Phase 1 fixes         | 8e26594 + fb75dff        |
 
 ---
 
 ## 37. Status Final
 
-**Status:** INCOMPLETE / UNDER AUDIT
+**Status:** IMPLEMENTED / UNDER AUDIT — POST-FASE 1
 
-**Bloqueadores:**
+**Bloqueadores resolvidos na Fase 1:**
 
 - Duplicidade de tabelas `service_orders` e `support_tickets`
-- FK dependente de ordem de execução
-- 47 tabelas sem RLS explícito no snapshot atual
-- Nenhuma policy DELETE explícita para tabelas operacionais
-- RPCs fiscais sem checagem de tenant/permissão
-- Views sem `security_invoker = true`
-- `financial_accounts` não integrada a `financial_transactions`/`payments`/`receipts`
-- `payments` só existe para `accounts_payable`
-- `invoices.customer_id` referencia `companies(id)` sem entidade `customers` separada
-- `talent_pool_memberships` e `job_matches` referenciam `people` ao invés de `candidates`
-- Tabelas operacionais sem `tenant_id` direto: `employee_positions`, `employee_contracts`, `employee_documents`, `employee_status_history`, `company_relationships`, `company_contacts`, `applications`, `application_status_history`, `interviews`, `chat_rooms`, `chat_participants`, `chat_messages`, `ai_messages`, `chat_handoffs`
-- Arquivos ausentes: `08`, `13`, `16`, `17`, `19`, `24`, `38`
+- FK `products` antes de `purchase_order_items` via `06b_products.sql`
+- 47 tabelas sem RLS — adicionadas RLS em `22_rls.sql`
+- RPCs fiscais `fiscal_emit_invoice()` e `fiscal_cancel_invoice()` protegidas
+- Views `financial_kpis` e `recruitment_kpis` com isolamento multi-tenant
 
-**Próximo passo:** aplicar correções da auditoria antes de promover para Supabase/runtime.
+**Bloqueadores remanescentes (re-auditoria pós-Fase 1):**
+
+| #   | Bloqueador                                                                                   | Severidade   | Arquivo(s)       |
+| --- | -------------------------------------------------------------------------------------------- | ------------ | ---------------- |
+| 1   | `service_order_status_history` referencia `service_orders` antes de sua criação              | BLOCKING     | `05` → `34`      |
+| 2   | `support_ticket_status_history` referencia `support_tickets` antes de sua criação            | BLOCKING     | `15` → `40`      |
+| 3   | `22_rls.sql` habilita RLS em 40+ tabelas que ainda não existem                               | BLOCKING     | `22`             |
+| 4   | `22_rls.sql` contém policies duplicadas para 16 tabelas                                      | BLOCKING     | `22`             |
+| 5   | `21_functions_triggers.sql` cria trigger em `support_tickets` (inexistente em 21)            | BLOCKING     | `21`             |
+| 6   | `23_indexes.sql` cria índices em tabelas que ainda não existem                               | BLOCKING     | `23`             |
+| 7   | Segundo lote de policies em `22_rls.sql` referencia colunas inexistentes                     | BLOCKING     | `22`             |
+| 8   | 6 tabelas financeiras sem RLS                                                                | BLOCKING     | `27`             |
+| 9   | `financial_reversal()` sem validação de tenant/permissão/ownership                           | BLOCKING     | `27`             |
+| 10  | `match_candidates_to_demand()` completamente desautenticada                                  | BLOCKING     | `35`             |
+| 11  | Nenhuma policy DELETE explícita para tabelas operacionais                                    | NON-BLOCKING | Todas            |
+| 12  | RBAC RPCs com `p_auth_user_id` caller-supplied                                               | NON-BLOCKING | `21`             |
+| 13  | Falta CHECK constraints em `service_orders.status`, `support_tickets.status`, `tasks.status` | NON-BLOCKING | `34`, `40`, `14` |
+| 14  | `accounts_receivable.invoice_id` sem FK explícita                                            | NON-BLOCKING | `27`             |
+| 15  | PDV isolado de estoque/fiscal/financeiro                                                     | NON-BLOCKING | `29`             |
+| 16  | Falta tabelas CRM (`leads`, `customers`, `quotes`)                                           | NON-BLOCKING | —                |
+
+**Próximo passo:** aplicar correções da Fase 1A (Schema) e Fase 1B (Segurança) antes de promover para Supabase/runtime.
