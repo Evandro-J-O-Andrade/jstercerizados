@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Shield, LogIn, Eye, EyeOff, Briefcase, Building2 } from 'lucide-react';
+import { Shield, LogIn, Eye, EyeOff } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,7 +12,6 @@ import { SEO } from '@/components/ui/SEO';
 import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config/images';
-import { cn } from '@/utils';
 import { normalizeError } from '@/lib/error-normalizer';
 
 const loginSchema = z.object({
@@ -22,12 +21,9 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-type AccessFlow = 'admin' | 'candidate' | 'company';
-
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [accessFlow, setAccessFlow] = useState<AccessFlow>('admin');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, isAuthenticated, authError } = useAuth();
   const navigate = useNavigate();
@@ -100,44 +96,14 @@ export default function Login() {
     );
   }
 
-  const flowConfig = {
-    admin: {
-      title: 'Painel Administrativo',
-      subtitle: 'Acesse sua conta para gerenciar cadastros e relatórios.',
-      icon: <Shield className="h-8 w-8" />,
-      placeholderEmail: 'admin@exemplo.com',
-    },
-    candidate: {
-      title: 'Área do Candidato',
-      subtitle: 'Acesse seu perfil para gerenciar candidaturas e currículos.',
-      icon: <Briefcase className="h-8 w-8" />,
-      placeholderEmail: 'candidato@exemplo.com',
-    },
-    company: {
-      title: 'Área da Empresa',
-      subtitle: 'Publique vagas e acesse sua área de recrutamento.',
-      icon: <Building2 className="h-8 w-8" />,
-      placeholderEmail: 'empresa@exemplo.com',
-    },
-  };
-
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <SEO
         title={`Entrar — ${COMPANY.name}`}
-        description={`Acesse sua conta na ${COMPANY.name}. Área do candidato, empresa ou administrador.`}
-        keywords={[
-          'login',
-          'acesso',
-          'conta',
-          COMPANY.name,
-          'candidato',
-          'empresa',
-          'administrador',
-        ]}
+        description={`Acesse sua conta na ${COMPANY.name}.`}
+        keywords={['login', 'acesso', 'conta', COMPANY.name]}
         noindex
       />
-      {/* Background image */}
       <SafeImage
         src={IMAGES.hero.login.src}
         fallbackSrc={IMAGES.hero.login.fallback}
@@ -188,130 +154,96 @@ export default function Login() {
         className="relative z-10 w-full max-w-md"
       >
         <div className="border-border/40 bg-card shadow-glass rounded-3xl border p-8">
-          {/* Access flow selector */}
-          <div className="mb-6 flex justify-center gap-2">
-            {(['admin', 'candidate', 'company'] as const).map((flow) => (
-              <button
-                key={flow}
-                type="button"
-                onClick={() => setAccessFlow(flow)}
-                className={cn(
-                  'flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200',
-                  accessFlow === flow
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'text-muted-foreground hover:bg-muted',
-                )}
-              >
-                {flowConfig[flow].icon}
-                {flow === 'admin'
-                  ? 'Admin'
-                  : flow === 'candidate'
-                    ? 'Candidato'
-                    : 'Empresa'}
-              </button>
-            ))}
+          <div className="mb-8 text-center">
+            <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+              <Shield className="h-8 w-8" />
+            </div>
+            <h1 className="text-foreground text-3xl font-bold">Entrar</h1>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Acesse sua conta para continuar.
+            </p>
           </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={accessFlow}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="mb-8 text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl backdrop-blur-sm">
-                  {accessFlow !== 'admin' ? (
-                    <div className="text-primary">
-                      {flowConfig[accessFlow].icon}
-                    </div>
-                  ) : (
-                    <div className="bg-primary/20 text-primary">
-                      {flowConfig[accessFlow].icon}
-                    </div>
-                  )}
-                </div>
-                <h1 className="text-foreground text-3xl font-bold">
-                  {flowConfig[accessFlow].title}
-                </h1>
-                <p className="text-muted-foreground mt-2 text-sm">
-                  {flowConfig[accessFlow].subtitle}
-                </p>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {error && (
+              <div className="bg-destructive/10 text-destructive rounded-xl p-4 text-sm">
+                {error}
               </div>
+            )}
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                {error && (
-                  <div className="bg-destructive/10 text-destructive rounded-xl p-4 text-sm">
-                    {error}
-                  </div>
+            <Input
+              label="E-mail"
+              type="email"
+              placeholder="seu@email.com"
+              error={errors.email?.message}
+              {...register('email')}
+            />
+
+            <div className="relative">
+              <Input
+                label="Senha"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                error={errors.password?.message}
+                {...register('password')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-muted-foreground hover:text-foreground absolute top-9 right-3"
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
                 )}
+              </button>
+            </div>
 
-                <Input
-                  label="E-mail"
-                  type="email"
-                  placeholder={flowConfig[accessFlow].placeholderEmail}
-                  error={errors.email?.message}
-                  {...register('email')}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="border-input text-primary focus:ring-primary h-4 w-4 rounded"
                 />
+                <span className="text-muted-foreground text-sm">
+                  Lembrar de mim
+                </span>
+              </label>
+              <Link
+                to="/recuperar-senha"
+                className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+              >
+                Esqueceu a senha?
+              </Link>
+            </div>
 
-                <div className="relative">
-                  <Input
-                    label="Senha"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    error={errors.password?.message}
-                    {...register('password')}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-muted-foreground hover:text-foreground absolute top-9 right-3"
-                    aria-label={
-                      showPassword ? 'Ocultar senha' : 'Mostrar senha'
-                    }
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )}
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="border-input text-primary focus:ring-primary h-4 w-4 rounded"
-                    />
-                    <span className="text-muted-foreground text-sm">
-                      Lembrar de mim
-                    </span>
-                  </label>
-                  <Link
-                    to="/recuperar-senha"
-                    className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
-                  >
-                    Esqueceu a senha?
-                  </Link>
-                </div>
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="xl"
-                  className="w-full"
-                  loading={isSubmitting}
-                  leftIcon={<LogIn className="h-5 w-5" />}
-                >
-                  Entrar
-                </Button>
-              </form>
-            </motion.div>
-          </AnimatePresence>
+            <Button
+              type="submit"
+              variant="primary"
+              size="xl"
+              className="w-full"
+              loading={isSubmitting}
+              leftIcon={<LogIn className="h-5 w-5" />}
+            >
+              Entrar
+            </Button>
+          </form>
 
           <div className="mt-6 text-center">
+            <p className="text-muted-foreground text-sm">
+              Não tem conta?{' '}
+              <Link
+                to="/cadastro"
+                className="text-primary hover:text-primary/80 font-medium"
+              >
+                Cadastre-se
+              </Link>
+            </p>
+          </div>
+
+          <div className="mt-4 text-center">
             <p className="text-muted-foreground/80 text-xs">
               Área restrita — Acesso autorizado apenas.
             </p>

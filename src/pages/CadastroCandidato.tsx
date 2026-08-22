@@ -55,7 +55,7 @@ export default function CandidateRegister() {
       if (result.error) {
         setError(normalizeError(result.error).userMessage);
       } else {
-        navigate('/dashboard/candidato');
+        navigate('/dashboard');
       }
     } catch (err) {
       setError(normalizeError(err).userMessage);
@@ -73,7 +73,7 @@ export default function CandidateRegister() {
           <h2 className="text-foreground mb-4 text-2xl font-bold">
             Você já está logado!
           </h2>
-          <Link to="/dashboard/candidato">
+          <Link to="/dashboard">
             <Button variant="primary" size="lg">
               Ir para o Painel
             </Button>

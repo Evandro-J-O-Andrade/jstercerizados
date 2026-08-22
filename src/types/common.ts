@@ -101,11 +101,16 @@ export interface Vaga {
   empresa?: string;
   cidade?: string;
   estado?: string;
+  tipo_contrato?:
+    'CLT' | 'ESTAGIO' | 'TEMPORARIO' | 'FREELA' | 'TERCEIRIZADO' | 'CD';
   tipoContrato?:
     'CLT' | 'ESTAGIO' | 'TEMPORARIO' | 'FREELA' | 'TERCEIRIZADO' | 'CD';
   nivel?: 'ESTAGIO' | 'JUNIOR' | 'PLENO' | 'SENIOR' | 'MASTER' | 'LIDERANCA';
+  salario_min?: number;
   salarioMin?: number;
+  salario_max?: number;
   salarioMax?: number;
+  salario_tipo?: 'mensal' | 'hora';
   salarioTipo?: 'mensal' | 'hora';
   modalidade?: 'PRESENCIAL' | 'HIBRIDO' | 'REMOTO';
   beneficios?: string[];
@@ -114,10 +119,14 @@ export interface Vaga {
   responsibilities?: string;
   area?: string;
   workload?: string;
+  work_schedule?: string;
   workSchedule?: string;
   vagas?: number;
   status: 'BORRAR' | 'ATIVA' | 'ARQUIVADA' | 'CONTRATADA';
-  dataPublicacao: string;
+  data_publicacao: string;
+  dataPublicacao?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Testimonial {

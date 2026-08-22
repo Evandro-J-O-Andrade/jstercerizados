@@ -46,10 +46,12 @@ const adminNavItems: NavItem[] = [
 
 export function BottomNavigation() {
   const { pathname } = useLocation();
-  const { isAuthenticated, profile } = useAuth();
+  const { isAuthenticated, roles } = useAuth();
+
+  const isAdmin = roles.some((r) => r.name === 'admin_master');
 
   const navItems = isAuthenticated
-    ? profile?.role === 'admin_master'
+    ? isAdmin
       ? adminNavItems
       : candidateNavItems
     : publicNavItems;

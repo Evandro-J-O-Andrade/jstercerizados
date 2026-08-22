@@ -5,21 +5,46 @@ import { Button } from '@/components/ui/Button';
 import { Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { normalizeError } from '@/lib/error-normalizer';
+import type { Role } from '@/types/auth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles?: string[];
+  allowedPermissions?: string[];
   requireAdminMaster?: boolean;
   requireTenantAccess?: boolean;
+  requireAnyRole?: boolean;
+}
+
+function hasRole(roles: Role[], roleName: string): boolean {
+  return roles.some((r) => r.name === roleName);
+}
+
+function hasPermission(
+  permissions: { name: string }[],
+  permissionName: string,
+): boolean {
+  return permissions.some((p) => p.name === permissionName);
 }
 
 export function ProtectedRoute({
   children,
   allowedRoles,
+  allowedPermissions,
   requireAdminMaster,
   requireTenantAccess,
+  requireAnyRole,
 }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading, profile, authError } = useAuth();
+  const {
+    isAuthenticated,
+    isLoading,
+    person,
+    tenantMemberships,
+    roles,
+    permissions,
+    isAdminMaster,
+    authError,
+  } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -57,26 +82,38 @@ export function ProtectedRoute({
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !person) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (allowedRoles && profile && !allowedRoles.includes(profile.role ?? '')) {
-    const fallback = profile.is_admin_master ? '/admin' : '/dashboard';
-    return <Navigate to={fallback} replace />;
+  if (requireAdminMaster && !isAdminMaster) {
+    return <Navigate to="/dashboard" replace />;
   }
 
-  if (requireAdminMaster && profile && !profile.is_admin_master) {
-    const fallback = profile.is_admin_master ? '/admin' : '/dashboard';
-    return <Navigate to={fallback} replace />;
-  }
-
-  if (requireTenantAccess && profile && !profile.tenant_id) {
+  if (requireTenantAccess && tenantMemberships.length === 0) {
     return <Navigate to="/onboarding" replace />;
   }
 
-  if (allowedRoles && !profile) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (allowedRoles && allowedRoles.length > 0) {
+    const hasAllowedRole = allowedRoles.some((role) => hasRole(roles, role));
+    if (!hasAllowedRole) {
+      const fallback = isAdminMaster ? '/admin' : '/dashboard';
+      return <Navigate to={fallback} replace />;
+    }
+  }
+
+  if (allowedPermissions && allowedPermissions.length > 0) {
+    const hasAllowedPermission = allowedPermissions.some((perm) =>
+      hasPermission(permissions, perm),
+    );
+    if (!hasAllowedPermission) {
+      const fallback = isAdminMaster ? '/admin' : '/dashboard';
+      return <Navigate to={fallback} replace />;
+    }
+  }
+
+  if (requireAnyRole && roles.length === 0) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;

@@ -106,32 +106,11 @@ function App() {
                     <ProtectedRoute
                       allowedRoles={[
                         'admin_master',
-                        'tenant_admin',
-                        'rh_manager',
-                        'recruiter',
-                        'finance',
-                        'support',
-                        'content_manager',
-                        'viewer',
-                        'member',
+                        'admin_tenant',
+                        'manager',
+                        'operator',
                       ]}
                     >
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/dashboard/candidato"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/dashboard/empresa"
-                  element={
-                    <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
                   }

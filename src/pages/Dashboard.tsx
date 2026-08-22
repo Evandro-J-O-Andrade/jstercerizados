@@ -82,9 +82,9 @@ const STATUS_VARIANTS: Record<string, StatusColorKey> = {
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
-  const { profile, logout, authError } = useAuth();
+  const { roles, logout, authError } = useAuth();
   const navigate = useNavigate();
-  const role = profile?.role ?? 'member';
+  const role = roles[0]?.name ?? 'member';
 
   const budgets = mockGetBudgets();
   const partners = mockGetPartners();

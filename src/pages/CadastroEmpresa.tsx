@@ -56,7 +56,7 @@ export default function CompanyRegister() {
       if (result.error) {
         setError(normalizeError(result.error).userMessage);
       } else {
-        navigate('/dashboard/empresa');
+        navigate('/dashboard');
       }
     } catch (err) {
       setError(normalizeError(err).userMessage);
@@ -74,7 +74,7 @@ export default function CompanyRegister() {
           <h2 className="text-foreground mb-4 text-2xl font-bold">
             Você já está logado!
           </h2>
-          <Link to="/dashboard/empresa">
+          <Link to="/dashboard">
             <Button variant="primary" size="lg">
               Ir para o Painel
             </Button>

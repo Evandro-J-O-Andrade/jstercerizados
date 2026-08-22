@@ -31,7 +31,7 @@ export const mockVagas: Vaga[] = [
       'Responsável pelo processamento mensal da folha de pagamento, cálculos de salários, férias, 13º salário e encargos sociais.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-01T10:00:00Z',
+    data_publicacao: '2026-08-01T10:00:00Z',
   },
   {
     id: '2',
@@ -56,7 +56,7 @@ export const mockVagas: Vaga[] = [
       'Profissional para suporte às atividades operacionais, carga e descarga, apoio à produção e logística.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-02T09:00:00Z',
+    data_publicacao: '2026-08-02T09:00:00Z',
   },
   {
     id: '3',
@@ -67,7 +67,7 @@ export const mockVagas: Vaga[] = [
     salarioMin: 10.56,
     salarioTipo: 'hora',
     status: 'ATIVA',
-    dataPublicacao: '2026-08-12T08:00:00Z',
+    data_publicacao: '2026-08-12T08:00:00Z',
   },
   {
     id: '4',
@@ -78,7 +78,7 @@ export const mockVagas: Vaga[] = [
     salarioMin: 10.56,
     salarioTipo: 'hora',
     status: 'ATIVA',
-    dataPublicacao: '2026-08-13T08:00:00Z',
+    data_publicacao: '2026-08-13T08:00:00Z',
   },
   {
     id: '5',
@@ -89,7 +89,7 @@ export const mockVagas: Vaga[] = [
     salarioMin: 10.56,
     salarioTipo: 'hora',
     status: 'ATIVA',
-    dataPublicacao: '2026-08-14T08:00:00Z',
+    data_publicacao: '2026-08-14T08:00:00Z',
   },
   {
     id: '6',
@@ -114,7 +114,7 @@ export const mockVagas: Vaga[] = [
       'Profissional para preparação e pintura de superfícies metálicas em linha de produção.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-03T08:00:00Z',
+    data_publicacao: '2026-08-03T08:00:00Z',
   },
   {
     id: '7',
@@ -134,7 +134,7 @@ export const mockVagas: Vaga[] = [
       'Profissional para limpeza e conservação de áreas administrativas, produtivas e comuns.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-04T07:00:00Z',
+    data_publicacao: '2026-08-04T07:00:00Z',
   },
   {
     id: '8',
@@ -158,7 +158,7 @@ export const mockVagas: Vaga[] = [
       'Profissional para fabricação, montagem e acabamento de estandes, cenários e mobiliários.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-05T08:00:00Z',
+    data_publicacao: '2026-08-05T08:00:00Z',
   },
   {
     id: '9',
@@ -183,7 +183,7 @@ export const mockVagas: Vaga[] = [
       'Profissional para montagem, instalação e manutenção de sistemas elétricos, iluminação e circuitos.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-06T08:00:00Z',
+    data_publicacao: '2026-08-06T08:00:00Z',
   },
   {
     id: '10',
@@ -209,7 +209,7 @@ export const mockVagas: Vaga[] = [
       'Profissional para manutenção corretiva e preventiva em compressores e secadores de ar comprimido industrial.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-07T08:00:00Z',
+    data_publicacao: '2026-08-07T08:00:00Z',
   },
   {
     id: '11',
@@ -240,7 +240,7 @@ export const mockVagas: Vaga[] = [
       'Profissional para pesquisa de fornecedores, cotações, negociação e apoio nas compras.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-08T08:00:00Z',
+    data_publicacao: '2026-08-08T08:00:00Z',
   },
   {
     id: '12',
@@ -272,7 +272,7 @@ export const mockVagas: Vaga[] = [
       'Profissional para liderança de equipe, acompanhamento da produção e gestão de melhorias.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-09T08:00:00Z',
+    data_publicacao: '2026-08-09T08:00:00Z',
   },
   {
     id: '13',
@@ -299,7 +299,7 @@ export const mockVagas: Vaga[] = [
       'Profissional para atendimento, gestão imobiliária e rotinas administrativas.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-10T08:00:00Z',
+    data_publicacao: '2026-08-10T08:00:00Z',
   },
   {
     id: '14',
@@ -329,7 +329,7 @@ export const mockVagas: Vaga[] = [
       'Profissional para separação, conferência, embalagem e expedição de pedidos de e-commerce.',
     vagas: 1,
     status: 'ATIVA',
-    dataPublicacao: '2026-08-11T08:00:00Z',
+    data_publicacao: '2026-08-11T08:00:00Z',
   },
   {
     id: '15',
@@ -340,7 +340,7 @@ export const mockVagas: Vaga[] = [
     salarioMin: 4000,
     salarioTipo: 'mensal',
     status: 'ATIVA',
-    dataPublicacao: '2026-08-15T08:00:00Z',
+    data_publicacao: '2026-08-15T08:00:00Z',
   },
 ];
 
@@ -377,7 +377,7 @@ export function mockGetVagas(filtro?: {
   if (filtro?.dataDias) {
     const cutoff = Date.now() - filtro.dataDias * 24 * 60 * 60 * 1000;
     result = result.filter(
-      (v) => new Date(v.dataPublicacao).getTime() >= cutoff,
+      (v) => new Date(v.data_publicacao).getTime() >= cutoff,
     );
   }
   if (filtro?.search) {
@@ -393,8 +393,8 @@ export function mockGetVagas(filtro?: {
 
   return result.sort(
     (a, b) =>
-      new Date(b.dataPublicacao).getTime() -
-      new Date(a.dataPublicacao).getTime(),
+      new Date(b.data_publicacao).getTime() -
+      new Date(a.data_publicacao).getTime(),
   );
 }
 
