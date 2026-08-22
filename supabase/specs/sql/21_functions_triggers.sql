@@ -713,9 +713,18 @@ create trigger trg_audit_consents
   after update on public.consents
   for each row execute function public.lgpd_consent_register();
 
+create or replace function public.trg_domain_event_to_outbox()
+returns trigger as $$
+begin
+  perform public.event_outbox_enqueue(new.id);
+  return new;
+end;
+$$ language plpgsql security definer;
+set search_path = public, pg_temp;
+
 create trigger trg_domain_event_to_outbox
   after insert on public.domain_events
-  for each row execute function public.event_outbox_enqueue(new.id);
+  for each row execute function public.trg_domain_event_to_outbox();
 
 create trigger trg_audit_data_deletion_requests
   before delete on public.people
