@@ -26,14 +26,33 @@ export interface TenantMembership {
 export interface Role {
   id: string;
   name: string;
-  display_name: string;
+  display_name?: string | null;
   description?: string | null;
   scope: 'system' | 'tenant';
-  is_system: boolean;
+  is_system?: boolean;
   tenant_id?: string | null;
   created_at: string;
   updated_at: string;
 }
+
+export type SystemRoleName = 'admin_master';
+export type TenantRoleName =
+  | 'tenant_admin'
+  | 'operations_manager'
+  | 'operator'
+  | 'rh_manager'
+  | 'recruiter'
+  | 'finance_manager'
+  | 'finance'
+  | 'support'
+  | 'commercial'
+  | 'stock_manager'
+  | 'security_manager'
+  | 'facilities_manager'
+  | 'lawyer'
+  | 'it_admin'
+  | 'viewer';
+export type RoleName = SystemRoleName | TenantRoleName;
 
 export interface Permission {
   id: string;
