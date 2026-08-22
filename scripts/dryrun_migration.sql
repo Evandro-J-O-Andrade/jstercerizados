@@ -15,7 +15,7 @@
 -- DRY-RUN MIGRATION
 -- ============================================================
 
--- Order: 00 -> 01 -> 02 -> 03 -> 04 -> 05 -> 06 -> 07 -> 09 -> 10 -> 11 -> 12 -> 14 -> 15 -> 18 -> 20 -> 21 -> 22 -> 23
+-- Order: 00 -> 01 -> 02 -> 03 -> 07 -> 04 -> 05 -> 06 -> 09 -> 10 -> 11 -> 12 -> 14 -> 15 -> 18 -> 20 -> 26 -> 27 -> 28 -> 29 -> 30 -> 31 -> 21 -> 22 -> 23
 
 \echo '=== Starting V2.1 Migration Dry-Run ==='
 
@@ -35,6 +35,10 @@
 \echo 'Applying 03_crm.sql...'
 \i supabase/specs/sql/03_crm.sql
 
+-- 07 Inventory
+\echo 'Applying 07_inventory_custody.sql...'
+\i supabase/specs/sql/07_inventory_custody.sql
+
 -- 04 RH/Recruitment
 \echo 'Applying 04_rh_recruitment.sql...'
 \i supabase/specs/sql/04_rh_recruitment.sql
@@ -46,10 +50,6 @@
 -- 06 Suppliers/Purchasing
 \echo 'Applying 06_suppliers_purchasing.sql...'
 \i supabase/specs/sql/06_suppliers_purchasing.sql
-
--- 07 Inventory
-\echo 'Applying 07_inventory_custody.sql...'
-\i supabase/specs/sql/07_inventory_custody.sql
 
 -- 09 Chat
 \echo 'Applying 09_chat.sql...'
@@ -83,6 +83,30 @@
 \echo 'Applying 20_lgpd.sql...'
 \i supabase/specs/sql/20_lgpd.sql
 
+-- 26 Error Codes
+\echo 'Applying 26_error_codes.sql...'
+\i supabase/specs/sql/26_error_codes.sql
+
+-- 27 Finance
+\echo 'Applying 27_finance.sql...'
+\i supabase/specs/sql/27_finance.sql
+
+-- 28 Fiscal
+\echo 'Applying 28_fiscal.sql...'
+\i supabase/specs/sql/28_fiscal.sql
+
+-- 29 POS
+\echo 'Applying 29_pos.sql...'
+\i supabase/specs/sql/29_pos.sql
+
+-- 30 Recruitment
+\echo 'Applying 30_recruitment.sql...'
+\i supabase/specs/sql/30_recruitment.sql
+
+-- 31 Automation
+\echo 'Applying 31_automation.sql...'
+\i supabase/specs/sql/31_automation.sql
+
 -- 21 Functions/Triggers
 \echo 'Applying 21_functions_triggers.sql...'
 \i supabase/specs/sql/21_functions_triggers.sql
@@ -91,8 +115,20 @@
 \echo 'Applying 22_rls.sql...'
 \i supabase/specs/sql/22_rls.sql
 
--- 23 Indexes
-\echo 'Applying 23_indexes.sql...'
-\i supabase/specs/sql/23_indexes.sql
+-- 45b Scheduling/Integrations
+\echo 'Applying 45b_scheduling_integrations.sql...'
+\i supabase/specs/sql/45b_scheduling_integrations.sql
+
+-- 46 Operations Field Service
+\echo 'Applying 46_operations_field_service.sql...'
+\i supabase/specs/sql/46_operations_field_service.sql
+
+-- 45 RLS Remaining
+\echo 'Applying 45_rls_remaining.sql...'
+\i supabase/specs/sql/45_rls_remaining.sql
+
+-- 45 Indexes
+\echo 'Applying 45_indexes.sql...'
+\i supabase/specs/sql/45_indexes.sql
 
 \echo '=== Migration Dry-Run Complete ==='

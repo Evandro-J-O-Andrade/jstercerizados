@@ -84,7 +84,20 @@ declare
     current_setting('app.causation_id', true)::uuid,
     null
   );
+  v_tenant uuid;
 begin
+  -- tenant_id may not exist on all audited tables (e.g. people, tenants)
+  -- For tenant-root entities like tenants, use the entity id itself as tenant_id
+  -- For other entities without tenant_id, leave as null (global scope)
+  begin
+    v_tenant := coalesce(new.tenant_id, old.tenant_id);
+  exception when others then
+    if tg_table_name = 'tenants' then
+      v_tenant := coalesce(new.id, old.id);
+    else
+      v_tenant := null;
+    end if;
+  end;
   insert into public.audit_logs (
     actor_person_id,
     tenant_id,
@@ -98,7 +111,7 @@ begin
     causation_id
   ) values (
     v_actor,
-    coalesce(new.tenant_id, old.tenant_id),
+    v_tenant,
     tg_op,
     tg_op,
     tg_table_name,
@@ -707,4 +720,51 @@ create trigger trg_domain_event_to_outbox
 create trigger trg_audit_data_deletion_requests
   before delete on public.people
   for each row execute function public.lgpd_legal_hold_check();
+
+-- ============================================================
+-- RBAC RPCs — Phase 01
+-- ============================================================
+
+create or replace function public.user_has_permission(
+  p_auth_user_id uuid,
+  p_resource text,
+  p_action text,
+  p_tenant_id uuid
+)
+returns boolean as $$
+begin
+  return exists (
+    select 1
+    from public.people pe
+    join public.role_assignments ra on ra.person_id = pe.id and ra.tenant_id = p_tenant_id
+    join public.role_permissions rp on rp.role_id = ra.role_id
+    join public.permissions perm on perm.id = rp.permission_id
+    where pe.auth_user_id = p_auth_user_id
+      and perm.resource = p_resource
+      and perm.action = p_action
+  );
+end;
+$$ language plpgsql security definer;
+set search_path = public, pg_temp;
+
+create or replace function public.user_permissions(
+  p_auth_user_id uuid,
+  p_tenant_id uuid
+)
+returns table (
+  resource text,
+  action text,
+  description text
+) as $$
+begin
+  return query
+  select distinct perm.resource, perm.action, perm.description
+  from public.people pe
+  join public.role_assignments ra on ra.person_id = pe.id and ra.tenant_id = p_tenant_id
+  join public.role_permissions rp on rp.role_id = ra.role_id
+  join public.permissions perm on perm.id = rp.permission_id
+  where pe.auth_user_id = p_auth_user_id;
+end;
+$$ language plpgsql security definer;
+set search_path = public, pg_temp;
 

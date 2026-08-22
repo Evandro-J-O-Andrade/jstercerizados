@@ -12,6 +12,7 @@ create table if not exists public.audit_logs (
   before_data jsonb,
   after_data jsonb,
   correlation_id uuid,
+  causation_id uuid,
   created_at timestamptz not null default now()
 );
 

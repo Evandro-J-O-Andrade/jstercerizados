@@ -60,12 +60,9 @@ create index idx_interviews_status on public.interviews(status);
 
 create index idx_services_tenant_id on public.services(tenant_id);
 create index idx_services_status on public.services(tenant_id, status);
-create index idx_service_orders_tenant_id on public.service_orders(tenant_id);
-create index idx_service_orders_status on public.service_orders(tenant_id, status);
-create index idx_service_orders_company_id on public.service_orders(company_id);
-create index idx_service_orders_period on public.service_orders(tenant_id, period_start, period_end);
-create index idx_service_order_status_history_service_order_id on public.service_order_status_history(service_order_id);
-create index idx_service_order_status_history_changed_at on public.service_order_status_history(service_order_id, changed_at);
+
+-- service_orders indexes moved to 45_indexes.sql (tables created in 04b_service_orders.sql)
+
 create index idx_contracts_tenant_id on public.contracts(tenant_id);
 create index idx_contracts_status on public.contracts(tenant_id, status);
 create index idx_contracts_company_id on public.contracts(company_id);
@@ -247,14 +244,3 @@ create index idx_data_retention_policies_tenant_domain on public.data_retention_
 create index idx_data_retention_policies_enabled on public.data_retention_policies(enabled) where enabled = true;
 
 -- ============================================================
--- INDEX COMMENTS
--- ============================================================
-
-comment on index idx_event_outbox_status_available_at is 'Worker outbox: pending jobs ordered by availability';
-comment on index idx_domain_events_idempotency_key is 'Idempotency lookup for domain events';
-comment on index idx_notification_deliveries_idempotency_key is 'Idempotency lookup for notification deliveries';
-comment on index idx_event_deliveries_idempotency_key is 'Idempotency lookup for event deliveries';
-comment on index idx_stock_balances_tenant_product is 'Stock balance lookup per product per tenant';
-comment on index idx_stock_movements_tenant_product on public.stock_movements(tenant_id, product_id) is 'Stock movement history per product';
-comment on index idx_audit_logs_tenant_id on public.audit_logs(tenant_id) is 'Audit log queries by tenant';
-comment on index idx_privacy_requests_status on public.privacy_requests(tenant_id, status) is 'Privacy request queue by tenant and status';
