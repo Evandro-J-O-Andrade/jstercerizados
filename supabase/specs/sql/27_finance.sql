@@ -35,6 +35,37 @@ create table if not exists public.cost_centers (
 );
 
 -- ============================================================
+-- INVOICES
+-- ============================================================
+
+create table if not exists public.invoices (
+  id uuid primary key default uuid_generate_v4(),
+  tenant_id uuid not null references public.tenants(id),
+  number text not null,
+  company_id uuid references public.companies(id),
+  customer_id uuid references public.companies(id),
+  issue_date date not null,
+  due_date date not null,
+  amount numeric not null,
+  status text not null default 'draft',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint uq_invoices_tenant_number unique (tenant_id, number)
+);
+
+create table if not exists public.invoice_items (
+  id uuid primary key default uuid_generate_v4(),
+  tenant_id uuid not null references public.tenants(id),
+  invoice_id uuid not null references public.invoices(id),
+  description text not null,
+  quantity numeric not null default 1,
+  unit_price numeric not null,
+  total numeric not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- ============================================================
 -- ACCOUNTS RECEIVABLE
 -- ============================================================
 
@@ -227,35 +258,8 @@ create table if not exists public.financial_installment_cancellations (
 );
 
 -- ============================================================
--- INVOICES
+-- FINANCIAL ACCOUNTS
 -- ============================================================
-
-create table if not exists public.invoices (
-  id uuid primary key default uuid_generate_v4(),
-  tenant_id uuid not null references public.tenants(id),
-  number text not null,
-  company_id uuid references public.companies(id),
-  customer_id uuid references public.companies(id),
-  issue_date date not null,
-  due_date date not null,
-  amount numeric not null,
-  status text not null default 'draft',
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  constraint uq_invoices_tenant_number unique (tenant_id, number)
-);
-
-create table if not exists public.invoice_items (
-  id uuid primary key default uuid_generate_v4(),
-  tenant_id uuid not null references public.tenants(id),
-  invoice_id uuid not null references public.invoices(id),
-  description text not null,
-  quantity numeric not null default 1,
-  unit_price numeric not null,
-  total numeric not null,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
 
 create table if not exists public.financial_accounts (
   id uuid primary key default uuid_generate_v4(),

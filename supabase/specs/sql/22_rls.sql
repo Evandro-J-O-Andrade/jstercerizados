@@ -255,37 +255,37 @@ create policy jobs_member_update on public.jobs
 
 create policy applications_member_read on public.applications
   for select
-  using (is_tenant_member(tenant_id));
+  using (exists (select 1 from public.candidates c where c.id = applications.candidate_id and is_tenant_member(c.tenant_id)));
 
 create policy applications_member_write on public.applications
   for insert
-  with check (is_tenant_member(tenant_id));
+  with check (exists (select 1 from public.candidates c where c.id = applications.candidate_id and is_tenant_member(c.tenant_id)));
 
 create policy applications_member_update on public.applications
   for update
-  using (is_tenant_member(tenant_id))
-  with check (is_tenant_member(tenant_id));
+  using (exists (select 1 from public.candidates c where c.id = applications.candidate_id and is_tenant_member(c.tenant_id)))
+  with check (exists (select 1 from public.candidates c where c.id = applications.candidate_id and is_tenant_member(c.tenant_id)));
 
 create policy application_status_history_member_read on public.application_status_history
   for select
-  using (exists (select 1 from public.applications a where a.id = application_id and is_tenant_member(a.tenant_id)));
+  using (exists (select 1 from public.applications a join public.candidates c on c.id = a.candidate_id where a.id = application_id and is_tenant_member(c.tenant_id)));
 
 create policy application_status_history_member_write on public.application_status_history
   for insert
-  with check (exists (select 1 from public.applications a where a.id = application_id and is_tenant_member(a.tenant_id)));
+  with check (exists (select 1 from public.applications a join public.candidates c on c.id = a.candidate_id where a.id = application_id and is_tenant_member(c.tenant_id)));
 
 create policy interviews_member_read on public.interviews
   for select
-  using (is_tenant_member(tenant_id));
+  using (exists (select 1 from public.applications a join public.candidates c on c.id = a.candidate_id where a.id = interviews.application_id and is_tenant_member(c.tenant_id)));
 
 create policy interviews_member_write on public.interviews
   for insert
-  with check (is_tenant_member(tenant_id));
+  with check (exists (select 1 from public.applications a join public.candidates c on c.id = a.candidate_id where a.id = interviews.application_id and is_tenant_member(c.tenant_id)));
 
 create policy interviews_member_update on public.interviews
   for update
-  using (is_tenant_member(tenant_id))
-  with check (is_tenant_member(tenant_id));
+  using (exists (select 1 from public.applications a join public.candidates c on c.id = a.candidate_id where a.id = interviews.application_id and is_tenant_member(c.tenant_id)))
+  with check (exists (select 1 from public.applications a join public.candidates c on c.id = a.candidate_id where a.id = interviews.application_id and is_tenant_member(c.tenant_id)));
 
 -- ============================================================
 -- SERVICES / CONTRACTS
@@ -328,90 +328,6 @@ create policy contract_status_history_member_read on public.contract_status_hist
 create policy contract_status_history_member_write on public.contract_status_history
   for insert
   with check (exists (select 1 from public.contracts c where c.id = contract_id and is_tenant_member(c.tenant_id)));
-
--- ============================================================
--- SERVICE ORDERS
--- ============================================================
-
-alter table public.service_orders enable row level security;
-alter table public.service_order_items enable row level security;
-alter table public.service_acceptances enable row level security;
-alter table public.service_executions enable row level security;
-alter table public.service_attachments enable row level security;
-alter table public.service_order_status_history enable row level security;
-
-create policy service_orders_member_read on public.service_orders
-  for select
-  using (is_tenant_member(tenant_id));
-
-create policy service_orders_member_write on public.service_orders
-  for insert
-  with check (is_tenant_member(tenant_id));
-
-create policy service_orders_member_update on public.service_orders
-  for update
-  using (is_tenant_member(tenant_id))
-  with check (is_tenant_member(tenant_id));
-
-create policy service_order_items_member_read on public.service_order_items
-  for select
-  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_order_items_member_write on public.service_order_items
-  for insert
-  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_order_items_member_update on public.service_order_items
-  for update
-  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)))
-  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_acceptances_member_read on public.service_acceptances
-  for select
-  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_acceptances_member_write on public.service_acceptances
-  for insert
-  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_acceptances_member_update on public.service_acceptances
-  for update
-  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)))
-  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_executions_member_read on public.service_executions
-  for select
-  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_executions_member_write on public.service_executions
-  for insert
-  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_executions_member_update on public.service_executions
-  for update
-  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)))
-  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_attachments_member_read on public.service_attachments
-  for select
-  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_attachments_member_write on public.service_attachments
-  for insert
-  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_attachments_member_update on public.service_attachments
-  for update
-  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)))
-  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_order_status_history_member_read on public.service_order_status_history
-  for select
-  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
-
-create policy service_order_status_history_member_write on public.service_order_status_history
-  for insert
-  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
 
 -- ============================================================
 -- SUPPORT TICKETS
@@ -537,11 +453,11 @@ create policy purchase_receipts_member_write on public.purchase_receipts
 
 create policy purchase_receipt_items_member_read on public.purchase_receipt_items
   for select
-  using (exists (select 1 from public.purchase_receipts pr where pr.id = purchase_receipt_id and is_tenant_member(pr.tenant_id)));
+  using (is_tenant_member(tenant_id));
 
 create policy purchase_receipt_items_member_write on public.purchase_receipt_items
   for insert
-  with check (exists (select 1 from public.purchase_receipts pr where pr.id = purchase_receipt_id and is_tenant_member(pr.tenant_id)));
+  with check (is_tenant_member(tenant_id));
 
 -- ============================================================
 -- INVENTORY / STOCK
@@ -690,11 +606,11 @@ create policy ai_messages_member_write on public.ai_messages
 
 create policy chat_handoffs_member_read on public.chat_handoffs
   for select
-  using (exists (select 1 from public.ai_conversations ac where ac.id = conversation_id and is_tenant_member(ac.tenant_id)));
+  using (exists (select 1 from public.chat_rooms cr where cr.id = chat_handoffs.room_id and is_tenant_member(cr.tenant_id)));
 
 create policy chat_handoffs_member_write on public.chat_handoffs
   for insert
-  with check (exists (select 1 from public.ai_conversations ac where ac.id = conversation_id and is_tenant_member(ac.tenant_id)));
+  with check (exists (select 1 from public.chat_rooms cr where cr.id = chat_handoffs.room_id and is_tenant_member(cr.tenant_id)));
 
 -- ============================================================
 -- NOTIFICATIONS / EVENTS / OUTBOX
@@ -793,16 +709,40 @@ create policy security_events_admin_write on public.security_events
 
 create policy first_login_state_member_read on public.first_login_state
   for select
-  using (is_tenant_member(tenant_id));
+  using (
+    public.is_admin_master()
+    or exists (
+      select 1 from public.tenant_memberships tm
+      where tm.person_id = first_login_state.person_id and tm.status = 'active'
+    )
+  );
 
 create policy first_login_state_member_write on public.first_login_state
   for insert
-  with check (is_tenant_member(tenant_id));
+  with check (
+    public.is_admin_master()
+    or exists (
+      select 1 from public.tenant_memberships tm
+      where tm.person_id = first_login_state.person_id and tm.status = 'active'
+    )
+  );
 
 create policy first_login_state_member_update on public.first_login_state
   for update
-  using (is_tenant_member(tenant_id))
-  with check (is_tenant_member(tenant_id));
+  using (
+    public.is_admin_master()
+    or exists (
+      select 1 from public.tenant_memberships tm
+      where tm.person_id = first_login_state.person_id and tm.status = 'active'
+    )
+  )
+  with check (
+    public.is_admin_master()
+    or exists (
+      select 1 from public.tenant_memberships tm
+      where tm.person_id = first_login_state.person_id and tm.status = 'active'
+    )
+  );
 
 -- ============================================================
 -- LGPD

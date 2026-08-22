@@ -1519,3 +1519,92 @@ create policy integration_sync_jobs_member_read on public.integration_sync_jobs
 create policy integration_sync_jobs_member_write on public.integration_sync_jobs
   for insert
   with check (is_tenant_member(tenant_id));
+
+-- ============================================================
+-- SERVICE ORDERS
+-- ============================================================
+
+alter table public.service_orders enable row level security;
+alter table public.service_order_items enable row level security;
+alter table public.service_acceptances enable row level security;
+alter table public.service_executions enable row level security;
+alter table public.service_attachments enable row level security;
+alter table public.service_order_status_history enable row level security;
+
+create policy service_orders_member_read on public.service_orders
+  for select
+  using (is_tenant_member(tenant_id));
+
+create policy service_orders_member_write on public.service_orders
+  for insert
+  with check (is_tenant_member(tenant_id));
+
+create policy service_orders_member_update on public.service_orders
+  for update
+  using (is_tenant_member(tenant_id))
+  with check (is_tenant_member(tenant_id));
+
+create policy service_order_items_member_read on public.service_order_items
+  for select
+  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_order_items_member_write on public.service_order_items
+  for insert
+  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_order_items_member_update on public.service_order_items
+  for update
+  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)))
+  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_acceptances_member_read on public.service_acceptances
+  for select
+  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_acceptances_member_write on public.service_acceptances
+  for insert
+  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_acceptances_member_update on public.service_acceptances
+  for update
+  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)))
+  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_executions_member_read on public.service_executions
+  for select
+  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_executions_member_write on public.service_executions
+  for insert
+  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_executions_member_update on public.service_executions
+  for update
+  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)))
+  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_attachments_member_read on public.service_attachments
+  for select
+  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_attachments_member_write on public.service_attachments
+  for insert
+  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_attachments_member_update on public.service_attachments
+  for update
+  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)))
+  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_order_status_history_member_read on public.service_order_status_history
+  for select
+  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_order_status_history_member_write on public.service_order_status_history
+  for insert
+  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));
+
+create policy service_order_status_history_member_update on public.service_order_status_history
+  for update
+  using (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)))
+  with check (exists (select 1 from public.service_orders so where so.id = service_order_id and is_tenant_member(so.tenant_id)));

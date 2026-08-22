@@ -161,18 +161,18 @@ on conflict (slug) do update set
 -- ============================================================
 
 insert into public.tenant_settings (tenant_id, key, value)
-select t.id, k.key, v.value
+select t.id, k.key, k.value
 from public.tenants t
 cross join (
   values
-    ('notifications.email.enabled', 'true'::jsonb),
-    ('notifications.whatsapp.enabled', 'false'::jsonb),
-    ('notifications.push.enabled', 'false'::jsonb),
-    ('inventory.min_stock_alert', 'true'::jsonb),
-    ('inventory.expiry_alert_days', '30'::jsonb),
-    ('support.sla_hours', '24'::jsonb),
-    ('billing.currency', 'BRL'::jsonb),
-    ('lgpd.retention_default_days', '365'::jsonb)
+     ('notifications.email.enabled', 'true'::jsonb),
+     ('notifications.whatsapp.enabled', 'false'::jsonb),
+     ('notifications.push.enabled', 'false'::jsonb),
+     ('inventory.min_stock_alert', 'true'::jsonb),
+     ('inventory.expiry_alert_days', '30'::jsonb),
+     ('support.sla_hours', '24'::jsonb),
+     ('billing.currency', '"BRL"'::jsonb),
+     ('lgpd.retention_default_days', '365'::jsonb)
 ) as k(key, value)
 left join public.tenant_settings ts on ts.tenant_id = t.id and ts.key = k.key
 where t.slug = 'js-empregos'
@@ -279,18 +279,18 @@ on conflict (person_id) do update set
 
 -- Categories for products (example)
 insert into public.tenant_settings (tenant_id, key, value)
-select t.id, k.key, v.value
+select t.id, k.key, k.value
 from public.tenants t
 cross join (
   values
-    ('inventory.categories.EPIs', 'EPI'::jsonb),
-    ('inventory.categories.ferramentas', 'Ferramentas'::jsonb),
-    ('inventory.categories.materiais', 'Materiais'::jsonb),
-    ('inventory.categories.uniformes', 'Uniformes'::jsonb),
-    ('inventory.units.unidade', 'unidade'::jsonb),
-    ('inventory.units.caixa', 'caixa'::jsonb),
-    ('inventory.units.par', 'par'::jsonb),
-    ('inventory.units.kit', 'kit'::jsonb)
+     ('inventory.categories.EPIs', '"EPI"'::jsonb),
+     ('inventory.categories.ferramentas', '"Ferramentas"'::jsonb),
+     ('inventory.categories.materiais', '"Materiais"'::jsonb),
+     ('inventory.categories.uniformes', '"Uniformes"'::jsonb),
+     ('inventory.units.unidade', '"unidade"'::jsonb),
+     ('inventory.units.caixa', '"caixa"'::jsonb),
+     ('inventory.units.par', '"par"'::jsonb),
+     ('inventory.units.kit', '"kit"'::jsonb)
 ) as k(key, value)
 left join public.tenant_settings ts on ts.tenant_id = t.id and ts.key = k.key
 where t.slug = 'js-empregos'
@@ -301,7 +301,7 @@ where t.slug = 'js-empregos'
 -- ============================================================
 
 insert into public.data_retention_policies (tenant_id, data_domain, retention_days, legal_basis, action_after_expiry, enabled)
-select t.id, k.data_domain, k.retention_days, k.legal_basis, k.action_after_expiry, true
+select t.id, k.data_domain, k.retention_days::integer, k.legal_basis, k.action_after_expiry, true
 from public.tenants t
 cross join (
   values
@@ -323,7 +323,7 @@ where t.slug = 'js-empregos'
 -- ============================================================
 
 insert into public.tenant_settings (tenant_id, key, value)
-select t.id, k.key, v.value
+select t.id, k.key, k.value
 from public.tenants t
 cross join (
   values
@@ -351,7 +351,7 @@ cross join (
     ('despesa_operacional', 'Despesa Operacional', 'expense', 'Despesas gerais de operação'),
     ('despesa_administrativa', 'Despesa Administrativa', 'expense', 'Despesas administrativas'),
     ('transferencia_interna', 'Transferência Interna', 'transfer', 'Transferências entre contas internas')
-) as k(name, name, type, description)
+) as k(internal_name, name, type, description)
 left join public.financial_categories fc on fc.tenant_id = t.id and fc.name = k.name
 where t.slug = 'js-empregos'
   and fc.id is null;

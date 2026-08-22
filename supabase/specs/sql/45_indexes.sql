@@ -1,5 +1,15 @@
--- CRM COMMERCIAL
+-- SERVICE ORDERS
 -- ============================================================
+
+create index idx_service_orders_tenant_id on public.service_orders(tenant_id);
+create index idx_service_orders_status on public.service_orders(tenant_id, status);
+create index idx_service_orders_company_id on public.service_orders(company_service_id);
+create index idx_service_orders_period on public.service_orders(tenant_id, period_start, period_end);
+create index idx_service_order_status_history_service_order_id on public.service_order_status_history(service_order_id);
+create index idx_service_order_status_history_changed_at on public.service_order_status_history(service_order_id, changed_at);
+
+-- ============================================================
+-- CRM COMMERCIAL
 
 create index idx_leads_tenant_id on public.leads(tenant_id);
 create index idx_leads_status on public.leads(tenant_id, status);
@@ -158,6 +168,6 @@ comment on index idx_domain_events_idempotency_key is 'Idempotency lookup for do
 comment on index idx_notification_deliveries_idempotency_key is 'Idempotency lookup for notification deliveries';
 comment on index idx_event_deliveries_idempotency_key is 'Idempotency lookup for event deliveries';
 comment on index idx_stock_balances_tenant_product is 'Stock balance lookup per product per tenant';
-comment on index idx_stock_movements_tenant_product on public.stock_movements(tenant_id, product_id) is 'Stock movement history per product';
-comment on index idx_audit_logs_tenant_id on public.audit_logs(tenant_id) is 'Audit log queries by tenant';
-comment on index idx_privacy_requests_status on public.privacy_requests(tenant_id, status) is 'Privacy request queue by tenant and status';
+comment on index idx_stock_movements_tenant_product is 'Stock movement history per product';
+comment on index idx_audit_logs_tenant_id is 'Audit log queries by tenant';
+comment on index idx_privacy_requests_status is 'Privacy request queue by tenant and status';

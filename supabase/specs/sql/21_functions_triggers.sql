@@ -84,7 +84,20 @@ declare
     current_setting('app.causation_id', true)::uuid,
     null
   );
+  v_tenant uuid;
 begin
+  -- tenant_id may not exist on all audited tables (e.g. people, tenants)
+  -- For tenant-root entities like tenants, use the entity id itself as tenant_id
+  -- For other entities without tenant_id, leave as null (global scope)
+  begin
+    v_tenant := coalesce(new.tenant_id, old.tenant_id);
+  exception when others then
+    if tg_table_name = 'tenants' then
+      v_tenant := coalesce(new.id, old.id);
+    else
+      v_tenant := null;
+    end if;
+  end;
   insert into public.audit_logs (
     actor_person_id,
     tenant_id,
@@ -98,7 +111,7 @@ begin
     causation_id
   ) values (
     v_actor,
-    coalesce(new.tenant_id, old.tenant_id),
+    v_tenant,
     tg_op,
     tg_op,
     tg_table_name,

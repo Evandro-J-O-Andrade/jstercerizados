@@ -3,10 +3,10 @@ const fs = require('fs');
 const path = require('path');
 
 const client = new Client({
-  host: 'db.okxqfyoqbhcmflpurfrw.supabase.co',
+  host: 'aws-0-sa-east-1.pooler.supabase.com',
   port: 5432,
   database: 'postgres',
-  user: 'postgres',
+  user: 'postgres.okxqfyoqbhcmflpurfrw',
   password: '@An2907081831',
   ssl: { rejectUnauthorized: false }
 });
@@ -16,6 +16,8 @@ const sqlDir = path.join(process.cwd(), 'supabase', 'specs', 'sql');
 // Corrected execution order based on dependency analysis
 // 03b_crm_commercial.sql moved after 06_products.sql
 // 04b_service_orders.sql moved after 34_crm_services.sql
+// 14b_support_tickets.sql moved before 21_functions_triggers.sql (support_tickets table dependency)
+// service_orders RLS policies moved from 22_rls.sql to 45_rls_remaining.sql (service_orders table dependency)
 // 45b_scheduling_integrations.sql after 45_indexes.sql
 const migrationOrder = [
   '00_extensions.sql',
@@ -33,14 +35,16 @@ const migrationOrder = [
   '12_custody.sql',
   '14_tasks.sql',
   '15_support.sql',
+  '14b_support_tickets.sql',
   '18_storage_documents.sql',
   '20_lgpd.sql',
   '21_functions_triggers.sql',
-  '14b_support_tickets.sql',
   '22_rls.sql',
   '23_indexes.sql',
   '25_validation.sql',
   '26_error_codes.sql',
+  '34_crm_services.sql',
+  '04b_service_orders.sql',
   '27_finance.sql',
   '28_fiscal.sql',
   '29_pos.sql',
@@ -48,7 +52,6 @@ const migrationOrder = [
   '31_automation.sql',
   '32_seed.sql',
   '33_employees.sql',
-  '34_crm_services.sql',
   '35_recruitment_talent_pool.sql',
   '36_inventory.sql',
   '37_purchasing.sql',
@@ -59,7 +62,6 @@ const migrationOrder = [
   '43_notifications.sql',
   '44_reports_views.sql',
   '03b_crm_commercial.sql',
-  '04b_service_orders.sql',
   '45b_scheduling_integrations.sql',
   '46_operations_field_service.sql',
   '45_rls_remaining.sql',
@@ -159,6 +161,11 @@ async function applyMigrations() {
     const sql = fs.readFileSync(filePath, 'utf8');
     
     console.log(`\nApplying: ${file}`);
+    
+    // Reset search_path to include extensions schema (migration 21's
+    // set search_path statements leak to session level due to semicolon
+    // placement after $$ language plpgsql security definer;)
+    await client.query('SET search_path TO "$user", public, extensions');
     
     // Log search_path before applying
     const pathResult = await client.query("SHOW search_path");

@@ -53,6 +53,5 @@ create table if not exists public.support_ticket_status_history (
   metadata jsonb not null default '{}'::jsonb
 );
 
-create trigger trg_set_updated_at_support_tickets
-  before update on public.support_tickets
-  for each row execute function public.set_updated_at();
+-- trg_set_updated_at_support_tickets is defined in 21_functions_triggers.sql
+-- after set_updated_at() function is created

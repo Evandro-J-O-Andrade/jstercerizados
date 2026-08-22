@@ -23,11 +23,15 @@ create or replace function public.validation_upsert(
   p_test_name text,
   p_status text,
   p_message text default null,
-  p_details jsonb default null
+  p_details jsonb default null,
+  p_tenant_id uuid default null
 ) returns void as $$
 begin
-  insert into public.validation_results (gate, suite, test_name, status, message, details)
-  values (p_gate, p_suite, p_test_name, p_status, p_message, p_details)
+  insert into public.validation_results (tenant_id, gate, suite, test_name, status, message, details)
+  values (
+    coalesce(p_tenant_id, (select id from public.tenants limit 1)),
+    p_gate, p_suite, p_test_name, p_status, p_message, p_details
+  )
   on conflict do nothing;
 end;
 $$ language plpgsql security definer;
@@ -42,16 +46,30 @@ create or replace function public.validation_assert(
   p_suite text,
   p_test_name text,
   p_pass_message text default 'OK',
-  p_fail_message text default 'FAIL'
+  p_fail_message text default 'FAIL',
+  p_tenant_id uuid default null
 ) returns void as $$
 begin
   if p_condition then
-    perform public.validation_upsert(p_gate, p_suite, p_test_name, 'PASS', p_pass_message);
+    perform public.validation_upsert(p_gate, p_suite, p_test_name, 'PASS', p_pass_message, null, p_tenant_id);
   else
-    perform public.validation_upsert(p_gate, p_suite, p_test_name, 'FAIL', p_fail_message);
+    perform public.validation_upsert(p_gate, p_suite, p_test_name, 'FAIL', p_fail_message, null, p_tenant_id);
   end if;
 end;
 $$ language plpgsql security definer;
+
+-- ============================================================
+-- PRE-INIT: Ensure tenants exist for validation_results
+-- ============================================================
+
+do $$
+begin
+  insert into public.tenants (name, slug, status) values ('Tenant A', 'tenant-a', 'active')
+  on conflict (slug) do nothing;
+  insert into public.tenants (name, slug, status) values ('Tenant B', 'tenant-b', 'active')
+  on conflict (slug) do nothing;
+end;
+$$;
 
 -- ============================================================
 -- 1. STRUCTURAL INTEGRITY
@@ -92,7 +110,7 @@ begin
   raise notice '=== D.25.2: Multi-tenancy ===';
 
   begin
-    select id into v_tenant_a from public.tenants where slug = 'js-empregos' limit 1;
+    select id into v_tenant_a from public.tenants where slug = 'tenant-a' limit 1;
     if v_tenant_a is null then
       insert into public.tenants (name, slug, status) values ('Tenant A', 'tenant-a', 'active') returning id into v_tenant_a;
       insert into public.tenants (name, slug, status) values ('Tenant B', 'tenant-b', 'active') returning id into v_tenant_b;

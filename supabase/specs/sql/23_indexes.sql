@@ -60,12 +60,9 @@ create index idx_interviews_status on public.interviews(status);
 
 create index idx_services_tenant_id on public.services(tenant_id);
 create index idx_services_status on public.services(tenant_id, status);
-create index idx_service_orders_tenant_id on public.service_orders(tenant_id);
-create index idx_service_orders_status on public.service_orders(tenant_id, status);
-create index idx_service_orders_company_id on public.service_orders(company_id);
-create index idx_service_orders_period on public.service_orders(tenant_id, period_start, period_end);
-create index idx_service_order_status_history_service_order_id on public.service_order_status_history(service_order_id);
-create index idx_service_order_status_history_changed_at on public.service_order_status_history(service_order_id, changed_at);
+
+-- service_orders indexes moved to 45_indexes.sql (tables created in 04b_service_orders.sql)
+
 create index idx_contracts_tenant_id on public.contracts(tenant_id);
 create index idx_contracts_status on public.contracts(tenant_id, status);
 create index idx_contracts_company_id on public.contracts(company_id);
