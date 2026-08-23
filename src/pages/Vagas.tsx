@@ -9,7 +9,9 @@ import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { mockGetVagas } from '@/services/mock/vagas';
-import { COMPANY } from '@/config';
+import { useJobs } from '@/hooks';
+import { mapJobToVaga } from '@/mappers/jobs';
+import { COMPANY, APP_ENV } from '@/config';
 
 const CONTRATO_LABELS: Record<string, string> = {
   CLT: 'CLT',
@@ -31,7 +33,52 @@ export default function Vagas() {
   const [dataDias, setDataDias] = useState('');
   const [showMoreFilters, setShowMoreFilters] = useState(false);
 
+  const tenantId = APP_ENV.defaultTenantId || null;
+  const { jobs: realJobs, isLoading } = useJobs(tenantId);
+
+  const realVagas = useMemo(() => {
+    return realJobs.map((job) => mapJobToVaga(job));
+  }, [realJobs]);
+
   const vagas = useMemo(() => {
+    if (tenantId && realVagas.length > 0) {
+      return realVagas.filter((vaga) => {
+        const matchesSearch =
+          !searchTerm ||
+          vaga.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          vaga.empresa?.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesCidade =
+          !cidadeFilter ||
+          vaga.cidade?.toLowerCase().includes(cidadeFilter.toLowerCase());
+
+        const matchesEstado =
+          !estadoFilter ||
+          vaga.estado?.toLowerCase().includes(estadoFilter.toLowerCase());
+
+        const matchesTipo =
+          !tipoFilter ||
+          vaga.tipoContrato === tipoFilter ||
+          vaga.tipo_contrato === tipoFilter;
+
+        const matchesModalidade =
+          !modalidadeFilter || vaga.modalidade === modalidadeFilter;
+
+        const matchesSalario =
+          !salarioMin ||
+          (vaga.salarioMin && vaga.salarioMin >= Number(salarioMin));
+
+        return (
+          matchesSearch &&
+          matchesCidade &&
+          matchesEstado &&
+          matchesTipo &&
+          matchesModalidade &&
+          matchesSalario
+        );
+      });
+    }
+
     return mockGetVagas({
       search: searchTerm || undefined,
       cidade: cidadeFilter || undefined,
@@ -49,6 +96,8 @@ export default function Vagas() {
     modalidadeFilter,
     salarioMin,
     dataDias,
+    tenantId,
+    realVagas,
   ]);
 
   const clearFilters = () => {
@@ -61,6 +110,14 @@ export default function Vagas() {
     setSalarioMin('');
     setDataDias('');
   };
+
+  if (isLoading && tenantId) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center">
+        <p className="text-muted-foreground">Carregando vagas...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">

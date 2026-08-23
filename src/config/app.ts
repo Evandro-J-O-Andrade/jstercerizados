@@ -18,4 +18,5 @@ export const APP_ENV = {
   appUrl: import.meta.env.VITE_APP_URL ?? 'http://localhost:3000',
   isDevelopment: import.meta.env.VITE_APP_ENV === 'development',
   isProduction: import.meta.env.VITE_APP_ENV === 'production',
+  defaultTenantId: import.meta.env.VITE_DEFAULT_TENANT_ID ?? '',
 } as const;
