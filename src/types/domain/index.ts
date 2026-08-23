@@ -1,3 +1,5 @@
+export type { Person } from './person';
+
 export type { Tenant, TenantCreateInput, TenantUpdateInput } from './tenant';
 
 export type {

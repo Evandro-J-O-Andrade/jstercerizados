@@ -11,6 +11,7 @@ import { PageLoader } from '@/components/ui/PageLoader';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 import { useIntro } from '@/contexts/IntroContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ToastProvider } from '@/components/feedback';
 import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
@@ -41,7 +42,28 @@ const Login = lazy(() => import('@/pages/Login'));
 const CadastroCandidato = lazy(() => import('@/pages/CadastroCandidato'));
 const CadastroEmpresa = lazy(() => import('@/pages/CadastroEmpresa'));
 const RecuperarSenha = lazy(() => import('@/pages/RecuperarSenha'));
-const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const DashboardShell = lazy(() =>
+  import('@/components/dashboard/DashboardShell').then((m) => ({
+    default: m.DashboardShell,
+  })),
+);
+import { DashboardRouteNotFound } from '@/components/dashboard/DashboardRouter';
+import VisaoGeralPage from '@/pages/dashboard/VisaoGeral';
+import VagasPage from '@/pages/dashboard/Vagas';
+import CandidatosPage from '@/pages/dashboard/Candidatos';
+import EmpresasPage from '@/pages/dashboard/Empresas';
+import ClientesPage from '@/pages/dashboard/Clientes';
+import ParceirosPage from '@/pages/dashboard/Parceiros';
+import FornecedoresPage from '@/pages/dashboard/Fornecedores';
+import UsuariosPage from '@/pages/dashboard/Usuarios';
+import ProcessosSeletivosPage from '@/pages/dashboard/ProcessosSeletivos';
+import ServicosPage from '@/pages/dashboard/Servicos';
+import FinanceiroPage from '@/pages/dashboard/Financeiro';
+import EstoquePage from '@/pages/dashboard/Estoque';
+import SuportePage from '@/pages/dashboard/Suporte';
+import RelatoriosPage from '@/pages/dashboard/Relatorios';
+import ConfiguracoesPage from '@/pages/dashboard/Configuracoes';
+const Onboarding = lazy(() => import('@/pages/Onboarding'));
 
 function App() {
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
@@ -106,15 +128,154 @@ function App() {
                     <ProtectedRoute
                       allowedRoles={[
                         'admin_master',
-                        'admin_tenant',
-                        'manager',
+                        'tenant_admin',
+                        'operations_manager',
                         'operator',
+                        'commercial',
+                        'finance',
+                        'finance_manager',
+                        'recruiter',
+                        'rh_manager',
+                        'stock_manager',
+                        'security_manager',
+                        'facilities_manager',
+                        'lawyer',
+                        'it_admin',
+                        'support',
+                        'viewer',
                       ]}
                     >
-                      <Dashboard />
+                      <DashboardShell />
                     </ProtectedRoute>
                   }
-                />
+                >
+                  <Route
+                    path="visao-geral"
+                    element={
+                      <PermissionGuard permission="dashboard.read">
+                        <VisaoGeralPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="vagas"
+                    element={
+                      <PermissionGuard permission="jobs.read">
+                        <VagasPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="candidatos"
+                    element={
+                      <PermissionGuard permission="candidates.read">
+                        <CandidatosPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="empresas"
+                    element={
+                      <PermissionGuard permission="companies.read">
+                        <EmpresasPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="clientes"
+                    element={
+                      <PermissionGuard permission="companies.read">
+                        <ClientesPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="parceiros"
+                    element={
+                      <PermissionGuard permission="companies.read">
+                        <ParceirosPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="fornecedores"
+                    element={
+                      <PermissionGuard permission="companies.read">
+                        <FornecedoresPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="usuarios"
+                    element={
+                      <PermissionGuard permission="people.read">
+                        <UsuariosPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="processos-seletivos"
+                    element={
+                      <PermissionGuard permission="recruitment.read">
+                        <ProcessosSeletivosPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="servicos"
+                    element={
+                      <PermissionGuard permission="service_orders.read">
+                        <ServicosPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="financeiro"
+                    element={
+                      <PermissionGuard permission="purchase_orders.read">
+                        <FinanceiroPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="estoque"
+                    element={
+                      <PermissionGuard permission="stock_movements.read">
+                        <EstoquePage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="suporte"
+                    element={
+                      <PermissionGuard permission="support_tickets.read">
+                        <SuportePage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="relatorios"
+                    element={
+                      <PermissionGuard permission="reports.read">
+                        <RelatoriosPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route
+                    path="configuracoes"
+                    element={
+                      <PermissionGuard
+                        permissions={['tenants.read', 'roles.read']}
+                        mode="any"
+                      >
+                        <ConfiguracoesPage />
+                      </PermissionGuard>
+                    }
+                  />
+                  <Route index element={<VisaoGeralPage />} />
+                  <Route path="*" element={<DashboardRouteNotFound />} />
+                </Route>
+                <Route path="/onboarding" element={<Onboarding />} />
                 <Route
                   path="/cadastro/candidato"
                   element={<CadastroCandidato />}

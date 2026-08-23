@@ -71,11 +71,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      console.log('[AUTH] loadAuthData start:', authUserId);
+
       const { data: personData, error: personError } = await supabase
         .from('people')
         .select('*')
         .eq('auth_user_id', authUserId)
         .maybeSingle();
+
+      console.log('[AUTH] people result:', {
+        personData: !!personData,
+        personError: personError?.message ?? null,
+      });
 
       if (personError) throw personError;
       if (!personData) {
@@ -96,6 +103,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
+      console.log('[AUTH] membership result:', {
+        count: membershipData?.length ?? 0,
+        membershipError: null,
+      });
+
       const tenantIds = (membershipData || [])
         .map((m: TenantMembership) => m.tenant_id)
         .filter((id): id is string => Boolean(id));
@@ -105,8 +117,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data: roleAssignmentData } = await supabase
         .from('role_assignments')
         .select('*')
-        .eq('person_id', personData.id)
-        .or('expires_at.is.null,expires_at.gt.now()');
+        .eq('person_id', personData.id);
+
+      console.log('[AUTH] role_assignment result:', {
+        count: roleAssignmentData?.length ?? 0,
+        roleAssignmentError: null,
+      });
 
       const roleIds = Array.from(
         new Set(
@@ -121,6 +137,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select('*')
         .in('id', roleIds);
 
+      console.log('[AUTH] roles result:', {
+        count: rolesData?.length ?? 0,
+        rolesError: null,
+      });
+
       const adminMaster = (rolesData || []).some(
         (r: Role) => r.scope === 'system' && r.name === 'admin_master',
       );
@@ -132,6 +153,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .from('role_permissions')
           .select('permission_id')
           .in('role_id', roleIds);
+
+        console.log('[AUTH] role_permissions result:', {
+          count: rolePerms?.length ?? 0,
+          rolePermsError: null,
+        });
 
         const permissionIds = Array.from(
           new Set(
@@ -150,14 +176,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
+      console.log('[AUTH] permissions result:', {
+        count: permissionsData.length,
+        permsError: null,
+      });
+      console.log('[AUTH] loadAuthData success');
+
       setPerson(personData as Person);
       setTenantMemberships((membershipData || []) as TenantMembership[]);
       setCurrentTenantId(primaryTenantId);
       setRoles((rolesData || []) as Role[]);
       setPermissions(permissionsData);
       setRoleAssignments((roleAssignmentData || []) as RoleAssignment[]);
+
+      console.log('[AUTH] state updated:', {
+        personId: personData.id,
+        tenantId: primaryTenantId,
+        membershipCount: membershipData?.length ?? 0,
+        roleCount: rolesData?.length ?? 0,
+        permissionCount: permissionsData.length,
+        isAdminMaster: adminMaster,
+      });
     } catch (error) {
-      console.error('Erro ao carregar dados de auth:', error);
+      console.error('[AUTH] loadAuthData error:', error);
       setPerson(null);
       setTenantMemberships([]);
       setCurrentTenantId(null);
@@ -170,6 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let isMounted = true;
+    const initialSessionProcessedRef = { current: false };
 
     const initAuth = async () => {
       try {
@@ -180,7 +222,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setAuthError(
               normalizeError(
                 new Error(
-                  'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.',
+                  'Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY.',
                 ),
               ).userMessage,
             );
@@ -189,9 +231,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
 
+        console.log('[AUTH] initAuth getSession');
         const {
           data: { session: initialSession },
         } = await supabase.auth.getSession();
+
+        console.log('[AUTH] initAuth session:', {
+          hasSession: !!initialSession,
+          userId: initialSession?.user?.id ?? null,
+        });
 
         if (!isMounted) return;
 
@@ -200,6 +248,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(currentSession?.user ?? null);
 
         if (currentSession?.user) {
+          console.log('[AUTH] initAuth loading identity');
+          initialSessionProcessedRef.current = true;
           await loadAuthData(currentSession.user.id);
         }
       } catch (error) {
@@ -225,19 +275,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (!isMounted) return;
 
+      console.log('[AUTH] onAuthStateChange:', event, {
+        hasSession: !!newSession,
+        userId: newSession?.user?.id ?? null,
+      });
+
       setSession(newSession);
       setUser(newSession?.user ?? null);
       setAuthError(null);
 
       const authEvent = event as string;
 
-      if (authEvent === 'SIGNED_IN' && newSession?.user) {
+      if (
+        authEvent === 'SIGNED_IN' &&
+        newSession?.user &&
+        !initialSessionProcessedRef.current
+      ) {
         await loadAuthData(newSession.user.id);
       } else if (
         authEvent === 'SIGNED_OUT' ||
         authEvent === 'SESSION_EXPIRED' ||
         authEvent === 'TOKEN_REFRESH_FAILED'
       ) {
+        console.log('[AUTH] onAuthStateChange clear state:', authEvent);
+        initialSessionProcessedRef.current = false;
         setPerson(null);
         setTenantMemberships([]);
         setCurrentTenantId(null);
@@ -282,9 +343,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      console.log('[AUTH] signIn start:', { email });
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
+      });
+
+      console.log('[AUTH] signIn result:', {
+        hasUser: !!data?.user,
+        hasSession: !!data?.session,
+        error: error?.message ?? null,
       });
 
       if (error) {
@@ -293,11 +361,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data.user) {
+        console.log('[AUTH] signIn success, loading identity');
         await loadAuthData(data.user.id);
       }
 
       return {};
     } catch (error) {
+      console.error('[AUTH] signIn exception:', error);
       return {
         error: normalizeError(error).userMessage,
       };
@@ -310,7 +380,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const supabase = getSupabaseClient();
       if (supabase) {
+        console.log('[AUTH] logout start');
         await supabase.auth.signOut();
+        console.log('[AUTH] logout success');
       }
       setUser(null);
       setPerson(null);

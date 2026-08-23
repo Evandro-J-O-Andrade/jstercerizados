@@ -17,6 +17,7 @@ export interface ContactFormData {
   service?: string;
 }
 
+/** @deprecated Use domain types from src/types/domain instead. */
 export interface BudgetRequest {
   id: string;
   name: string;
@@ -34,6 +35,7 @@ export interface BudgetRequest {
   createdAt: string;
 }
 
+/** @deprecated Use Company from src/types/domain instead. */
 export interface Partner {
   id: string;
   company: string;
@@ -49,6 +51,7 @@ export interface Partner {
   createdAt: string;
 }
 
+/** @deprecated Use Supplier from src/types/domain instead. */
 export interface Supplier {
   id: string;
   company: string;
@@ -63,6 +66,7 @@ export interface Supplier {
   createdAt: string;
 }
 
+/** @deprecated Use Candidate from src/types/domain instead. */
 export interface Candidate {
   id: string;
   name: string;
@@ -81,6 +85,7 @@ export interface Candidate {
   createdAt: string;
 }
 
+/** @deprecated Use Service from src/types/domain instead. */
 export interface Service {
   id: string;
   slug: string;
@@ -94,6 +99,7 @@ export interface Service {
   category: 'rh' | 'facilities' | 'terceirizacao' | 'candidato';
 }
 
+/** @deprecated Use Job from src/types/domain instead. */
 export interface Vaga {
   id: string;
   slug: string;

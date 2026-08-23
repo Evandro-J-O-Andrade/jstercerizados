@@ -82,9 +82,8 @@ const STATUS_VARIANTS: Record<string, StatusColorKey> = {
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
-  const { roles, logout, authError } = useAuth();
+  const { logout, authError, isAdminMaster } = useAuth();
   const navigate = useNavigate();
-  const role = roles[0]?.name ?? 'member';
 
   const budgets = mockGetBudgets();
   const partners = mockGetPartners();
@@ -378,7 +377,7 @@ export default function Dashboard() {
     }
   }
 
-  const isAdminMaster = role === 'admin_master';
+  const isAdminMasterFromContext = isAdminMaster;
 
   return (
     <div className="min-h-screen">
@@ -397,10 +396,12 @@ export default function Dashboard() {
               <Shield className="text-primary h-8 w-8" />
               <div>
                 <h1 className="text-foreground text-3xl font-bold">
-                  {isAdminMaster ? 'Painel Administrativo' : 'Área do Usuário'}
+                  {isAdminMasterFromContext
+                    ? 'Painel Administrativo'
+                    : 'Área do Usuário'}
                 </h1>
                 <p className="text-muted-foreground">
-                  {isAdminMaster
+                  {isAdminMasterFromContext
                     ? 'Gerencie clientes, parceiros, fornecedores e currículos.'
                     : 'Acompanhe suas informações e atividades.'}
                 </p>

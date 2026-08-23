@@ -1,7 +1,7 @@
 // Future: Supabase client, n8n webhook helpers, etc.
 export const config = {
   supabaseUrl: import.meta.env.VITE_SUPABASE_URL ?? '',
-  supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY ?? '',
+  supabasePublishableKey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? '',
   whatsappNumber: import.meta.env.VITE_WHATSAPP_NUMBER ?? '+5511999999999',
   smtpHost: import.meta.env.VITE_SMTP_HOST ?? '',
   smtpPort: Number(import.meta.env.VITE_SMTP_PORT ?? 587),

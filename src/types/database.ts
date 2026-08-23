@@ -832,6 +832,209 @@ export interface Database {
           updated_at?: string;
         };
       };
+      recruitment_processes: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          job_id: string | null;
+          title: string;
+          description: string | null;
+          status: 'open' | 'closed' | 'draft';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          job_id?: string | null;
+          title: string;
+          description?: string | null;
+          status?: 'open' | 'closed' | 'draft';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          job_id?: string | null;
+          title?: string;
+          description?: string | null;
+          status?: 'open' | 'closed' | 'draft';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      service_orders: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          title: string;
+          description: string | null;
+          status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          title: string;
+          description?: string | null;
+          status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          title?: string;
+          description?: string | null;
+          status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      financial_transactions: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          description: string;
+          category: string | null;
+          type: 'income' | 'expense';
+          amount: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          description: string;
+          category?: string | null;
+          type: 'income' | 'expense';
+          amount: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          description?: string;
+          category?: string | null;
+          type?: 'income' | 'expense';
+          amount?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      stock_movements: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          product_id: string;
+          quantity: number;
+          movement_type: 'in' | 'out' | 'adjustment';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          product_id: string;
+          quantity: number;
+          movement_type: 'in' | 'out' | 'adjustment';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          product_id?: string;
+          quantity?: number;
+          movement_type?: 'in' | 'out' | 'adjustment';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      support_tickets: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          title: string;
+          description: string | null;
+          status: 'open' | 'in_progress' | 'resolved' | 'closed';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          title: string;
+          description?: string | null;
+          status?: 'open' | 'in_progress' | 'resolved' | 'closed';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          title?: string;
+          description?: string | null;
+          status?: 'open' | 'in_progress' | 'resolved' | 'closed';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      report_definitions: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          name: string;
+          description: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          name: string;
+          description?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          name?: string;
+          description?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      tenant_settings: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          key: string;
+          value: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          key: string;
+          value: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          key?: string;
+          value?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
