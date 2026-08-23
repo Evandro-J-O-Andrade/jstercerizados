@@ -6,7 +6,7 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { CLIENTS_LIST } from '@/mock/clients';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
+import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl, APP_ENV } from '@/config';
 import {
   Building2,
   Users,
@@ -15,7 +15,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
+import { useCompanies } from '@/hooks';
+import { mapCompanyToClient } from '@/mappers/companies';
 
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -181,9 +183,27 @@ function ClientCase({
 }
 
 export default function Clientes() {
-  const confirmedClients = CLIENTS_LIST.filter(
-    (client) => client.name && client.logo,
-  );
+  const tenantId = APP_ENV.defaultTenantId || null;
+  const { companies, isLoading } = useCompanies(tenantId);
+
+  const realClients = useMemo(() => {
+    return companies.map(mapCompanyToClient);
+  }, [companies]);
+
+  const confirmedClients = useMemo(() => {
+    if (tenantId && realClients.length > 0) {
+      return realClients.filter((client) => client.name);
+    }
+    return CLIENTS_LIST.filter((client) => client.name && client.logo);
+  }, [tenantId, realClients]);
+
+  if (isLoading && tenantId) {
+    return (
+      <div className="flex min-h-[70dvh] items-center justify-center">
+        <p className="text-muted-foreground">Carregando clientes...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
