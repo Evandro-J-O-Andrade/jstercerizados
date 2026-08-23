@@ -4,6 +4,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
   type ReactNode,
 } from 'react';
 import { getSupabaseClient } from '@/lib/supabase';
@@ -44,6 +45,10 @@ interface AuthContextType {
   ) => Promise<{ error?: string }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
   updateProfile: (data: Partial<Person>) => Promise<{ error?: string }>;
+  hasPermission: (permissionKey: string) => boolean;
+  hasAnyPermission: (permissionKeys: string[]) => boolean;
+  hasAllPermissions: (permissionKeys: string[]) => boolean;
+  resolvePostLoginDestination: () => string;
   authError: string | null;
 }
 
@@ -63,11 +68,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const initialSessionProcessedRef = useRef(false);
+  const isMountedRef = useRef(true);
 
   const loadAuthData = useCallback(async (authUserId: string) => {
     try {
       const supabase = getSupabaseClient();
-      if (!supabase) {
+      if (!supabase || !isMountedRef.current) {
         return;
       }
 
@@ -86,13 +93,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (personError) throw personError;
       if (!personData) {
-        setPerson(null);
-        setTenantMemberships([]);
-        setCurrentTenantId(null);
-        setRoles([]);
-        setPermissions([]);
-        setRoleAssignments([]);
-        setIsAdminMaster(false);
+        if (isMountedRef.current) {
+          setPerson(null);
+          setTenantMemberships([]);
+          setCurrentTenantId(null);
+          setRoles([]);
+          setPermissions([]);
+          setRoleAssignments([]);
+          setIsAdminMaster(false);
+        }
         return;
       }
 
@@ -145,7 +154,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const adminMaster = (rolesData || []).some(
         (r: Role) => r.scope === 'system' && r.name === 'admin_master',
       );
-      setIsAdminMaster(adminMaster);
+      if (isMountedRef.current) {
+        setIsAdminMaster(adminMaster);
+      }
 
       let permissionsData: Permission[] = [];
       if (roleIds.length > 0) {
@@ -182,12 +193,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       console.log('[AUTH] loadAuthData success');
 
-      setPerson(personData as Person);
-      setTenantMemberships((membershipData || []) as TenantMembership[]);
-      setCurrentTenantId(primaryTenantId);
-      setRoles((rolesData || []) as Role[]);
-      setPermissions(permissionsData);
-      setRoleAssignments((roleAssignmentData || []) as RoleAssignment[]);
+      if (isMountedRef.current) {
+        setPerson(personData as Person);
+        setTenantMemberships((membershipData || []) as TenantMembership[]);
+        setCurrentTenantId(primaryTenantId);
+        setRoles((rolesData || []) as Role[]);
+        setPermissions(permissionsData);
+        setRoleAssignments((roleAssignmentData || []) as RoleAssignment[]);
+      }
 
       console.log('[AUTH] state updated:', {
         personId: personData.id,
@@ -197,28 +210,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         permissionCount: permissionsData.length,
         isAdminMaster: adminMaster,
       });
+
+      console.log('[AUTH:HANDOFF] loadAuthData complete', {
+        authenticated: true,
+        hasPerson: !!personData,
+        hasMembership: (membershipData?.length ?? 0) > 0,
+        roleCount: rolesData?.length ?? 0,
+        permissionCount: permissionsData.length,
+        isAdminMaster: adminMaster,
+      });
     } catch (error) {
       console.error('[AUTH] loadAuthData error:', error);
-      setPerson(null);
-      setTenantMemberships([]);
-      setCurrentTenantId(null);
-      setRoles([]);
-      setPermissions([]);
-      setRoleAssignments([]);
-      setIsAdminMaster(false);
+      if (isMountedRef.current) {
+        setPerson(null);
+        setTenantMemberships([]);
+        setCurrentTenantId(null);
+        setRoles([]);
+        setPermissions([]);
+        setRoleAssignments([]);
+        setIsAdminMaster(false);
+      }
     }
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-    const initialSessionProcessedRef = { current: false };
-
     const initAuth = async () => {
       try {
         const supabase = getSupabaseClient();
 
         if (!supabase) {
-          if (isMounted) {
+          if (isMountedRef.current) {
             setAuthError(
               normalizeError(
                 new Error(
@@ -241,7 +262,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           userId: initialSession?.user?.id ?? null,
         });
 
-        if (!isMounted) return;
+        if (!isMountedRef.current) return;
 
         const currentSession = initialSession;
         setSession(currentSession);
@@ -255,7 +276,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error('Erro ao inicializar auth:', error);
       } finally {
-        if (isMounted) {
+        if (isMountedRef.current) {
           setIsLoading(false);
         }
       }
@@ -266,14 +287,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = getSupabaseClient();
     if (!supabase) {
       return () => {
-        isMounted = false;
+        isMountedRef.current = false;
       };
     }
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      if (!isMounted) return;
+      if (!isMountedRef.current) return;
 
       console.log('[AUTH] onAuthStateChange:', event, {
         hasSession: !!newSession,
@@ -291,7 +312,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         newSession?.user &&
         !initialSessionProcessedRef.current
       ) {
+        console.log('[AUTH:HANDOFF] SIGNED_IN received', {
+          authenticated: true,
+          userId: newSession.user.id,
+        });
         await loadAuthData(newSession.user.id);
+        initialSessionProcessedRef.current = true;
+        console.log('[AUTH:HANDOFF] post-login RBAC resolved');
       } else if (
         authEvent === 'SIGNED_OUT' ||
         authEvent === 'SESSION_EXPIRED' ||
@@ -299,15 +326,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ) {
         console.log('[AUTH] onAuthStateChange clear state:', authEvent);
         initialSessionProcessedRef.current = false;
-        setPerson(null);
-        setTenantMemberships([]);
-        setCurrentTenantId(null);
-        setRoles([]);
-        setPermissions([]);
-        setRoleAssignments([]);
-        setIsAdminMaster(false);
-        setSession(null);
-        setUser(null);
+        if (isMountedRef.current) {
+          setPerson(null);
+          setTenantMemberships([]);
+          setCurrentTenantId(null);
+          setRoles([]);
+          setPermissions([]);
+          setRoleAssignments([]);
+          setIsAdminMaster(false);
+          setSession(null);
+          setUser(null);
+        }
         if (
           authEvent === 'SESSION_EXPIRED' ||
           authEvent === 'TOKEN_REFRESH_FAILED'
@@ -318,7 +347,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => {
-      isMounted = false;
+      isMountedRef.current = false;
       subscription.unsubscribe();
     };
   }, [loadAuthData]);
@@ -361,8 +390,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data.user) {
-        console.log('[AUTH] signIn success, loading identity');
-        await loadAuthData(data.user.id);
+        console.log('[AUTH] signIn success');
       }
 
       return {};
@@ -397,6 +425,85 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Erro ao fazer logout:', error);
     }
   };
+
+  const hasPermission = useCallback(
+    (permissionKey: string): boolean => {
+      if (isAdminMaster) return true;
+      return permissions.some(
+        (p) => `${p.resource}.${p.action}` === permissionKey,
+      );
+    },
+    [permissions, isAdminMaster],
+  );
+
+  const hasAnyPermission = useCallback(
+    (permissionKeys: string[]): boolean => {
+      if (isAdminMaster) return true;
+      return permissionKeys.some((key) => hasPermission(key));
+    },
+    [hasPermission, isAdminMaster],
+  );
+
+  const hasAllPermissions = useCallback(
+    (permissionKeys: string[]): boolean => {
+      if (isAdminMaster) return true;
+      return permissionKeys.every((key) => hasPermission(key));
+    },
+    [hasPermission, isAdminMaster],
+  );
+
+  const resolvePostLoginDestination = useCallback((): string => {
+    const target = (() => {
+      if (isAdminMaster) {
+        return '/dashboard';
+      }
+
+      if (tenantMemberships.length === 0) {
+        return '/onboarding';
+      }
+
+      if (
+        hasAnyPermission(['jobs.read', 'candidates.read', 'recruitment.read'])
+      ) {
+        return '/dashboard';
+      }
+
+      if (hasAnyPermission(['companies.read'])) {
+        return '/dashboard/empresas';
+      }
+
+      if (hasAnyPermission(['people.read'])) {
+        return '/dashboard/usuarios';
+      }
+
+      if (hasAnyPermission(['service_orders.read'])) {
+        return '/dashboard/servicos';
+      }
+
+      if (hasAnyPermission(['stock_movements.read'])) {
+        return '/dashboard/estoque';
+      }
+
+      if (hasAnyPermission(['support_tickets.read'])) {
+        return '/dashboard/suporte';
+      }
+
+      if (hasAnyPermission(['reports.read'])) {
+        return '/dashboard/relatorios';
+      }
+
+      return '/dashboard';
+    })();
+
+    console.log('[AUTH:HANDOFF] resolvePostLoginDestination', {
+      isAdminMaster,
+      membershipCount: tenantMemberships.length,
+      permissionCount: permissions.length,
+      destination: target,
+    });
+
+    return target;
+  }, [isAdminMaster, tenantMemberships, hasAnyPermission, permissions]);
 
   const register = async (
     email: string,
@@ -602,6 +709,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         resetPassword,
         updateProfile,
+        hasPermission,
+        hasAnyPermission,
+        hasAllPermissions,
+        resolvePostLoginDestination,
         authError,
       }}
     >

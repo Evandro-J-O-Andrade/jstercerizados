@@ -64,7 +64,7 @@ export function BottomNavigation() {
           const isActive = pathname === item.href;
           return (
             <Link
-              key={item.href}
+              key={item.label}
               to={item.href}
               onClick={
                 item.href === '/'

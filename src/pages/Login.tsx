@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Shield, LogIn, Eye, EyeOff, Briefcase, Building2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,19 +24,23 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 type AccessFlow = 'admin' | 'candidato' | 'empresa';
 
+type LoginStatus =
+  'idle' | 'authenticating' | 'loading-profile' | 'success' | 'error';
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [accessFlow, setAccessFlow] = useState<AccessFlow>('admin');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loginSuccess, setLoginSuccess] = useState(false);
-  const { login, isAuthenticated, authError, tenantMemberships, person } =
-    useAuth();
+  const [loginStatus, setLoginStatus] = useState<LoginStatus>('idle');
+  const {
+    login,
+    isAuthenticated,
+    authError,
+    person,
+    resolvePostLoginDestination,
+  } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const from = (location.state as { from?: { pathname: string } })?.from
-    ?.pathname;
 
   const {
     register,
@@ -47,33 +51,30 @@ export default function Login() {
   });
 
   useEffect(() => {
-    if (loginSuccess && isAuthenticated) {
-      const target =
-        tenantMemberships.length === 0 ? '/onboarding' : '/dashboard';
-      const timer = setTimeout(() => {
-        navigate(target, { replace: true });
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-
-    if (isAuthenticated && !loginSuccess) {
-      const target =
-        tenantMemberships.length === 0 ? '/onboarding' : from || '/dashboard';
+    if (isAuthenticated && person) {
+      const target = resolvePostLoginDestination();
+      console.log('[AUTH:HANDOFF] login redirect', {
+        authenticated: true,
+        hasPerson: !!person,
+        destination: target,
+      });
       navigate(target, { replace: true });
     }
-  }, [loginSuccess, isAuthenticated, navigate, from, tenantMemberships]);
+  }, [isAuthenticated, person, navigate, resolvePostLoginDestination]);
 
   const onSubmit = async (data: LoginFormData): Promise<void> => {
     setError('');
     setIsSubmitting(true);
+    setLoginStatus('authenticating');
 
     try {
       const result = await login(data.email, data.password);
 
       if (result.error) {
         setError(normalizeError(result.error).userMessage);
+        setLoginStatus('error');
       } else {
-        setLoginSuccess(true);
+        setLoginStatus('loading-profile');
       }
     } finally {
       setIsSubmitting(false);
@@ -81,12 +82,13 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if (authError) {
+    if (authError && loginStatus !== 'loading-profile') {
       setError(normalizeError(authError).userMessage);
+      setLoginStatus('error');
     }
-  }, [authError]);
+  }, [authError, loginStatus]);
 
-  if (loginSuccess && isAuthenticated) {
+  if (loginStatus === 'success' && isAuthenticated) {
     const firstName = person?.full_name?.split(' ')[0] || 'colaborador';
 
     return (
@@ -314,10 +316,14 @@ export default function Login() {
                   variant="primary"
                   size="xl"
                   className="w-full"
-                  loading={isSubmitting}
+                  loading={isSubmitting || loginStatus === 'loading-profile'}
                   leftIcon={<LogIn className="h-5 w-5" />}
                 >
-                  Entrar
+                  {loginStatus === 'loading-profile'
+                    ? 'Preparando seu painel...'
+                    : loginStatus === 'authenticating'
+                      ? 'Autenticando...'
+                      : 'Entrar'}
                 </Button>
               </form>
 

@@ -324,15 +324,10 @@ export default function Vagas() {
                         <span className="text-muted-foreground">R$</span>
                         <span className="text-muted-foreground">
                           {vaga.salarioMin.toLocaleString('pt-BR')}
-                          {vaga.salarioTipo === 'hora' && ' / hora'}
-                          {vaga.salarioTipo !== 'hora' && (
-                            <>
-                              {' – '}
-                              {vaga.salarioMax
-                                ? vaga.salarioMax.toLocaleString('pt-BR')
-                                : 'a combinar'}
-                            </>
-                          )}
+                          {' – '}
+                          {vaga.salarioMax
+                            ? vaga.salarioMax.toLocaleString('pt-BR')
+                            : 'a combinar'}
                         </span>
                       </div>
                     )}

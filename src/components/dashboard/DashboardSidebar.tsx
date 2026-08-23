@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Briefcase,
@@ -16,11 +16,14 @@ import {
   Headphones,
   BarChart3,
   X,
+  User,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { hasPermission } from '@/utils/rbac';
 import type { Permission } from '@/types/auth';
 import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface NavItem {
   label: string;
@@ -30,96 +33,135 @@ interface NavItem {
   exact?: boolean;
 }
 
-const dashboardNavItems: NavItem[] = [
+interface NavGroup {
+  title?: string;
+  items: NavItem[];
+}
+
+const dashboardNavGroups: NavGroup[] = [
   {
-    label: 'Visão Geral',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-    exact: true,
+    items: [
+      {
+        label: 'Visão Geral',
+        href: '/dashboard',
+        icon: LayoutDashboard,
+        exact: true,
+      },
+    ],
   },
   {
-    label: 'Vagas',
-    href: '/dashboard/vagas',
-    icon: Briefcase,
-    permissions: ['jobs.read'],
+    title: 'Recrutamento',
+    items: [
+      {
+        label: 'Vagas',
+        href: '/dashboard/vagas',
+        icon: Briefcase,
+        permissions: ['jobs.read'],
+      },
+      {
+        label: 'Candidatos',
+        href: '/dashboard/candidatos',
+        icon: Users,
+        permissions: ['candidates.read'],
+      },
+      {
+        label: 'Processos Seletivos',
+        href: '/dashboard/processos-seletivos',
+        icon: GitCompare,
+        permissions: ['recruitment.read'],
+      },
+    ],
   },
   {
-    label: 'Candidatos',
-    href: '/dashboard/candidatos',
-    icon: Users,
-    permissions: ['candidates.read'],
+    title: 'Empresas',
+    items: [
+      {
+        label: 'Empresas',
+        href: '/dashboard/empresas',
+        icon: Building2,
+        permissions: ['companies.read'],
+      },
+      {
+        label: 'Clientes',
+        href: '/dashboard/clientes',
+        icon: FileText,
+        permissions: ['companies.read'],
+      },
+      {
+        label: 'Parceiros',
+        href: '/dashboard/parceiros',
+        icon: Users2,
+        permissions: ['companies.read'],
+      },
+      {
+        label: 'Fornecedores',
+        href: '/dashboard/fornecedores',
+        icon: Truck,
+        permissions: ['companies.read'],
+      },
+    ],
   },
   {
-    label: 'Empresas',
-    href: '/dashboard/empresas',
-    icon: Building2,
-    permissions: ['companies.read'],
+    title: 'RH',
+    items: [
+      {
+        label: 'Usuários',
+        href: '/dashboard/usuarios',
+        icon: UserCog,
+        permissions: ['people.read'],
+      },
+    ],
   },
   {
-    label: 'Clientes',
-    href: '/dashboard/clientes',
-    icon: FileText,
-    permissions: ['companies.read'],
+    title: 'Serviços',
+    items: [
+      {
+        label: 'Serviços',
+        href: '/dashboard/servicos',
+        icon: Wrench,
+        permissions: ['service_orders.read'],
+      },
+    ],
   },
   {
-    label: 'Parceiros',
-    href: '/dashboard/parceiros',
-    icon: Users2,
-    permissions: ['companies.read'],
+    title: 'Gestão',
+    items: [
+      {
+        label: 'Financeiro',
+        href: '/dashboard/financeiro',
+        icon: DollarSign,
+        permissions: ['purchase_orders.read'],
+      },
+      {
+        label: 'Estoque',
+        href: '/dashboard/estoque',
+        icon: Package,
+        permissions: ['stock_movements.read'],
+      },
+      {
+        label: 'Suporte',
+        href: '/dashboard/suporte',
+        icon: Headphones,
+        permissions: ['support_tickets.read'],
+      },
+      {
+        label: 'Relatórios',
+        href: '/dashboard/relatorios',
+        icon: BarChart3,
+        permissions: ['reports.read'],
+      },
+    ],
   },
   {
-    label: 'Fornecedores',
-    href: '/dashboard/fornecedores',
-    icon: Truck,
-    permissions: ['companies.read'],
-  },
-  {
-    label: 'Usuários',
-    href: '/dashboard/usuarios',
-    icon: UserCog,
-    permissions: ['people.read'],
-  },
-  {
-    label: 'Processos Seletivos',
-    href: '/dashboard/processos-seletivos',
-    icon: GitCompare,
-    permissions: ['recruitment.read'],
-  },
-  {
-    label: 'Serviços',
-    href: '/dashboard/servicos',
-    icon: Wrench,
-    permissions: ['service_orders.read'],
-  },
-  {
-    label: 'Financeiro',
-    href: '/dashboard/financeiro',
-    icon: DollarSign,
-    permissions: ['purchase_orders.read'],
-  },
-  {
-    label: 'Estoque',
-    href: '/dashboard/estoque',
-    icon: Package,
-    permissions: ['stock_movements.read'],
-  },
-  {
-    label: 'Suporte',
-    href: '/dashboard/suporte',
-    icon: Headphones,
-    permissions: ['support_tickets.read'],
-  },
-  {
-    label: 'Relatórios',
-    href: '/dashboard/relatorios',
-    icon: BarChart3,
-    permissions: ['reports.read'],
-  },
-  {
-    label: 'Configurações',
-    href: '/dashboard/configuracoes',
-    icon: Settings2,
-    permissions: ['tenants.read', 'roles.read'],
+    title: 'Sistema',
+    items: [
+      {
+        label: 'Configurações',
+        href: '/dashboard/configuracoes',
+        icon: Settings2,
+        permissions: ['tenants.read', 'roles.read'],
+      },
+    ],
   },
 ];
 
@@ -137,14 +179,24 @@ export function DashboardSidebar({
   isAdminMaster,
 }: DashboardSidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { person, roles, logout } = useAuth();
 
-  const filteredNavItems = dashboardNavItems.filter((item) => {
-    if (isAdminMaster) return true;
-    if (!item.permissions || item.permissions.length === 0) return true;
-    return item.permissions.some((perm) =>
-      hasPermission(userPermissions, perm),
-    );
-  });
+  const roleLabel = roles[0]?.display_name || roles[0]?.name || 'Usuário';
+  const displayName = person?.full_name?.trim() || 'Usuário';
+
+  const filteredGroups = dashboardNavGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => {
+        if (isAdminMaster) return true;
+        if (!item.permissions || item.permissions.length === 0) return true;
+        return item.permissions.some((perm) =>
+          hasPermission(userPermissions, perm),
+        );
+      }),
+    }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <>
@@ -172,31 +224,88 @@ export function DashboardSidebar({
           </Button>
         </div>
 
-        <nav className="space-y-1 p-4" aria-label="Dashboard">
-          {filteredNavItems.map((item) => {
-            const isActive = item.exact
-              ? location.pathname === item.href
-              : location.pathname.startsWith(item.href);
-
-            return (
-              <NavLink
-                key={item.href}
-                to={item.href}
-                end={item.exact}
-                onClick={onClose}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+        <div className="flex h-full flex-col">
+          <nav
+            className="flex-1 space-y-1 overflow-y-auto p-4"
+            aria-label="Dashboard"
+          >
+            {filteredGroups.map((group) => (
+              <div key={group.title || 'main'} className="mb-4">
+                {group.title && (
+                  <p className="text-muted-foreground mb-2 px-3 text-xs font-semibold tracking-wider uppercase">
+                    {group.title}
+                  </p>
                 )}
+                <div className="space-y-1">
+                  {group.items.map((item) => {
+                    const isActive = item.exact
+                      ? location.pathname === item.href
+                      : location.pathname.startsWith(item.href);
+
+                    return (
+                      <NavLink
+                        key={item.href}
+                        to={item.href}
+                        end={item.exact}
+                        onClick={onClose}
+                        className={cn(
+                          'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                          isActive
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                        )}
+                      >
+                        <item.icon className="h-5 w-5 shrink-0" />
+                        {item.label}
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
+
+          <div className="border-border border-t p-4">
+            <div className="mb-3 flex items-center gap-3">
+              <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
+                {displayName.charAt(0).toUpperCase()}
+              </div>
+              <div className="min-w-0">
+                <p className="text-foreground truncate text-sm font-medium">
+                  {displayName}
+                </p>
+                <p className="text-muted-foreground truncate text-xs">
+                  {roleLabel}
+                </p>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  navigate('/dashboard/configuracoes');
+                }}
+                className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
               >
-                <item.icon className="h-5 w-5 shrink-0" />
-                {item.label}
-              </NavLink>
-            );
-          })}
-        </nav>
+                <User className="h-4 w-4" />
+                Meu perfil
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  logout();
+                  navigate('/login');
+                }}
+                className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                Sair
+              </button>
+            </div>
+          </div>
+        </div>
       </aside>
     </>
   );

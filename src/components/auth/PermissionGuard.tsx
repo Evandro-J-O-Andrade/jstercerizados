@@ -6,6 +6,7 @@ import { Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { normalizeError } from '@/lib/error-normalizer';
 import { hasAnyPermission, hasAllPermissions } from '@/utils/rbac';
+import DashboardForbidden from '@/pages/dashboard/DashboardForbidden';
 
 interface PermissionGuardProps {
   children: React.ReactNode;
@@ -92,7 +93,7 @@ export function PermissionGuard({
     if (fallback) {
       return <>{fallback}</>;
     }
-    return <Navigate to="/dashboard" replace />;
+    return <DashboardForbidden />;
   }
 
   return <>{children}</>;
