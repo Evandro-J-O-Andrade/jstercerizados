@@ -5,9 +5,9 @@ import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { JobApplicationForm } from '@/components/forms/JobApplicationForm';
+import { mockGetVagaBySlug } from '@/services/mock/vagas';
 import { COMPANY } from '@/config';
 import { ArrowLeft, MapPin, Clock, DollarSign, Briefcase } from 'lucide-react';
-import { usePublicJob } from '@/hooks/useJobs';
 
 const CONTRATO_LABELS: Record<string, string> = {
   CLT: 'CLT',
@@ -18,40 +18,17 @@ const CONTRATO_LABELS: Record<string, string> = {
   CD: 'C/D',
 };
 
+const MODALIDADE_LABELS: Record<string, string> = {
+  PRESENCIAL: 'Presencial',
+  HIBRIDO: 'Híbrido',
+  REMOTO: 'Remoto',
+};
+
 export default function VagaDetalhe() {
   const { slug } = useParams<{ slug: string }>();
-  const { job: vaga, isLoading, error } = usePublicJob(slug);
+  const vaga = slug ? mockGetVagaBySlug(slug) : undefined;
 
-  if (error) {
-    return (
-      <div className="min-h-screen">
-        <Section className="pt-20 md:pt-28">
-          <Container>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center"
-            >
-              <h1 className="text-foreground text-4xl font-bold sm:text-5xl">
-                Erro ao carregar vaga
-              </h1>
-              <p className="text-muted-foreground mx-auto mt-4 max-w-md text-lg">
-                {error}
-              </p>
-              <Link to="/vagas">
-                <Button variant="secondary" size="lg" className="mt-8">
-                  Ver todas as vagas
-                </Button>
-              </Link>
-            </motion.div>
-          </Container>
-        </Section>
-      </div>
-    );
-  }
-
-  if (!isLoading && !vaga) {
+  if (!vaga) {
     return (
       <div className="min-h-screen">
         <Section className="pt-20 md:pt-28">
@@ -80,44 +57,22 @@ export default function VagaDetalhe() {
     );
   }
 
-  if (isLoading || !vaga) {
-    return (
-      <div className="min-h-screen">
-        <Section className="pt-20 md:pt-28">
-          <Container>
-            <div className="mx-auto max-w-3xl animate-pulse space-y-4">
-              <div className="bg-muted h-8 w-3/4 rounded" />
-              <div className="bg-muted h-4 w-1/2 rounded" />
-              <div className="bg-muted h-64 w-full rounded" />
-            </div>
-          </Container>
-        </Section>
-      </div>
-    );
-  }
-
-  const contractLabel =
-    vaga.employment_type && CONTRATO_LABELS[vaga.employment_type]
-      ? CONTRATO_LABELS[vaga.employment_type]
-      : vaga.employment_type;
-
-  const benefitsList = vaga.benefits
-    ? vaga.benefits
-        .split(',')
-        .map((b) => b.trim())
-        .filter(Boolean)
-    : [];
+  const formatCurrency = (value: number) =>
+    value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
 
   return (
     <div className="min-h-screen">
       <SEO
-        title={`${vaga.title} — ${COMPANY.name}`}
+        title={`${vaga.titulo} — ${COMPANY.name}`}
         description={
-          vaga.description ||
-          `Oportunidade de ${vaga.title} na ${COMPANY.name}.`
+          vaga.descricao || `Oportunidade de ${vaga.titulo} na ${COMPANY.name}.`
         }
         keywords={[
-          vaga.title,
+          vaga.titulo,
+          vaga.area || '',
           'vaga',
           'emprego',
           'trabalho',
@@ -151,23 +106,23 @@ export default function VagaDetalhe() {
             >
               <div>
                 <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
-                  {vaga.title}
+                  {vaga.titulo}
                 </h1>
-                {vaga.location && (
+                {vaga.empresa && (
                   <p className="text-muted-foreground mt-2 text-lg">
-                    {vaga.location}
+                    {vaga.empresa}
                   </p>
                 )}
               </div>
-              {contractLabel && (
+              {vaga.tipoContrato && (
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-medium ${
-                    contractLabel === 'CLT'
+                    vaga.tipoContrato === 'CLT'
                       ? 'bg-success/10 text-success'
                       : 'bg-primary/10 text-primary'
                   }`}
                 >
-                  {contractLabel}
+                  {CONTRATO_LABELS[vaga.tipoContrato]}
                 </span>
               )}
             </motion.div>
@@ -178,31 +133,50 @@ export default function VagaDetalhe() {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
             >
-              {vaga.location && (
+              {vaga.area && (
                 <div className="flex items-center gap-3">
-                  <MapPin className="text-primary h-5 w-5" />
-                  <span className="text-sm">{vaga.location}</span>
+                  <Briefcase className="text-primary h-5 w-5" />
+                  <span className="text-sm">{vaga.area}</span>
                 </div>
               )}
-              {vaga.published_at && (
+              {vaga.cidade && vaga.estado && (
                 <div className="flex items-center gap-3">
-                  <Clock className="text-primary h-5 w-5" />
+                  <MapPin className="text-primary h-5 w-5" />
                   <span className="text-sm">
-                    Publicada em{' '}
-                    {new Date(vaga.published_at).toLocaleDateString('pt-BR')}
+                    {vaga.cidade}, {vaga.estado}
                   </span>
                 </div>
               )}
-              {vaga.salary && (
+              {vaga.workSchedule && (
                 <div className="flex items-center gap-3">
-                  <DollarSign className="text-primary h-5 w-5" />
-                  <span className="text-sm">{vaga.salary}</span>
+                  <Clock className="text-primary h-5 w-5" />
+                  <span className="text-sm">{vaga.workSchedule}</span>
                 </div>
               )}
-              {contractLabel && (
+              {vaga.modalidade && (
                 <div className="flex items-center gap-3">
                   <Briefcase className="text-primary h-5 w-5" />
-                  <span className="text-sm">{contractLabel}</span>
+                  <span className="text-sm">
+                    {MODALIDADE_LABELS[vaga.modalidade]}
+                  </span>
+                </div>
+              )}
+              {vaga.salarioMin && (
+                <div className="flex items-center gap-3">
+                  <DollarSign className="text-primary h-5 w-5" />
+                  <span className="text-sm">
+                    {formatCurrency(vaga.salarioMin)}
+                    {vaga.salarioTipo === 'hora' && ' / hora'}
+                    {vaga.salarioTipo !== 'hora' && vaga.salarioMax
+                      ? ' – ' + formatCurrency(vaga.salarioMax)
+                      : ''}
+                  </span>
+                </div>
+              )}
+              {vaga.workload && (
+                <div className="flex items-center gap-3">
+                  <Clock className="text-primary h-5 w-5" />
+                  <span className="text-sm">{vaga.workload}</span>
                 </div>
               )}
             </motion.div>
@@ -212,35 +186,46 @@ export default function VagaDetalhe() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
-              {vaga.description && (
+              {vaga.descricao && (
                 <div className="border-border mb-8 border-t pt-8">
                   <h2 className="text-foreground mb-4 text-xl font-semibold">
                     Sobre a vaga
                   </h2>
                   <p className="text-muted-foreground leading-relaxed">
-                    {vaga.description}
+                    {vaga.descricao}
                   </p>
                 </div>
               )}
 
-              {vaga.requirements && (
+              {vaga.responsibilities && (
+                <div className="border-border mb-8 border-t pt-8">
+                  <h2 className="text-foreground mb-4 text-xl font-semibold">
+                    Responsabilidades e atribuições
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {vaga.responsibilities}
+                  </p>
+                </div>
+              )}
+
+              {vaga.requisitos && (
                 <div className="border-border mb-8 border-t pt-8">
                   <h2 className="text-foreground mb-4 text-xl font-semibold">
                     Requisitos e qualificações
                   </h2>
                   <p className="text-muted-foreground leading-relaxed">
-                    {vaga.requirements}
+                    {vaga.requisitos}
                   </p>
                 </div>
               )}
 
-              {benefitsList.length > 0 && (
+              {vaga.beneficios && vaga.beneficios.length > 0 && (
                 <div className="border-border mb-8 border-t pt-8">
-                  <h2 className="text-muted-foreground mb-2 text-xs font-medium">
+                  <h2 className="text-foreground mb-4 text-xl font-semibold">
                     Benefícios
                   </h2>
                   <div className="flex flex-wrap gap-2">
-                    {benefitsList.map((beneficio) => (
+                    {vaga.beneficios.map((beneficio) => (
                       <span
                         key={beneficio}
                         className="bg-primary/10 text-primary rounded-full px-4 py-2 text-sm font-medium"
@@ -258,7 +243,7 @@ export default function VagaDetalhe() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              <JobApplicationForm jobTitle={vaga.title} />
+              <JobApplicationForm jobTitle={vaga.titulo} />
             </motion.div>
           </motion.div>
         </Container>
