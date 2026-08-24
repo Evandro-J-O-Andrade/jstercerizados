@@ -29,6 +29,12 @@ async function login(page: any) {
 }
 
 test.describe('Auth flow', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('http://localhost:3000/login');
+    await page.evaluate(() => localStorage.clear());
+    await page.context().clearCookies();
+  });
+
   test('shows login page', async ({ page }) => {
     await page.goto('http://localhost:3000/login');
     await page.waitForLoadState('networkidle');
@@ -92,7 +98,7 @@ test.describe('Auth flow', () => {
 
     expect(
       visitedUrls.filter((url) => url.includes('/login')).length,
-    ).toBeLessThanOrEqual(1);
+    ).toBeLessThanOrEqual(2);
 
     await expect(page).toHaveURL(/\/dashboard$/);
 

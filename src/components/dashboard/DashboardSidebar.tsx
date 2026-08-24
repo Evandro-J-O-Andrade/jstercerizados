@@ -19,10 +19,10 @@ import {
   User,
   LogOut,
   Shield,
+  ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { hasPermission } from '@/utils/rbac';
-import type { Permission } from '@/types/auth';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
@@ -52,7 +52,7 @@ const dashboardNavGroups: NavGroup[] = [
     ],
   },
   {
-    title: 'Recrutamento',
+    title: 'Recrutamento & RH',
     items: [
       {
         label: 'Vagas',
@@ -75,7 +75,7 @@ const dashboardNavGroups: NavGroup[] = [
     ],
   },
   {
-    title: 'Empresas',
+    title: 'Empresas & Clientes',
     items: [
       {
         label: 'Empresas',
@@ -104,17 +104,6 @@ const dashboardNavGroups: NavGroup[] = [
     ],
   },
   {
-    title: 'RH',
-    items: [
-      {
-        label: 'Usuários',
-        href: '/dashboard/usuarios',
-        icon: UserCog,
-        permissions: ['people.read'],
-      },
-    ],
-  },
-  {
     title: 'Serviços',
     items: [
       {
@@ -126,7 +115,7 @@ const dashboardNavGroups: NavGroup[] = [
     ],
   },
   {
-    title: 'Gestão',
+    title: 'Financeiro',
     items: [
       {
         label: 'Financeiro',
@@ -134,18 +123,33 @@ const dashboardNavGroups: NavGroup[] = [
         icon: DollarSign,
         permissions: ['purchase_orders.read'],
       },
+    ],
+  },
+  {
+    title: 'Operacional',
+    items: [
       {
         label: 'Estoque',
         href: '/dashboard/estoque',
         icon: Package,
         permissions: ['stock_movements.read'],
       },
+    ],
+  },
+  {
+    title: 'Suporte',
+    items: [
       {
         label: 'Suporte',
         href: '/dashboard/suporte',
         icon: Headphones,
         permissions: ['support_tickets.read'],
       },
+    ],
+  },
+  {
+    title: 'Relatórios',
+    items: [
       {
         label: 'Relatórios',
         href: '/dashboard/relatorios',
@@ -155,8 +159,14 @@ const dashboardNavGroups: NavGroup[] = [
     ],
   },
   {
-    title: 'Sistema',
+    title: 'Administração',
     items: [
+      {
+        label: 'Usuários',
+        href: '/dashboard/usuarios',
+        icon: UserCog,
+        permissions: ['people.read'],
+      },
       {
         label: 'Configurações',
         href: '/dashboard/configuracoes',
@@ -170,19 +180,17 @@ const dashboardNavGroups: NavGroup[] = [
 interface DashboardSidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  userPermissions: Permission[];
-  isAdminMaster: boolean;
+  onNavigate?: () => void;
 }
 
 export function DashboardSidebar({
   isOpen,
   onClose,
-  userPermissions,
-  isAdminMaster,
+  onNavigate,
 }: DashboardSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { person, roles, logout } = useAuth();
+  const { person, roles, logout, permissions, isAdminMaster } = useAuth();
 
   const roleLabel = roles[0]?.display_name || roles[0]?.name || 'Usuário';
   const displayName = person?.full_name?.trim() || 'Usuário';
@@ -194,11 +202,17 @@ export function DashboardSidebar({
         if (isAdminMaster) return true;
         if (!item.permissions || item.permissions.length === 0) return true;
         return item.permissions.some((perm) =>
-          hasPermission(userPermissions, perm),
+          hasPermission(permissions, perm),
         );
       }),
     }))
     .filter((group) => group.items.length > 0);
+
+  const handleNavigate = (href: string) => {
+    navigate(href);
+    onNavigate?.();
+    onClose();
+  };
 
   return (
     <>
@@ -254,7 +268,7 @@ export function DashboardSidebar({
                         key={item.href}
                         to={item.href}
                         end={item.exact}
-                        onClick={onClose}
+                        onClick={() => handleNavigate(item.href)}
                         className={cn(
                           'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                           isActive
@@ -264,6 +278,9 @@ export function DashboardSidebar({
                       >
                         <item.icon className="h-5 w-5 shrink-0" />
                         {item.label}
+                        {isActive && (
+                          <ChevronRight className="text-primary ml-auto h-4 w-4" />
+                        )}
                       </NavLink>
                     );
                   })}
@@ -289,10 +306,7 @@ export function DashboardSidebar({
             <div className="space-y-0.5">
               <button
                 type="button"
-                onClick={() => {
-                  onClose();
-                  navigate('/dashboard/configuracoes');
-                }}
+                onClick={() => handleNavigate('/dashboard/configuracoes')}
                 className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
               >
                 <User className="h-4 w-4" />
@@ -301,7 +315,6 @@ export function DashboardSidebar({
               <button
                 type="button"
                 onClick={() => {
-                  onClose();
                   logout();
                   navigate('/login');
                 }}

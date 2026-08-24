@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      console.log('[AUTH] loadAuthData start:', authUserId);
+      console.log('[AUTH:IDENTITY] loadAuthData start', authUserId);
 
       const { data: personData, error: personError } = await supabase
         .from('people')
@@ -87,9 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('auth_user_id', authUserId)
         .maybeSingle();
 
-      console.log('[AUTH] people result:', {
-        personData: !!personData,
-        personError: personError?.message ?? null,
+      console.log('[AUTH:IDENTITY] people loaded', {
+        hasPerson: !!personData,
+        error: personError?.message ?? null,
       });
 
       if (personError) throw personError;
@@ -113,11 +113,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
-      console.log('[AUTH] membership result:', {
-        count: membershipData?.length ?? 0,
-        membershipError: null,
-      });
-
       const tenantIds = (membershipData || [])
         .map((m: TenantMembership) => m.tenant_id)
         .filter((id): id is string => Boolean(id));
@@ -128,11 +123,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from('role_assignments')
         .select('*')
         .eq('person_id', personData.id);
-
-      console.log('[AUTH] role_assignment result:', {
-        count: roleAssignmentData?.length ?? 0,
-        roleAssignmentError: null,
-      });
 
       const roleIds = Array.from(
         new Set(
@@ -147,11 +137,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select('*')
         .in('id', roleIds);
 
-      console.log('[AUTH] roles result:', {
-        count: rolesData?.length ?? 0,
-        rolesError: null,
-      });
-
       const adminMaster = (rolesData || []).some(
         (r: Role) => r.scope === 'system' && r.name === 'admin_master',
       );
@@ -165,11 +150,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .from('role_permissions')
           .select('permission_id')
           .in('role_id', roleIds);
-
-        console.log('[AUTH] role_permissions result:', {
-          count: rolePerms?.length ?? 0,
-          rolePermsError: null,
-        });
 
         const permissionIds = Array.from(
           new Set(
@@ -188,11 +168,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      console.log('[AUTH] permissions result:', {
-        count: permissionsData.length,
-        permsError: null,
+      console.log('[AUTH:IDENTITY] data loaded', {
+        hasPerson: !!personData,
+        memberships: membershipData?.length ?? 0,
+        roles: rolesData?.length ?? 0,
+        permissions: permissionsData.length,
       });
-      console.log('[AUTH] loadAuthData success');
 
       if (isMountedRef.current) {
         setPerson(personData as Person);
@@ -203,15 +184,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRoleAssignments((roleAssignmentData || []) as RoleAssignment[]);
       }
 
-      console.log('[AUTH] state updated:', {
-        personId: personData.id,
-        tenantId: primaryTenantId,
-        membershipCount: membershipData?.length ?? 0,
-        roleCount: rolesData?.length ?? 0,
-        permissionCount: permissionsData.length,
-        isAdminMaster: adminMaster,
-      });
-
       console.log('[AUTH:HANDOFF] loadAuthData complete', {
         authenticated: true,
         hasPerson: !!personData,
@@ -221,7 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdminMaster: adminMaster,
       });
     } catch (error) {
-      console.error('[AUTH] loadAuthData error:', error);
+      console.error('[AUTH:IDENTITY] loadAuthData failed', error);
       if (isMountedRef.current) {
         setPerson(null);
         setTenantMemberships([]);
@@ -235,6 +207,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    isMountedRef.current = true;
     const initAuth = async () => {
       try {
         const supabase = getSupabaseClient();
@@ -297,11 +270,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (!isMountedRef.current) return;
 
-      console.log('[AUTH] onAuthStateChange:', event, {
-        hasSession: !!newSession,
-        userId: newSession?.user?.id ?? null,
-      });
-
       setSession(newSession);
       setUser(newSession?.user ?? null);
       setAuthError(null);
@@ -314,15 +282,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         !initialSessionProcessedRef.current &&
         !authLoadInFlightRef.current
       ) {
-        console.log('[AUTH:HANDOFF] SIGNED_IN received', {
-          authenticated: true,
-          userId: newSession.user.id,
-        });
         authLoadInFlightRef.current = true;
         await loadAuthData(newSession.user.id);
         initialSessionProcessedRef.current = true;
         authLoadInFlightRef.current = false;
-        console.log('[AUTH:HANDOFF] post-login RBAC resolved');
       } else if (
         authEvent === 'SIGNED_OUT' ||
         authEvent === 'SESSION_EXPIRED' ||
@@ -379,13 +342,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      console.log('[AUTH] signIn start:', { email });
+      console.log('[AUTH:LOGIN] start', { email });
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      console.log('[AUTH] signIn result:', {
+      console.log('[AUTH:LOGIN] signIn result', {
         hasUser: !!data?.user,
         hasSession: !!data?.session,
         error: error?.message ?? null,
@@ -397,17 +360,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data.user) {
-        console.log('[AUTH] signIn success — loading identity');
+        console.log('[AUTH:LOGIN] success — loading identity');
         authLoadInFlightRef.current = true;
+        setSession(data.session);
+        setUser(data.user);
         await loadAuthData(data.user.id);
         initialSessionProcessedRef.current = true;
         authLoadInFlightRef.current = false;
-        console.log('[AUTH] signIn identity loaded');
+        console.log('[AUTH:LOGIN] identity loaded');
       }
 
       return {};
     } catch (error) {
-      console.error('[AUTH] signIn exception:', error);
+      console.error('[AUTH:LOGIN] exception', error);
       authLoadInFlightRef.current = false;
       return {
         error: normalizeError(error).userMessage,
@@ -700,6 +665,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     }
   };
+
+  console.log('[AUTH:TRACE] AuthProvider render', {
+    user: !!user,
+    session: !!session,
+    person: !!person,
+    isAuthenticated: !!user && !!session,
+    mounted: isMountedRef.current,
+    initialProcessed: initialSessionProcessedRef.current,
+    loadInFlight: authLoadInFlightRef.current,
+  });
 
   return (
     <AuthContext.Provider
