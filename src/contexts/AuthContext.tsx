@@ -330,6 +330,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     authLoadInFlightRef.current = false;
 
     const supabase = getSupabaseClient();
+
+    console.log('[AUTH:DIAGNOSTIC]', {
+      hasSupabaseClient: !!supabase,
+      hasUrl: !!import.meta.env?.VITE_SUPABASE_URL,
+      hasKey: !!import.meta.env?.VITE_SUPABASE_PUBLISHABLE_KEY,
+    });
+
     if (!supabase) {
       setIsLoading(false);
       return {
