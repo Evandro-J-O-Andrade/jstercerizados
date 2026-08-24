@@ -5,9 +5,8 @@ import {
   Building2,
   FileText,
   ArrowUpRight,
-  TrendingUp,
-  CheckCircle2,
-  AlertCircle,
+  Activity,
+  Inbox,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -25,7 +24,7 @@ interface StatCard {
   icon: React.ComponentType<{ className?: string }>;
   color: 'primary' | 'success' | 'accent' | 'warning';
   href?: string;
-  trend?: string;
+  description?: string;
 }
 
 export default function VisaoGeral() {
@@ -116,7 +115,7 @@ export default function VisaoGeral() {
           icon: Users,
           color: 'primary',
           href: '/dashboard/candidatos',
-          trend: '+12%',
+          description: 'Cadastrados na plataforma',
         },
         {
           label: 'Vagas',
@@ -124,7 +123,7 @@ export default function VisaoGeral() {
           icon: Briefcase,
           color: 'success',
           href: '/dashboard/vagas',
-          trend: '+5%',
+          description: 'Publicadas',
         },
         {
           label: 'Empresas',
@@ -132,7 +131,7 @@ export default function VisaoGeral() {
           icon: Building2,
           color: 'accent',
           href: '/dashboard/empresas',
-          trend: '+2',
+          description: 'Parceiras cadastradas',
         },
         {
           label: 'Processos',
@@ -140,6 +139,7 @@ export default function VisaoGeral() {
           icon: FileText,
           color: 'warning',
           href: '/dashboard/processos-seletivos',
+          description: 'Em andamento',
         },
       );
       return base;
@@ -162,6 +162,7 @@ export default function VisaoGeral() {
         icon: Briefcase,
         color: 'success',
         href: '/dashboard/vagas',
+        description: 'Publicadas',
       });
     }
     if (canCandidates) {
@@ -171,6 +172,7 @@ export default function VisaoGeral() {
         icon: Users,
         color: 'primary',
         href: '/dashboard/candidatos',
+        description: 'Cadastrados',
       });
     }
     if (canCompanies) {
@@ -180,6 +182,7 @@ export default function VisaoGeral() {
         icon: Building2,
         color: 'accent',
         href: '/dashboard/empresas',
+        description: 'Parceiras',
       });
     }
 
@@ -239,27 +242,19 @@ export default function VisaoGeral() {
     return actions;
   }, [isAdminMaster, permissions]);
 
-  const roleNames = useMemo(
-    () => roles.map((r) => r.display_name || r.name).join(', '),
-    [roles],
-  );
-
-  const userPermissions = useMemo(
-    () => permissions.map((p) => `${p.resource}.${p.action}`),
-    [permissions],
-  );
-
   const recentJobs = useMemo(() => jobs.slice(0, 5), [jobs]);
-
   const recentCandidates = useMemo(() => candidates.slice(0, 5), [candidates]);
 
+  const isEmpty =
+    !isLoading && !error && jobs.length === 0 && candidates.length === 0;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-foreground text-2xl font-bold">
-          {greeting ? `Bem-vindo, ${greeting} 👋` : 'Bem-vindo 👋'}
+        <h1 className="text-foreground text-3xl font-bold tracking-tight">
+          {greeting ? greeting : 'Bem-vindo'}
         </h1>
-        <p className="text-muted-foreground mt-1">{subtitle}</p>
+        <p className="text-muted-foreground mt-2 text-base">{subtitle}</p>
       </div>
 
       {isLoading && (
@@ -278,7 +273,11 @@ export default function VisaoGeral() {
         </div>
       )}
 
-      {error && <div className="text-destructive text-sm">{error}</div>}
+      {error && (
+        <Card className="border-destructive/50 bg-destructive/5 p-6">
+          <p className="text-destructive text-sm">{error}</p>
+        </Card>
+      )}
 
       {!isLoading && !error && (
         <>
@@ -288,17 +287,17 @@ export default function VisaoGeral() {
                 <Card
                   key={stat.label}
                   className={cn(
-                    'p-6 transition-all duration-200 hover:shadow-md',
-                    stat.href && 'hover:border-primary/40 cursor-pointer',
+                    'group relative overflow-hidden p-6 transition-all duration-200 hover:shadow-lg',
+                    stat.href && 'cursor-pointer',
                   )}
                   style={{ animationDelay: `${index * 50}ms` }}
                   onClick={() => stat.href && navigate(stat.href)}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-start justify-between">
                     <div className="flex items-center gap-4">
                       <div
                         className={cn(
-                          'flex h-12 w-12 items-center justify-center rounded-lg',
+                          'flex h-12 w-12 items-center justify-center rounded-xl',
                           stat.color === 'primary' &&
                             'bg-primary/10 text-primary',
                           stat.color === 'success' &&
@@ -314,15 +313,18 @@ export default function VisaoGeral() {
                         <p className="text-foreground text-2xl font-bold">
                           {stat.value}
                         </p>
-                        <p className="text-muted-foreground text-sm">
+                        <p className="text-muted-foreground text-sm font-medium">
                           {stat.label}
                         </p>
+                        {stat.description && (
+                          <p className="text-muted-foreground/70 mt-0.5 text-xs">
+                            {stat.description}
+                          </p>
+                        )}
                       </div>
                     </div>
-                    {stat.trend && (
-                      <span className="text-success text-xs font-medium">
-                        {stat.trend}
-                      </span>
+                    {stat.href && (
+                      <ArrowUpRight className="text-muted-foreground group-hover:text-primary h-5 w-5 transition-colors" />
                     )}
                   </div>
                 </Card>
@@ -330,18 +332,36 @@ export default function VisaoGeral() {
             </div>
           )}
 
-          {stats.length === 0 && !isLoading && (
+          {isEmpty && (
             <Card className="p-8">
               <div className="flex flex-col items-center justify-center text-center">
-                <AlertCircle className="text-muted-foreground mb-4 h-12 w-12" />
+                <div className="bg-muted mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                  <Inbox className="text-muted-foreground h-8 w-8" />
+                </div>
                 <h3 className="text-foreground text-lg font-semibold">
-                  Nenhum dado disponível
+                  Tudo pronto por aqui
                 </h3>
                 <p className="text-muted-foreground mt-2 max-w-md text-sm">
-                  Ainda não há dados suficientes para exibir indicadores.
-                  Conforme você for utilizando o sistema, os números aparecerão
-                  aqui automaticamente.
+                  Quando você publicar vagas e receber candidatos, os dados
+                  aparecerão aqui automaticamente. Use o menu lateral para
+                  começar.
                 </p>
+                <div className="mt-6 flex gap-3">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => navigate('/dashboard/vagas')}
+                  >
+                    Publicar vaga
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate('/dashboard/candidatos')}
+                  >
+                    Ver candidatos
+                  </Button>
+                </div>
               </div>
             </Card>
           )}
@@ -352,7 +372,7 @@ export default function VisaoGeral() {
                 <h2 className="text-foreground text-lg font-semibold">
                   Visão geral
                 </h2>
-                <TrendingUp className="text-muted-foreground h-5 w-5" />
+                <Activity className="text-muted-foreground h-5 w-5" />
               </div>
               <p className="text-muted-foreground text-sm">
                 Utilize a navegação lateral para acessar os módulos permitidos
@@ -488,58 +508,6 @@ export default function VisaoGeral() {
               </Card>
             </div>
           )}
-
-          {jobs.length === 0 && candidates.length === 0 && !isLoading && (
-            <Card className="p-8">
-              <div className="flex flex-col items-center justify-center text-center">
-                <CheckCircle2 className="text-success mb-4 h-12 w-12" />
-                <h3 className="text-foreground text-lg font-semibold">
-                  Tudo pronto por aqui
-                </h3>
-                <p className="text-muted-foreground mt-2 max-w-md text-sm">
-                  Quando você publicar vagas e receber candidatos, os dados
-                  aparecerão aqui automaticamente. Use o menu lateral para
-                  começar.
-                </p>
-                <div className="mt-6 flex gap-3">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => navigate('/dashboard/vagas')}
-                  >
-                    Publicar vaga
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate('/dashboard/candidatos')}
-                  >
-                    Ver candidatos
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          )}
-
-          <Card className="p-6">
-            <h2 className="text-foreground mb-4 text-lg font-semibold">
-              Informações do Usuário
-            </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-muted-foreground text-sm">Roles</p>
-                <p className="text-foreground font-medium">
-                  {roleNames || 'Nenhuma'}
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground text-sm">Permissões</p>
-                <p className="text-foreground font-medium">
-                  {userPermissions.length} permissões
-                </p>
-              </div>
-            </div>
-          </Card>
         </>
       )}
     </div>

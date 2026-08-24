@@ -8,8 +8,6 @@ const EXIT_MS = 2000;
 
 const easing = [0.25, 0.4, 0.25, 1] as const;
 
-const SHOWCASE_KEY = 'js-showcase-dismissed';
-
 export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
   const shouldReduceMotion = useReducedMotion();
   const [phase, setPhase] = useState<'entering' | 'holding' | 'closing'>(
@@ -27,15 +25,7 @@ export function CinematicShowcase({ onFinish }: { onFinish: () => void }) {
   const finish = useCallback(() => {
     timers.current.forEach(clearTimeout);
     timers.current = [];
-    sessionStorage.setItem(SHOWCASE_KEY, '1');
     onFinish();
-  }, [onFinish]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && sessionStorage.getItem(SHOWCASE_KEY)) {
-      onFinish();
-      return;
-    }
   }, [onFinish]);
 
   useEffect(() => {
