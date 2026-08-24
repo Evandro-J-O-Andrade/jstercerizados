@@ -18,12 +18,14 @@ import {
   X,
   User,
   LogOut,
+  Shield,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { hasPermission } from '@/utils/rbac';
 import type { Permission } from '@/types/auth';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/contexts/AuthContext';
+import { COMPANY } from '@/config';
 
 interface NavItem {
   label: string;
@@ -202,7 +204,7 @@ export function DashboardSidebar({
     <>
       {isOpen && (
         <div
-          className="bg-background/80 fixed inset-0 z-40 lg:hidden"
+          className="bg-background/60 fixed inset-0 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -213,7 +215,12 @@ export function DashboardSidebar({
         )}
       >
         <div className="flex items-center justify-between border-b p-4 lg:hidden">
-          <span className="text-foreground font-semibold">Menu</span>
+          <div className="flex items-center gap-2">
+            <Shield className="text-primary h-6 w-6" />
+            <span className="text-foreground font-semibold">
+              {COMPANY.name}
+            </span>
+          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -236,7 +243,7 @@ export function DashboardSidebar({
                     {group.title}
                   </p>
                 )}
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   {group.items.map((item) => {
                     const isActive = item.exact
                       ? location.pathname === item.href
@@ -270,7 +277,7 @@ export function DashboardSidebar({
               <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
                 {displayName.charAt(0).toUpperCase()}
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-foreground truncate text-sm font-medium">
                   {displayName}
                 </p>
@@ -279,7 +286,7 @@ export function DashboardSidebar({
                 </p>
               </div>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <button
                 type="button"
                 onClick={() => {

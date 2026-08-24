@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Menu, Bell, ChevronDown, User, Shield } from 'lucide-react';
+import {
+  LogOut,
+  Menu,
+  Bell,
+  ChevronDown,
+  User,
+  Shield,
+  Search,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,6 +26,7 @@ export function DashboardHeader({
   const { person, roles, logout, isAdminMaster } = useAuth();
   const navigate = useNavigate();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -30,14 +39,18 @@ export function DashboardHeader({
   const firstName = displayName.split(' ')[0];
   const greeting = firstName === displayName ? displayName : `${firstName}`;
 
+  const contextLabel = isAdminMaster
+    ? 'Painel Administrativo'
+    : 'Área do Usuário';
+
   return (
     <header
       className={cn(
-        'bg-card border-border border-b px-4 py-3 lg:px-8',
+        'bg-background/80 border-border/60 sticky top-0 z-30 border-b backdrop-blur-xl',
         className,
       )}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-4 py-3 lg:px-8">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -49,16 +62,37 @@ export function DashboardHeader({
             <Menu className="h-5 w-5" />
           </Button>
           <div>
+            <div className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+              {contextLabel}
+            </div>
             <h1 className="text-foreground text-lg font-semibold">
-              {isAdminMaster ? 'Painel Administrativo' : 'Área do Usuário'}
-            </h1>
-            <p className="text-muted-foreground text-sm">
               {person?.full_name ? `Bem-vindo, ${greeting} 👋` : 'Bem-vindo 👋'}
-            </p>
+            </h1>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          <div
+            className={cn(
+              'hidden items-center gap-2 rounded-lg border px-3 py-1.5 transition-colors md:flex',
+              searchFocused
+                ? 'border-primary/50 bg-background'
+                : 'border-border bg-muted/50',
+            )}
+          >
+            <Search className="text-muted-foreground h-4 w-4" />
+            <input
+              type="text"
+              placeholder="Buscar..."
+              className="placeholder:text-muted-foreground bg-transparent text-sm outline-none"
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+            />
+            <kbd className="text-muted-foreground hidden text-xs lg:inline-block">
+              ⌘K
+            </kbd>
+          </div>
+
           <Button
             variant="ghost"
             size="sm"

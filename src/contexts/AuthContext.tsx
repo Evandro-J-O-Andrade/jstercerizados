@@ -70,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authError, setAuthError] = useState<string | null>(null);
   const initialSessionProcessedRef = useRef(false);
   const isMountedRef = useRef(true);
+  const authLoadInFlightRef = useRef(false);
 
   const loadAuthData = useCallback(async (authUserId: string) => {
     try {
@@ -270,8 +271,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (currentSession?.user) {
           console.log('[AUTH] initAuth loading identity');
-          initialSessionProcessedRef.current = true;
           await loadAuthData(currentSession.user.id);
+          initialSessionProcessedRef.current = true;
         }
       } catch (error) {
         console.error('Erro ao inicializar auth:', error);
@@ -310,14 +311,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (
         authEvent === 'SIGNED_IN' &&
         newSession?.user &&
-        !initialSessionProcessedRef.current
+        !initialSessionProcessedRef.current &&
+        !authLoadInFlightRef.current
       ) {
         console.log('[AUTH:HANDOFF] SIGNED_IN received', {
           authenticated: true,
           userId: newSession.user.id,
         });
+        authLoadInFlightRef.current = true;
         await loadAuthData(newSession.user.id);
         initialSessionProcessedRef.current = true;
+        authLoadInFlightRef.current = false;
         console.log('[AUTH:HANDOFF] post-login RBAC resolved');
       } else if (
         authEvent === 'SIGNED_OUT' ||
@@ -326,6 +330,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ) {
         console.log('[AUTH] onAuthStateChange clear state:', authEvent);
         initialSessionProcessedRef.current = false;
+        authLoadInFlightRef.current = false;
         if (isMountedRef.current) {
           setPerson(null);
           setTenantMemberships([]);
@@ -358,6 +363,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ): Promise<{ error?: string }> => {
     setAuthError(null);
     setIsLoading(true);
+    initialSessionProcessedRef.current = false;
+    authLoadInFlightRef.current = false;
 
     const supabase = getSupabaseClient();
     if (!supabase) {
@@ -390,12 +397,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data.user) {
-        console.log('[AUTH] signIn success');
+        console.log('[AUTH] signIn success — loading identity');
+        authLoadInFlightRef.current = true;
+        await loadAuthData(data.user.id);
+        initialSessionProcessedRef.current = true;
+        authLoadInFlightRef.current = false;
+        console.log('[AUTH] signIn identity loaded');
       }
 
       return {};
     } catch (error) {
       console.error('[AUTH] signIn exception:', error);
+      authLoadInFlightRef.current = false;
       return {
         error: normalizeError(error).userMessage,
       };

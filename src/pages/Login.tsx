@@ -42,6 +42,12 @@ export default function Login() {
   } = useAuth();
   const navigate = useNavigate();
 
+  console.log('[AUTH:HANDOFF] Login render', {
+    isAuthenticated,
+    hasPerson: !!person,
+    loginStatus,
+  });
+
   const {
     register,
     handleSubmit,
@@ -51,6 +57,11 @@ export default function Login() {
   });
 
   useEffect(() => {
+    console.log('[AUTH:HANDOFF] login effect', {
+      isAuthenticated,
+      hasPerson: !!person,
+      loginStatus,
+    });
     if (isAuthenticated && person) {
       const target = resolvePostLoginDestination();
       console.log('[AUTH:HANDOFF] login redirect', {
@@ -60,7 +71,13 @@ export default function Login() {
       });
       navigate(target, { replace: true });
     }
-  }, [isAuthenticated, person, navigate, resolvePostLoginDestination]);
+  }, [
+    isAuthenticated,
+    person,
+    navigate,
+    resolvePostLoginDestination,
+    loginStatus,
+  ]);
 
   const onSubmit = async (data: LoginFormData): Promise<void> => {
     setError('');
