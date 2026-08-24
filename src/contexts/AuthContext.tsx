@@ -666,16 +666,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  console.log('[AUTH:TRACE] AuthProvider render', {
-    user: !!user,
-    session: !!session,
-    person: !!person,
-    isAuthenticated: !!user && !!session,
-    mounted: isMountedRef.current,
-    initialProcessed: initialSessionProcessedRef.current,
-    loadInFlight: authLoadInFlightRef.current,
-  });
-
   return (
     <AuthContext.Provider
       value={{

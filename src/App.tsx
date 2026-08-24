@@ -237,7 +237,7 @@ function App() {
             path="*"
             element={
               <PublicLayout>
-                <Suspense fallback={<PageLoader />}>
+                <Suspense fallback={null}>
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/vagas" element={<Vagas />} />

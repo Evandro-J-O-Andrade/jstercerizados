@@ -18,8 +18,6 @@ export function DashboardShell({ breadcrumbItems = [] }: DashboardShellProps) {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         onNavigate={() => setSidebarOpen(false)}
-        userPermissions={permissions}
-        isAdminMaster={isAdminMaster}
       />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">

@@ -1,4 +1,4 @@
-import { Outlet, type ReactNode } from 'react-router-dom';
+import { type ReactNode } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { BottomNavigation } from '@/components/layout/BottomNavigation';
