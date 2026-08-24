@@ -86,3 +86,43 @@ export function usePublicJobs(filters?: {
     refetch: () => jobsRepository.findPublished(filters),
   };
 }
+
+export function usePublicJob(slug?: string) {
+  const [item, setItem] = useState<Job | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!slug) return;
+    let cancelled = false;
+    setIsLoading(true);
+    setError(null);
+
+    jobsRepository
+      .findPublishedBySlug(slug)
+      .then((data) => {
+        if (!cancelled) setItem(data);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : 'Erro ao carregar vaga',
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  return {
+    job: item,
+    isLoading,
+    error,
+    refetch: () => slug && jobsRepository.findPublishedBySlug(slug),
+  };
+}

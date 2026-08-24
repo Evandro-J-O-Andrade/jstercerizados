@@ -69,6 +69,18 @@ export class JobsRepository extends SupabaseRepository {
     return data || null;
   }
 
+  async findPublishedBySlug(slug: string): Promise<Job | null> {
+    if (!this.supabase) return null;
+    const { data, error } = await this.supabase
+      .from('jobs')
+      .select('*')
+      .eq('slug', slug)
+      .eq('status', 'published')
+      .maybeSingle();
+    if (error) throw error;
+    return data || null;
+  }
+
   async create(input: JobCreateInput): Promise<Job> {
     if (!this.supabase) throw new Error('Supabase não configurado');
     const { data, error } = await this.supabase
