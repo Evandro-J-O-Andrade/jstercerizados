@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { Breadcrumb } from '@/components/dashboard/Breadcrumb';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface DashboardShellProps {
   breadcrumbItems?: { label: string; href?: string }[];
@@ -10,7 +9,6 @@ interface DashboardShellProps {
 
 export function DashboardShell({ breadcrumbItems = [] }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { permissions, isAdminMaster } = useAuth();
 
   return (
     <div className="bg-muted/30 flex h-screen w-full overflow-hidden">
