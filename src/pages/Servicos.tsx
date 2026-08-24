@@ -55,6 +55,7 @@ export default function Servicos() {
             </motion.p>
           </motion.div>
 
+          {/* Soluções em RH */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -88,6 +89,7 @@ export default function Servicos() {
             </motion.div>
           </motion.div>
 
+          {/* Soluções Operacionais (Facilities) */}
           <motion.div
             initial="hidden"
             whileInView="visible"

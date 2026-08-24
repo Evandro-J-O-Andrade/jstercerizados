@@ -6,8 +6,9 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
-import { useCompanies } from '@/hooks/useCompanies';
-import { useAuth } from '@/contexts/AuthContext';
+import { CLIENTS_LIST } from '@/mock/clients';
+import { PARTNERS_LOGOS } from '@/mock/partners';
+import { ClientCard } from '@/components/sections/ClientCard';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import {
@@ -19,15 +20,9 @@ import {
   Shield,
   Briefcase,
   Handshake,
-  Inbox,
 } from 'lucide-react';
 
 export default function Empresas() {
-  const { currentTenantId } = useAuth();
-  const { companies, isLoading, error } = useCompanies(currentTenantId, {
-    status: 'active',
-  });
-
   return (
     <div className="min-h-screen">
       <SEO
@@ -47,6 +42,7 @@ export default function Empresas() {
       />
       <Section className="pt-20 md:pt-28">
         <Container>
+          {/* Hero */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -72,6 +68,7 @@ export default function Empresas() {
             </p>
           </motion.div>
 
+          {/* CTA principal */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -101,12 +98,7 @@ export default function Empresas() {
             </motion.a>
           </motion.div>
 
-          {error && (
-            <div className="border-destructive/50 bg-destructive/5 mt-8 rounded-xl border p-4 text-center text-sm text-red-600">
-              {error}
-            </div>
-          )}
-
+          {/* Benefícios */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -152,6 +144,7 @@ export default function Empresas() {
             ))}
           </motion.div>
 
+          {/* Clientes que confiam na J&S */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -173,72 +166,78 @@ export default function Empresas() {
               de Recursos Humanos, mão de obra e serviços especializados.
             </motion.p>
 
-            {isLoading && companies.length === 0 ? (
-              <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="bg-muted/50 border-border/50 rounded-2xl border p-4"
-                  >
-                    <div className="bg-muted mb-3 h-16 w-full animate-pulse rounded" />
-                    <div className="bg-muted h-4 w-2/3 animate-pulse rounded" />
-                  </div>
-                ))}
-              </div>
-            ) : companies.length > 0 ? (
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerReveal(0.1)}
-                className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
-              >
-                {companies.map((company) => (
-                  <motion.div
-                    key={company.id}
-                    variants={staggerItem('up')}
-                    className="bg-muted/50 border-border/50 group relative overflow-hidden rounded-2xl border"
-                  >
-                    <div className="relative aspect-[4/3] w-full overflow-hidden">
-                      {company.logo_url ? (
-                        <SafeImage
-                          src={company.logo_url}
-                          alt={company.trading_name || company.legal_name}
-                          className="h-full w-full object-cover grayscale-[40%] transition-all duration-300 group-hover:grayscale-0"
-                        />
-                      ) : (
-                        <div className="bg-muted flex h-full w-full items-center justify-center">
-                          <Building2 className="text-muted-foreground h-8 w-8" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-3 text-center">
-                      <span className="text-foreground text-xs font-semibold">
-                        {company.trading_name || company.legal_name}
-                      </span>
-                    </div>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerReveal(0.1)}
+              className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
+            >
+              {CLIENTS_LIST.filter((client) => client.name && client.logo).map(
+                (client, index) => (
+                  <motion.div key={client.id} variants={staggerItem('up')}>
+                    <ClientCard client={client} index={index} />
                   </motion.div>
-                ))}
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="border-border mt-10 flex flex-col items-center justify-center rounded-2xl border border-dashed p-12 text-center"
-              >
-                <Inbox className="text-muted-foreground mb-4 h-12 w-12" />
-                <h3 className="text-foreground text-lg font-semibold">
-                  Nenhuma empresa cadastrada
-                </h3>
-                <p className="text-muted-foreground mt-2 max-w-md text-sm">
-                  As empresas parceiras aparecerão aqui automaticamente após o
-                  cadastro.
-                </p>
-              </motion.div>
-            )}
+                ),
+              )}
+            </motion.div>
           </motion.div>
 
+          {/* Nossos parceiros */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mt-24"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-center text-3xl font-bold sm:text-4xl"
+            >
+              Nossos parceiros
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center text-lg"
+            >
+              Construímos uma rede de parceiros estratégicos para ampliar nossas
+              soluções e entregar mais eficiência aos nossos clientes.
+            </motion.p>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerReveal(0.1)}
+              className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-6"
+            >
+              {PARTNERS_LOGOS.map((partner) => (
+                <motion.div
+                  key={partner.name}
+                  variants={staggerItem('up')}
+                  whileHover={{ scale: 1.05 }}
+                  className="group bg-muted/50 border-border/50 relative overflow-hidden rounded-2xl border"
+                >
+                  <div className="relative aspect-[4/3] w-full overflow-hidden">
+                    <SafeImage
+                      src={partner.photo}
+                      fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%232a2a2a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='16'%3EEmpresa%3C/text%3E%3C/svg%3E"
+                      alt={partner.name}
+                      className="h-full w-full object-cover grayscale-[40%] transition-all duration-300 group-hover:grayscale-0"
+                    />
+                  </div>
+                  <div className="p-3 text-center">
+                    <span className="text-foreground text-xs font-semibold">
+                      {partner.name}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Fornecedores */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -277,6 +276,7 @@ export default function Empresas() {
             </motion.div>
           </motion.div>
 
+          {/* Sua empresa */}
           <motion.div
             initial="hidden"
             whileInView="visible"
