@@ -81,15 +81,38 @@ export default function Clientes() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-foreground text-lg font-semibold">
-                    {item.name}
+                    {item.legal_name}
                   </h3>
-                  <p className="text-muted-foreground mt-1">{item.slug}</p>
+                  {item.trading_name && (
+                    <p className="text-muted-foreground mt-1">
+                      {item.trading_name}
+                    </p>
+                  )}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {item.cnpj && (
+                      <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
+                        CNPJ: {item.cnpj}
+                      </span>
+                    )}
+                    {item.website && (
+                      <span className="bg-accent/10 text-accent rounded-full px-3 py-1 text-xs font-medium">
+                        {item.website}
+                      </span>
+                    )}
+                    {item.industry && (
+                      <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs font-medium">
+                        {item.industry}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <span
                   className={cn(
                     'rounded-full px-3 py-1 text-xs font-medium',
                     item.status === 'active' && 'bg-success/10 text-success',
                     item.status === 'inactive' && 'bg-warning/10 text-warning',
+                    item.status === 'suspended' &&
+                      'bg-destructive/10 text-destructive',
                     item.status === 'pending' &&
                       'bg-muted text-muted-foreground',
                   )}

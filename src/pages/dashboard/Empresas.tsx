@@ -81,23 +81,27 @@ export default function Empresas() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-foreground text-lg font-semibold">
-                    {company.name}
+                    {company.legal_name}
                   </h3>
-                  <p className="text-muted-foreground mt-1">{company.slug}</p>
+                  {company.trading_name && (
+                    <p className="text-muted-foreground mt-1">
+                      {company.trading_name}
+                    </p>
+                  )}
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {company.document && (
+                    {company.cnpj && (
                       <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
-                        {company.document}
+                        CNPJ: {company.cnpj}
                       </span>
                     )}
-                    {company.contact_email && (
+                    {company.website && (
                       <span className="bg-accent/10 text-accent rounded-full px-3 py-1 text-xs font-medium">
-                        {company.contact_email}
+                        {company.website}
                       </span>
                     )}
-                    {company.contact_phone && (
-                      <span className="bg-success/10 text-success rounded-full px-3 py-1 text-xs font-medium">
-                        {company.contact_phone}
+                    {company.industry && (
+                      <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs font-medium">
+                        {company.industry}
                       </span>
                     )}
                   </div>
@@ -108,6 +112,8 @@ export default function Empresas() {
                     company.status === 'active' && 'bg-success/10 text-success',
                     company.status === 'inactive' &&
                       'bg-warning/10 text-warning',
+                    company.status === 'suspended' &&
+                      'bg-destructive/10 text-destructive',
                     company.status === 'pending' &&
                       'bg-muted text-muted-foreground',
                   )}
