@@ -1,9 +1,10 @@
-import type { Database } from '@/types/database';
+﻿import type { Database } from '@/types/database';
 import type {
   Tenant,
   Company,
   Candidate,
   Job,
+  JobRow,
   Application,
   Lead,
   Service,
@@ -41,8 +42,51 @@ export function mapCandidate(
   };
 }
 
-export function mapJob(row: Database['public']['Tables']['jobs']['Row']): Job {
-  return { ...row };
+export function mapJob(row: JobRow): Job {
+  const contractType = row.contract_type || '';
+  const employmentType = contractType || null;
+
+  const city = row.city || '';
+  const state = row.state || '';
+  const locationDetail = row.location_detail || '';
+  const location =
+    [city, state].filter(Boolean).join(', ') || locationDetail || null;
+
+  let salary: string | null = null;
+  if (
+    row.salary_type === 'range' &&
+    row.salary_min != null &&
+    row.salary_max != null
+  ) {
+    salary = `${row.salary_min.toLocaleString('pt-BR')} – ${row.salary_max.toLocaleString('pt-BR')}`;
+  } else if (row.salary_type === 'monthly' && row.salary_min != null) {
+    salary = `${row.salary_min.toLocaleString('pt-BR')}/mês`;
+  } else {
+    salary = 'A combinar';
+  }
+
+  return {
+    id: row.id,
+    tenant_id: row.tenant_id,
+    company_id: row.company_relationship_id,
+    slug: row.slug,
+    title: row.title,
+    description: row.description,
+    responsibilities: row.responsibilities,
+    requirements: row.requirements,
+    benefits: row.benefits,
+    employment_type: employmentType,
+    location,
+    salary,
+    work_mode: row.work_mode as Job['work_mode'],
+    status: row.status,
+    published_at: row.published_at,
+    closed_at: row.expires_at,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    company: undefined,
+    applicationsCount: row.applications_count,
+  };
 }
 
 export function mapApplication(

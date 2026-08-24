@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/contexts/AuthContext';
 import { jobsRepository } from '@/repositories/jobs.repository';
@@ -109,12 +109,24 @@ export default function Vagas() {
                     'rounded-full px-3 py-1 text-xs font-medium',
                     job.status === 'published' && 'bg-success/10 text-success',
                     job.status === 'draft' && 'bg-warning/10 text-warning',
-                    job.status === 'closed' && 'bg-muted text-muted-foreground',
-                    job.status === 'cancelled' &&
+                    job.status === 'archived' &&
+                      'bg-muted text-muted-foreground',
+                    job.status === 'hired' && 'bg-primary/10 text-primary',
+                    job.status === 'expired' &&
                       'bg-destructive/10 text-destructive',
                   )}
                 >
-                  {job.status}
+                  {job.status === 'published'
+                    ? 'Publicada'
+                    : job.status === 'draft'
+                      ? 'Rascunho'
+                      : job.status === 'archived'
+                        ? 'Arquivada'
+                        : job.status === 'hired'
+                          ? 'Preenchida'
+                          : job.status === 'expired'
+                            ? 'Expirada'
+                            : job.status}
                 </span>
               </div>
             </Card>
