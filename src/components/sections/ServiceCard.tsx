@@ -2,7 +2,7 @@ import type { ComponentType } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import type { Service } from '@/types/domain/recruitment';
+import type { Service } from '@/types/common';
 import { SERVICE_ICONS } from '@/constants/icons';
 import { SafeImage } from '@/components/ui/SafeImage';
 
@@ -67,7 +67,7 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
           </div>
 
           <p className="text-muted-foreground mb-4 line-clamp-3 flex-1 text-sm">
-            {service.short_description || service.description}
+            {service.shortDescription || service.description}
           </p>
 
           {service.benefits && service.benefits.length > 0 && (
