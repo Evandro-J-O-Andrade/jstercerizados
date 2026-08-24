@@ -44,3 +44,45 @@ export function useJobs(
     refetch: () => jobsRepository.findAll(tenantId ?? '', filters),
   };
 }
+
+export function usePublicJobs(filters?: {
+  status?: JobStatus;
+  search?: string;
+}) {
+  const [items, setItems] = useState<Job[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoading(true);
+    setError(null);
+
+    jobsRepository
+      .findPublished(filters)
+      .then((data) => {
+        if (!cancelled) setItems(data);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : 'Erro ao carregar vagas',
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [filters?.status, filters?.search]);
+
+  return {
+    jobs: items,
+    isLoading,
+    error,
+    refetch: () => jobsRepository.findPublished(filters),
+  };
+}

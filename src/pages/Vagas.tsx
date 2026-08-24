@@ -8,8 +8,7 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
-import { useJobs } from '@/hooks/useJobs';
-import { useAuth } from '@/contexts/AuthContext';
+import { usePublicJobs } from '@/hooks/useJobs';
 import { COMPANY } from '@/config';
 import type { JobStatus } from '@/types/domain/job';
 
@@ -23,7 +22,6 @@ const CONTRATO_LABELS: Record<string, string> = {
 };
 
 export default function Vagas() {
-  const { currentTenantId } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [cidadeFilter, setCidadeFilter] = useState('');
   const [estadoFilter, setEstadoFilter] = useState('');
@@ -37,11 +35,7 @@ export default function Vagas() {
     return filters;
   }, [searchTerm]);
 
-  const {
-    jobs: vagas,
-    isLoading,
-    error,
-  } = useJobs(currentTenantId, searchFilter);
+  const { jobs: vagas, isLoading, error } = usePublicJobs(searchFilter);
 
   const filteredVagas = useMemo(() => {
     return vagas.filter((vaga) => {

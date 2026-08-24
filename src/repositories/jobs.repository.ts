@@ -27,6 +27,24 @@ export class JobsRepository extends SupabaseRepository {
     return data || [];
   }
 
+  async findPublished(filters?: {
+    status?: JobStatus;
+    search?: string;
+  }): Promise<Job[]> {
+    if (!this.supabase) return [];
+    let query = this.supabase
+      .from('jobs')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (filters?.status) query = query.eq('status', filters.status);
+    if (filters?.search) query = query.ilike('title', `%${filters.search}%`);
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  }
+
   async findById(id: string, tenantId: string): Promise<Job | null> {
     if (!this.supabase) return null;
     const { data, error } = await this.supabase
