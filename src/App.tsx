@@ -7,7 +7,6 @@ import { BottomNavigation } from '@/components/layout/BottomNavigation';
 import { AccessibilityWidget } from '@/components/ui/AccessibilityWidget';
 import { ChatWidget } from '@/components/ui/ChatWidget';
 import { HumanChatWidget } from '@/components/ui/HumanChatWidget';
-import { PageLoader } from '@/components/ui/PageLoader';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 import { useIntro } from '@/contexts/IntroContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -75,22 +74,19 @@ function App() {
     setIntroComplete(true);
   }, [setIntroComplete]);
 
-  if (!introComplete) {
-    return (
-      <AnimatePresence mode="wait">
-        <CinematicShowcase key="intro" onFinish={handleIntroFinish} />
-      </AnimatePresence>
-    );
-  }
-
   return (
     <ErrorBoundary>
       <ToastProvider>
+        {!introComplete && (
+          <AnimatePresence mode="wait">
+            <CinematicShowcase key="intro" onFinish={handleIntroFinish} />
+          </AnimatePresence>
+        )}
         <div className="flex min-h-dvh flex-col overflow-x-hidden">
           <ScrollToTop />
           <Navbar />
           <main className="flex-1 pt-16 pb-24 lg:pt-20 lg:pb-0">
-            <Suspense fallback={<PageLoader />}>
+            <Suspense fallback={null}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/vagas" element={<Vagas />} />
@@ -122,6 +118,11 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro" element={<Cadastro />} />
                 <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+                <Route
+                  path="/cadastro/candidato"
+                  element={<CadastroCandidato />}
+                />
+                <Route path="/cadastro/empresa" element={<CadastroEmpresa />} />
                 <Route
                   path="/dashboard/*"
                   element={
@@ -276,11 +277,6 @@ function App() {
                   <Route path="*" element={<DashboardRouteNotFound />} />
                 </Route>
                 <Route path="/onboarding" element={<Onboarding />} />
-                <Route
-                  path="/cadastro/candidato"
-                  element={<CadastroCandidato />}
-                />
-                <Route path="/cadastro/empresa" element={<CadastroEmpresa />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
