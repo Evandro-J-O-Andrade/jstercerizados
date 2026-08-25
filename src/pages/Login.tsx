@@ -42,12 +42,6 @@ export default function Login() {
   } = useAuth();
   const navigate = useNavigate();
 
-  console.log('[AUTH:HANDOFF] Login render', {
-    isAuthenticated,
-    hasPerson: !!person,
-    loginStatus,
-  });
-
   const {
     register,
     handleSubmit,
@@ -57,18 +51,8 @@ export default function Login() {
   });
 
   useEffect(() => {
-    console.log('[AUTH:HANDOFF] login effect', {
-      isAuthenticated,
-      hasPerson: !!person,
-      loginStatus,
-    });
     if (isAuthenticated && person) {
       const target = resolvePostLoginDestination();
-      console.log('[AUTH:HANDOFF] login redirect', {
-        authenticated: true,
-        hasPerson: !!person,
-        destination: target,
-      });
       navigate(target, { replace: true });
     }
   }, [
@@ -79,13 +63,26 @@ export default function Login() {
     loginStatus,
   ]);
 
+  const onInvalid = (formErrors: unknown) => {
+    console.error('[AUTH:FORM_INVALID]', formErrors);
+  };
+
   const onSubmit = async (data: LoginFormData): Promise<void> => {
+    console.log('[AUTH:SUBMIT] FORM VALID', {
+      email: data.email,
+      passwordLength: data.password.length,
+    });
+
     setError('');
     setIsSubmitting(true);
     setLoginStatus('authenticating');
 
     try {
+      console.log('[AUTH:SUBMIT] CALLING LOGIN');
+
       const result = await login(data.email, data.password);
+
+      console.log('[AUTH:SUBMIT] LOGIN RESULT', result);
 
       if (result.error) {
         setError(normalizeError(result.error).userMessage);
@@ -93,6 +90,10 @@ export default function Login() {
       } else {
         setLoginStatus('loading-profile');
       }
+    } catch (error) {
+      console.error('[AUTH:SUBMIT] UNEXPECTED ERROR', error);
+      setError(normalizeError(error).userMessage);
+      setLoginStatus('error');
     } finally {
       setIsSubmitting(false);
     }
@@ -271,7 +272,10 @@ export default function Login() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              <form
+                onSubmit={handleSubmit(onSubmit, onInvalid)}
+                className="space-y-5"
+              >
                 {error && (
                   <div className="bg-destructive/10 text-destructive rounded-xl p-4 text-sm">
                     {error}
