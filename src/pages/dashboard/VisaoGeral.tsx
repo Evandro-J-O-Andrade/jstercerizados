@@ -87,7 +87,7 @@ export default function VisaoGeral() {
 
   const subtitle = useMemo(() => {
     if (isAdminMaster) {
-      return 'VisÃ£o geral da plataforma.';
+      return 'Visão geral da plataforma.';
     }
     if (roleLabel) {
       const lower = roleLabel.toLowerCase();
@@ -98,10 +98,10 @@ export default function VisaoGeral() {
         return 'Confira suas oportunidades e candidaturas.';
       }
       if (lower.includes('empresa')) {
-        return 'Acompanhe suas vagas e processos de contrataÃ§Ã£o.';
+        return 'Acompanhe suas vagas e processos de contratação.';
       }
     }
-    return 'Aqui estÃ¡ o resumo da sua operaÃ§Ã£o.';
+    return 'Aqui está o resumo da sua operação.';
   }, [isAdminMaster, roleLabel]);
 
   const stats = useMemo<StatCard[]>(() => {
@@ -135,7 +135,7 @@ export default function VisaoGeral() {
         },
         {
           label: 'Processos',
-          value: 'â€”',
+          value: '—',
           icon: FileText,
           color: 'warning',
           href: '/dashboard/processos-seletivos',
@@ -342,9 +342,9 @@ export default function VisaoGeral() {
                   Tudo pronto por aqui
                 </h3>
                 <p className="text-muted-foreground mt-2 max-w-md text-sm">
-                  Quando vocÃª publicar vagas e receber candidatos, os dados
-                  aparecerÃ£o aqui automaticamente. Use o menu lateral para
-                  comeÃ§ar.
+                  Quando você publicar vagas e receber candidatos, os dados
+                  aparecerão aqui automaticamente. Use o menu lateral para
+                  começar.
                 </p>
                 <div className="mt-6 flex gap-3">
                   <Button
@@ -370,20 +370,20 @@ export default function VisaoGeral() {
             <Card className="p-6 lg:col-span-2">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-foreground text-lg font-semibold">
-                  VisÃ£o geral
+                  Visão geral
                 </h2>
                 <Activity className="text-muted-foreground h-5 w-5" />
               </div>
               <p className="text-muted-foreground text-sm">
-                Utilize a navegaÃ§Ã£o lateral para acessar os mÃ³dulos
-                permitidos pelo seu perfil. Os indicadores acima sÃ£o carregados
-                a partir dos dados reais da plataforma.
+                Utilize a navegação lateral para acessar os módulos permitidos
+                pelo seu perfil. Os indicadores acima são carregados a partir
+                dos dados reais da plataforma.
               </p>
             </Card>
 
             <Card className="p-6">
               <h2 className="text-foreground mb-4 text-lg font-semibold">
-                Acesso rÃ¡pido
+                Acesso rápido
               </h2>
               {quickActions.length > 0 ? (
                 <div className="space-y-2">
@@ -402,7 +402,7 @@ export default function VisaoGeral() {
                 </div>
               ) : (
                 <p className="text-muted-foreground text-sm">
-                  Nenhuma aÃ§Ã£o rÃ¡pida disponÃ­vel para este perfil.
+                  Nenhuma ação rápida disponível para este perfil.
                 </p>
               )}
             </Card>
