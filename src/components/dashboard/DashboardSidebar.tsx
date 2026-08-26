@@ -192,7 +192,7 @@ export function DashboardSidebar({
   const navigate = useNavigate();
   const { person, roles, logout, permissions, isAdminMaster } = useAuth();
 
-  const roleLabel = roles[0]?.display_name || roles[0]?.name || 'Usuário';
+  const roleLabel = roles[0]?.name || roles[0]?.name || 'Usuário';
   const displayName = person?.full_name?.trim() || 'Usuário';
 
   const filteredGroups = dashboardNavGroups

@@ -296,6 +296,7 @@ export default function Login() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     error={errors.password?.message}
+                    autoComplete="current-password"
                     {...register('password')}
                   />
                   <button

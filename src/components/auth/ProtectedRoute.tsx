@@ -20,12 +20,7 @@ function hasRole(roles: Role[], roleName: string): boolean {
   return roles.some((r) => r.name === roleName);
 }
 
-function hasPermission(
-  permissions: { name: string }[],
-  permissionName: string,
-): boolean {
-  return permissions.some((p) => p.name === permissionName);
-}
+import { hasPermission } from '@/utils/rbac';
 
 export function ProtectedRoute({
   children,
@@ -43,57 +38,10 @@ export function ProtectedRoute({
     roles,
     permissions,
     isAdminMaster,
+    firstLoginState,
     authError,
   } = useAuth();
   const location = useLocation();
-
-  const decision = (() => {
-    if (isLoading) return 'loading';
-    if (authError) return 'auth_error';
-    if (!isAuthenticated || !person) return 'redirect_login';
-    if (requireAdminMaster && !isAdminMaster)
-      return 'redirect_dashboard_admin_required';
-    if (requireTenantAccess && tenantMemberships.length === 0)
-      return 'redirect_onboarding';
-    if (allowedRoles && allowedRoles.length > 0) {
-      const hasAllowedRole = allowedRoles.some((role) => hasRole(roles, role));
-      if (!hasAllowedRole)
-        return `redirect_dashboard_role_denied:${isAdminMaster ? '/admin' : '/dashboard'}`;
-    }
-    if (allowedPermissions && allowedPermissions.length > 0) {
-      const hasAllowedPermission = allowedPermissions.some((perm) =>
-        hasPermission(permissions, perm),
-      );
-      if (!hasAllowedPermission)
-        return `redirect_dashboard_permission_denied:${isAdminMaster ? '/admin' : '/dashboard'}`;
-    }
-    if (requireAnyRole && roles.length === 0)
-      return 'redirect_dashboard_any_role_required';
-    return 'allow';
-  })();
-
-  console.log('[AUTH:HANDOFF] ProtectedRoute decision', {
-    isLoading,
-    authenticated: isAuthenticated,
-    hasPerson: !!person,
-    membershipCount: tenantMemberships.length,
-    roleCount: roles.length,
-    permissionCount: permissions.length,
-    isAdminMaster,
-    decision,
-  });
-
-  console.log('[AUTH:HANDOFF] ProtectedRoute', {
-    pathname: location.pathname,
-    isAuthenticated,
-    isLoading,
-    person: !!person,
-    membershipCount: tenantMemberships.length,
-    roleCount: roles.length,
-    permissionCount: permissions.length,
-    isAdminMaster,
-    decision,
-  });
 
   if (isLoading) {
     return <PageLoader />;
@@ -134,6 +82,18 @@ export function ProtectedRoute({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  if (firstLoginState && !firstLoginState.first_login_completed) {
+    const hasTerms =
+      firstLoginState.terms_version && firstLoginState.privacy_version;
+    if (!hasTerms) {
+      return <Navigate to="/primeiro-acesso/termos" replace />;
+    }
+  }
+
+  if (firstLoginState?.must_change_password) {
+    return <Navigate to="/primeiro-acesso/senha" replace />;
+  }
+
   if (requireAdminMaster && !isAdminMaster) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -145,7 +105,7 @@ export function ProtectedRoute({
   if (allowedRoles && allowedRoles.length > 0) {
     const hasAllowedRole = allowedRoles.some((role) => hasRole(roles, role));
     if (!hasAllowedRole) {
-      const fallback = isAdminMaster ? '/admin' : '/dashboard';
+      const fallback = '/dashboard';
       return <Navigate to={fallback} replace />;
     }
   }
@@ -155,7 +115,7 @@ export function ProtectedRoute({
       hasPermission(permissions, perm),
     );
     if (!hasAllowedPermission) {
-      const fallback = isAdminMaster ? '/admin' : '/dashboard';
+      const fallback = '/dashboard';
       return <Navigate to={fallback} replace />;
     }
   }

@@ -1,18 +1,44 @@
-import { Suspense, lazy, useState, useCallback } from 'react';
+import React, { Suspense, lazy, useCallback, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { AccessibilityWidget } from '@/components/ui/AccessibilityWidget';
-import { ChatWidget } from '@/components/ui/ChatWidget';
-import { HumanChatWidget } from '@/components/ui/HumanChatWidget';
 import { useIntro } from '@/contexts/IntroContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { FirstAccessRoute } from '@/components/auth/FirstAccessRoute';
 import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ToastProvider } from '@/components/feedback';
 import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 import { PublicLayout } from '@/components/layout/PublicLayout';
 import { AppShell } from '@/components/layout/AppShell';
+import { AccessibilityWidget } from '@/components/ui/AccessibilityWidget';
+import { ChatWidget } from '@/components/ui/ChatWidget';
+import { HumanChatWidget } from '@/components/ui/HumanChatWidget';
 import NotFound from '@/pages/NotFound';
+import DashboardHome from '@/pages/dashboard/DashboardHome';
+import TenantsPage from '@/pages/dashboard/TenantsPage';
+import ClientesPage from '@/pages/dashboard/ClientesPage';
+import OnboardingPage from '@/pages/dashboard/OnboardingPage';
+import AssinaturasPage from '@/pages/dashboard/AssinaturasPage';
+import GestaoSaaSPage from '@/pages/dashboard/GestaoSaaSPage';
+import CatalogoPage from '@/pages/dashboard/CatalogoPage';
+import DocumentosPage from '@/pages/dashboard/DocumentosPage';
+import ContratosPage from '@/pages/dashboard/ContratosPage';
+import TermosPage from '@/pages/dashboard/TermosPage';
+import LgpdPage from '@/pages/dashboard/LgpdPage';
+import SegurancaPage from '@/pages/dashboard/SegurancaPage';
+import MonitoramentoPage from '@/pages/dashboard/MonitoramentoPage';
+import IntegracoesPage from '@/pages/dashboard/IntegracoesPage';
+import FiscalPage from '@/pages/dashboard/FiscalPage';
+import ContabilidadePage from '@/pages/dashboard/ContabilidadePage';
+import AuditoriaPage from '@/pages/dashboard/AuditoriaPage';
+import RhPage from '@/pages/dashboard/RhPage';
+import IaPage from '@/pages/dashboard/IaPage';
+import GestaoPage from '@/pages/dashboard/GestaoPage';
+import {
+  MODULE_PAGE_MAP,
+  MODULE_PERMISSION_MAP,
+  PORTAL_MODULES,
+} from '@/components/portal/ModuleRegistry';
 
 const Home = lazy(() => import('@/pages/Home'));
 const Sobre = lazy(() => import('@/pages/Sobre'));
@@ -40,12 +66,15 @@ const CadastroCandidato = lazy(() => import('@/pages/CadastroCandidato'));
 const CadastroEmpresa = lazy(() => import('@/pages/CadastroEmpresa'));
 const RecuperarSenha = lazy(() => import('@/pages/RecuperarSenha'));
 const Onboarding = lazy(() => import('@/pages/Onboarding'));
+const PrimeiroAcessoTermos = lazy(
+  () => import('@/pages/primeiro-acesso/Termos'),
+);
+const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
 import { DashboardRouteNotFound } from '@/components/dashboard/DashboardRouter';
 import VisaoGeralPage from '@/pages/dashboard/VisaoGeral';
 import VagasPage from '@/pages/dashboard/Vagas';
 import CandidatosPage from '@/pages/dashboard/Candidatos';
 import EmpresasPage from '@/pages/dashboard/Empresas';
-import ClientesPage from '@/pages/dashboard/Clientes';
 import ParceirosPage from '@/pages/dashboard/Parceiros';
 import FornecedoresPage from '@/pages/dashboard/Fornecedores';
 import UsuariosPage from '@/pages/dashboard/Usuarios';
@@ -56,12 +85,53 @@ import EstoquePage from '@/pages/dashboard/Estoque';
 import SuportePage from '@/pages/dashboard/Suporte';
 import RelatoriosPage from '@/pages/dashboard/Relatorios';
 import ConfiguracoesPage from '@/pages/dashboard/Configuracoes';
+import RbacAuditPage from '@/pages/dashboard/RbacAuditPage';
+import RolesPermissoesPage from '@/pages/dashboard/RolesPermissoesPage';
+
+const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
+  DashboardHome,
+  TenantsPage,
+  ClientesPage,
+  OnboardingPage,
+  AssinaturasPage,
+  GestaoSaaSPage,
+  CatalogoPage,
+  DocumentosPage,
+  ContratosPage,
+  TermosPage,
+  LgpdPage,
+  SegurancaPage,
+  MonitoramentoPage,
+  IntegracoesPage,
+  FiscalPage,
+  ContabilidadePage,
+  AuditoriaPage,
+  RhPage,
+  IaPage,
+  GestaoPage,
+  RbacAuditPage,
+  RolesPermissoesPage,
+  VisaoGeralPage,
+  VagasPage,
+  CandidatosPage,
+  EmpresasPage,
+  ParceirosPage,
+  FornecedoresPage,
+  UsuariosPage,
+  ProcessosSeletivosPage,
+  ServicosPage,
+  FinanceiroPage,
+  EstoquePage,
+  SuportePage,
+  RelatoriosPage,
+  ConfiguracoesPage,
+};
 
 function App() {
+  const { introComplete, setIntroComplete } = useIntro();
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [isHumanChatOpen, setIsHumanChatOpen] = useState(false);
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
-  const { introComplete, setIntroComplete } = useIntro();
 
   const handleIntroFinish = useCallback(() => {
     setIntroComplete(true);
@@ -74,6 +144,51 @@ function App() {
       </AnimatePresence>
     );
   }
+
+  const platformModules = PORTAL_MODULES.filter(
+    (module) => module.scope === 'platform',
+  );
+  const tenantModules = PORTAL_MODULES.filter(
+    (module) => module.scope === 'tenant',
+  );
+
+  const dashboardRoutes = [
+    { path: '', element: <DashboardHome />, exact: true },
+    ...platformModules
+      .filter(
+        (module) =>
+          MODULE_PAGE_MAP[module.id] && MODULE_PERMISSION_MAP[module.id],
+      )
+      .map((module) => ({
+        path: module.route.replace('/dashboard/', ''),
+        element: (
+          <PermissionGuard permission={MODULE_PERMISSION_MAP[module.id]}>
+            {PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]] ? (
+              React.createElement(PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]])
+            ) : (
+              <DashboardRouteNotFound />
+            )}
+          </PermissionGuard>
+        ),
+      })),
+    ...tenantModules
+      .filter(
+        (module) =>
+          MODULE_PAGE_MAP[module.id] && MODULE_PERMISSION_MAP[module.id],
+      )
+      .map((module) => ({
+        path: module.route.replace('/dashboard/', ''),
+        element: (
+          <PermissionGuard permission={MODULE_PERMISSION_MAP[module.id]}>
+            {PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]] ? (
+              React.createElement(PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]])
+            ) : (
+              <DashboardRouteNotFound />
+            )}
+          </PermissionGuard>
+        ),
+      })),
+  ];
 
   return (
     <ErrorBoundary>
@@ -106,133 +221,40 @@ function App() {
               </ProtectedRoute>
             }
           >
+            {dashboardRoutes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={route.element}
+              />
+            ))}
             <Route
-              path="visao-geral"
+              path="rbac-auditoria"
               element={
-                <PermissionGuard permission="dashboard.read">
-                  <VisaoGeralPage />
+                <PermissionGuard permission="audit.read">
+                  <RbacAuditPage />
                 </PermissionGuard>
               }
             />
-            <Route
-              path="vagas"
-              element={
-                <PermissionGuard permission="jobs.read">
-                  <VagasPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="candidatos"
-              element={
-                <PermissionGuard permission="candidates.read">
-                  <CandidatosPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="empresas"
-              element={
-                <PermissionGuard permission="companies.read">
-                  <EmpresasPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="clientes"
-              element={
-                <PermissionGuard permission="companies.read">
-                  <ClientesPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="parceiros"
-              element={
-                <PermissionGuard permission="companies.read">
-                  <ParceirosPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="fornecedores"
-              element={
-                <PermissionGuard permission="companies.read">
-                  <FornecedoresPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="usuarios"
-              element={
-                <PermissionGuard permission="people.read">
-                  <UsuariosPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="processos-seletivos"
-              element={
-                <PermissionGuard permission="recruitment.read">
-                  <ProcessosSeletivosPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="servicos"
-              element={
-                <PermissionGuard permission="service_orders.read">
-                  <ServicosPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="financeiro"
-              element={
-                <PermissionGuard permission="purchase_orders.read">
-                  <FinanceiroPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="estoque"
-              element={
-                <PermissionGuard permission="stock_movements.read">
-                  <EstoquePage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="suporte"
-              element={
-                <PermissionGuard permission="support_tickets.read">
-                  <SuportePage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="relatorios"
-              element={
-                <PermissionGuard permission="reports.read">
-                  <RelatoriosPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="configuracoes"
-              element={
-                <PermissionGuard
-                  permissions={['tenants.read', 'roles.read']}
-                  mode="any"
-                >
-                  <ConfiguracoesPage />
-                </PermissionGuard>
-              }
-            />
-            <Route index element={<VisaoGeralPage />} />
             <Route path="*" element={<DashboardRouteNotFound />} />
           </Route>
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route
+            path="/primeiro-acesso/termos"
+            element={
+              <FirstAccessRoute>
+                <PrimeiroAcessoTermos />
+              </FirstAccessRoute>
+            }
+          />
+          <Route
+            path="/primeiro-acesso/senha"
+            element={
+              <FirstAccessRoute>
+                <PrimeiroAcessoSenha />
+              </FirstAccessRoute>
+            }
+          />
           <Route
             path="*"
             element={

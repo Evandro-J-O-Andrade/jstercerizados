@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Users,
   Briefcase,
@@ -83,11 +83,11 @@ export default function VisaoGeral() {
   const greeting = firstName || displayName || null;
 
   const primaryRole = roles[0];
-  const roleLabel = primaryRole?.display_name || primaryRole?.name || null;
+  const roleLabel = primaryRole?.name || primaryRole?.name || null;
 
   const subtitle = useMemo(() => {
     if (isAdminMaster) {
-      return 'Visão geral da plataforma.';
+      return 'Vis�o geral da plataforma.';
     }
     if (roleLabel) {
       const lower = roleLabel.toLowerCase();
@@ -98,10 +98,10 @@ export default function VisaoGeral() {
         return 'Confira suas oportunidades e candidaturas.';
       }
       if (lower.includes('empresa')) {
-        return 'Acompanhe suas vagas e processos de contratação.';
+        return 'Acompanhe suas vagas e processos de contrata��o.';
       }
     }
-    return 'Aqui está o resumo da sua operação.';
+    return 'Aqui est� o resumo da sua opera��o.';
   }, [isAdminMaster, roleLabel]);
 
   const stats = useMemo<StatCard[]>(() => {
@@ -135,7 +135,7 @@ export default function VisaoGeral() {
         },
         {
           label: 'Processos',
-          value: '—',
+          value: '�',
           icon: FileText,
           color: 'warning',
           href: '/dashboard/processos-seletivos',
@@ -342,9 +342,9 @@ export default function VisaoGeral() {
                   Tudo pronto por aqui
                 </h3>
                 <p className="text-muted-foreground mt-2 max-w-md text-sm">
-                  Quando você publicar vagas e receber candidatos, os dados
-                  aparecerão aqui automaticamente. Use o menu lateral para
-                  começar.
+                  Quando voc� publicar vagas e receber candidatos, os dados
+                  aparecer�o aqui automaticamente. Use o menu lateral para
+                  come�ar.
                 </p>
                 <div className="mt-6 flex gap-3">
                   <Button
@@ -370,20 +370,20 @@ export default function VisaoGeral() {
             <Card className="p-6 lg:col-span-2">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-foreground text-lg font-semibold">
-                  Visão geral
+                  Vis�o geral
                 </h2>
                 <Activity className="text-muted-foreground h-5 w-5" />
               </div>
               <p className="text-muted-foreground text-sm">
-                Utilize a navegação lateral para acessar os módulos permitidos
-                pelo seu perfil. Os indicadores acima são carregados a partir
+                Utilize a navega��o lateral para acessar os m�dulos permitidos
+                pelo seu perfil. Os indicadores acima s�o carregados a partir
                 dos dados reais da plataforma.
               </p>
             </Card>
 
             <Card className="p-6">
               <h2 className="text-foreground mb-4 text-lg font-semibold">
-                Acesso rápido
+                Acesso r�pido
               </h2>
               {quickActions.length > 0 ? (
                 <div className="space-y-2">
@@ -402,7 +402,7 @@ export default function VisaoGeral() {
                 </div>
               ) : (
                 <p className="text-muted-foreground text-sm">
-                  Nenhuma ação rápida disponível para este perfil.
+                  Nenhuma a��o r�pida dispon�vel para este perfil.
                 </p>
               )}
             </Card>
@@ -434,7 +434,7 @@ export default function VisaoGeral() {
                           {job.title}
                         </p>
                         <p className="text-muted-foreground mt-0.5 text-xs">
-                          {job.location || 'Sem localização'}
+                          {job.location || 'Sem localiza��o'}
                         </p>
                       </div>
                       <span

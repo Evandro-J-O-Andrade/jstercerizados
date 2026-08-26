@@ -15,7 +15,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "prepare": "husky",
-    "provision:admin": "tsx scripts/provision-admin.ts"
+    "provision:admin": "tsx scripts/provision-admin.ts",
+    "provision:client": "tsx scripts/seed-client-users.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

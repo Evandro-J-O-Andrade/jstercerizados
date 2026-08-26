@@ -10,12 +10,15 @@ import {
 import { getSupabaseClient } from '@/lib/supabase';
 import type { User, Session } from '@supabase/supabase-js';
 import { normalizeError } from '@/lib/error-normalizer';
+import { normalizePermissions } from '@/utils/rbac-normalize';
 import type {
   Person,
   TenantMembership,
   Role,
   Permission,
   RoleAssignment,
+  FirstLoginState,
+  LegalAcceptance,
 } from '@/types/auth';
 
 interface AuthContextType {
@@ -24,9 +27,12 @@ interface AuthContextType {
   tenantMemberships: TenantMembership[];
   currentTenantId: string | null;
   tenantIds: string[];
+  tenants: { id: string; name: string }[];
   roles: Role[];
   permissions: Permission[];
   roleAssignments: RoleAssignment[];
+  firstLoginState: FirstLoginState | null;
+  legalAcceptances: LegalAcceptance[];
   isAdminMaster: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -45,9 +51,19 @@ interface AuthContextType {
   ) => Promise<{ error?: string }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
   updateProfile: (data: Partial<Person>) => Promise<{ error?: string }>;
+  changePassword: (
+    currentPassword: string,
+    newPassword: string,
+  ) => Promise<{ error?: string }>;
+  acceptTerms: (
+    documentType: string,
+    documentVersion: string,
+    metadata?: Record<string, unknown>,
+  ) => Promise<{ error?: string }>;
   hasPermission: (permissionKey: string) => boolean;
   hasAnyPermission: (permissionKeys: string[]) => boolean;
   hasAllPermissions: (permissionKeys: string[]) => boolean;
+  switchTenant: (tenantId: string | null) => Promise<void>;
   resolvePostLoginDestination: () => string;
   authError: string | null;
 }
@@ -61,9 +77,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     TenantMembership[]
   >([]);
   const [currentTenantId, setCurrentTenantId] = useState<string | null>(null);
+  const [tenants, setTenants] = useState<{ id: string; name: string }[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [roleAssignments, setRoleAssignments] = useState<RoleAssignment[]>([]);
+  const [firstLoginState, setFirstLoginState] =
+    useState<FirstLoginState | null>(null);
+  const [legalAcceptances, setLegalAcceptances] = useState<LegalAcceptance[]>(
+    [],
+  );
   const [isAdminMaster, setIsAdminMaster] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
@@ -98,9 +120,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setPerson(null);
           setTenantMemberships([]);
           setCurrentTenantId(null);
+          setTenants([]);
           setRoles([]);
           setPermissions([]);
           setRoleAssignments([]);
+          setFirstLoginState(null);
+          setLegalAcceptances([]);
           setIsAdminMaster(false);
         }
         return;
@@ -118,6 +143,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .filter((id): id is string => Boolean(id));
 
       const primaryTenantId = tenantIds[0] || null;
+
+      let tenantsData: { id: string; name: string }[] = [];
+      if (tenantIds.length > 0) {
+        const { data: tenantsResult } = await supabase
+          .from('tenants')
+          .select('id, name')
+          .in('id', tenantIds);
+        tenantsData = (tenantsResult || []) as { id: string; name: string }[];
+      }
 
       const { data: roleAssignmentData } = await supabase
         .from('role_assignments')
@@ -138,11 +172,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .in('id', roleIds);
 
       const adminMaster = (rolesData || []).some(
-        (r: Role) => r.scope === 'system' && r.name === 'admin_master',
+        (r: Role) => r.scope === 'global' && r.name === 'admin_master',
       );
-      if (isMountedRef.current) {
-        setIsAdminMaster(adminMaster);
-      }
 
       let permissionsData: Permission[] = [];
       if (roleIds.length > 0) {
@@ -164,34 +195,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .from('permissions')
             .select('*')
             .in('id', permissionIds);
-          permissionsData = perms || [];
+
+          const normalizedPermissions = normalizePermissions(perms || []);
+
+          permissionsData = normalizedPermissions;
         }
       }
 
-      console.log('[AUTH:IDENTITY] data loaded', {
-        hasPerson: !!personData,
-        memberships: membershipData?.length ?? 0,
-        roles: rolesData?.length ?? 0,
-        permissions: permissionsData.length,
-      });
+      const { data: firstLoginData } = await supabase
+        .from('first_login_state')
+        .select('*')
+        .eq('person_id', personData.id)
+        .maybeSingle();
+
+      const { data: legalAcceptancesData } = await supabase
+        .from('legal_acceptances')
+        .select('*')
+        .eq('person_id', personData.id)
+        .order('accepted_at', { ascending: false });
 
       if (isMountedRef.current) {
         setPerson(personData as Person);
         setTenantMemberships((membershipData || []) as TenantMembership[]);
         setCurrentTenantId(primaryTenantId);
+        setTenants(tenantsData);
         setRoles((rolesData || []) as Role[]);
         setPermissions(permissionsData);
         setRoleAssignments((roleAssignmentData || []) as RoleAssignment[]);
+        setFirstLoginState((firstLoginData as FirstLoginState) || null);
+        setLegalAcceptances((legalAcceptancesData || []) as LegalAcceptance[]);
+        setIsAdminMaster(adminMaster);
       }
-
-      console.log('[AUTH:HANDOFF] loadAuthData complete', {
-        authenticated: true,
-        hasPerson: !!personData,
-        hasMembership: (membershipData?.length ?? 0) > 0,
-        roleCount: rolesData?.length ?? 0,
-        permissionCount: permissionsData.length,
-        isAdminMaster: adminMaster,
-      });
     } catch (error) {
       console.error('[AUTH:IDENTITY] loadAuthData failed', error);
       if (isMountedRef.current) {
@@ -201,6 +235,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRoles([]);
         setPermissions([]);
         setRoleAssignments([]);
+        setFirstLoginState(null);
+        setLegalAcceptances([]);
         setIsAdminMaster(false);
       }
     }
@@ -301,6 +337,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setRoles([]);
           setPermissions([]);
           setRoleAssignments([]);
+          setFirstLoginState(null);
+          setLegalAcceptances([]);
           setIsAdminMaster(false);
           setSession(null);
           setUser(null);
@@ -404,6 +442,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setRoles([]);
       setPermissions([]);
       setRoleAssignments([]);
+      setFirstLoginState(null);
+      setLegalAcceptances([]);
       setIsAdminMaster(false);
       setSession(null);
     } catch (error) {
@@ -411,30 +451,194 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const changePassword = async (
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<{ error?: string }> => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return {
+        error: normalizeError(
+          new Error(
+            'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+          ),
+        ).userMessage,
+      };
+    }
+
+    if (!user) {
+      return { error: 'Usuário não autenticado' };
+    }
+
+    try {
+      const { error: reauthError } = await supabase.auth.signInWithPassword({
+        email: user.email || '',
+        password: currentPassword,
+      });
+
+      if (reauthError) {
+        return { error: 'Senha atual incorreta' };
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateError) {
+        return { error: normalizeError(updateError).userMessage };
+      }
+
+      if (person && firstLoginState) {
+        const { error: stateError } = await supabase
+          .from('first_login_state')
+          .update({
+            must_change_password: false,
+            first_login_completed: true,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('person_id', person.id);
+
+        if (stateError) {
+          console.error(
+            '[AUTH] Failed to update first_login_state:',
+            stateError,
+          );
+        } else {
+          setFirstLoginState({
+            ...firstLoginState,
+            must_change_password: false,
+            first_login_completed: true,
+            updated_at: new Date().toISOString(),
+          });
+        }
+      }
+
+      return {};
+    } catch (error) {
+      return {
+        error: normalizeError(error).userMessage,
+      };
+    }
+  };
+
+  const acceptTerms = async (
+    documentType: string,
+    documentVersion: string,
+    metadata?: Record<string, unknown>,
+  ): Promise<{ error?: string }> => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return {
+        error: normalizeError(
+          new Error(
+            'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+          ),
+        ).userMessage,
+      };
+    }
+
+    if (!user || !person) {
+      return { error: 'Usuário não autenticado' };
+    }
+
+    try {
+      const acceptancePayload: Record<string, unknown> = {
+        person_id: person.id,
+        tenant_id: currentTenantId,
+        document_type: documentType,
+        document_version: documentVersion,
+        ip: null,
+        user_agent:
+          typeof navigator !== 'undefined' ? navigator.userAgent : null,
+        metadata: metadata || {},
+      };
+
+      const { data: acceptanceData, error: acceptanceError } = await supabase
+        .from('legal_acceptances')
+        .insert(acceptancePayload)
+        .select('*')
+        .single();
+
+      if (acceptanceError) {
+        return { error: normalizeError(acceptanceError).userMessage };
+      }
+
+      if (firstLoginState) {
+        const updatePayload: Record<string, unknown> = {
+          updated_at: new Date().toISOString(),
+        };
+
+        if (documentType === 'terms') {
+          updatePayload.terms_version = documentVersion;
+        } else if (documentType === 'privacy') {
+          updatePayload.privacy_version = documentVersion;
+        } else if (documentType === 'lgpd') {
+          updatePayload.lgpd_consent_version = documentVersion;
+        }
+
+        const { error: stateError } = await supabase
+          .from('first_login_state')
+          .update(updatePayload)
+          .eq('person_id', person.id);
+
+        if (stateError) {
+          console.error(
+            '[AUTH] Failed to update first_login_state:',
+            stateError,
+          );
+        } else {
+          setFirstLoginState({
+            ...firstLoginState,
+            ...updatePayload,
+          });
+        }
+      }
+
+      if (acceptanceData) {
+        setLegalAcceptances((prev) => [
+          acceptanceData as LegalAcceptance,
+          ...prev,
+        ]);
+      }
+
+      return {};
+    } catch (error) {
+      return {
+        error: normalizeError(error).userMessage,
+      };
+    }
+  };
+
   const hasPermission = useCallback(
     (permissionKey: string): boolean => {
-      if (isAdminMaster) return true;
       return permissions.some(
         (p) => `${p.resource}.${p.action}` === permissionKey,
       );
     },
-    [permissions, isAdminMaster],
+    [permissions],
   );
 
   const hasAnyPermission = useCallback(
     (permissionKeys: string[]): boolean => {
-      if (isAdminMaster) return true;
       return permissionKeys.some((key) => hasPermission(key));
     },
-    [hasPermission, isAdminMaster],
+    [hasPermission],
   );
 
   const hasAllPermissions = useCallback(
     (permissionKeys: string[]): boolean => {
-      if (isAdminMaster) return true;
       return permissionKeys.every((key) => hasPermission(key));
     },
-    [hasPermission, isAdminMaster],
+    [hasPermission],
+  );
+
+  const switchTenant = useCallback(
+    async (tenantId: string | null) => {
+      if (!user) return;
+      setCurrentTenantId(tenantId);
+      await loadAuthData(user.id);
+    },
+    [user, loadAuthData],
   );
 
   const resolvePostLoginDestination = useCallback((): string => {
@@ -445,6 +649,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (tenantMemberships.length === 0) {
         return '/onboarding';
+      }
+
+      if (firstLoginState && !firstLoginState.first_login_completed) {
+        const hasTerms =
+          firstLoginState.terms_version && firstLoginState.privacy_version;
+        if (!hasTerms) {
+          return '/primeiro-acesso/termos';
+        }
+      }
+
+      if (firstLoginState?.must_change_password) {
+        return '/primeiro-acesso/senha';
       }
 
       if (
@@ -483,12 +699,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     console.log('[AUTH:HANDOFF] resolvePostLoginDestination', {
       isAdminMaster,
       membershipCount: tenantMemberships.length,
+      mustChangePassword: firstLoginState?.must_change_password ?? null,
+      firstLoginCompleted: firstLoginState?.first_login_completed ?? null,
       permissionCount: permissions.length,
       destination: target,
     });
 
     return target;
-  }, [isAdminMaster, tenantMemberships, hasAnyPermission, permissions]);
+  }, [
+    isAdminMaster,
+    tenantMemberships,
+    firstLoginState,
+    hasAnyPermission,
+    permissions,
+  ]);
 
   const register = async (
     email: string,
@@ -683,9 +907,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         tenantIds: tenantMemberships
           .map((m) => m.tenant_id)
           .filter((id): id is string => Boolean(id)),
+        tenants,
         roles,
         permissions,
         roleAssignments,
+        firstLoginState,
+        legalAcceptances,
         isAdminMaster,
         isAuthenticated: !!user && !!session,
         isLoading,
@@ -694,9 +921,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         resetPassword,
         updateProfile,
+        changePassword,
+        acceptTerms,
         hasPermission,
         hasAnyPermission,
         hasAllPermissions,
+        switchTenant,
         resolvePostLoginDestination,
         authError,
       }}

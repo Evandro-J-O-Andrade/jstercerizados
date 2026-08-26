@@ -107,33 +107,24 @@ export interface Database {
         Row: {
           id: string;
           name: string;
-          display_name: string;
           description: string | null;
           scope: 'system' | 'tenant';
-          is_system: boolean;
-          tenant_id: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           name: string;
-          display_name: string;
           description?: string | null;
-          scope: 'system' | 'tenant';
-          is_system?: boolean;
-          tenant_id?: string | null;
+          scope?: 'system' | 'tenant';
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
           name?: string;
-          display_name?: string;
           description?: string | null;
           scope?: 'system' | 'tenant';
-          is_system?: boolean;
-          tenant_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -142,26 +133,26 @@ export interface Database {
         Row: {
           id: string;
           name: string;
-          resource: string;
-          action: string;
+          module: string;
           description: string | null;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
           name: string;
-          resource: string;
-          action: string;
+          module?: string;
           description?: string | null;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
           name?: string;
-          resource?: string;
-          action?: string;
+          module?: string;
           description?: string | null;
           created_at?: string;
+          updated_at?: string;
         };
       };
       role_assignments: {
@@ -1095,6 +1086,73 @@ export interface Database {
           updated_at?: string;
         };
       };
+      first_login_state: {
+        Row: {
+          person_id: string;
+          must_change_password: boolean;
+          terms_version: string | null;
+          privacy_version: string | null;
+          lgpd_consent_version: string | null;
+          first_login_completed: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          person_id: string;
+          must_change_password?: boolean;
+          terms_version?: string | null;
+          privacy_version?: string | null;
+          lgpd_consent_version?: string | null;
+          first_login_completed?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          person_id?: string;
+          must_change_password?: boolean;
+          terms_version?: string | null;
+          privacy_version?: string | null;
+          lgpd_consent_version?: string | null;
+          first_login_completed?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      legal_acceptances: {
+        Row: {
+          id: string;
+          person_id: string;
+          tenant_id: string;
+          document_type: string;
+          document_version: string;
+          accepted_at: string;
+          ip: string | null;
+          user_agent: string | null;
+          metadata: Record<string, unknown>;
+        };
+        Insert: {
+          id?: string;
+          person_id: string;
+          tenant_id: string;
+          document_type: string;
+          document_version: string;
+          accepted_at?: string;
+          ip?: string | null;
+          user_agent?: string | null;
+          metadata?: Record<string, unknown>;
+        };
+        Update: {
+          id?: string;
+          person_id?: string;
+          tenant_id?: string;
+          document_type?: string;
+          document_version?: string;
+          accepted_at?: string;
+          ip?: string | null;
+          user_agent?: string | null;
+          metadata?: Record<string, unknown>;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -1105,7 +1163,6 @@ export interface Database {
     Enums: {
       person_status: 'active' | 'inactive' | 'pending';
       tenant_status: 'active' | 'inactive' | 'pending';
-      role_scope: 'system' | 'tenant';
       company_status: 'active' | 'inactive' | 'pending';
       candidate_status: 'active' | 'inactive' | 'pending';
       job_status: 'draft' | 'published' | 'archived' | 'hired' | 'expired';

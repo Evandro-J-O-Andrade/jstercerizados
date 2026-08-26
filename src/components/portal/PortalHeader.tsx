@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   LogOut,
   Menu,
@@ -8,33 +9,35 @@ import {
   User,
   Shield,
   Search,
+  Globe,
   Sun,
   Moon,
-  Globe,
+  PanelLeftOpen,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
 import { useTheme } from '@/hooks/useTheme';
 import { COMPANY } from '@/config';
 import { cn } from '@/utils';
+import { normalizeRoleScope } from '@/utils/rbac-normalize';
 
-interface DashboardHeaderProps {
+interface PortalHeaderProps {
   onMenuClick: () => void;
+  moduleTitle?: string;
   className?: string;
 }
 
-export function DashboardHeader({
+export function PortalHeader({
   onMenuClick,
+  moduleTitle,
   className,
-}: DashboardHeaderProps) {
-  const { logout } = useAuth();
-  const { roles } = useAuth();
-  const { identity, availableMemberships, activeTenantId, switchAccount } =
+}: PortalHeaderProps) {
+  const { person, roles, logout } = useAuth();
+  const { activeTenantId, availableMemberships, switchAccount, activeRole } =
     useAccount();
-  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
@@ -44,12 +47,27 @@ export function DashboardHeader({
     navigate('/login');
   };
 
-  const handleSwitchAccount = (tenantId: string) => {
-    switchAccount(tenantId);
-    setSwitchOpen(false);
-    setUserMenuOpen(false);
-    navigate('/dashboard');
-  };
+  const primaryRole = roles[0];
+  const roleLabel = primaryRole?.name || primaryRole?.name || 'Usuário';
+  const displayName = person?.full_name?.trim() || 'Usuário';
+  const firstName = displayName.split(' ')[0];
+
+  const contextLabel = activeRole
+    ? normalizeRoleScope(activeRole.scope) === 'platform'
+      ? 'Painel Administrativo'
+      : 'Área do Usuário'
+    : 'Área do Usuário';
+
+  const currentMembership = availableMemberships.find(
+    (m) => m.tenant_id === activeTenantId,
+  );
+  const tenantLabel = currentMembership
+    ? 'Tenant selecionado'
+    : activeRole
+      ? normalizeRoleScope(activeRole.scope) === 'platform'
+        ? 'Plataforma'
+        : ''
+      : '';
 
   return (
     <header
@@ -70,10 +88,10 @@ export function DashboardHeader({
         </Button>
         <div className="hidden lg:block">
           <div className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
-            {identity.contextLabel}
+            {moduleTitle ? `${contextLabel} / ${moduleTitle}` : contextLabel}
           </div>
           <h1 className="text-foreground text-lg font-semibold">
-            {identity.greeting}, {identity.firstName}
+            {person?.full_name ? `Bom dia, ${firstName}` : 'Bem-vindo'}
           </h1>
         </div>
         <div className="lg:hidden">
@@ -84,6 +102,16 @@ export function DashboardHeader({
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/')}
+          className="hidden items-center gap-2 md:flex"
+        >
+          <Globe className="h-4 w-4" />
+          <span className="text-sm">Site público</span>
+        </Button>
+
         <div
           className={cn(
             'hidden items-center gap-2 rounded-lg border px-3 py-1.5 transition-colors md:flex',
@@ -109,7 +137,7 @@ export function DashboardHeader({
           variant="ghost"
           size="sm"
           aria-label="Notificações"
-          className="relative"
+          className="relative hidden sm:flex"
         >
           <Bell className="h-5 w-5" />
           <span className="bg-primary absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full" />
@@ -125,14 +153,14 @@ export function DashboardHeader({
             className="flex items-center gap-2"
           >
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold">
-              {identity.displayName.charAt(0).toUpperCase()}
+              {displayName.charAt(0).toUpperCase()}
             </div>
             <div className="hidden text-left sm:block">
               <p className="text-foreground text-sm leading-tight font-medium">
-                {identity.displayName}
+                {displayName}
               </p>
               <p className="text-muted-foreground text-xs leading-tight">
-                {identity.roleName}
+                {tenantLabel || roleLabel}
               </p>
             </div>
             <ChevronDown className="text-muted-foreground h-4 w-4" />
@@ -149,14 +177,9 @@ export function DashboardHeader({
               >
                 <div className="border-border/60 border-b px-3 py-2">
                   <p className="text-foreground text-sm font-medium">
-                    {identity.displayName}
+                    {displayName}
                   </p>
-                  <p className="text-muted-foreground text-xs">
-                    {identity.email}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {identity.roleName} • {identity.contextLabel}
-                  </p>
+                  <p className="text-muted-foreground text-xs">{roleLabel}</p>
                 </div>
                 <button
                   type="button"
@@ -169,19 +192,28 @@ export function DashboardHeader({
                   <User className="h-4 w-4" />
                   Meu perfil
                 </button>
-                {availableMemberships.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUserMenuOpen(false);
-                      setSwitchOpen(true);
-                    }}
-                    className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
-                  >
-                    <Shield className="h-4 w-4" />
-                    Trocar contexto
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    navigate('/dashboard/configuracoes');
+                  }}
+                  className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
+                >
+                  <Shield className="h-4 w-4" />
+                  Segurança
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    setSwitchOpen(true);
+                  }}
+                  className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
+                >
+                  <PanelLeftOpen className="h-4 w-4" />
+                  Trocar conta
+                </button>
                 <button
                   type="button"
                   onClick={() => {
@@ -223,12 +255,14 @@ export function DashboardHeader({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="bg-background/60 fixed inset-0 z-[60] flex items-center justify-center backdrop-blur-sm"
+            onClick={() => setSwitchOpen(false)}
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               className="bg-card border-border mx-4 w-full max-w-lg rounded-xl border p-6 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-foreground text-lg font-semibold">
@@ -251,14 +285,21 @@ export function DashboardHeader({
                   const membershipRoles = roles.filter(
                     (r) => r.id === membership.role_id,
                   );
-                  const roleName = membershipRoles[0]?.name || 'Usuário';
+                  const roleName =
+                    membershipRoles[0]?.name ||
+                    membershipRoles[0]?.name ||
+                    'Usuário';
                   const isActive = membership.tenant_id === activeTenantId;
 
                   return (
                     <button
                       key={membership.id}
                       type="button"
-                      onClick={() => handleSwitchAccount(membership.tenant_id)}
+                      onClick={() => {
+                        switchAccount(membership.tenant_id);
+                        setSwitchOpen(false);
+                        navigate('/dashboard');
+                      }}
                       className={cn(
                         'border-border hover:border-primary/50 rounded-xl border p-4 text-left transition-all',
                         isActive && 'ring-primary/50 ring-2',

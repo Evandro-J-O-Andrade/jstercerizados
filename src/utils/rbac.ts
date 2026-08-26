@@ -1,8 +1,5 @@
 import type { Permission } from '@/types/auth';
-
-export function getPermissionKey(permission: Permission): string {
-  return `${permission.resource}.${permission.action}`;
-}
+import { getPermissionKey, normalizePermissions } from './rbac-normalize';
 
 export function hasPermission(
   permissions: Permission[],
@@ -24,3 +21,5 @@ export function hasAllPermissions(
 ): boolean {
   return permissionKeys.every((key) => hasPermission(permissions, key));
 }
+
+export { getPermissionKey, normalizePermissions };

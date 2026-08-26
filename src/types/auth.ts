@@ -26,20 +26,17 @@ export interface TenantMembership {
 export interface Role {
   id: string;
   name: string;
-  display_name?: string | null;
   description?: string | null;
-  scope: 'system' | 'tenant';
-  is_system?: boolean;
-  tenant_id?: string | null;
+  scope: 'global' | 'tenant';
   created_at: string;
   updated_at: string;
 }
 
-export type SystemRoleName = 'admin_master';
-export type TenantRoleName =
+export type RoleName =
+  | 'admin_master'
+  | 'platform_admin'
+  | 'support_engineer'
   | 'tenant_admin'
-  | 'operations_manager'
-  | 'operator'
   | 'rh_manager'
   | 'recruiter'
   | 'finance_manager'
@@ -52,11 +49,11 @@ export type TenantRoleName =
   | 'lawyer'
   | 'it_admin'
   | 'viewer';
-export type RoleName = SystemRoleName | TenantRoleName;
 
 export interface Permission {
   id: string;
   name: string;
+  module: string;
   resource: string;
   action: string;
   description?: string | null;
@@ -76,6 +73,29 @@ export interface RoleAssignment {
 export interface RolePermission {
   role_id: string;
   permission_id: string;
+}
+
+export interface FirstLoginState {
+  person_id: string;
+  must_change_password: boolean;
+  terms_version: string | null;
+  privacy_version: string | null;
+  lgpd_consent_version: string | null;
+  first_login_completed: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LegalAcceptance {
+  id: string;
+  person_id: string;
+  tenant_id: string;
+  document_type: string;
+  document_version: string;
+  accepted_at: string;
+  ip: string | null;
+  user_agent: string | null;
+  metadata: Record<string, unknown>;
 }
 
 export interface AuthState {
