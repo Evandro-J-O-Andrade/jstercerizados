@@ -7,7 +7,7 @@ interface FirstAccessRouteProps {
 }
 
 export function FirstAccessRoute({ children }: FirstAccessRouteProps) {
-  const { isAuthenticated, isLoading, person, firstLoginState } = useAuth();
+  const { isAuthenticated, isLoading, person } = useAuth();
 
   if (isLoading) {
     return <PageLoader />;
@@ -15,10 +15,6 @@ export function FirstAccessRoute({ children }: FirstAccessRouteProps) {
 
   if (!isAuthenticated || !person) {
     return <Navigate to="/login" replace />;
-  }
-
-  if (firstLoginState?.first_login_completed) {
-    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;

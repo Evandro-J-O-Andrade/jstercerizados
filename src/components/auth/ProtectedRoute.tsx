@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { normalizeError } from '@/lib/error-normalizer';
+import { hasPermission } from '@/utils/rbac';
 import type { Role } from '@/types/auth';
 
 interface ProtectedRouteProps {
@@ -19,8 +20,6 @@ interface ProtectedRouteProps {
 function hasRole(roles: Role[], roleName: string): boolean {
   return roles.some((r) => r.name === roleName);
 }
-
-import { hasPermission } from '@/utils/rbac';
 
 export function ProtectedRoute({
   children,
@@ -38,7 +37,6 @@ export function ProtectedRoute({
     roles,
     permissions,
     isAdminMaster,
-    firstLoginState,
     authError,
   } = useAuth();
   const location = useLocation();
@@ -80,18 +78,6 @@ export function ProtectedRoute({
 
   if (!isAuthenticated || !person) {
     return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
-  if (firstLoginState && !firstLoginState.first_login_completed) {
-    const hasTerms =
-      firstLoginState.terms_version && firstLoginState.privacy_version;
-    if (!hasTerms) {
-      return <Navigate to="/primeiro-acesso/termos" replace />;
-    }
-  }
-
-  if (firstLoginState?.must_change_password) {
-    return <Navigate to="/primeiro-acesso/senha" replace />;
   }
 
   if (requireAdminMaster && !isAdminMaster) {

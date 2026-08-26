@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/Button';
 import { SEO } from '@/components/ui/SEO';
 import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
-import { getSupabaseClient } from '@/lib/supabase';
 
 type AreaInfo = {
   title: string;
@@ -149,13 +148,7 @@ function getAreaInfo(
 export default function AuthWelcome() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const {
-    person,
-    roles,
-    isAdminMaster,
-    firstLoginState,
-    updateFirstLoginState,
-  } = useAuth();
+  const { person, roles, isAdminMaster } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -164,52 +157,18 @@ export default function AuthWelcome() {
     }
   }, [person, navigate]);
 
-  useEffect(() => {
-    if (firstLoginState?.welcome_completed_at) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [firstLoginState, navigate]);
-
   const handleContinue = async () => {
+    if (isSubmitting || !person) {
+      return;
+    }
+
     setIsSubmitting(true);
     setError('');
 
     try {
-      const supabase = getSupabaseClient();
-      if (!supabase || !person) {
-        setError('Erro de conexão. Tente novamente.');
-        return;
-      }
-
-      const { error: updateError } = await supabase
-        .from('first_login_state')
-        .upsert(
-          {
-            person_id: person.id,
-            welcome_completed_at: new Date().toISOString(),
-            first_login_completed: true,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'person_id' },
-        );
-
-      if (updateError) {
-        setError(updateError.message);
-        return;
-      }
-
-      if (firstLoginState) {
-        updateFirstLoginState({
-          ...firstLoginState,
-          welcome_completed_at: new Date().toISOString(),
-          first_login_completed: true,
-          updated_at: new Date().toISOString(),
-        });
-      }
-
       navigate('/dashboard', { replace: true });
     } catch {
-      setError('Erro ao registrar. Tente novamente.');
+      setError('Erro ao acessar. Tente novamente.');
     } finally {
       setIsSubmitting(false);
     }

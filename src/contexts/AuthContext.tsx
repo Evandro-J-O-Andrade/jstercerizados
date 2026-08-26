@@ -455,7 +455,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const changePassword = async (
-    currentPassword: string,
+    _currentPassword: string,
     newPassword: string,
   ): Promise<{ error?: string }> => {
     const supabase = getSupabaseClient();
@@ -474,21 +474,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const { error: reauthError } = await supabase.auth.signInWithPassword({
-        email: user.email || '',
-        password: currentPassword,
-      });
-
-      if (reauthError) {
-        return { error: 'Senha atual incorreta' };
-      }
-
       const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
       });
 
       if (updateError) {
-        return { error: normalizeError(updateError).userMessage };
+        const updateMessage =
+          updateError?.message || 'Erro ao atualizar senha. Tente novamente.';
+
+        console.error('[AUTH:CHANGE_PASSWORD] atualização de senha falhou', {
+          code: updateError?.code || null,
+          message: updateMessage,
+          status: updateError?.status || null,
+          name: updateError?.name || null,
+        });
+
+        return {
+          error: updateMessage,
+        };
       }
 
       if (person && firstLoginState) {
@@ -496,21 +499,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .from('first_login_state')
           .update({
             must_change_password: false,
-            first_login_completed: true,
             updated_at: new Date().toISOString(),
           })
           .eq('person_id', person.id);
 
         if (stateError) {
-          console.error(
-            '[AUTH] Failed to update first_login_state:',
-            stateError,
-          );
+          console.error('[AUTH] Failed to update first_login_state:', {
+            code: stateError.code,
+            message: stateError.message,
+            details: stateError.details,
+            hint: stateError.hint,
+          });
         } else {
           setFirstLoginState({
             ...firstLoginState,
             must_change_password: false,
-            first_login_completed: true,
             updated_at: new Date().toISOString(),
           });
         }
@@ -585,10 +588,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .eq('person_id', person.id);
 
         if (stateError) {
-          console.error(
-            '[AUTH] Failed to update first_login_state:',
-            stateError,
-          );
+          console.error('[AUTH] Failed to update first_login_state:', {
+            code: stateError.code,
+            message: stateError.message,
+            details: stateError.details,
+            hint: stateError.hint,
+          });
         } else {
           setFirstLoginState({
             ...firstLoginState,
@@ -642,6 +647,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .upsert(payload, { onConflict: 'person_id' });
 
       if (updateError) {
+        console.error('[FIRST_LOGIN_STATE] erro', {
+          code: updateError.code,
+          message: updateError.message,
+          details: updateError.details,
+          hint: updateError.hint,
+        });
         return { error: normalizeError(updateError).userMessage };
       }
 
@@ -692,79 +703,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const resolvePostLoginDestination = useCallback((): string => {
-    const target = (() => {
-      if (isAdminMaster) {
-        return '/dashboard';
-      }
-
-      if (tenantMemberships.length === 0) {
-        return '/onboarding';
-      }
-
-      const hasAcceptedTerms =
-        legalAcceptances.some((a) => a.document_type === 'terms') ||
-        firstLoginState?.terms_version != null;
-
-      if (!hasAcceptedTerms) {
-        return '/auth/terms';
-      }
-
-      const welcomeCompleted =
-        firstLoginState?.welcome_completed_at != null ||
-        firstLoginState?.first_login_completed === true;
-
-      if (!welcomeCompleted) {
-        return '/auth/welcome';
-      }
-
-      if (firstLoginState?.must_change_password) {
-        return '/primeiro-acesso/senha';
-      }
-
-      if (
-        hasAnyPermission(['jobs.read', 'candidates.read', 'recruitment.read'])
-      ) {
-        return '/dashboard';
-      }
-
-      if (hasAnyPermission(['companies.read'])) {
-        return '/dashboard/empresas';
-      }
-
-      if (hasAnyPermission(['people.read'])) {
-        return '/dashboard/usuarios';
-      }
-
-      if (hasAnyPermission(['service_orders.read'])) {
-        return '/dashboard/servicos';
-      }
-
-      if (hasAnyPermission(['stock_movements.read'])) {
-        return '/dashboard/estoque';
-      }
-
-      if (hasAnyPermission(['support_tickets.read'])) {
-        return '/dashboard/suporte';
-      }
-
-      if (hasAnyPermission(['reports.read'])) {
-        return '/dashboard/relatorios';
-      }
-
-      return '/dashboard';
-    })();
-
-    console.log('[AUTH:HANDOFF] resolvePostLoginDestination', {
+    console.log('[AUTH:FLOW] resolvePostLoginDestination', {
       isAdminMaster,
       membershipCount: tenantMemberships.length,
       mustChangePassword: firstLoginState?.must_change_password ?? null,
       firstLoginCompleted: firstLoginState?.first_login_completed ?? null,
-      welcomeCompleted: firstLoginState?.welcome_completed_at ?? null,
+      termsVersion: firstLoginState?.terms_version ?? null,
       permissionCount: permissions.length,
-      destination: target,
     });
 
-    return target;
+    if (tenantMemberships.length === 0) {
+      console.log('[AUTH:FLOW] redirect → /onboarding (sem membership)');
+      return '/onboarding';
+    }
+
+    if (firstLoginState?.must_change_password) {
+      console.log(
+        '[AUTH:FLOW] redirect → /primeiro-acesso/senha (must_change_password)',
+      );
+      return '/primeiro-acesso/senha';
+    }
+
+    const hasAcceptedTerms =
+      legalAcceptances.some((a) => a.document_type === 'terms') ||
+      firstLoginState?.terms_version != null;
+
+    if (!hasAcceptedTerms) {
+      console.log('[AUTH:FLOW] redirect → /auth/terms (termos pendentes)');
+      return '/auth/terms';
+    }
+
+    console.log(
+      '[AUTH:FLOW] redirect → /auth/welcome (etapa obrigatória pós-login)',
+    );
+    return '/auth/welcome';
   }, [
     isAdminMaster,
     tenantMemberships,

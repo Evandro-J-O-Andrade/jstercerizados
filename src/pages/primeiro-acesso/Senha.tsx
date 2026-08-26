@@ -23,8 +23,12 @@ export default function PrimeiroAcessoSenha() {
   const [showPasswords, setShowPasswords] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const { changePassword, isAuthenticated, person, firstLoginState } =
-    useAuth();
+  const {
+    changePassword,
+    isAuthenticated,
+    person,
+    resolvePostLoginDestination,
+  } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,12 +36,6 @@ export default function PrimeiroAcessoSenha() {
       navigate('/login', { replace: true });
     }
   }, [isAuthenticated, person, navigate]);
-
-  useEffect(() => {
-    if (firstLoginState && !firstLoginState.must_change_password) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [firstLoginState, navigate]);
 
   const passwordsMatch = newPassword === confirmPassword;
   const meetsRequirements = PASSWORD_REQUIREMENTS.every((req) =>
@@ -67,7 +65,8 @@ export default function PrimeiroAcessoSenha() {
       if (result.error) {
         setError(result.error);
       } else {
-        navigate('/dashboard', { replace: true });
+        const target = resolvePostLoginDestination();
+        navigate(target, { replace: true });
       }
     } catch {
       setError('Erro ao alterar senha. Tente novamente.');
@@ -126,6 +125,7 @@ export default function PrimeiroAcessoSenha() {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 required
+                autoComplete="current-password"
               />
             </div>
 
@@ -137,6 +137,7 @@ export default function PrimeiroAcessoSenha() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
+                autoComplete="new-password"
               />
             </div>
 
@@ -148,6 +149,7 @@ export default function PrimeiroAcessoSenha() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
+                autoComplete="new-password"
               />
               {confirmPassword.length > 0 && (
                 <div className="absolute top-9 right-3">

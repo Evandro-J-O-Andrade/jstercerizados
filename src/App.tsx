@@ -90,6 +90,10 @@ import RelatoriosPage from '@/pages/dashboard/Relatorios';
 import ConfiguracoesPage from '@/pages/dashboard/Configuracoes';
 import RbacAuditPage from '@/pages/dashboard/RbacAuditPage';
 import RolesPermissoesPage from '@/pages/dashboard/RolesPermissoesPage';
+import CompanyRelationshipsPage from '@/pages/dashboard/CompanyRelationshipsPage';
+import SkillsPage from '@/pages/dashboard/SkillsPage';
+import NotificationsPage from '@/pages/dashboard/NotificationsPage';
+import ApplicationDetailPage from '@/pages/dashboard/ApplicationDetailPage';
 
 const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   DashboardHome,
@@ -128,6 +132,10 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   SuportePage,
   RelatoriosPage,
   ConfiguracoesPage,
+  CompanyRelationshipsPage,
+  SkillsPage,
+  NotificationsPage,
+  ApplicationDetailPage,
 };
 
 function App() {
@@ -157,7 +165,7 @@ function App() {
 
   const dashboardRoutes = [
     { path: '', element: <DashboardHome />, exact: true },
-    ...platformModules
+    ...(platformModules.length ? platformModules : [])
       .filter(
         (module) =>
           MODULE_PAGE_MAP[module.id] &&
@@ -165,7 +173,10 @@ function App() {
             !module.requiredPermissions?.length),
       )
       .map((module) => ({
-        path: module.route.replace('/dashboard/', ''),
+        path:
+          module.route === '/dashboard'
+            ? ''
+            : module.route.replace('/dashboard/', ''),
         element: (
           <PermissionGuard permission={MODULE_PERMISSION_MAP[module.id]}>
             {PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]] ? (
@@ -176,7 +187,7 @@ function App() {
           </PermissionGuard>
         ),
       })),
-    ...tenantModules
+    ...(tenantModules.length ? tenantModules : [])
       .filter(
         (module) =>
           MODULE_PAGE_MAP[module.id] &&
@@ -184,7 +195,10 @@ function App() {
             !module.requiredPermissions?.length),
       )
       .map((module) => ({
-        path: module.route.replace('/dashboard/', ''),
+        path:
+          module.route === '/dashboard'
+            ? ''
+            : module.route.replace('/dashboard/', ''),
         element: (
           <PermissionGuard permission={MODULE_PERMISSION_MAP[module.id]}>
             {PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]] ? (
@@ -242,6 +256,38 @@ function App() {
               element={
                 <PermissionGuard permission="audit.read">
                   <RbacAuditPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relacionamentos"
+              element={
+                <PermissionGuard permission="companies.read">
+                  <CompanyRelationshipsPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="habilidades"
+              element={
+                <PermissionGuard permission="skills.read">
+                  <SkillsPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="notificacoes"
+              element={
+                <PermissionGuard permission="notifications.read">
+                  <NotificationsPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="processos-seletivos/:id"
+              element={
+                <PermissionGuard permission="applications.read">
+                  <ApplicationDetailPage />
                 </PermissionGuard>
               }
             />

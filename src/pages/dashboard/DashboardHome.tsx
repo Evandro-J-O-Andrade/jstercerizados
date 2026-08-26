@@ -1,35 +1,51 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Users, Briefcase, BarChart3 } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Users,
+  Briefcase,
+  Building2,
+  Activity,
+} from 'lucide-react';
 import { ModuleCard } from '@/components/portal/ModuleCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { cn } from '@/utils';
+import { getSupabaseClient } from '@/lib/supabase';
 
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  users: Users,
-  briefcase: Briefcase,
-  'bar-chart-3': BarChart3,
-};
-
-function ModuleIconWrapper({
-  name,
-  className,
-}: {
-  name: string;
-  className?: string;
-}) {
-  const Icon = ICON_MAP[name] || LayoutDashboard;
-  return <Icon className={cn('h-5 w-5 shrink-0', className)} />;
+interface DashboardStats {
+  people: number;
+  companies: number;
+  jobs: number;
+  candidates: number;
+  applications: number;
+  recentEvents: Array<{
+    id: string;
+    event_type: string;
+    description: string;
+    created_at: string;
+  }>;
+  loading: boolean;
 }
 
 export default function DashboardHome() {
-  const { person, roles } = useAuth();
+  const { person, roles, currentTenantId, tenantMemberships, isAdminMaster } =
+    useAuth();
   const { availableModules, activePermissions } = useAccount();
+  const [stats, setStats] = useState<DashboardStats>({
+    people: 0,
+    companies: 0,
+    jobs: 0,
+    candidates: 0,
+    applications: 0,
+    recentEvents: [],
+    loading: true,
+  });
+
   const displayName = person?.full_name?.trim() || 'Usuário';
   const firstName = displayName.split(/\s+/)[0];
   const roleName = roles[0]?.name || 'Usuário';
+  const scope = isAdminMaster ? 'platform' : 'tenant';
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('pt-BR', {
@@ -44,6 +60,196 @@ export default function DashboardHome() {
     if (hour < 18) return 'Boa tarde';
     return 'Boa noite';
   }, []);
+
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+
+    const fetchStats = async () => {
+      try {
+        const tenantIds = tenantMemberships.map((m) => m.tenant_id);
+        const isPlatform = isAdminMaster;
+        let peopleCount = 0;
+        let companiesCount = 0;
+        let jobsCount = 0;
+        let candidatesCount = 0;
+        let applicationsCount = 0;
+        let recentEvents: DashboardStats['recentEvents'] = [];
+
+        if (isPlatform) {
+          const [
+            { count: pCount },
+            { count: jCount },
+            { count: candCount },
+            { count: appCount },
+          ] = await Promise.all([
+            supabase.from('people').select('*', { count: 'exact', head: true }),
+            supabase.from('jobs').select('*', { count: 'exact', head: true }),
+            supabase
+              .from('candidates')
+              .select('*', { count: 'exact', head: true }),
+            supabase
+              .from('applications')
+              .select('*', { count: 'exact', head: true }),
+          ]);
+          peopleCount = pCount || 0;
+          jobsCount = jCount || 0;
+          candidatesCount = candCount || 0;
+          applicationsCount = appCount || 0;
+
+          const companiesResult = await supabase
+            .from('company_relationships')
+            .select('company_id', { count: 'exact', head: true });
+          companiesCount = companiesResult.count || 0;
+
+          const { data: events } = await supabase
+            .from('domain_events')
+            .select('id, event_type, description, created_at')
+            .order('created_at', { ascending: false })
+            .limit(10);
+          recentEvents = events || [];
+        } else {
+          const activeTenantId = currentTenantId || tenantIds[0];
+          if (activeTenantId) {
+            const [
+              { count: pCount },
+              { count: jCount },
+              { count: candCount },
+              { count: appCount },
+            ] = await Promise.all([
+              supabase
+                .from('people')
+                .select('*', { count: 'exact', head: true })
+                .eq('tenant_id', activeTenantId),
+              supabase
+                .from('jobs')
+                .select('*', { count: 'exact', head: true })
+                .eq('tenant_id', activeTenantId),
+              supabase
+                .from('candidates')
+                .select('*', { count: 'exact', head: true })
+                .eq('tenant_id', activeTenantId),
+              supabase
+                .from('applications')
+                .select('*', { count: 'exact', head: true })
+                .eq('tenant_id', activeTenantId),
+            ]);
+            peopleCount = pCount || 0;
+            jobsCount = jCount || 0;
+            candidatesCount = candCount || 0;
+            applicationsCount = appCount || 0;
+
+            const companiesResult = await supabase
+              .from('company_relationships')
+              .select('company_id', { count: 'exact', head: true })
+              .eq('tenant_id', activeTenantId);
+            companiesCount = companiesResult.count || 0;
+
+            const { data: events } = await supabase
+              .from('domain_events')
+              .select('id, event_type, description, created_at')
+              .eq('tenant_id', activeTenantId)
+              .order('created_at', { ascending: false })
+              .limit(10);
+            recentEvents = events || [];
+          }
+        }
+
+        setStats({
+          people: peopleCount,
+          companies: companiesCount,
+          jobs: jobsCount,
+          candidates: candidatesCount,
+          applications: applicationsCount,
+          recentEvents,
+          loading: false,
+        });
+      } catch (error) {
+        console.error('[DASHBOARD] Failed to load stats:', error);
+        setStats((prev) => ({ ...prev, loading: false }));
+      }
+    };
+
+    fetchStats();
+  }, [isAdminMaster, currentTenantId, tenantMemberships]);
+
+  const kpis = useMemo(() => {
+    if (isAdminMaster) {
+      return [
+        {
+          label: 'Usuários',
+          value: stats.people,
+          icon: Users,
+          permission: 'people.read',
+        },
+        {
+          label: 'Empresas',
+          value: stats.companies,
+          icon: Building2,
+          permission: 'companies.read',
+        },
+        {
+          label: 'Vagas',
+          value: stats.jobs,
+          icon: Briefcase,
+          permission: 'jobs.read',
+        },
+        {
+          label: 'Candidatos',
+          value: stats.candidates,
+          icon: Users,
+          permission: 'candidates.read',
+        },
+        {
+          label: 'Candidaturas',
+          value: stats.applications,
+          icon: Briefcase,
+          permission: 'applications.read',
+        },
+      ];
+    }
+
+    return [
+      {
+        label: 'Colaboradores',
+        value: stats.people,
+        icon: Users,
+        permission: 'people.read',
+      },
+      {
+        label: 'Empresas',
+        value: stats.companies,
+        icon: Building2,
+        permission: 'companies.read',
+      },
+      {
+        label: 'Vagas',
+        value: stats.jobs,
+        icon: Briefcase,
+        permission: 'jobs.read',
+      },
+      {
+        label: 'Candidatos',
+        value: stats.candidates,
+        icon: Users,
+        permission: 'candidates.read',
+      },
+      {
+        label: 'Candidaturas',
+        value: stats.applications,
+        icon: Briefcase,
+        permission: 'applications.read',
+      },
+    ];
+  }, [stats, isAdminMaster]);
+
+  const visibleKpis = useMemo(() => {
+    return kpis.filter((kpi) =>
+      activePermissions.some(
+        (p) => `${p.resource}.${p.action}` === kpi.permission,
+      ),
+    );
+  }, [kpis, activePermissions]);
 
   const quickAccessModules = useMemo(() => {
     const priorityIds = [
@@ -76,7 +282,9 @@ export default function DashboardHome() {
             {greeting}, {firstName}
           </h2>
           <p className="text-muted-foreground text-sm">
-            {roleName} · {dateStr}
+            {roleName.replace(/_/g, ' ')} ·{' '}
+            {scope === 'platform' ? 'Painel Administrativo' : 'Área do Usuário'}{' '}
+            · {dateStr}
           </p>
         </section>
 
@@ -84,48 +292,82 @@ export default function DashboardHome() {
           <h3 className="text-foreground mb-4 text-lg font-semibold">
             Indicadores
           </h3>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                label: 'Módulos disponíveis',
-                value: availableModules.length.toString(),
-                icon: 'layout-dashboard',
-              },
-              {
-                label: 'Permissões ativas',
-                value: activePermissions.length.toString(),
-                icon: 'users',
-              },
-              {
-                label: 'Acesso rápido',
-                value: `${quickAccessModules.length}`,
-                icon: 'briefcase',
-              },
-              { label: 'Data atual', value: dateStr, icon: 'bar-chart-3' },
-            ].map((item, idx) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className="bg-card border-border rounded-xl border p-4 shadow-sm"
-              >
-                <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                  {item.label}
-                </div>
-                <div className="flex items-center gap-2">
-                  <ModuleIconWrapper
-                    name={item.icon}
-                    className="text-primary"
-                  />
-                  <span className="text-foreground text-2xl font-semibold">
-                    {item.value}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          {stats.loading ? (
+            <div className="text-muted-foreground text-sm">
+              Carregando indicadores...
+            </div>
+          ) : visibleKpis.length === 0 ? (
+            <div className="bg-card border-border rounded-xl border p-6 shadow-sm">
+              <p className="text-muted-foreground text-sm">
+                Nenhum indicador disponível para o seu perfil.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {visibleKpis.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="bg-card border-border rounded-xl border p-4 shadow-sm"
+                  >
+                    <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                      {item.label}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-foreground text-2xl font-semibold">
+                        {item.value.toLocaleString('pt-BR')}
+                      </span>
+                      <Icon className="text-primary h-5 w-5" />
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </section>
+
+        {stats.recentEvents.length > 0 && (
+          <section>
+            <h3 className="text-foreground mb-4 flex items-center gap-2 text-lg font-semibold">
+              <Activity className="h-5 w-5" />
+              Atividade recente
+            </h3>
+            <div className="bg-card border-border rounded-xl border shadow-sm">
+              <div className="divide-border divide-y">
+                {stats.recentEvents.slice(0, 8).map((event, idx) => (
+                  <motion.div
+                    key={event.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.03 }}
+                    className="flex items-center justify-between px-4 py-3"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="text-foreground truncate text-sm font-medium">
+                        {event.description || event.event_type}
+                      </p>
+                      <p className="text-muted-foreground truncate text-xs">
+                        {event.event_type}
+                      </p>
+                    </div>
+                    <span className="text-muted-foreground shrink-0 text-xs">
+                      {new Date(event.created_at).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {isEmpty ? (
           <section>
