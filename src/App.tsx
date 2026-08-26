@@ -301,6 +301,14 @@ function App() {
                 </PermissionGuard>
               }
             />
+            <Route
+              path="vagas"
+              element={
+                <PermissionGuard permission="jobs.read">
+                  <VagasPage />
+                </PermissionGuard>
+              }
+            />
             <Route path="*" element={<DashboardRouteNotFound />} />
           </Route>
           <Route path="/onboarding" element={<Onboarding />} />

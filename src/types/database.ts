@@ -1191,6 +1191,9 @@ export interface Database {
       company_status: 'active' | 'inactive' | 'pending';
       candidate_status: 'active' | 'inactive' | 'archived' | 'blacklisted';
       job_status: 'draft' | 'published' | 'archived' | 'hired' | 'expired';
+      contract_type:
+        'clt' | 'internship' | 'temporary' | 'freelance' | 'contracted' | 'cd';
+      work_mode: 'onsite' | 'hybrid' | 'remote';
       application_status:
         'applied' | 'review' | 'interview' | 'approved' | 'rejected';
       lead_status: 'new' | 'contacted' | 'proposal' | 'won' | 'lost';

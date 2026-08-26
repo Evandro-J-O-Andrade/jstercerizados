@@ -1,42 +1,36 @@
-﻿import { SupabaseRepository } from './supabase.repository';
-import type { Job, JobRow } from '@/types/domain/job';
-import { mapJob } from '@/types/domain/mappers';
+import { SupabaseRepository } from './supabase.repository';
+import type { Job, JobCreateInput, JobUpdateInput } from '@/types/domain/job';
 
-export class JobsRepository extends SupabaseRepository {
-  async findAll(
-    tenantId: string,
-    filters?: { status?: string; companyId?: string; search?: string },
-  ): Promise<Job[]> {
+export class JobRepository extends SupabaseRepository {
+  async findAll(tenantId: string): Promise<Job[]> {
     if (!this.supabase) return [];
-    let query = this.supabase
-      .from('jobs')
-      .select(
-        `
-        *,
-        company_relationship:company_relationships(*)
-      `,
-      )
-      .eq('tenant_id', tenantId)
-      .order('created_at', { ascending: false });
 
-    if (filters?.status) query = query.eq('status', filters.status);
-    if (filters?.companyId)
-      query = query.eq('company_relationship_id', filters.companyId);
-    if (filters?.search) query = query.ilike('title', `%${filters.search}%`);
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return (data || []).map(mapJob);
-  }
-
-  async findById(id: string, tenantId: string): Promise<Job | null> {
-    if (!this.supabase) return null;
     const { data, error } = await this.supabase
       .from('jobs')
       .select(
         `
         *,
-        company_relationship:company_relationships(*)
+        company_relationship:company_relationships(*),
+        skills:job_skills(*)
+      `,
+      )
+      .eq('tenant_id', tenantId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return (data || []) as Job[];
+  }
+
+  async findById(id: string, tenantId: string): Promise<Job | null> {
+    if (!this.supabase) return null;
+
+    const { data, error } = await this.supabase
+      .from('jobs')
+      .select(
+        `
+        *,
+        company_relationship:company_relationships(*),
+        skills:job_skills(*)
       `,
       )
       .eq('id', id)
@@ -44,38 +38,14 @@ export class JobsRepository extends SupabaseRepository {
       .maybeSingle();
 
     if (error) throw error;
-    return data ? mapJob(data as JobRow) : null;
+    return data as Job | null;
   }
 
-  async create(input: {
-    tenant_id: string;
-    title: string;
-    slug: string;
-    description?: string | null;
-    responsibilities?: string | null;
-    requirements?: string | null;
-    benefits?: string | null;
-    salary_min?: number | null;
-    salary_max?: number | null;
-    salary_type?: string | null;
-    contract_type?: string | null;
-    seniority?: string | null;
-    work_hours?: string | null;
-    work_mode?: string | null;
-    city?: string | null;
-    state?: string | null;
-    location_detail?: string | null;
-    status?: string | null;
-    published_at?: string | null;
-    expires_at?: string | null;
-    metadata?: Record<string, unknown>;
-    created_by?: string | null;
-    company_relationship_id?: string | null;
-  }): Promise<Job> {
+  async create(input: JobCreateInput, tenantId: string): Promise<Job> {
     if (!this.supabase) throw new Error('Supabase não configurado');
 
     const payload: Record<string, unknown> = {
-      tenant_id: input.tenant_id,
+      tenant_id: tenantId || input.tenant_id,
       title: input.title,
       slug: input.slug,
       status: input.status ?? 'draft',
@@ -115,47 +85,26 @@ export class JobsRepository extends SupabaseRepository {
       .select(
         `
         *,
-        company_relationship:company_relationships(*)
+        company_relationship:company_relationships(*),
+        skills:job_skills(*)
       `,
       )
       .single();
 
     if (error) throw error;
-    return mapJob(data as JobRow);
+    return data as Job;
   }
 
   async update(
     id: string,
     tenantId: string,
-    input: Partial<{
-      company_relationship_id: string | null;
-      title: string;
-      slug: string;
-      description: string | null;
-      responsibilities: string | null;
-      requirements: string | null;
-      benefits: string | null;
-      salary_min: number | null;
-      salary_max: number | null;
-      salary_type: string | null;
-      contract_type: string | null;
-      seniority: string | null;
-      work_hours: string | null;
-      work_mode: string | null;
-      city: string | null;
-      state: string | null;
-      location_detail: string | null;
-      status: string | null;
-      published_at: string | null;
-      expires_at: string | null;
-      metadata: Record<string, unknown>;
-      created_by: string | null;
-    }>,
+    input: JobUpdateInput,
   ): Promise<Job> {
     if (!this.supabase) throw new Error('Supabase não configurado');
 
     const payload: Record<string, unknown> = {};
 
+    if (input.tenant_id !== undefined) payload.tenant_id = input.tenant_id;
     if (input.company_relationship_id !== undefined)
       payload.company_relationship_id = input.company_relationship_id;
     if (input.title !== undefined) payload.title = input.title;
@@ -195,13 +144,14 @@ export class JobsRepository extends SupabaseRepository {
       .select(
         `
         *,
-        company_relationship:company_relationships(*)
+        company_relationship:company_relationships(*),
+        skills:job_skills(*)
       `,
       )
       .single();
 
     if (error) throw error;
-    return mapJob(data as JobRow);
+    return data as Job;
   }
 
   async delete(id: string, tenantId: string): Promise<void> {
@@ -215,67 +165,6 @@ export class JobsRepository extends SupabaseRepository {
 
     if (error) throw error;
   }
-
-  async findPublished(filters?: {
-    status?: string;
-    search?: string;
-  }): Promise<Job[]> {
-    if (!this.supabase) return [];
-    let query = this.supabase
-      .from('jobs')
-      .select(
-        `
-        *,
-        company_relationship:company_relationships(*)
-      `,
-      )
-      .eq('status', 'published')
-      .order('published_at', { ascending: false });
-
-    if (filters?.search) {
-      query = query.ilike('title', `%${filters.search}%`);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return (data || []).map(mapJob);
-  }
-
-  async findBySlug(slug: string, tenantId: string): Promise<Job | null> {
-    if (!this.supabase) return null;
-    const { data, error } = await this.supabase
-      .from('jobs')
-      .select(
-        `
-        *,
-        company_relationship:company_relationships(*)
-      `,
-      )
-      .eq('slug', slug)
-      .eq('tenant_id', tenantId)
-      .maybeSingle();
-
-    if (error) throw error;
-    return data ? mapJob(data as JobRow) : null;
-  }
-
-  async findPublishedBySlug(slug: string): Promise<Job | null> {
-    if (!this.supabase) return null;
-    const { data, error } = await this.supabase
-      .from('jobs')
-      .select(
-        `
-        *,
-        company_relationship:company_relationships(*)
-      `,
-      )
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .maybeSingle();
-
-    if (error) throw error;
-    return data ? mapJob(data as JobRow) : null;
-  }
 }
 
-export const jobsRepository = new JobsRepository();
+export const jobRepository = new JobRepository();
