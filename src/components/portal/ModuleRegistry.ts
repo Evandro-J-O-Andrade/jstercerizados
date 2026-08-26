@@ -2199,6 +2199,7 @@ export const MODULE_PAGE_MAP: Record<string, string> = {
   preferencias: 'ConfiguracoesPage',
   'minha-conta': 'ConfiguracoesPage',
   'seguranca-conta': 'SegurancaPage',
+  sessoes: 'SessoesPage',
 };
 
 export const MODULE_PERMISSION_MAP: Record<string, string> = {
@@ -2230,4 +2231,5 @@ export const MODULE_PERMISSION_MAP: Record<string, string> = {
   preferencias: '',
   'minha-conta': '',
   'seguranca-conta': '',
+  sessoes: 'sessions.read',
 };

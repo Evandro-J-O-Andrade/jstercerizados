@@ -94,6 +94,7 @@ import CompanyRelationshipsPage from '@/pages/dashboard/CompanyRelationshipsPage
 import SkillsPage from '@/pages/dashboard/SkillsPage';
 import NotificationsPage from '@/pages/dashboard/NotificationsPage';
 import ApplicationDetailPage from '@/pages/dashboard/ApplicationDetailPage';
+import SessoesPage from '@/pages/dashboard/SessoesPage';
 
 const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   DashboardHome,
@@ -136,6 +137,7 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   SkillsPage,
   NotificationsPage,
   ApplicationDetailPage,
+  SessoesPage,
 };
 
 function App() {

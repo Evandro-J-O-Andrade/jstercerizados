@@ -2,15 +2,9 @@ import { useEffect, useState } from 'react';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Building2, Plus } from 'lucide-react';
-import { getSupabaseClient } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
-
-interface Tenant {
-  id: string;
-  name: string;
-  status: string;
-  created_at: string;
-}
+import { tenantRepository } from '@/repositories/tenant.repository';
+import type { Tenant } from '@/types/domain/tenant';
 
 export default function TenantsPage() {
   const { isAdminMaster, tenantMemberships } = useAuth();
@@ -18,38 +12,45 @@ export default function TenantsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = getSupabaseClient();
-    if (!supabase) return;
+    let cancelled = false;
 
     const fetchTenants = async () => {
       try {
+        let data: Tenant[] = [];
+
         if (isAdminMaster) {
-          const { data } = await supabase
-            .from('tenants')
-            .select('id, name, status, created_at')
-            .order('created_at', { ascending: false });
-          setTenants(data || []);
-        } else {
-          const tenantIds = tenantMemberships.map((m) => m.tenant_id);
-          if (tenantIds.length === 0) {
-            setTenants([]);
-            return;
-          }
-          const { data } = await supabase
-            .from('tenants')
-            .select('id, name, status, created_at')
-            .in('id', tenantIds)
-            .order('created_at', { ascending: false });
-          setTenants(data || []);
+          data = await tenantRepository.findAll('');
+        } else if (tenantMemberships.length > 0) {
+          const promises = tenantMemberships.map((m) =>
+            tenantRepository.findById(m.tenant_id, m.tenant_id),
+          );
+          const results = await Promise.all(promises);
+          data = results.filter((t): t is Tenant => t !== null);
+        }
+
+        if (!cancelled) {
+          setTenants(
+            data.sort(
+              (a, b) =>
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime(),
+            ),
+          );
         }
       } catch (error) {
         console.error('[TENANTS] Failed to load:', error);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchTenants();
+
+    return () => {
+      cancelled = true;
+    };
   }, [isAdminMaster, tenantMemberships]);
 
   return (

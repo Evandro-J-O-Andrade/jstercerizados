@@ -2,21 +2,10 @@ import { useEffect, useState } from 'react';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
 import { Shield, Users, Key } from 'lucide-react';
-import { getSupabaseClient } from '@/lib/supabase';
-
-interface Role {
-  id: string;
-  name: string;
-  scope: string;
-  description: string | null;
-}
-
-interface Permission {
-  id: string;
-  name: string;
-  module: string;
-  description: string | null;
-}
+import { roleRepository } from '@/repositories/role.repository';
+import { permissionRepository } from '@/repositories/permission.repository';
+import type { Role } from '@/types/domain/role';
+import type { Permission } from '@/types/domain/permission';
 
 export default function RolesPermissoesPage() {
   const [roles, setRoles] = useState<Role[]>([]);
@@ -24,31 +13,33 @@ export default function RolesPermissoesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = getSupabaseClient();
-    if (!supabase) return;
+    let cancelled = false;
 
     const fetchData = async () => {
       try {
-        const [{ data: rolesData }, { data: permsData }] = await Promise.all([
-          supabase
-            .from('roles')
-            .select('id, name, scope, description')
-            .order('name'),
-          supabase
-            .from('permissions')
-            .select('id, name, module, description')
-            .order('module, name'),
+        const [rolesData, permsData] = await Promise.all([
+          roleRepository.findAll(''),
+          permissionRepository.findAll(''),
         ]);
-        setRoles(rolesData || []);
-        setPermissions(permsData || []);
+
+        if (!cancelled) {
+          setRoles(rolesData);
+          setPermissions(permsData);
+        }
       } catch (error) {
         console.error('[ROLES_PERMISSOES] Failed to load:', error);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -105,15 +96,15 @@ export default function RolesPermissoesPage() {
                 'fiscal',
                 'accounting',
                 'platform',
-              ].map((module) => {
+              ].map((resource) => {
                 const modulePerms = permissions.filter(
-                  (p) => p.module === module,
+                  (p) => p.resource === resource,
                 );
                 if (modulePerms.length === 0) return null;
                 return (
-                  <div key={module} className="px-4 py-3">
+                  <div key={resource} className="px-4 py-3">
                     <h4 className="text-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                      {module}
+                      {resource}
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {modulePerms.map((perm) => (
@@ -121,7 +112,7 @@ export default function RolesPermissoesPage() {
                           key={perm.id}
                           className="bg-muted text-muted-foreground rounded-lg px-2 py-1 text-xs"
                         >
-                          {perm.name}
+                          {perm.action}
                         </span>
                       ))}
                     </div>

@@ -2,6 +2,18 @@ export type { Person } from './person';
 
 export type { Tenant, TenantCreateInput, TenantUpdateInput } from './tenant';
 
+export type { Role, RoleCreateInput, RoleUpdateInput } from './role';
+
+export type { Permission, PermissionCreateInput } from './permission';
+
+export type { SecurityEvent, AuditLog, DomainEvent } from './security';
+
+export type {
+  Notification,
+  NotificationDelivery,
+  NotificationPreference,
+} from './notification';
+
 export type {
   Company,
   CompanyCreateInput,

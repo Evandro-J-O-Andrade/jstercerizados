@@ -1,39 +1,52 @@
 import { useEffect, useState } from 'react';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
-import { Shield, Users, Key } from 'lucide-react';
+import { Shield, Users } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { getSupabaseClient } from '@/lib/supabase';
-
-interface Role {
-  id: string;
-  name: string;
-  scope: string;
-}
+import { securityEventRepository } from '@/repositories/security.repository';
+import type { SecurityEvent } from '@/types/domain/security';
 
 export default function SegurancaPage() {
-  const [roles, setRoles] = useState<Role[]>([]);
+  const { currentTenantId, isAdminMaster } = useAuth();
+  const [roles, setRoles] = useState<
+    { id: string; name: string; scope: string }[]
+  >([]);
+  const [events, setEvents] = useState<SecurityEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const supabase = getSupabaseClient();
     if (!supabase) return;
 
-    const fetchRoles = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await supabase
-          .from('roles')
-          .select('id, name, scope')
-          .order('name');
-        setRoles(data || []);
+        const tenantId = currentTenantId;
+        if (!tenantId && !isAdminMaster) {
+          setLoading(false);
+          return;
+        }
+
+        const [rolesResult, eventsResult] = await Promise.all([
+          supabase.from('roles').select('id, name, scope').order('name'),
+          isAdminMaster && tenantId
+            ? securityEventRepository.findAll(tenantId)
+            : Promise.resolve([] as SecurityEvent[]),
+        ]);
+
+        setRoles(rolesResult.data || []);
+        if (Array.isArray(eventsResult)) {
+          setEvents(eventsResult);
+        }
       } catch (error) {
-        console.error('[SEGURANCA] Failed to load roles:', error);
+        console.error('[SEGURANCA] Failed to load data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRoles();
-  }, []);
+    fetchData();
+  }, [currentTenantId, isAdminMaster]);
 
   return (
     <ModuleWorkspace
@@ -57,7 +70,7 @@ export default function SegurancaPage() {
                 <span className="text-foreground text-2xl font-semibold">
                   {roles.length}
                 </span>
-                <Key className="text-primary h-5 w-5" />
+                <Shield className="text-primary h-5 w-5" />
               </div>
             </Card>
             <Card className="p-6">
@@ -83,6 +96,49 @@ export default function SegurancaPage() {
               </div>
             </Card>
           </div>
+
+          {isAdminMaster && events.length > 0 && (
+            <Card className="overflow-hidden">
+              <div className="border-border border-b px-4 py-3">
+                <h3 className="text-foreground text-sm font-semibold">
+                  Eventos de segurança recentes
+                </h3>
+              </div>
+              <table className="divide-border min-w-full divide-y">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Evento
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      IP
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Data
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-border divide-y">
+                  {events.slice(0, 20).map((event) => (
+                    <tr
+                      key={event.id}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="text-foreground px-4 py-3 text-sm font-medium">
+                        {event.event_type}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-sm">
+                        {event.ip || '—'}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-sm">
+                        {new Date(event.created_at).toLocaleString('pt-BR')}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+          )}
 
           <Card className="overflow-hidden">
             <div className="border-border border-b px-4 py-3">
