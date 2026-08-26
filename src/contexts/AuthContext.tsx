@@ -402,6 +402,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
+        console.error('[AUTH:LOGIN] signIn failed', {
+          code: (error as any)?.code || null,
+          message: error?.message || null,
+          status: (error as any)?.status || null,
+          name: (error as any)?.name || null,
+        });
         setIsLoading(false);
         return { error: normalizeError(error).userMessage };
       }

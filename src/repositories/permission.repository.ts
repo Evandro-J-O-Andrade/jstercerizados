@@ -1,5 +1,8 @@
 import { SupabaseRepository } from './supabase.repository';
-import type { Permission } from '@/types/domain/permission';
+import type {
+  Permission,
+  PermissionCreateInput,
+} from '@/types/domain/permission';
 
 export class PermissionRepository extends SupabaseRepository {
   async findAll(_tenantId: string): Promise<Permission[]> {
@@ -39,6 +42,25 @@ export class PermissionRepository extends SupabaseRepository {
 
     if (error) throw error;
     return data || [];
+  }
+
+  async create(
+    input: PermissionCreateInput,
+    _tenantId: string,
+  ): Promise<Permission> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { data, error } = await this.supabase
+      .from('permissions')
+      .insert({
+        resource: input.resource,
+        action: input.action,
+        description: input.description ?? null,
+      })
+      .select('*')
+      .single();
+
+    if (error) throw error;
+    return data;
   }
 }
 

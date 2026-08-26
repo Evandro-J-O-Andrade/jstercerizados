@@ -293,6 +293,14 @@ function App() {
                 </PermissionGuard>
               }
             />
+            <Route
+              path="candidatos"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <CandidatosPage />
+                </PermissionGuard>
+              }
+            />
             <Route path="*" element={<DashboardRouteNotFound />} />
           </Route>
           <Route path="/onboarding" element={<Onboarding />} />

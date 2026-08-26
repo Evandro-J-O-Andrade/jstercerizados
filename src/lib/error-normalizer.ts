@@ -181,7 +181,16 @@ function isAuthError(input: unknown): boolean {
   if (typeof input === 'object' && input !== null) {
     const record = input as Record<string, unknown>;
     const status = record.status || record.statusCode;
+    const code = record.code;
     if (typeof status === 'number' && status === 401) {
+      return true;
+    }
+    if (
+      typeof code === 'string' &&
+      /^(invalid_credentials|email_not_confirmed|user_not_found|session_expired|token_expired|token_revoked|missing_session_token|invalid_grant|unsupported_grant_type)/.test(
+        code,
+      )
+    ) {
       return true;
     }
   }
