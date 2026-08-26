@@ -352,6 +352,12 @@ Classificação preliminar por domínio:
 4. **RLS está massivamente presente:** 553 policies indicam que o isolamento por `tenant_id` e RBAC está implementado no Cloud em muito mais tabelas do que o inventário local previa.
 5. A regra de isolamento (`people` não é usuários globais, `tenant_id` acompanha domínios, RBAC em múltiplas camadas) **deve ser verificada tabela por tabela** antes de qualquer implementação de UI.
 
+### Migrations aplicadas no Cloud
+
+- `20260826000001_candidate_bootstrap.sql` aplicada em 2026-08-26.
+  - Policy `people_member_read` atualizada para incluir self-read via `auth.uid() = auth_user_id`.
+  - Função `bootstrap_candidate_identity()` criada para provisionamento atômico e idempotente de identidade de candidato.
+
 ## Próximos passos (C1.7-C)
 
 1. Mapear cada tabela desconhecida para domínio → módulo → permission → rota → UI.
