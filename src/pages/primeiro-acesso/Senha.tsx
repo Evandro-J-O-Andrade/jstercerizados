@@ -22,12 +22,7 @@ export default function PrimeiroAcessoSenha() {
   const [showPasswords, setShowPasswords] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const {
-    changePassword,
-    isAuthenticated,
-    person,
-    resolvePostLoginDestination,
-  } = useAuth();
+  const { changePassword, isAuthenticated, person } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,6 +41,13 @@ export default function PrimeiroAcessoSenha() {
     e.preventDefault();
     setError('');
 
+    console.log('[AUTH:CHANGE_PASSWORD] submit', {
+      newPasswordLength: newPassword.length,
+      confirmPasswordLength: confirmPassword.length,
+      passwordsMatch: newPassword === confirmPassword,
+      meetsRequirements,
+    });
+
     if (!passwordsMatch) {
       setError('As senhas não coincidem.');
       return;
@@ -63,7 +65,7 @@ export default function PrimeiroAcessoSenha() {
       if (result.error) {
         setError(result.error);
       } else {
-        const target = resolvePostLoginDestination();
+        const target = result.destination || '/dashboard';
         navigate(target, { replace: true });
       }
     } catch {

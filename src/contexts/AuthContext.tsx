@@ -54,7 +54,7 @@ interface AuthContextType {
   changePassword: (
     currentPassword: string,
     newPassword: string,
-  ) => Promise<{ error?: string }>;
+  ) => Promise<{ error?: string; destination?: string }>;
   acceptTerms: (
     documentType: string,
     documentVersion: string,
@@ -502,7 +502,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const changePassword = async (
     _currentPassword: string,
     newPassword: string,
-  ): Promise<{ error?: string }> => {
+  ): Promise<{ error?: string; destination?: string }> => {
     const supabase = getSupabaseClient();
     if (!supabase) {
       return {
@@ -519,6 +519,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      console.log('[AUTH:CHANGE_PASSWORD] iniciando troca de senha', {
+        hasSession: !!user,
+        userId: user.id,
+        newPasswordLength: newPassword.length,
+      });
+
       const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
       });
@@ -539,7 +545,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
 
-      if (person && firstLoginState) {
+      console.log('[AUTH:CHANGE_PASSWORD] updateUser:success');
+
+      if (person) {
         const { error: stateError } = await supabase
           .from('first_login_state')
           .update({
@@ -549,18 +557,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .eq('person_id', person.id);
 
         if (stateError) {
-          console.error('[AUTH] Failed to update first_login_state:', {
-            code: stateError.code,
-            message: stateError.message,
-            details: stateError.details,
-            hint: stateError.hint,
-          });
+          console.error(
+            '[AUTH:CHANGE_PASSWORD] first_login_state:update:failed',
+            {
+              code: stateError.code,
+              message: stateError.message,
+            },
+          );
         } else {
-          setFirstLoginState({
-            ...firstLoginState,
-            must_change_password: false,
-            updated_at: new Date().toISOString(),
-          });
+          console.log('[AUTH:CHANGE_PASSWORD] first_login_state:updated');
         }
       }
 
@@ -568,8 +573,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await loadAuthData(user.id);
       }
 
-      return {};
+      console.log('[AUTH:CHANGE_PASSWORD] identity:reloaded');
+
+      const freshPersonId = person?.id || user.id;
+      const [{ data: freshFirstLogin }, { data: freshLegalAcceptances }] =
+        await Promise.all([
+          supabase
+            .from('first_login_state')
+            .select('*')
+            .eq('person_id', freshPersonId)
+            .maybeSingle(),
+          supabase
+            .from('legal_acceptances')
+            .select('document_type, document_version, accepted_at')
+            .eq('person_id', freshPersonId)
+            .order('accepted_at', { ascending: false }),
+        ]);
+
+      const mustChangePassword = freshFirstLogin?.must_change_password ?? false;
+      const hasAcceptedTerms =
+        (freshLegalAcceptances || []).some(
+          (a: any) => a.document_type === 'terms',
+        ) || freshFirstLogin?.terms_version != null;
+
+      let destination = '/dashboard';
+      if (mustChangePassword) {
+        destination = '/primeiro-acesso/senha';
+      } else if (!hasAcceptedTerms) {
+        destination = '/auth/terms';
+      } else {
+        destination = '/auth/welcome';
+      }
+
+      console.log('[AUTH:CHANGE_PASSWORD] destination', {
+        mustChangePassword,
+        hasAcceptedTerms,
+        destination,
+      });
+
+      return { destination };
     } catch (error) {
+      console.error('[AUTH:CHANGE_PASSWORD] exception', error);
       return {
         error: normalizeError(error).userMessage,
       };
