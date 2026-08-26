@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { stockMovementsRepository } from '@/repositories/stock-movements.repository';
 import { cn } from '@/utils';
+import { Package } from 'lucide-react';
 import type { StockMovement } from '@/repositories/stock-movements.repository';
 
 export default function Estoque() {
@@ -46,14 +48,12 @@ export default function Estoque() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Estoque</h1>
-        <p className="text-muted-foreground mt-1">
-          Gerencie o estoque de produtos e materiais.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Estoque"
+      description="Produtos e movimentações."
+      icon={Package}
+      breadcrumbItems={[{ label: 'Estoque' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando estoque...</p>
@@ -105,6 +105,6 @@ export default function Estoque() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
-import { useAuth } from '@/contexts/AuthContext';
+import { Shield } from 'lucide-react';
 import { getSupabaseClient } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/utils';
 
 type Person = {
@@ -258,152 +260,167 @@ export default function RbacAuditPage() {
   const totalTenants = tenants.length;
 
   return (
-    <div className="space-y-6">
-      <Card className="p-6">
-        <h2 className="text-foreground mb-4 text-lg font-semibold">
-          Visão geral do RBAC
-        </h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div>
-            <p className="text-muted-foreground text-xs tracking-wider uppercase">
-              Pessoas
-            </p>
-            <p className="text-foreground text-2xl font-bold">{totalPeople}</p>
+    <ModuleWorkspace
+      title="RBAC Auditoria"
+      description="Visão geral do RBAC."
+      icon={Shield}
+      breadcrumbItems={[
+        { label: 'RBAC Auditoria', href: '/dashboard/rbac-auditoria' },
+      ]}
+    >
+      <div className="space-y-6">
+        <Card className="p-6">
+          <h2 className="text-foreground mb-4 text-lg font-semibold">
+            Visão geral do RBAC
+          </h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div>
+              <p className="text-muted-foreground text-xs tracking-wider uppercase">
+                Pessoas
+              </p>
+              <p className="text-foreground text-2xl font-bold">
+                {totalPeople}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs tracking-wider uppercase">
+                Roles
+              </p>
+              <p className="text-foreground text-2xl font-bold">{totalRoles}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs tracking-wider uppercase">
+                Permissões
+              </p>
+              <p className="text-foreground text-2xl font-bold">
+                {totalPermissions}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs tracking-wider uppercase">
+                Tenants
+              </p>
+              <p className="text-foreground text-2xl font-bold">
+                {totalTenants}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-muted-foreground text-xs tracking-wider uppercase">
-              Roles
-            </p>
-            <p className="text-foreground text-2xl font-bold">{totalRoles}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground text-xs tracking-wider uppercase">
-              Permissões
-            </p>
-            <p className="text-foreground text-2xl font-bold">
-              {totalPermissions}
-            </p>
-          </div>
-          <div>
-            <p className="text-muted-foreground text-xs tracking-wider uppercase">
-              Tenants
-            </p>
-            <p className="text-foreground text-2xl font-bold">{totalTenants}</p>
-          </div>
-        </div>
-      </Card>
+        </Card>
 
-      <Card className="p-6">
-        <h2 className="text-foreground mb-4 text-lg font-semibold">
-          Matriz RBAC
-        </h2>
-        <p className="text-muted-foreground mb-4 text-sm">
-          Usuário → Tenant → Role → Permissões → Módulos
-        </p>
-        <div className="space-y-4">
-          {matrix.map((row) => (
-            <div
-              key={row.person.id}
-              className="border-border/60 rounded-lg border p-4"
-            >
-              <div className="mb-2 flex items-center justify-between">
-                <div>
-                  <p className="text-foreground text-sm font-medium">
-                    {row.person.full_name}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {row.person.email}
-                  </p>
+        <Card className="p-6">
+          <h2 className="text-foreground mb-4 text-lg font-semibold">
+            Matriz RBAC
+          </h2>
+          <p className="text-muted-foreground mb-4 text-sm">
+            Usuário → Tenant → Role → Permissões → Módulos
+          </p>
+          <div className="space-y-4">
+            {matrix.map((row) => (
+              <div
+                key={row.person.id}
+                className="border-border/60 rounded-lg border p-4"
+              >
+                <div className="mb-2 flex items-center justify-between">
+                  <div>
+                    <p className="text-foreground text-sm font-medium">
+                      {row.person.full_name}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {row.person.email}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    {row.person.status}
+                  </span>
                 </div>
-                <span className="text-muted-foreground text-xs">
-                  {row.person.status}
-                </span>
-              </div>
 
-              <div className="mb-2">
-                <p className="text-muted-foreground text-xs tracking-wider uppercase">
-                  Tenants
-                </p>
-                {row.memberships.length === 0 ? (
-                  <p className="text-muted-foreground text-xs">
-                    Sem membership
+                <div className="mb-2">
+                  <p className="text-muted-foreground text-xs tracking-wider uppercase">
+                    Tenants
                   </p>
-                ) : (
-                  <div className="mt-1 flex flex-wrap gap-2">
-                    {row.memberships.map((m) => {
-                      const tenant = tenants.find((t) => t.id === m.tenant_id);
-                      return (
-                        <span
-                          key={m.id}
-                          className="bg-muted text-foreground rounded-full px-2 py-0.5 text-xs"
-                        >
-                          {tenant?.name || m.tenant_id} ({m.membership_role})
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              <div className="mb-2">
-                <p className="text-muted-foreground text-xs tracking-wider uppercase">
-                  Roles
-                </p>
-                {row.roles.length === 0 ? (
-                  <p className="text-muted-foreground text-xs">Sem roles</p>
-                ) : (
-                  <div className="mt-1 flex flex-wrap gap-2">
-                    {row.roles.map((r) => (
-                      <span
-                        key={r.id}
-                        className={cn(
-                          'rounded-full px-2 py-0.5 text-xs',
-                          r.is_global
-                            ? 'bg-primary/10 text-primary'
-                            : 'bg-accent/10 text-accent',
-                        )}
-                      >
-                        {r.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="mb-2">
-                <p className="text-muted-foreground text-xs tracking-wider uppercase">
-                  Permissões
-                </p>
-                <p className="text-foreground text-xs">
-                  {row.permissions.length} permissões
-                </p>
-              </div>
-
-              <div>
-                <p className="text-muted-foreground text-xs tracking-wider uppercase">
-                  Módulos
-                </p>
-                <div className="mt-1 flex flex-wrap gap-2">
-                  {row.modules.length === 0 ? (
-                    <span className="text-muted-foreground text-xs">
-                      Nenhum módulo
-                    </span>
+                  {row.memberships.length === 0 ? (
+                    <p className="text-muted-foreground text-xs">
+                      Sem membership
+                    </p>
                   ) : (
-                    row.modules.map((mod) => (
-                      <span
-                        key={mod}
-                        className="bg-success/10 text-success rounded-full px-2 py-0.5 text-xs"
-                      >
-                        {mod}
-                      </span>
-                    ))
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {row.memberships.map((m) => {
+                        const tenant = tenants.find(
+                          (t) => t.id === m.tenant_id,
+                        );
+                        return (
+                          <span
+                            key={m.id}
+                            className="bg-muted text-foreground rounded-full px-2 py-0.5 text-xs"
+                          >
+                            {tenant?.name || m.tenant_id} ({m.membership_role})
+                          </span>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
+
+                <div className="mb-2">
+                  <p className="text-muted-foreground text-xs tracking-wider uppercase">
+                    Roles
+                  </p>
+                  {row.roles.length === 0 ? (
+                    <p className="text-muted-foreground text-xs">Sem roles</p>
+                  ) : (
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {row.roles.map((r) => (
+                        <span
+                          key={r.id}
+                          className={cn(
+                            'rounded-full px-2 py-0.5 text-xs',
+                            r.is_global
+                              ? 'bg-primary/10 text-primary'
+                              : 'bg-accent/10 text-accent',
+                          )}
+                        >
+                          {r.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mb-2">
+                  <p className="text-muted-foreground text-xs tracking-wider uppercase">
+                    Permissões
+                  </p>
+                  <p className="text-foreground text-xs">
+                    {row.permissions.length} permissões
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-muted-foreground text-xs tracking-wider uppercase">
+                    Módulos
+                  </p>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    {row.modules.length === 0 ? (
+                      <span className="text-muted-foreground text-xs">
+                        Nenhum módulo
+                      </span>
+                    ) : (
+                      row.modules.map((mod) => (
+                        <span
+                          key={mod}
+                          className="bg-success/10 text-success rounded-full px-2 py-0.5 text-xs"
+                        >
+                          {mod}
+                        </span>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </Card>
-    </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </ModuleWorkspace>
   );
 }

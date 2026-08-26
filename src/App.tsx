@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { useIntro } from '@/contexts/IntroContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { FirstAccessRoute } from '@/components/auth/FirstAccessRoute';
+import { AuthRoute } from '@/components/auth/AuthRoute';
 import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ToastProvider } from '@/components/feedback';
@@ -39,6 +40,8 @@ import {
   MODULE_PERMISSION_MAP,
   PORTAL_MODULES,
 } from '@/components/portal/ModuleRegistry';
+import AuthTerms from '@/pages/auth/Termos';
+import AuthWelcome from '@/pages/auth/BoasVindas';
 
 const Home = lazy(() => import('@/pages/Home'));
 const Sobre = lazy(() => import('@/pages/Sobre'));
@@ -157,7 +160,9 @@ function App() {
     ...platformModules
       .filter(
         (module) =>
-          MODULE_PAGE_MAP[module.id] && MODULE_PERMISSION_MAP[module.id],
+          MODULE_PAGE_MAP[module.id] &&
+          (MODULE_PERMISSION_MAP[module.id] ||
+            !module.requiredPermissions?.length),
       )
       .map((module) => ({
         path: module.route.replace('/dashboard/', ''),
@@ -174,7 +179,9 @@ function App() {
     ...tenantModules
       .filter(
         (module) =>
-          MODULE_PAGE_MAP[module.id] && MODULE_PERMISSION_MAP[module.id],
+          MODULE_PAGE_MAP[module.id] &&
+          (MODULE_PERMISSION_MAP[module.id] ||
+            !module.requiredPermissions?.length),
       )
       .map((module) => ({
         path: module.route.replace('/dashboard/', ''),
@@ -197,28 +204,30 @@ function App() {
           <Route
             path="/dashboard/*"
             element={
-              <ProtectedRoute
-                allowedRoles={[
-                  'admin_master',
-                  'tenant_admin',
-                  'operations_manager',
-                  'operator',
-                  'commercial',
-                  'finance',
-                  'finance_manager',
-                  'recruiter',
-                  'rh_manager',
-                  'stock_manager',
-                  'security_manager',
-                  'facilities_manager',
-                  'lawyer',
-                  'it_admin',
-                  'support',
-                  'viewer',
-                ]}
-              >
-                <AppShell />
-              </ProtectedRoute>
+              <AuthRoute>
+                <ProtectedRoute
+                  allowedRoles={[
+                    'admin_master',
+                    'tenant_admin',
+                    'operations_manager',
+                    'operator',
+                    'commercial',
+                    'finance',
+                    'finance_manager',
+                    'recruiter',
+                    'rh_manager',
+                    'stock_manager',
+                    'security_manager',
+                    'facilities_manager',
+                    'lawyer',
+                    'it_admin',
+                    'support',
+                    'viewer',
+                  ]}
+                >
+                  <AppShell />
+                </ProtectedRoute>
+              </AuthRoute>
             }
           >
             {dashboardRoutes.map((route) => (
@@ -239,6 +248,8 @@ function App() {
             <Route path="*" element={<DashboardRouteNotFound />} />
           </Route>
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/auth/terms" element={<AuthTerms />} />
+          <Route path="/auth/welcome" element={<AuthWelcome />} />
           <Route
             path="/primeiro-acesso/termos"
             element={

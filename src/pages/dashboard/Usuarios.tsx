@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { usersRepository } from '@/repositories/users.repository';
 import { cn } from '@/utils';
+import { Users } from 'lucide-react';
 import type { Person } from '@/types/domain/person';
 
 export default function Usuarios() {
@@ -46,14 +48,12 @@ export default function Usuarios() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Usuários</h1>
-        <p className="text-muted-foreground mt-1">
-          Gerencie os usuários e suas permissões.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Usuários"
+      description="Gerencie os usuários e permissões."
+      icon={Users}
+      breadcrumbItems={[{ label: 'Usuários' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando usuários...</p>
@@ -106,6 +106,6 @@ export default function Usuarios() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

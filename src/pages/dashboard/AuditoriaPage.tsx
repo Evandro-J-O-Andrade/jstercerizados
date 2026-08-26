@@ -1,64 +1,113 @@
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { ModuleCard } from '@/components/portal/ModuleCard';
+import { Card } from '@/components/ui/Card';
+import { FileText } from 'lucide-react';
+import { getSupabaseClient } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAccount } from '@/contexts/AccountContext';
-import { getAvailableModules } from '@/components/portal/ModuleRegistry';
-import { normalizeRoleScope } from '@/utils/rbac-normalize';
-import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+
+interface DomainEvent {
+  id: string;
+  event_type: string;
+  description: string;
+  created_at: string;
+}
 
 export default function AuditoriaPage() {
-  const { permissions } = useAuth();
-  const { activeRole } = useAccount();
+  const { isAdminMaster, tenantMemberships, currentTenantId } = useAuth();
+  const [events, setEvents] = useState<DomainEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const modules = useMemo(
-    () =>
-      getAvailableModules(
-        permissions,
-        activeRole ? normalizeRoleScope(activeRole.scope) : 'tenant',
-      ),
-    [permissions, activeRole?.scope],
-  );
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
 
-  const module = modules.find((m: ModuleDefinition) => m.id === 'auditoria');
+    const fetchEvents = async () => {
+      try {
+        let query = supabase
+          .from('domain_events')
+          .select('id, event_type, description, created_at')
+          .order('created_at', { ascending: false })
+          .limit(50);
 
-  const cards = useMemo(() => {
-    if (!module?.features) return [];
-    return module.features.map((feature) => ({
-      id: feature.id,
-      title: feature.title,
-      description: feature.description,
-      route: feature.route,
-      icon: 'file-text',
-    }));
-  }, [module]);
+        if (!isAdminMaster) {
+          const activeTenantId =
+            currentTenantId || tenantMemberships[0]?.tenant_id;
+          if (activeTenantId) {
+            query = query.eq('tenant_id', activeTenantId);
+          }
+        }
+
+        const { data } = await query;
+        setEvents(data || []);
+      } catch (error) {
+        console.error('[AUDITORIA] Failed to load:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, [isAdminMaster, currentTenantId, tenantMemberships]);
 
   return (
     <ModuleWorkspace
-      title={module?.title || 'Auditoria'}
-      description={module?.description || 'Logs e eventos do sistema'}
-      module={module}
-      permissions={permissions}
-      breadcrumbItems={[{ label: 'Auditoria' }]}
+      title="Auditoria"
+      description="Logs e eventos do sistema."
+      icon={FileText}
+      breadcrumbItems={[{ label: 'Auditoria', href: '/dashboard/auditoria' }]}
     >
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {cards.map((card) => (
-          <ModuleCard
-            key={card.id}
-            module={{
-              id: card.id,
-              title: card.title,
-              description: card.description,
-              icon: card.icon,
-              route: card.route,
-              category: 'seguranca',
-              scope: 'platform',
-              requiredPermissions: [],
-            }}
-            permissions={permissions}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <div className="text-muted-foreground text-sm">
+          Carregando eventos...
+        </div>
+      ) : events.length === 0 ? (
+        <Card className="p-6">
+          <p className="text-muted-foreground text-sm">
+            Nenhum evento de auditoria encontrado.
+          </p>
+        </Card>
+      ) : (
+        <Card className="overflow-hidden">
+          <table className="divide-border min-w-full divide-y">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                  Tipo
+                </th>
+                <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                  Descrição
+                </th>
+                <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                  Data
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-border divide-y">
+              {events.map((event) => (
+                <tr
+                  key={event.id}
+                  className="hover:bg-muted/30 transition-colors"
+                >
+                  <td className="text-foreground px-4 py-3 text-sm font-medium">
+                    {event.event_type}
+                  </td>
+                  <td className="text-muted-foreground px-4 py-3 text-sm">
+                    {event.description || '—'}
+                  </td>
+                  <td className="text-muted-foreground px-4 py-3 text-sm">
+                    {new Date(event.created_at).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      )}
     </ModuleWorkspace>
   );
 }

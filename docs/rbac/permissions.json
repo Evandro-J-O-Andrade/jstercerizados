@@ -1,0 +1,1479 @@
+[
+  {
+    "id": "c49ddf68-ed63-4cf2-b54d-d2251a815272",
+    "resource": "tenants",
+    "action": "create",
+    "description": "Criar tenant",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "bf4e553e-898b-4e0b-a31f-a793a6735bde",
+    "resource": "tenants",
+    "action": "read",
+    "description": "Ler tenant",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "f3427e6f-4a90-4dce-9bdd-41a6198c4aaf",
+    "resource": "tenants",
+    "action": "update",
+    "description": "Atualizar tenant",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "46c37233-614c-4608-badb-01767d4acff1",
+    "resource": "tenants",
+    "action": "delete",
+    "description": "Remover tenant",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "ea7fa862-3f34-40b5-b97c-15c73b46151d",
+    "resource": "people",
+    "action": "create",
+    "description": "Criar pessoa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "0d4761e4-1151-4cc5-b501-0b3907e6eeb9",
+    "resource": "people",
+    "action": "read",
+    "description": "Ler pessoa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "9f3ed31c-4e44-46aa-bb57-f848ec5028b5",
+    "resource": "people",
+    "action": "update",
+    "description": "Atualizar pessoa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "ecb60027-34ff-4d1c-b4cd-86251e95d8c1",
+    "resource": "people",
+    "action": "delete",
+    "description": "Remover pessoa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "c47a1dd6-4942-429c-8709-6fa9131abee4",
+    "resource": "roles",
+    "action": "create",
+    "description": "Criar role",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "738d6262-c02d-40ae-b2f9-93af299ed743",
+    "resource": "roles",
+    "action": "read",
+    "description": "Ler role",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "57f35f00-777c-4224-b96a-9bdd6f05cb84",
+    "resource": "roles",
+    "action": "update",
+    "description": "Atualizar role",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "11aa3eed-48cd-4f29-ad63-efdd4d76c918",
+    "resource": "roles",
+    "action": "delete",
+    "description": "Remover role",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "a4eb685e-4786-44da-9424-ba5c717010d2",
+    "resource": "companies",
+    "action": "create",
+    "description": "Criar empresa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "5c9e957d-8a99-4d19-8de1-469a526e85dc",
+    "resource": "companies",
+    "action": "read",
+    "description": "Ler empresa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "73b96008-1e57-4c03-9438-f5d0164df60b",
+    "resource": "companies",
+    "action": "update",
+    "description": "Atualizar empresa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "4a0db6f9-a591-47fc-bb0b-4d97fe293129",
+    "resource": "companies",
+    "action": "delete",
+    "description": "Remover empresa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "2e0a6201-20f4-489b-8e3e-fb042cb7ff01",
+    "resource": "products",
+    "action": "create",
+    "description": "Criar produto",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "13322f98-970c-41ff-9903-3a8f922d7f71",
+    "resource": "products",
+    "action": "read",
+    "description": "Ler produto",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "8aba243f-a68f-400f-bed1-40fc0a611fad",
+    "resource": "products",
+    "action": "update",
+    "description": "Atualizar produto",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "02fa198c-5c9f-4c53-9611-f65759e398f9",
+    "resource": "products",
+    "action": "delete",
+    "description": "Remover produto",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "a6671cf6-95d2-4205-956c-71f83a22d90d",
+    "resource": "stock_movements",
+    "action": "create",
+    "description": "Criar movimentação",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "880caed1-8255-4bef-86a2-f1828e7f9536",
+    "resource": "stock_movements",
+    "action": "read",
+    "description": "Ler movimentação",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "bf709be3-1926-4bad-ae68-8429b2f99794",
+    "resource": "purchase_orders",
+    "action": "create",
+    "description": "Criar pedido de compra",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "afaa01f4-6ee6-407a-a320-ba31dca7d1a7",
+    "resource": "purchase_orders",
+    "action": "read",
+    "description": "Ler pedido de compra",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "234900b7-5537-41b5-bbf1-2091df6cfbd6",
+    "resource": "purchase_orders",
+    "action": "update",
+    "description": "Atualizar pedido de compra",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "58369814-3cdf-40bc-9f33-7ad065b51f7d",
+    "resource": "purchase_orders",
+    "action": "confirm",
+    "description": "Confirmar pedido de compra",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "9afe631f-1a1c-41c2-91db-11ce0af5ee21",
+    "resource": "purchase_receipts",
+    "action": "create",
+    "description": "Criar recebimento",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "ed76790a-c742-4d45-8f9f-38bbe4ed51fe",
+    "resource": "purchase_receipts",
+    "action": "read",
+    "description": "Ler recebimento",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "96a4d936-2265-4241-aca0-84637b9f541a",
+    "resource": "purchase_receipts",
+    "action": "confirm",
+    "description": "Confirmar recebimento",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "2712e7f0-c117-464e-b6c5-add090f68d85",
+    "resource": "service_orders",
+    "action": "create",
+    "description": "Criar ordem de serviço",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "0eade96f-6d8a-4f9a-a388-ecdf8b7405d7",
+    "resource": "service_orders",
+    "action": "read",
+    "description": "Ler ordem de serviço",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "b332c3aa-67e7-43c8-8327-9bcf14471d25",
+    "resource": "service_orders",
+    "action": "update",
+    "description": "Atualizar ordem de serviço",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "90e063b7-6a15-4caa-99b6-e11a419fbf16",
+    "resource": "service_orders",
+    "action": "complete",
+    "description": "Concluir ordem de serviço",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "0e773490-f9c3-4540-95d0-534226a9896a",
+    "resource": "contracts",
+    "action": "create",
+    "description": "Criar contrato",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "cec25721-f1fe-4560-a86a-d36741b43891",
+    "resource": "contracts",
+    "action": "read",
+    "description": "Ler contrato",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "be857fdf-c37a-411b-8353-7e0b5c4f54bb",
+    "resource": "contracts",
+    "action": "update",
+    "description": "Atualizar contrato",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "9723dca7-7a58-4baa-8a2d-09bed345fe1a",
+    "resource": "contracts",
+    "action": "renew",
+    "description": "Renovar contrato",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "7038a064-aa1d-4e88-a3ae-e81a49e975a3",
+    "resource": "tasks",
+    "action": "create",
+    "description": "Criar tarefa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "20032d59-4bf6-46f9-aff0-78965e34a68e",
+    "resource": "tasks",
+    "action": "read",
+    "description": "Ler tarefa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "a7d0c6ac-c07a-47aa-a2f3-781f0474e3d0",
+    "resource": "tasks",
+    "action": "update",
+    "description": "Atualizar tarefa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "9da75044-a113-4300-b007-96ba51da349d",
+    "resource": "tasks",
+    "action": "assign",
+    "description": "Atribuir tarefa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "1c283da0-f29d-4cc4-807b-d5c6c9293e99",
+    "resource": "support_tickets",
+    "action": "create",
+    "description": "Criar ticket",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "9d0faa6a-4ea2-4bab-b2ae-3608d2e20141",
+    "resource": "support_tickets",
+    "action": "read",
+    "description": "Ler ticket",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "34286b88-6a06-4e13-a53d-1b00d601e432",
+    "resource": "support_tickets",
+    "action": "update",
+    "description": "Atualizar ticket",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "952e6d7f-442c-4428-a220-a8b88c7f244d",
+    "resource": "support_tickets",
+    "action": "resolve",
+    "description": "Resolver ticket",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "3d54245f-f459-4439-a126-643dd2f63882",
+    "resource": "chat",
+    "action": "create",
+    "description": "Criar conversa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "ea802c96-8f3c-4a7f-8206-2fa3d652093d",
+    "resource": "chat",
+    "action": "read",
+    "description": "Ler conversa",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "985a91ec-2e21-4bb6-99e6-bba27a17b171",
+    "resource": "chat",
+    "action": "handoff",
+    "description": "Transferir atendimento",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "1b35aab6-fe73-44e0-8ac1-736a2fbdef4e",
+    "resource": "notifications",
+    "action": "create",
+    "description": "Criar notificação",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "be4161c2-1a18-4ef3-b231-e2a59c4626e9",
+    "resource": "notifications",
+    "action": "read",
+    "description": "Ler notificação",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "90187ae0-dd67-4a9d-a345-bb84c6b9118d",
+    "resource": "files",
+    "action": "upload",
+    "description": "Enviar arquivo",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "425055aa-9fea-4203-b869-1d1a77e43016",
+    "resource": "files",
+    "action": "read",
+    "description": "Ler arquivo",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "615e2f97-ac8b-4c8a-b285-83492aac9fba",
+    "resource": "files",
+    "action": "delete",
+    "description": "Remover arquivo",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "43d5bac1-92d6-4580-bde9-e3b6ee3c6f26",
+    "resource": "documents",
+    "action": "create",
+    "description": "Criar documento",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "2f94fb10-9033-472b-9fb1-6d5c47e2b117",
+    "resource": "documents",
+    "action": "read",
+    "description": "Ler documento",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "4adefd0e-da26-40b7-b305-f4bdc5ccec5b",
+    "resource": "documents",
+    "action": "version",
+    "description": "Criar versão de documento",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "3a4a0bcf-197d-4965-84e5-82e1b864a434",
+    "resource": "audit_logs",
+    "action": "read",
+    "description": "Ler auditoria",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "ec80fcb6-bbd7-4e37-b75f-a408c4ecc802",
+    "resource": "security_events",
+    "action": "read",
+    "description": "Ler eventos de segurança",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "50ccc832-f161-4edb-8e78-0cde150441c6",
+    "resource": "lgpd",
+    "action": "read",
+    "description": "Ler dados LGPD",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "4ed2eda1-329e-43da-a3b2-88db41a69ce8",
+    "resource": "lgpd",
+    "action": "manage_consent",
+    "description": "Gerenciar consentimento",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "617354e9-83cb-4a65-9c2d-a435eadec6fa",
+    "resource": "lgpd",
+    "action": "manage_retention",
+    "description": "Gerenciar retenção",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "1bef5b01-0272-4a14-ad42-fe9d17203a37",
+    "resource": "reports",
+    "action": "read",
+    "description": "Ler relatórios",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "81a59683-d8d4-4b39-81cd-8468ca7df587",
+    "resource": "dashboard",
+    "action": "read",
+    "description": "Ler dashboard",
+    "created_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "84fac669-a441-4d0b-8376-4e192cb8f7b2",
+    "resource": "jobs",
+    "action": "close",
+    "description": "Encerrar vaga",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "21531326-b06b-4b90-89d8-5f163f7dc746",
+    "resource": "candidates",
+    "action": "delete",
+    "description": "Remover candidato",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "f5afd88e-7edb-4c67-aefd-120a3c0b4c4a",
+    "resource": "candidates.documents",
+    "action": "read",
+    "description": "Consultar documentos do candidato",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "66eb1a5a-9e97-48f1-af9f-e3297923685a",
+    "resource": "candidates.documents",
+    "action": "manage",
+    "description": "Gerenciar documentos do candidato",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "dafa7382-df7c-4985-95fc-1094959553ad",
+    "resource": "candidates.profile",
+    "action": "read",
+    "description": "Consultar perfil completo do candidato",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "5388fb3d-cb91-406c-bebc-51569da01044",
+    "resource": "recruitment",
+    "action": "read",
+    "description": "Visualizar processos seletivos",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "b440a270-7bb1-41fc-a31e-e1ee023ba8ba",
+    "resource": "recruitment",
+    "action": "create",
+    "description": "Criar processo seletivo",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "ad6a6d06-0a29-485a-8581-1a04cad8e658",
+    "resource": "recruitment",
+    "action": "update",
+    "description": "Editar processo seletivo",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "74586ba9-af4f-4189-a758-096e7c660c65",
+    "resource": "recruitment",
+    "action": "delete",
+    "description": "Excluir processo seletivo",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "9dc7137c-b045-48ba-86a6-3f2e61e86bfe",
+    "resource": "recruitment",
+    "action": "advance",
+    "description": "Avançar candidato para próxima etapa",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "3bd52aaf-616c-4547-b08c-960a5af2018b",
+    "resource": "recruitment",
+    "action": "reject",
+    "description": "Reprovar candidato",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "cbd63735-6a79-4328-af3b-654a4674748a",
+    "resource": "recruitment.stage",
+    "action": "manage",
+    "description": "Gerenciar etapas do processo",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "7df7aa78-e72c-445c-9b96-eebb139fd434",
+    "resource": "applications",
+    "action": "advance",
+    "description": "Avançar status da candidatura",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "f3adb101-ad88-4e2a-ad4d-5dbc678d0c31",
+    "resource": "applications",
+    "action": "reject",
+    "description": "Rejeitar candidatura",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "c39a1771-a08e-4f85-9494-eb596145e020",
+    "resource": "applications.history",
+    "action": "read",
+    "description": "Consultar histórico de status da candidatura",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "fce8a6c5-36f4-44a4-b50c-4812b019fffe",
+    "resource": "talent_pool",
+    "action": "read",
+    "description": "Consultar banco de talentos",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "58b8496f-63c2-4789-bb3e-bc5f97515487",
+    "resource": "talent_pool",
+    "action": "manage",
+    "description": "Administrar talentos do banco",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "8f0c7fff-d462-4299-9425-dcf060486703",
+    "resource": "talent_pool",
+    "action": "match",
+    "description": "Executar matching candidato-vaga",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "4c0c9c68-7d0d-4798-bc9f-56d9003e4d57",
+    "resource": "recruitment_demands",
+    "action": "read",
+    "description": "Consultar demandas de recrutamento",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "4bb5498a-4c66-40e2-abb0-6aff68e115a5",
+    "resource": "recruitment_demands",
+    "action": "create",
+    "description": "Abrir nova demanda de recrutamento",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "ca9464d2-b43b-4ce7-bf09-0c0367051e33",
+    "resource": "recruitment_demands",
+    "action": "update",
+    "description": "Editar demanda de recrutamento",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "e63e0561-ac4f-40d9-9063-eebc4374dc32",
+    "resource": "recruitment_demands",
+    "action": "delete",
+    "description": "Excluir demanda de recrutamento",
+    "created_at": "2026-08-23T18:42:55.646147+00:00"
+  },
+  {
+    "id": "bfb3cc55-6af5-402d-a694-05fb36b6ae2f",
+    "resource": "jobs",
+    "action": "read",
+    "description": "Visualizar vagas",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "6b059168-da28-4e7d-93b1-2c51f61a54a8",
+    "resource": "jobs",
+    "action": "create",
+    "description": "Criar vaga",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "9df92cfe-86ec-45ef-81be-c00dd639636b",
+    "resource": "jobs",
+    "action": "update",
+    "description": "Editar vaga",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "a25cdc41-d02f-4f70-8186-74bcba4db548",
+    "resource": "jobs",
+    "action": "delete",
+    "description": "Excluir vaga",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "4966e2b1-c3e9-42b6-b90c-318cb1c90a1d",
+    "resource": "jobs",
+    "action": "publish",
+    "description": "Publicar vaga",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "a20d723d-a66f-42bf-8d4c-1097ec27ad4a",
+    "resource": "candidates",
+    "action": "read",
+    "description": "Visualizar candidatos",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "38a9d067-5a6e-44ce-818d-cd93aca25f55",
+    "resource": "candidates",
+    "action": "create",
+    "description": "Cadastrar candidato",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "a6c461f6-b8eb-4c2d-97a7-538a4cd46c71",
+    "resource": "candidates",
+    "action": "update",
+    "description": "Editar candidato",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "bf9a780e-9cff-467e-9b73-e47524da9016",
+    "resource": "applications",
+    "action": "read",
+    "description": "Visualizar candidaturas",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "0ba9279d-fda3-4bf6-bd43-3e955807fca8",
+    "resource": "applications",
+    "action": "create",
+    "description": "Registrar candidatura",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "0e63c84e-9963-4d1a-a27d-a96e71e7d078",
+    "resource": "applications",
+    "action": "update",
+    "description": "Atualizar candidatura",
+    "created_at": "2026-08-23T18:45:45.235955+00:00"
+  },
+  {
+    "id": "ca3aa162-fd9a-448b-8b50-211e0cb4876f",
+    "resource": "ai",
+    "action": "configure",
+    "description": "Configurar IA",
+    "created_at": "2026-08-25T17:23:12.236362+00:00"
+  },
+  {
+    "id": "843e9701-7587-4331-aa84-8bc0a0a1268c",
+    "resource": "ai",
+    "action": "test",
+    "description": "Testar IA",
+    "created_at": "2026-08-25T17:23:12.379708+00:00"
+  },
+  {
+    "id": "4b6b2149-1529-49ba-9a08-8f71e56116da",
+    "resource": "applications",
+    "action": "approve",
+    "description": "Aprovar candidatura",
+    "created_at": "2026-08-25T17:23:12.454022+00:00"
+  },
+  {
+    "id": "b3d471dc-c1f1-43ba-b451-f64bce2eadf6",
+    "resource": "applications",
+    "action": "interview",
+    "description": "Agendar entrevista",
+    "created_at": "2026-08-25T17:23:12.547086+00:00"
+  },
+  {
+    "id": "5b258330-c285-4f33-b95b-98620b203093",
+    "resource": "audit",
+    "action": "export",
+    "description": "Exportar logs de auditoria",
+    "created_at": "2026-08-25T17:23:12.611583+00:00"
+  },
+  {
+    "id": "acdde241-8af0-4601-9883-93184635a499",
+    "resource": "audit",
+    "action": "filter",
+    "description": "Filtrar logs de auditoria",
+    "created_at": "2026-08-25T17:23:12.728531+00:00"
+  },
+  {
+    "id": "5fea2318-0c50-46f4-9b97-0aab31792a13",
+    "resource": "audit",
+    "action": "read",
+    "description": "Visualizar logs de auditoria",
+    "created_at": "2026-08-25T17:23:12.78748+00:00"
+  },
+  {
+    "id": "e3316eee-a387-4252-a1a0-0481a04af70f",
+    "resource": "auth",
+    "action": "change_password",
+    "description": "Alterar senha",
+    "created_at": "2026-08-25T17:23:12.861021+00:00"
+  },
+  {
+    "id": "90bd18be-ff4e-4930-bf81-6448f8729ef6",
+    "resource": "auth",
+    "action": "revoke_session",
+    "description": "Encerrar sessão",
+    "created_at": "2026-08-25T17:23:12.918833+00:00"
+  },
+  {
+    "id": "4ebded41-0704-4b7a-8416-cc3783269a4e",
+    "resource": "automations",
+    "action": "create",
+    "description": "Criar automação",
+    "created_at": "2026-08-25T17:23:12.980327+00:00"
+  },
+  {
+    "id": "78eefa80-3907-462f-b370-c01a6419f573",
+    "resource": "automations",
+    "action": "toggle",
+    "description": "Ativar/desativar automação",
+    "created_at": "2026-08-25T17:23:13.051795+00:00"
+  },
+  {
+    "id": "918449b9-9391-4c38-abf1-ea181de4db0e",
+    "resource": "automations",
+    "action": "update",
+    "description": "Atualizar automação",
+    "created_at": "2026-08-25T17:23:13.105337+00:00"
+  },
+  {
+    "id": "06f737b5-b5ed-4eb5-b690-72da57f2f969",
+    "resource": "billing",
+    "action": "cancel",
+    "description": "Cancelar fatura",
+    "created_at": "2026-08-25T17:23:13.158674+00:00"
+  },
+  {
+    "id": "8fdc7b37-86b6-4b45-8909-6dc35cb25514",
+    "resource": "billing",
+    "action": "create",
+    "description": "Criar fatura",
+    "created_at": "2026-08-25T17:23:13.226801+00:00"
+  },
+  {
+    "id": "71d53a4a-d77d-4a7a-9bc0-1970f4ba3010",
+    "resource": "billing",
+    "action": "export",
+    "description": "Exportar faturamento",
+    "created_at": "2026-08-25T17:23:13.29768+00:00"
+  },
+  {
+    "id": "ad27ab98-b8a3-4a64-84c7-bfcda8a00af5",
+    "resource": "billing",
+    "action": "read",
+    "description": "Visualizar faturamento",
+    "created_at": "2026-08-25T17:23:13.367236+00:00"
+  },
+  {
+    "id": "d4091ced-da85-4abe-9c52-c3261469e156",
+    "resource": "billing",
+    "action": "update",
+    "description": "Atualizar fatura",
+    "created_at": "2026-08-25T17:23:13.425584+00:00"
+  },
+  {
+    "id": "bdd0a47c-c5a7-487d-8ca2-8093b3bb48c8",
+    "resource": "candidates",
+    "action": "export",
+    "description": "Exportar candidatos",
+    "created_at": "2026-08-25T17:23:13.482914+00:00"
+  },
+  {
+    "id": "affa6e69-9f4b-4fb9-a90d-6131d617c63e",
+    "resource": "companies",
+    "action": "convert",
+    "description": "Converter lead em cliente",
+    "created_at": "2026-08-25T17:23:13.535929+00:00"
+  },
+  {
+    "id": "59e5108f-d0ad-4557-b075-0a822163cc1a",
+    "resource": "contracts",
+    "action": "delete",
+    "description": "Remover contrato",
+    "created_at": "2026-08-25T17:23:13.588117+00:00"
+  },
+  {
+    "id": "ed40fbed-19a1-463b-80de-f353c6771bc7",
+    "resource": "contracts",
+    "action": "export",
+    "description": "Exportar contrato",
+    "created_at": "2026-08-25T17:23:13.649762+00:00"
+  },
+  {
+    "id": "733db0f9-366f-4112-9132-9226367fdddb",
+    "resource": "documents",
+    "action": "publish",
+    "description": "Publicar documento",
+    "created_at": "2026-08-25T17:23:13.71114+00:00"
+  },
+  {
+    "id": "4bd7d615-9d9c-4646-8ec0-0a46a91ff83d",
+    "resource": "documents",
+    "action": "update",
+    "description": "Atualizar documento",
+    "created_at": "2026-08-25T17:23:13.772642+00:00"
+  },
+  {
+    "id": "11ff1830-9b94-4c05-97a2-5a12ebdf9c8d",
+    "resource": "domain_events",
+    "action": "read",
+    "description": "Visualizar eventos/indicadores",
+    "created_at": "2026-08-25T17:23:13.832065+00:00"
+  },
+  {
+    "id": "682747bb-fd89-4459-8b0f-c529ee57cc16",
+    "resource": "files",
+    "action": "create",
+    "description": "Upload de arquivo",
+    "created_at": "2026-08-25T17:23:13.890086+00:00"
+  },
+  {
+    "id": "9fbd2f1c-272d-4732-a94f-c9099de90a37",
+    "resource": "files",
+    "action": "update",
+    "description": "Atualizar arquivo",
+    "created_at": "2026-08-25T17:23:13.961835+00:00"
+  },
+  {
+    "id": "01df682c-ee1d-49cb-a324-721262e34243",
+    "resource": "finance",
+    "action": "approve",
+    "description": "Aprovar pagamento",
+    "created_at": "2026-08-25T17:23:14.025095+00:00"
+  },
+  {
+    "id": "5edc3c55-f8b1-4aa1-9d23-031d218a49c4",
+    "resource": "finance",
+    "action": "create",
+    "description": "Criar lançamento financeiro",
+    "created_at": "2026-08-25T17:23:14.090347+00:00"
+  },
+  {
+    "id": "f12784ab-1068-481d-b889-bc450fd67126",
+    "resource": "finance",
+    "action": "delete",
+    "description": "Remover lançamento financeiro",
+    "created_at": "2026-08-25T17:23:14.169645+00:00"
+  },
+  {
+    "id": "88f9b040-2cb6-49ef-b38e-20e5e0c0a628",
+    "resource": "finance",
+    "action": "forecast",
+    "description": "Projetar fluxo de caixa",
+    "created_at": "2026-08-25T17:23:14.302633+00:00"
+  },
+  {
+    "id": "974c8211-8db6-422f-b197-accd54c5c03a",
+    "resource": "finance",
+    "action": "reconcile",
+    "description": "Reconciliar lançamento",
+    "created_at": "2026-08-25T17:23:14.431492+00:00"
+  },
+  {
+    "id": "6f4fd139-63ee-4268-8999-96fb889bc457",
+    "resource": "finance",
+    "action": "update",
+    "description": "Atualizar lançamento financeiro",
+    "created_at": "2026-08-25T17:23:14.553882+00:00"
+  },
+  {
+    "id": "aae4ef2f-6f16-486a-b341-b5bf50409ae1",
+    "resource": "integrations",
+    "action": "delete",
+    "description": "Remover integração",
+    "created_at": "2026-08-25T17:23:14.675058+00:00"
+  },
+  {
+    "id": "b62f2fc7-d725-454d-8cb3-0aa6fe2f0a31",
+    "resource": "integrations",
+    "action": "test",
+    "description": "Testar integração",
+    "created_at": "2026-08-25T17:23:14.801138+00:00"
+  },
+  {
+    "id": "2ac90a4c-40b7-424a-b795-e5a48dad1422",
+    "resource": "jobs",
+    "action": "archive",
+    "description": "Arquivar vaga",
+    "created_at": "2026-08-25T17:23:14.914622+00:00"
+  },
+  {
+    "id": "df8de99c-6e69-4d7d-a1d8-c1fb370d5848",
+    "resource": "people",
+    "action": "disable",
+    "description": "Desativar pessoa/usuário",
+    "created_at": "2026-08-25T17:23:15.034313+00:00"
+  },
+  {
+    "id": "059ba644-4e06-4a73-9bcf-b7b0d38fbf9a",
+    "resource": "permissions",
+    "action": "create",
+    "description": "Criar permissão",
+    "created_at": "2026-08-25T17:23:15.17629+00:00"
+  },
+  {
+    "id": "53308a34-09d3-4322-8d83-ea899ecded0e",
+    "resource": "permissions",
+    "action": "read",
+    "description": "Visualizar permissões",
+    "created_at": "2026-08-25T17:23:15.290007+00:00"
+  },
+  {
+    "id": "c277cb1f-f45d-42ae-a91e-bef87cbf2ace",
+    "resource": "recruitment",
+    "action": "close",
+    "description": "recruitment.close",
+    "created_at": "2026-08-25T17:23:15.411579+00:00"
+  },
+  {
+    "id": "95f461c2-c031-4da8-a4f4-5adeb964da29",
+    "resource": "reports",
+    "action": "generate",
+    "description": "Gerar relatório",
+    "created_at": "2026-08-25T17:23:15.541271+00:00"
+  },
+  {
+    "id": "475e33fb-2323-4bc1-a38f-3ceef8362f03",
+    "resource": "service_orders",
+    "action": "cancel",
+    "description": "Cancelar ordem de serviço",
+    "created_at": "2026-08-25T17:23:15.679804+00:00"
+  },
+  {
+    "id": "6d3755fe-05a0-4e13-bfcc-73dcd35618a1",
+    "resource": "support_tickets",
+    "action": "close",
+    "description": "Fechar chamado",
+    "created_at": "2026-08-25T17:23:15.810266+00:00"
+  },
+  {
+    "id": "e47bb006-a15f-4386-bc6c-66095ed6abbb",
+    "resource": "tenant",
+    "action": "update",
+    "description": "tenant.update",
+    "created_at": "2026-08-25T17:23:15.938396+00:00"
+  },
+  {
+    "id": "91b172c2-61ae-47f0-8ac7-82de89f9b369",
+    "resource": "finance",
+    "action": "export",
+    "description": "Exportar financeiro",
+    "created_at": "2026-08-25T17:23:14.241053+00:00"
+  },
+  {
+    "id": "3669732e-1b3a-479c-9b02-ca0ceff6a9b9",
+    "resource": "finance",
+    "action": "read",
+    "description": "Visualizar financeiro",
+    "created_at": "2026-08-25T17:23:14.374806+00:00"
+  },
+  {
+    "id": "5a8bdde7-7025-4cb3-8b54-0f5a213c1cd6",
+    "resource": "finance",
+    "action": "reject",
+    "description": "Rejeitar pagamento",
+    "created_at": "2026-08-25T17:23:14.491351+00:00"
+  },
+  {
+    "id": "db7a2627-3726-4a54-82ad-51236f694666",
+    "resource": "integrations",
+    "action": "create",
+    "description": "Criar integração",
+    "created_at": "2026-08-25T17:23:14.616586+00:00"
+  },
+  {
+    "id": "7c1f1e1c-1dfa-4180-9c86-fea6a93bad9c",
+    "resource": "integrations",
+    "action": "manage",
+    "description": "Gerenciar integrações",
+    "created_at": "2026-08-25T17:23:14.737347+00:00"
+  },
+  {
+    "id": "7d9d5e96-ea59-4045-b2cb-5a72c6ac4e2f",
+    "resource": "integrations",
+    "action": "update",
+    "description": "Atualizar integração",
+    "created_at": "2026-08-25T17:23:14.856745+00:00"
+  },
+  {
+    "id": "0f6e832f-56de-4e68-bb1e-cc4a46848dea",
+    "resource": "jobs",
+    "action": "export",
+    "description": "Exportar vagas",
+    "created_at": "2026-08-25T17:23:14.981154+00:00"
+  },
+  {
+    "id": "243f8087-437f-44e9-b1ba-b46220da6081",
+    "resource": "people",
+    "action": "export",
+    "description": "Exportar pessoas/usuários",
+    "created_at": "2026-08-25T17:23:15.105695+00:00"
+  },
+  {
+    "id": "ee7a97bf-c512-4e98-91c5-111e157ba123",
+    "resource": "permissions",
+    "action": "delete",
+    "description": "Remover permissão",
+    "created_at": "2026-08-25T17:23:15.227751+00:00"
+  },
+  {
+    "id": "9c8e2cce-608e-4f9a-993e-862fe1916439",
+    "resource": "permissions",
+    "action": "update",
+    "description": "Atualizar permissão",
+    "created_at": "2026-08-25T17:23:15.350479+00:00"
+  },
+  {
+    "id": "6095bf39-8fd8-45f9-afab-2c4d948b0cff",
+    "resource": "reports",
+    "action": "export",
+    "description": "Exportar relatório",
+    "created_at": "2026-08-25T17:23:15.46436+00:00"
+  },
+  {
+    "id": "16af648e-cf2f-4244-bf7d-c0552bb7a5ba",
+    "resource": "security_events",
+    "action": "export",
+    "description": "Exportar eventos de segurança",
+    "created_at": "2026-08-25T17:23:15.610954+00:00"
+  },
+  {
+    "id": "dd6cbdc4-06c6-4a18-a04f-8bfbb8e3305f",
+    "resource": "stock_movements",
+    "action": "export",
+    "description": "Exportar movimentações",
+    "created_at": "2026-08-25T17:23:15.746432+00:00"
+  },
+  {
+    "id": "d8a5691a-694a-418b-b5b6-8fc04a6b8481",
+    "resource": "tenant",
+    "action": "manage",
+    "description": "Gerenciar tenant",
+    "created_at": "2026-08-25T17:23:15.881327+00:00"
+  },
+  {
+    "id": "a9ed4e14-7d36-43e7-b0d8-13032980c201",
+    "resource": "tenants",
+    "action": "activate",
+    "description": "Ativar tenant",
+    "created_at": "2026-08-25T17:23:15.999807+00:00"
+  },
+  {
+    "id": "81c8a033-5728-4436-ba77-9afb07270855",
+    "resource": "accounting",
+    "action": "chart_of_accounts",
+    "description": "accounting.chart_of_accounts.create",
+    "created_at": "2026-08-25T17:46:19.846523+00:00"
+  },
+  {
+    "id": "515e1cfa-433b-45a5-bca3-3066a04bc5bb",
+    "resource": "accounting",
+    "action": "dashboard",
+    "description": "accounting.dashboard.read",
+    "created_at": "2026-08-25T17:46:20.197261+00:00"
+  },
+  {
+    "id": "7648a3f3-a98f-45c0-ba26-c411f46a182f",
+    "resource": "accounting",
+    "action": "entries",
+    "description": "Criar lançamento",
+    "created_at": "2026-08-25T17:46:20.259737+00:00"
+  },
+  {
+    "id": "d492edb5-4660-46cd-8c05-ce88592b4664",
+    "resource": "accounting",
+    "action": "reconciliation",
+    "description": "accounting.reconciliation.read",
+    "created_at": "2026-08-25T17:46:20.575916+00:00"
+  },
+  {
+    "id": "94f0dded-1a02-4f7b-8550-08d61fa46c6b",
+    "resource": "accounting",
+    "action": "reports",
+    "description": "accounting.reports.export",
+    "created_at": "2026-08-25T17:46:20.626555+00:00"
+  },
+  {
+    "id": "00bcfa77-44d4-4eb1-af5b-1ae407bc5ecc",
+    "resource": "accounting",
+    "action": "trial_balance",
+    "description": "accounting.trial_balance.read",
+    "created_at": "2026-08-25T17:46:20.756525+00:00"
+  },
+  {
+    "id": "cc285a11-0821-4196-9c07-2ab6ee5ec082",
+    "resource": "finance",
+    "action": "accounts_payable",
+    "description": "finance.accounts_payable.create",
+    "created_at": "2026-08-25T17:46:20.815637+00:00"
+  },
+  {
+    "id": "1cc56192-1410-4ba6-8a0e-30f155672fa8",
+    "resource": "finance",
+    "action": "accounts_receivable",
+    "description": "finance.accounts_receivable.create",
+    "created_at": "2026-08-25T17:46:21.070058+00:00"
+  },
+  {
+    "id": "37e5e63b-6755-4373-a414-1eee9a680b59",
+    "resource": "finance",
+    "action": "billing",
+    "description": "finance.billing.cancel",
+    "created_at": "2026-08-25T17:46:21.305328+00:00"
+  },
+  {
+    "id": "d7d90ed3-6d0d-4a4c-a2a7-96cc9e8e1b0a",
+    "resource": "finance",
+    "action": "cashflow",
+    "description": "finance.cashflow.read",
+    "created_at": "2026-08-25T17:46:21.568788+00:00"
+  },
+  {
+    "id": "9f9abae6-2985-4cfd-a280-a5a52a82bc70",
+    "resource": "finance",
+    "action": "collections",
+    "description": "finance.collections.manage",
+    "created_at": "2026-08-25T17:46:21.663452+00:00"
+  },
+  {
+    "id": "2ea382bb-d4ac-4f50-9e50-c4b8ff5ce56a",
+    "resource": "finance",
+    "action": "dashboard",
+    "description": "finance.dashboard.read",
+    "created_at": "2026-08-25T17:46:21.731699+00:00"
+  },
+  {
+    "id": "1deb0c92-715a-473d-a64d-47b224fa18f2",
+    "resource": "finance",
+    "action": "reports",
+    "description": "finance.reports.export",
+    "created_at": "2026-08-25T17:46:21.799982+00:00"
+  },
+  {
+    "id": "2d252b3d-aa0c-4785-94d1-1c6140bdaa78",
+    "resource": "finance",
+    "action": "suppliers",
+    "description": "finance.suppliers.read",
+    "created_at": "2026-08-25T17:46:21.924865+00:00"
+  },
+  {
+    "id": "a33b6fcb-19fe-4da1-b972-318a26444887",
+    "resource": "fiscal",
+    "action": "dashboard",
+    "description": "fiscal.dashboard.read",
+    "created_at": "2026-08-25T17:46:21.980395+00:00"
+  },
+  {
+    "id": "42b666d1-59ce-4912-be40-8539ed6ae12f",
+    "resource": "fiscal",
+    "action": "invoices",
+    "description": "Cancelar nota fiscal",
+    "created_at": "2026-08-25T17:46:22.046269+00:00"
+  },
+  {
+    "id": "c9433e50-87e3-4dd8-a8b4-8aa541141b15",
+    "resource": "fiscal",
+    "action": "reports",
+    "description": "fiscal.reports.export",
+    "created_at": "2026-08-25T17:46:22.30409+00:00"
+  },
+  {
+    "id": "b03f8de6-1162-4d37-be40-d0e9538511bb",
+    "resource": "fiscal",
+    "action": "taxes",
+    "description": "fiscal.taxes.read",
+    "created_at": "2026-08-25T17:46:22.42772+00:00"
+  },
+  {
+    "id": "e37ba460-7323-4838-bbae-4480002af210",
+    "resource": "accounting.chart_of_accounts",
+    "action": "create",
+    "description": "accounting.chart_of_accounts.create",
+    "created_at": "2026-08-25T17:48:02.046498+00:00"
+  },
+  {
+    "id": "5eb9d2ea-288a-4822-982a-12d04848a1c1",
+    "resource": "accounting.chart_of_accounts",
+    "action": "delete",
+    "description": "accounting.chart_of_accounts.delete",
+    "created_at": "2026-08-25T17:48:02.13855+00:00"
+  },
+  {
+    "id": "7e496485-3fb0-41e1-ad60-94831d2d15d6",
+    "resource": "accounting.chart_of_accounts",
+    "action": "read",
+    "description": "accounting.chart_of_accounts.read",
+    "created_at": "2026-08-25T17:48:02.20624+00:00"
+  },
+  {
+    "id": "11189606-e807-4d7a-9a39-dfcdcffbce2d",
+    "resource": "accounting.chart_of_accounts",
+    "action": "update",
+    "description": "accounting.chart_of_accounts.update",
+    "created_at": "2026-08-25T17:48:02.266004+00:00"
+  },
+  {
+    "id": "16b1c2f7-df61-4e32-9e72-bf460ad83e3e",
+    "resource": "accounting.dashboard",
+    "action": "read",
+    "description": "accounting.dashboard.read",
+    "created_at": "2026-08-25T17:48:02.353221+00:00"
+  },
+  {
+    "id": "eb2fbc36-d86c-43b4-a741-c5a837187f21",
+    "resource": "accounting.entries",
+    "action": "create",
+    "description": "Criar lançamento",
+    "created_at": "2026-08-25T17:48:02.434818+00:00"
+  },
+  {
+    "id": "5f139992-aff7-4508-85b5-a1a4ab54ed94",
+    "resource": "accounting.entries",
+    "action": "delete",
+    "description": "Remover lançamento",
+    "created_at": "2026-08-25T17:48:02.500278+00:00"
+  },
+  {
+    "id": "57a96660-db65-45e7-aa58-b13142b1245f",
+    "resource": "accounting.entries",
+    "action": "read",
+    "description": "Visualizar lançamentos",
+    "created_at": "2026-08-25T17:48:02.561828+00:00"
+  },
+  {
+    "id": "3cc84da5-0a36-4501-881c-dcd2d237bcb2",
+    "resource": "accounting.entries",
+    "action": "update",
+    "description": "Atualizar lançamento",
+    "created_at": "2026-08-25T17:48:02.621378+00:00"
+  },
+  {
+    "id": "3bdaf17d-44fd-4ccb-8055-a86df89850b6",
+    "resource": "accounting.reconciliation",
+    "action": "read",
+    "description": "accounting.reconciliation.read",
+    "created_at": "2026-08-25T17:48:02.681332+00:00"
+  },
+  {
+    "id": "2efa8306-3ca4-4849-add5-be7677832201",
+    "resource": "accounting.reports",
+    "action": "export",
+    "description": "accounting.reports.export",
+    "created_at": "2026-08-25T17:48:02.743535+00:00"
+  },
+  {
+    "id": "cbc3b6d4-91ef-4ad8-9273-20adc1957d15",
+    "resource": "accounting.reports",
+    "action": "read",
+    "description": "Visualizar relatórios contábeis",
+    "created_at": "2026-08-25T17:48:02.800182+00:00"
+  },
+  {
+    "id": "33ff61eb-ba10-4f44-bbad-f9e8896d0f7d",
+    "resource": "accounting.trial_balance",
+    "action": "read",
+    "description": "accounting.trial_balance.read",
+    "created_at": "2026-08-25T17:48:02.87566+00:00"
+  },
+  {
+    "id": "f1b2919f-933b-4d24-8790-1cd4b81270f3",
+    "resource": "finance.accounts_payable",
+    "action": "create",
+    "description": "finance.accounts_payable.create",
+    "created_at": "2026-08-25T17:48:02.935525+00:00"
+  },
+  {
+    "id": "16b8ced7-fcee-46d0-8286-7b9a29cb3213",
+    "resource": "finance.accounts_payable",
+    "action": "delete",
+    "description": "finance.accounts_payable.delete",
+    "created_at": "2026-08-25T17:48:02.994675+00:00"
+  },
+  {
+    "id": "a8f412a0-5044-4f83-91e2-f308a7bd92bd",
+    "resource": "finance.accounts_payable",
+    "action": "read",
+    "description": "finance.accounts_payable.read",
+    "created_at": "2026-08-25T17:48:03.057159+00:00"
+  },
+  {
+    "id": "c79563ac-8700-4d81-9088-64bd1a3f0a16",
+    "resource": "finance.accounts_payable",
+    "action": "update",
+    "description": "finance.accounts_payable.update",
+    "created_at": "2026-08-25T17:48:03.125034+00:00"
+  },
+  {
+    "id": "bc5501b0-b714-4853-9499-ef24c7b13f70",
+    "resource": "finance.accounts_receivable",
+    "action": "create",
+    "description": "finance.accounts_receivable.create",
+    "created_at": "2026-08-25T17:48:03.189886+00:00"
+  },
+  {
+    "id": "de528b31-86d2-4fe5-aac2-f89e63122128",
+    "resource": "finance.accounts_receivable",
+    "action": "delete",
+    "description": "finance.accounts_receivable.delete",
+    "created_at": "2026-08-25T17:48:03.277012+00:00"
+  },
+  {
+    "id": "67e2bbac-94dd-4610-8e21-2ab3a414136e",
+    "resource": "finance.accounts_receivable",
+    "action": "read",
+    "description": "finance.accounts_receivable.read",
+    "created_at": "2026-08-25T17:48:03.348357+00:00"
+  },
+  {
+    "id": "f534ae9c-0ca2-46d7-b1fd-13f26a6bd324",
+    "resource": "finance.accounts_receivable",
+    "action": "update",
+    "description": "finance.accounts_receivable.update",
+    "created_at": "2026-08-25T17:48:03.4455+00:00"
+  },
+  {
+    "id": "abb964f2-8cc8-4004-a026-70a8386ace57",
+    "resource": "finance.billing",
+    "action": "cancel",
+    "description": "finance.billing.cancel",
+    "created_at": "2026-08-25T17:48:03.508156+00:00"
+  },
+  {
+    "id": "0243e291-e6ce-4834-bcdf-b2dca8003735",
+    "resource": "finance.billing",
+    "action": "create",
+    "description": "finance.billing.create",
+    "created_at": "2026-08-25T17:48:03.56514+00:00"
+  },
+  {
+    "id": "07c9a6a8-be80-4dfb-920f-c50eea874c8e",
+    "resource": "finance.billing",
+    "action": "read",
+    "description": "finance.billing.read",
+    "created_at": "2026-08-25T17:48:03.616457+00:00"
+  },
+  {
+    "id": "4051eb26-9af4-450f-b56f-3ad54354325c",
+    "resource": "finance.billing",
+    "action": "update",
+    "description": "finance.billing.update",
+    "created_at": "2026-08-25T17:48:03.684963+00:00"
+  },
+  {
+    "id": "7d3e0caa-bc36-4b4b-b8b3-be5b47e41c3f",
+    "resource": "finance.dashboard",
+    "action": "read",
+    "description": "finance.dashboard.read",
+    "created_at": "2026-08-25T17:48:03.901499+00:00"
+  },
+  {
+    "id": "61fec18f-89f9-4ae1-9da9-1b16961a878a",
+    "resource": "finance.suppliers",
+    "action": "read",
+    "description": "finance.suppliers.read",
+    "created_at": "2026-08-25T17:48:04.096754+00:00"
+  },
+  {
+    "id": "338ab74e-1cc0-477c-befb-44b512c0a87d",
+    "resource": "fiscal.invoices",
+    "action": "issue",
+    "description": "fiscal.invoices.issue",
+    "created_at": "2026-08-25T17:48:04.268633+00:00"
+  },
+  {
+    "id": "2a4fa766-b952-4892-914e-2f6ce05f5524",
+    "resource": "fiscal.reports",
+    "action": "export",
+    "description": "fiscal.reports.export",
+    "created_at": "2026-08-25T17:48:04.447288+00:00"
+  },
+  {
+    "id": "ca20af39-39cb-418f-b53b-de346ae04b59",
+    "resource": "finance.cashflow",
+    "action": "read",
+    "description": "finance.cashflow.read",
+    "created_at": "2026-08-25T17:48:03.753541+00:00"
+  },
+  {
+    "id": "f93e4881-24bd-4aa2-880f-4d7d36f20030",
+    "resource": "finance.reports",
+    "action": "export",
+    "description": "finance.reports.export",
+    "created_at": "2026-08-25T17:48:03.970482+00:00"
+  },
+  {
+    "id": "6714e02f-74ce-44aa-98a3-24fa3003e8df",
+    "resource": "fiscal.dashboard",
+    "action": "read",
+    "description": "fiscal.dashboard.read",
+    "created_at": "2026-08-25T17:48:04.14882+00:00"
+  },
+  {
+    "id": "ab6871b3-ebe0-4164-8a78-8bb18fdec007",
+    "resource": "fiscal.invoices",
+    "action": "read",
+    "description": "Visualizar notas fiscais",
+    "created_at": "2026-08-25T17:48:04.327657+00:00"
+  },
+  {
+    "id": "08b61e59-e035-4b8c-95eb-5db21846f796",
+    "resource": "fiscal.reports",
+    "action": "read",
+    "description": "Visualizar relatórios fiscais",
+    "created_at": "2026-08-25T17:48:04.507815+00:00"
+  },
+  {
+    "id": "6334d3bd-7278-457a-ad3d-e324dcd01ba1",
+    "resource": "finance.collections",
+    "action": "manage",
+    "description": "finance.collections.manage",
+    "created_at": "2026-08-25T17:48:03.821889+00:00"
+  },
+  {
+    "id": "dbfe8d96-8992-4e09-b5a9-056a8244806c",
+    "resource": "finance.reports",
+    "action": "read",
+    "description": "finance.reports.read",
+    "created_at": "2026-08-25T17:48:04.027564+00:00"
+  },
+  {
+    "id": "5f998bde-84b9-45fd-a3b9-dc0ecbdd8557",
+    "resource": "fiscal.invoices",
+    "action": "cancel",
+    "description": "Cancelar nota fiscal",
+    "created_at": "2026-08-25T17:48:04.199506+00:00"
+  },
+  {
+    "id": "0ce633a8-1c5e-431e-99f6-99d5746647fe",
+    "resource": "fiscal.invoices",
+    "action": "void",
+    "description": "fiscal.invoices.void",
+    "created_at": "2026-08-25T17:48:04.386378+00:00"
+  },
+  {
+    "id": "bf8c792d-1c8e-46ad-a040-b3960cfd05e1",
+    "resource": "fiscal.taxes",
+    "action": "read",
+    "description": "fiscal.taxes.read",
+    "created_at": "2026-08-25T17:48:04.569148+00:00"
+  }
+]

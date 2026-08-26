@@ -1,0 +1,162 @@
+[
+  {
+    "id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+    "name": "admin_master",
+    "description": "Administrador global do sistema",
+    "scope": "global",
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "7002337d-2742-4d5f-9737-f523fd765a2f",
+    "name": "operator",
+    "description": "Operador",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000001",
+    "name": "tenant_admin",
+    "description": "Administrador do tenant",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000002",
+    "name": "rh_manager",
+    "description": "Gerente de Recursos Humanos",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000003",
+    "name": "recruiter",
+    "description": "Recrutador",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000004",
+    "name": "finance_manager",
+    "description": "Gerente Financeiro",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000005",
+    "name": "finance",
+    "description": "Analista Financeiro",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000006",
+    "name": "support",
+    "description": "Suporte",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000007",
+    "name": "commercial",
+    "description": "Comercial",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000008",
+    "name": "operations_manager",
+    "description": "Gerente de Operações",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000009",
+    "name": "stock_manager",
+    "description": "Gerente de Estoque",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000010",
+    "name": "security_manager",
+    "description": "Gerente de Segurança",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000011",
+    "name": "facilities_manager",
+    "description": "Gerente de Facilities",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000012",
+    "name": "lawyer",
+    "description": "Jurídico",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000013",
+    "name": "it_admin",
+    "description": "Administrador de TI",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "10000000-0000-0000-0000-000000000014",
+    "name": "viewer",
+    "description": "Visualizador",
+    "scope": "tenant",
+    "created_at": "2026-08-22T05:42:35.559497+00:00",
+    "updated_at": "2026-08-22T05:42:35.559497+00:00"
+  },
+  {
+    "id": "5e2af066-0f2d-4111-ae98-d918b8f361f3",
+    "name": "fiscal_manager",
+    "description": "Fiscal Manager",
+    "scope": "tenant",
+    "created_at": "2026-08-25T17:44:05.520393+00:00",
+    "updated_at": "2026-08-25T17:44:05.520393+00:00"
+  },
+  {
+    "id": "28fa734f-601d-4a4f-a7e9-1c5557d0ef23",
+    "name": "accountant",
+    "description": "Accountant",
+    "scope": "tenant",
+    "created_at": "2026-08-25T17:44:05.643937+00:00",
+    "updated_at": "2026-08-25T17:44:05.643937+00:00"
+  },
+  {
+    "id": "ef9d88da-0188-4dee-af90-43009b64a616",
+    "name": "accounting_manager",
+    "description": "Accounting Manager",
+    "scope": "tenant",
+    "created_at": "2026-08-25T17:44:05.715606+00:00",
+    "updated_at": "2026-08-25T17:44:05.715606+00:00"
+  },
+  {
+    "id": "e12dfe36-6c52-43c9-92be-b302437b5bba",
+    "name": "billing_manager",
+    "description": "Billing Manager",
+    "scope": "tenant",
+    "created_at": "2026-08-25T17:44:05.764877+00:00",
+    "updated_at": "2026-08-25T17:44:05.764877+00:00"
+  }
+]

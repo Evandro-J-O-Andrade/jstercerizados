@@ -1,0 +1,92 @@
+[
+  {
+    "id": "db115328-a1ee-4ff4-95e1-33e5c50c9f0f",
+    "auth_user_id": null,
+    "full_name": "Person A",
+    "email": "person-a@test.local",
+    "phone": null,
+    "status": "active",
+    "created_at": "2026-08-22T05:35:12.657654+00:00",
+    "updated_at": "2026-08-22T05:35:12.657654+00:00"
+  },
+  {
+    "id": "1cf61b5c-211b-478d-b102-c6f603c6f9f6",
+    "auth_user_id": null,
+    "full_name": "Person B",
+    "email": "person-b@test.local",
+    "phone": null,
+    "status": "active",
+    "created_at": "2026-08-22T05:35:12.657654+00:00",
+    "updated_at": "2026-08-22T05:35:12.657654+00:00"
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "auth_user_id": null,
+    "full_name": "Admin Master",
+    "email": "admin@jsempregos.com.br",
+    "phone": null,
+    "status": "active",
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000002",
+    "auth_user_id": null,
+    "full_name": "Admin Tenant",
+    "email": "admin.tenant@jsempregos.com.br",
+    "phone": null,
+    "status": "active",
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000003",
+    "auth_user_id": null,
+    "full_name": "Gerente Operacional",
+    "email": "gerente@jsempregos.com.br",
+    "phone": null,
+    "status": "active",
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000004",
+    "auth_user_id": null,
+    "full_name": "Operador",
+    "email": "operador@jsempregos.com.br",
+    "phone": null,
+    "status": "active",
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "id": "a9562696-bc73-4369-8d4c-4da0077d57fc",
+    "auth_user_id": "a78ddef1-5659-404f-9c7c-940c5df0abf1",
+    "full_name": "Evandro Andrade",
+    "email": "evandro_j.o.a@hotmail.com",
+    "phone": null,
+    "status": "active",
+    "created_at": "2026-08-22T07:32:49.653238+00:00",
+    "updated_at": "2026-08-22T07:32:49.653238+00:00"
+  },
+  {
+    "id": "a6798b31-fed1-42a4-bc36-d107b0ffaf51",
+    "auth_user_id": "41c0039a-0103-4558-aa61-35bf3944749d",
+    "full_name": "Gestor J&S Empregos",
+    "email": "gestor@jsempregos.com.br",
+    "phone": null,
+    "status": "active",
+    "created_at": "2026-08-25T16:28:44.26016+00:00",
+    "updated_at": "2026-08-25T16:28:44.26016+00:00"
+  },
+  {
+    "id": "993ae2a4-64d6-475b-8a5c-d71f788ed178",
+    "auth_user_id": "f7dfd4a2-17f8-49a6-9d14-feef3cc31bce",
+    "full_name": "Financeiro J&S Empregos",
+    "email": "financeiro@jsempregos.com.br",
+    "phone": null,
+    "status": "active",
+    "created_at": "2026-08-25T16:29:23.34815+00:00",
+    "updated_at": "2026-08-25T16:29:23.34815+00:00"
+  }
+]

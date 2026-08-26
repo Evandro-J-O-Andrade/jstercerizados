@@ -35,7 +35,10 @@ interface PortalSidebarProps {
   onNavigate?: () => void;
 }
 
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+export const ICON_MAP: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   home: Home,
   users: Users,
   briefcase: Briefcase,
@@ -64,7 +67,13 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   user: Users,
 };
 
-function ModuleIcon({ name, className }: { name: string; className?: string }) {
+export function ModuleIcon({
+  name,
+  className,
+}: {
+  name: string;
+  className?: string;
+}) {
   const Icon = ICON_MAP[name] || Home;
   return <Icon className={cn('h-5 w-5 shrink-0', className)} />;
 }

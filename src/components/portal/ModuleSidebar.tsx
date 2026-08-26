@@ -16,7 +16,7 @@ export function ModuleSidebar({
   onNavigate,
 }: ModuleSidebarProps) {
   const location = useLocation();
-  const features = getAvailableFeatures(permissions, module, 'tenant');
+  const features = getAvailableFeatures(permissions, module, module.scope);
 
   if (!features.length) {
     return null;

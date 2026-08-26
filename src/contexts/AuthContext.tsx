@@ -60,6 +60,9 @@ interface AuthContextType {
     documentVersion: string,
     metadata?: Record<string, unknown>,
   ) => Promise<{ error?: string }>;
+  updateFirstLoginState: (
+    updates: Partial<FirstLoginState>,
+  ) => Promise<{ error?: string }>;
   hasPermission: (permissionKey: string) => boolean;
   hasAnyPermission: (permissionKeys: string[]) => boolean;
   hasAllPermissions: (permissionKeys: string[]) => boolean;
@@ -609,6 +612,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateFirstLoginState = async (
+    updates: Partial<FirstLoginState>,
+  ): Promise<{ error?: string }> => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return {
+        error: normalizeError(
+          new Error(
+            'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+          ),
+        ).userMessage,
+      };
+    }
+
+    if (!user || !person) {
+      return { error: 'Usuário não autenticado' };
+    }
+
+    try {
+      const payload: Record<string, unknown> = {
+        ...updates,
+        person_id: person.id,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error: updateError } = await supabase
+        .from('first_login_state')
+        .upsert(payload, { onConflict: 'person_id' });
+
+      if (updateError) {
+        return { error: normalizeError(updateError).userMessage };
+      }
+
+      setFirstLoginState((prev) =>
+        prev
+          ? { ...prev, ...updates, updated_at: new Date().toISOString() }
+          : null,
+      );
+
+      return {};
+    } catch (error) {
+      return {
+        error: normalizeError(error).userMessage,
+      };
+    }
+  };
+
   const hasPermission = useCallback(
     (permissionKey: string): boolean => {
       return permissions.some(
@@ -651,12 +701,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return '/onboarding';
       }
 
-      if (firstLoginState && !firstLoginState.first_login_completed) {
-        const hasTerms =
-          firstLoginState.terms_version && firstLoginState.privacy_version;
-        if (!hasTerms) {
-          return '/primeiro-acesso/termos';
-        }
+      const hasAcceptedTerms =
+        legalAcceptances.some((a) => a.document_type === 'terms') ||
+        firstLoginState?.terms_version != null;
+
+      if (!hasAcceptedTerms) {
+        return '/auth/terms';
+      }
+
+      const welcomeCompleted =
+        firstLoginState?.welcome_completed_at != null ||
+        firstLoginState?.first_login_completed === true;
+
+      if (!welcomeCompleted) {
+        return '/auth/welcome';
       }
 
       if (firstLoginState?.must_change_password) {
@@ -701,6 +759,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       membershipCount: tenantMemberships.length,
       mustChangePassword: firstLoginState?.must_change_password ?? null,
       firstLoginCompleted: firstLoginState?.first_login_completed ?? null,
+      welcomeCompleted: firstLoginState?.welcome_completed_at ?? null,
       permissionCount: permissions.length,
       destination: target,
     });
@@ -710,6 +769,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAdminMaster,
     tenantMemberships,
     firstLoginState,
+    legalAcceptances,
     hasAnyPermission,
     permissions,
   ]);
@@ -923,6 +983,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updateProfile,
         changePassword,
         acceptTerms,
+        updateFirstLoginState,
         hasPermission,
         hasAnyPermission,
         hasAllPermissions,

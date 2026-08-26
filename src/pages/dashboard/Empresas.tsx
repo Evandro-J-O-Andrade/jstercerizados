@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { companiesRepository } from '@/repositories/companies.repository';
 import { cn } from '@/utils';
+import { Building2 } from 'lucide-react';
 import type { Company } from '@/types/domain/company';
 
 export default function Empresas() {
@@ -46,14 +48,12 @@ export default function Empresas() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Empresas</h1>
-        <p className="text-muted-foreground mt-1">
-          Gerencie as empresas cadastradas na plataforma.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Empresas"
+      description="Cadastro e relacionamento de empresas."
+      icon={Building2}
+      breadcrumbItems={[{ label: 'Empresas' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando empresas...</p>
@@ -125,6 +125,6 @@ export default function Empresas() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

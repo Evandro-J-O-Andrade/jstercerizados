@@ -1,0 +1,26 @@
+[
+  {
+    "id": "c874b8b2-ab32-4478-84f7-29f14878c6f3",
+    "name": "Tenant A",
+    "slug": "tenant-a",
+    "status": "active",
+    "created_at": "2026-08-22T05:35:12.657654+00:00",
+    "updated_at": "2026-08-22T05:35:12.657654+00:00"
+  },
+  {
+    "id": "20ee28ae-724e-40f6-8467-e815251325ed",
+    "name": "Tenant B",
+    "slug": "tenant-b",
+    "status": "active",
+    "created_at": "2026-08-22T05:35:12.657654+00:00",
+    "updated_at": "2026-08-22T05:35:12.657654+00:00"
+  },
+  {
+    "id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+    "name": "J&S Empregos LTDA",
+    "slug": "js-empregos",
+    "status": "active",
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  }
+]

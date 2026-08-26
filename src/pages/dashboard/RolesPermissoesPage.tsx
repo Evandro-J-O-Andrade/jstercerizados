@@ -1,66 +1,137 @@
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { ModuleCard } from '@/components/portal/ModuleCard';
-import { useAuth } from '@/contexts/AuthContext';
-import { useAccount } from '@/contexts/AccountContext';
-import { getAvailableModules } from '@/components/portal/ModuleRegistry';
-import { normalizeRoleScope } from '@/utils/rbac-normalize';
-import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+import { Card } from '@/components/ui/Card';
+import { Shield, Users, Key } from 'lucide-react';
+import { getSupabaseClient } from '@/lib/supabase';
+
+interface Role {
+  id: string;
+  name: string;
+  scope: string;
+  description: string | null;
+}
+
+interface Permission {
+  id: string;
+  name: string;
+  module: string;
+  description: string | null;
+}
 
 export default function RolesPermissoesPage() {
-  const { permissions } = useAuth();
-  const { activeRole } = useAccount();
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const modules = useMemo(
-    () =>
-      getAvailableModules(
-        permissions,
-        activeRole ? normalizeRoleScope(activeRole.scope) : 'tenant',
-      ),
-    [permissions, activeRole?.scope],
-  );
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
 
-  const module = modules.find(
-    (m: ModuleDefinition) => m.id === 'roles-permissoes',
-  );
+    const fetchData = async () => {
+      try {
+        const [{ data: rolesData }, { data: permsData }] = await Promise.all([
+          supabase
+            .from('roles')
+            .select('id, name, scope, description')
+            .order('name'),
+          supabase
+            .from('permissions')
+            .select('id, name, module, description')
+            .order('module, name'),
+        ]);
+        setRoles(rolesData || []);
+        setPermissions(permsData || []);
+      } catch (error) {
+        console.error('[ROLES_PERMISSOES] Failed to load:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const cards = useMemo(() => {
-    if (!module?.features) return [];
-    return module.features.map((feature) => ({
-      id: feature.id,
-      title: feature.title,
-      description: feature.description,
-      route: feature.route,
-      icon: 'shield',
-    }));
-  }, [module]);
+    fetchData();
+  }, []);
 
   return (
     <ModuleWorkspace
-      title={module?.title || 'Roles & Permissões'}
-      description={module?.description || 'Papéis e permissões do sistema'}
-      module={module}
-      permissions={permissions}
-      breadcrumbItems={[{ label: 'Roles & Permissões' }]}
+      title="Roles & Permissões"
+      description="Papéis e permissões do sistema."
+      icon={Shield}
+      breadcrumbItems={[
+        { label: 'Roles & Permissões', href: '/dashboard/roles-permissoes' },
+      ]}
     >
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {cards.map((card) => (
-          <ModuleCard
-            key={card.id}
-            module={{
-              id: card.id,
-              title: card.title,
-              description: card.description,
-              icon: card.icon,
-              route: card.route,
-              category: 'seguranca',
-              scope: 'platform',
-              requiredPermissions: [],
-            }}
-            permissions={permissions}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <div className="text-muted-foreground text-sm">
+          Carregando roles e permissões...
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Card className="p-6">
+              <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                Roles
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-foreground text-2xl font-semibold">
+                  {roles.length}
+                </span>
+                <Users className="text-primary h-5 w-5" />
+              </div>
+            </Card>
+            <Card className="p-6">
+              <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                Permissões
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-foreground text-2xl font-semibold">
+                  {permissions.length}
+                </span>
+                <Key className="text-primary h-5 w-5" />
+              </div>
+            </Card>
+          </div>
+
+          <Card className="overflow-hidden">
+            <div className="border-border border-b px-4 py-3">
+              <h3 className="text-foreground text-sm font-semibold">
+                Permissões por módulo
+              </h3>
+            </div>
+            <div className="divide-border divide-y">
+              {[
+                'core',
+                'recruitment',
+                'finance',
+                'fiscal',
+                'accounting',
+                'platform',
+              ].map((module) => {
+                const modulePerms = permissions.filter(
+                  (p) => p.module === module,
+                );
+                if (modulePerms.length === 0) return null;
+                return (
+                  <div key={module} className="px-4 py-3">
+                    <h4 className="text-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                      {module}
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {modulePerms.map((perm) => (
+                        <span
+                          key={perm.id}
+                          className="bg-muted text-muted-foreground rounded-lg px-2 py-1 text-xs"
+                        >
+                          {perm.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </div>
+      )}
     </ModuleWorkspace>
   );
 }

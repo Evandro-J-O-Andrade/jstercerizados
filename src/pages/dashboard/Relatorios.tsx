@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { reportsRepository } from '@/repositories/reports.repository';
+import { BarChart3 } from 'lucide-react';
 import type { ReportDefinition } from '@/repositories/reports.repository';
 
 export default function Relatorios() {
@@ -45,14 +47,12 @@ export default function Relatorios() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Relatórios</h1>
-        <p className="text-muted-foreground mt-1">
-          Gere e visualize relatórios do sistema.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Relatórios"
+      description="Relatórios e análises."
+      icon={BarChart3}
+      breadcrumbItems={[{ label: 'Relatórios' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando relatórios...</p>
@@ -87,6 +87,6 @@ export default function Relatorios() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

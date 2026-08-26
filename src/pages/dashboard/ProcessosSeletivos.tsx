@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { recruitmentProcessesRepository } from '@/repositories/recruitment-processes.repository';
 import { cn } from '@/utils';
+import { ClipboardList } from 'lucide-react';
 import type { RecruitmentProcess } from '@/repositories/recruitment-processes.repository';
 
 export default function ProcessosSeletivos() {
@@ -49,16 +51,12 @@ export default function ProcessosSeletivos() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">
-          Processos Seletivos
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Acompanhe os processos seletivos em andamento.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Processos Seletivos"
+      description="Acompanhe processos seletivos."
+      icon={ClipboardList}
+      breadcrumbItems={[{ label: 'Processos Seletivos' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando processos...</p>
@@ -107,6 +105,6 @@ export default function ProcessosSeletivos() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

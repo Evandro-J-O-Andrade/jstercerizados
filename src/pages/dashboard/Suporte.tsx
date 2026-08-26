@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { supportTicketsRepository } from '@/repositories/support-tickets.repository';
 import { cn } from '@/utils';
+import { Headphones } from 'lucide-react';
 import type { SupportTicket } from '@/repositories/support-tickets.repository';
 
 export default function Suporte() {
@@ -46,14 +48,12 @@ export default function Suporte() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Suporte</h1>
-        <p className="text-muted-foreground mt-1">
-          Acompanhe os tickets de suporte.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Suporte"
+      description="Chamados e atendimentos."
+      icon={Headphones}
+      breadcrumbItems={[{ label: 'Suporte' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando tickets...</p>
@@ -105,6 +105,6 @@ export default function Suporte() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

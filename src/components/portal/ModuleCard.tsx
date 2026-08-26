@@ -1,13 +1,14 @@
 import { NavLink } from 'react-router-dom';
-import { type LucideIcon, Home } from 'lucide-react';
+import { Home } from 'lucide-react';
 import { cn } from '@/utils';
 import type { ModuleDefinition } from './ModuleRegistry';
 import type { Permission } from '@/types/auth';
+import { ICON_MAP } from './PortalSidebar';
 
 interface ModuleCardLegacyProps {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<{ className?: string }>;
   route: string;
   badge?: string | number;
   disabled?: boolean;
@@ -36,7 +37,7 @@ export function ModuleCard(props: ModuleCardProps) {
   let route = '';
   let title = '';
   let description = '';
-  let Icon: LucideIcon = Home;
+  let Icon: React.ComponentType<{ className?: string }> = Home;
   let className = '';
 
   if (isLegacyProps(props)) {
@@ -60,7 +61,7 @@ export function ModuleCard(props: ModuleCardProps) {
     route = module.route;
     title = module.title;
     description = module.description;
-    Icon = module.icon as unknown as LucideIcon;
+    Icon = ICON_MAP[module.icon] || Home;
     className = next.className || '';
   }
 

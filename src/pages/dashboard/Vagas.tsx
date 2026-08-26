@@ -1,8 +1,10 @@
 ﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { jobsRepository } from '@/repositories/jobs.repository';
 import { cn } from '@/utils';
+import { Briefcase } from 'lucide-react';
 import type { Job } from '@/types/domain/job';
 
 export default function Vagas() {
@@ -46,14 +48,12 @@ export default function Vagas() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Vagas</h1>
-        <p className="text-muted-foreground mt-1">
-          Gerencie as vagas abertas da sua empresa.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Vagas"
+      description="Gerencie as vagas abertas."
+      icon={Briefcase}
+      breadcrumbItems={[{ label: 'Vagas' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando vagas...</p>
@@ -133,6 +133,6 @@ export default function Vagas() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

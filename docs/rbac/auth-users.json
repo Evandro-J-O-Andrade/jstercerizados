@@ -1,0 +1,66 @@
+[
+  {
+    "id": "f7dfd4a2-17f8-49a6-9d14-feef3cc31bce",
+    "aud": "authenticated",
+    "role": "authenticated",
+    "email": "financeiro@jsempregos.com.br",
+    "email_confirmed_at": "2026-08-25T16:29:22.690754Z",
+    "phone": "",
+    "confirmed_at": "2026-08-25T16:29:22.690754Z",
+    "app_metadata": {
+      "provider": "email",
+      "providers": ["email"]
+    },
+    "user_metadata": {
+      "email_verified": true,
+      "full_name": "Financeiro J&S Empregos"
+    },
+    "identities": null,
+    "created_at": "2026-08-25T16:29:22.682706Z",
+    "updated_at": "2026-08-25T16:29:22.691636Z",
+    "is_anonymous": false
+  },
+  {
+    "id": "41c0039a-0103-4558-aa61-35bf3944749d",
+    "aud": "authenticated",
+    "role": "authenticated",
+    "email": "gestor@jsempregos.com.br",
+    "email_confirmed_at": "2026-08-25T16:28:43.587098Z",
+    "phone": "",
+    "confirmed_at": "2026-08-25T16:28:43.587098Z",
+    "app_metadata": {
+      "provider": "email",
+      "providers": ["email"]
+    },
+    "user_metadata": {
+      "email_verified": true,
+      "full_name": "Gestor J&S Empregos"
+    },
+    "identities": null,
+    "created_at": "2026-08-25T16:28:43.562728Z",
+    "updated_at": "2026-08-25T16:28:43.591904Z",
+    "is_anonymous": false
+  },
+  {
+    "id": "a78ddef1-5659-404f-9c7c-940c5df0abf1",
+    "aud": "authenticated",
+    "role": "authenticated",
+    "email": "evandro_j.o.a@hotmail.com",
+    "email_confirmed_at": "2026-08-17T07:11:08.164136Z",
+    "phone": "",
+    "confirmed_at": "2026-08-17T07:11:08.164136Z",
+    "last_sign_in_at": "2026-08-25T18:27:16.28056Z",
+    "app_metadata": {
+      "provider": "email",
+      "providers": ["email"]
+    },
+    "user_metadata": {
+      "email_verified": true,
+      "full_name": "Evandro Andrade"
+    },
+    "identities": null,
+    "created_at": "2026-08-17T07:11:08.143238Z",
+    "updated_at": "2026-08-25T18:27:16.330945Z",
+    "is_anonymous": false
+  }
+]

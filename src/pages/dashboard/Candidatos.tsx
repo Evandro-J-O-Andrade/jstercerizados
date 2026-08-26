@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { candidatesRepository } from '@/repositories/candidates.repository';
 import { cn } from '@/utils';
+import { Users } from 'lucide-react';
 import type { Candidate } from '@/types/domain/candidate';
 
 export default function Candidatos() {
@@ -46,14 +48,12 @@ export default function Candidatos() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Candidatos</h1>
-        <p className="text-muted-foreground mt-1">
-          Acompanhe os candidatos inscritos nas vagas.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Candidatos"
+      description="Acompanhe os candidatos inscritos."
+      icon={Users}
+      breadcrumbItems={[{ label: 'Candidatos' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando candidatos...</p>
@@ -117,6 +117,6 @@ export default function Candidatos() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

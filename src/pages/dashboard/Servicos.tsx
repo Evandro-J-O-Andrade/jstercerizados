@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { servicesRepository } from '@/repositories/services.repository';
 import { cn } from '@/utils';
+import { Wrench } from 'lucide-react';
 import type { ServiceOrder } from '@/repositories/services.repository';
 
 export default function Servicos() {
@@ -46,14 +48,12 @@ export default function Servicos() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Serviços</h1>
-        <p className="text-muted-foreground mt-1">
-          Gerencie os serviços oferecidos.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Serviços"
+      description="Catálogo e ordens de serviço."
+      icon={Wrench}
+      breadcrumbItems={[{ label: 'Serviços' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando serviços...</p>
@@ -103,6 +103,6 @@ export default function Servicos() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

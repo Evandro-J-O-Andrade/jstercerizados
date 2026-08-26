@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { partnersRepository } from '@/repositories/partners.repository';
 import { cn } from '@/utils';
+import { Handshake } from 'lucide-react';
 import type { Partner } from '@/types/domain/recruitment';
 
 export default function Parceiros() {
@@ -46,14 +48,12 @@ export default function Parceiros() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Parceiros</h1>
-        <p className="text-muted-foreground mt-1">
-          Gerencie os parceiros comerciais.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Parceiros"
+      description="Gerencie parceiros."
+      icon={Handshake}
+      breadcrumbItems={[{ label: 'Parceiros' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando parceiros...</p>
@@ -104,6 +104,6 @@ export default function Parceiros() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

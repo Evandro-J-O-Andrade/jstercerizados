@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { settingsRepository } from '@/repositories/settings.repository';
+import { Settings } from 'lucide-react';
 import type { TenantSetting } from '@/repositories/settings.repository';
 
 export default function Configuracoes() {
@@ -47,14 +49,12 @@ export default function Configuracoes() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Configurações</h1>
-        <p className="text-muted-foreground mt-1">
-          Gerencie as configurações do sistema.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Configurações"
+      description="Configurações do sistema."
+      icon={Settings}
+      breadcrumbItems={[{ label: 'Configurações' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando configurações...</p>
@@ -87,6 +87,6 @@ export default function Configuracoes() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

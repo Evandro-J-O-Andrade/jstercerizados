@@ -1114,6 +1114,7 @@ export interface Database {
           privacy_version?: string | null;
           lgpd_consent_version?: string | null;
           first_login_completed?: boolean;
+          welcome_completed_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { suppliersRepository } from '@/repositories/suppliers.repository';
 import { cn } from '@/utils';
+import { Truck } from 'lucide-react';
 import type { Supplier } from '@/types/domain/recruitment';
 
 export default function Fornecedores() {
@@ -48,14 +50,12 @@ export default function Fornecedores() {
   }, [currentTenantId]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-foreground text-2xl font-bold">Fornecedores</h1>
-        <p className="text-muted-foreground mt-1">
-          Gerencie os fornecedores e seus produtos.
-        </p>
-      </div>
-
+    <ModuleWorkspace
+      title="Fornecedores"
+      description="Gerencie fornecedores."
+      icon={Truck}
+      breadcrumbItems={[{ label: 'Fornecedores' }]}
+    >
       {isLoading && (
         <Card className="p-6">
           <p className="text-muted-foreground">Carregando fornecedores...</p>
@@ -103,6 +103,6 @@ export default function Fornecedores() {
           ))}
         </div>
       )}
-    </div>
+    </ModuleWorkspace>
   );
 }

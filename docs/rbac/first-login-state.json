@@ -1,0 +1,62 @@
+[
+  {
+    "person_id": "00000000-0000-0000-0000-000000000001",
+    "must_change_password": true,
+    "terms_version": "v1",
+    "privacy_version": "v1",
+    "lgpd_consent_version": "v1",
+    "first_login_completed": false,
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "person_id": "00000000-0000-0000-0000-000000000002",
+    "must_change_password": true,
+    "terms_version": "v1",
+    "privacy_version": "v1",
+    "lgpd_consent_version": "v1",
+    "first_login_completed": false,
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "person_id": "00000000-0000-0000-0000-000000000003",
+    "must_change_password": true,
+    "terms_version": "v1",
+    "privacy_version": "v1",
+    "lgpd_consent_version": "v1",
+    "first_login_completed": false,
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "person_id": "00000000-0000-0000-0000-000000000004",
+    "must_change_password": true,
+    "terms_version": "v1",
+    "privacy_version": "v1",
+    "lgpd_consent_version": "v1",
+    "first_login_completed": false,
+    "created_at": "2026-08-22T05:35:13.661881+00:00",
+    "updated_at": "2026-08-22T05:35:13.661881+00:00"
+  },
+  {
+    "person_id": "a6798b31-fed1-42a4-bc36-d107b0ffaf51",
+    "must_change_password": true,
+    "terms_version": "v1",
+    "privacy_version": "v1",
+    "lgpd_consent_version": "v1",
+    "first_login_completed": false,
+    "created_at": "2026-08-25T16:29:22.508114+00:00",
+    "updated_at": "2026-08-25T16:29:22.508114+00:00"
+  },
+  {
+    "person_id": "993ae2a4-64d6-475b-8a5c-d71f788ed178",
+    "must_change_password": true,
+    "terms_version": "v1",
+    "privacy_version": "v1",
+    "lgpd_consent_version": "v1",
+    "first_login_completed": false,
+    "created_at": "2026-08-25T16:29:23.690908+00:00",
+    "updated_at": "2026-08-25T16:29:23.690908+00:00"
+  }
+]
