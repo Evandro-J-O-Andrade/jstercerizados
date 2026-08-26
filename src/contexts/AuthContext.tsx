@@ -73,16 +73,6 @@ interface AuthContextType {
 
 const SESSION_PERSIST_KEY = 'jst_session_persist';
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-function markSessionPersisted() {
-  try {
-    sessionStorage.setItem(SESSION_PERSIST_KEY, '1');
-  } catch {
-    // ignore
-  }
-}
-
 function clearSessionPersistence() {
   try {
     sessionStorage.removeItem(SESSION_PERSIST_KEY);
@@ -91,14 +81,7 @@ function clearSessionPersistence() {
   }
 }
 
-function isSessionPersisted(): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    return sessionStorage.getItem(SESSION_PERSIST_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -282,12 +265,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        const persisted = isSessionPersisted();
-
-        console.log('[AUTH] initAuth getSession', {
-          persisted,
-        });
-
         const {
           data: { session: initialSession },
         } = await supabase.auth.getSession();
@@ -295,20 +272,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('[AUTH] initAuth session:', {
           hasSession: !!initialSession,
           userId: initialSession?.user?.id ?? null,
-          persisted,
         });
 
         if (!isMountedRef.current) return;
-
-        if (!persisted && initialSession) {
-          console.log('[AUTH] initAuth clearing non-persisted session');
-          await supabase.auth.signOut();
-          clearSessionPersistence();
-          setSession(null);
-          setUser(null);
-          setIsLoading(false);
-          return;
-        }
 
         const currentSession = initialSession;
         setSession(currentSession);
@@ -445,7 +411,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         authLoadInFlightRef.current = true;
         setSession(data.session);
         setUser(data.user);
-        markSessionPersisted();
         await loadAuthData(data.user.id);
         initialSessionProcessedRef.current = true;
         authLoadInFlightRef.current = false;
