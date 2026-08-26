@@ -6,6 +6,7 @@ import {
   Briefcase,
   Building2,
   Activity,
+  FileText,
 } from 'lucide-react';
 import { ModuleCard } from '@/components/portal/ModuleCard';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +20,8 @@ interface DashboardStats {
   jobs: number;
   candidates: number;
   applications: number;
+  tenants: number;
+  notifications: number;
   recentEvents: Array<{
     id: string;
     event_type: string;
@@ -29,23 +32,24 @@ interface DashboardStats {
 }
 
 export default function DashboardHome() {
-  const { person, roles, currentTenantId, tenantMemberships, isAdminMaster } =
+  const { roles, currentTenantId, tenantMemberships, isAdminMaster } =
     useAuth();
-  const { availableModules, activePermissions } = useAccount();
+  const { availableModules, activePermissions, identity } = useAccount();
   const [stats, setStats] = useState<DashboardStats>({
     people: 0,
     companies: 0,
     jobs: 0,
     candidates: 0,
     applications: 0,
+    tenants: 0,
+    notifications: 0,
     recentEvents: [],
     loading: true,
   });
 
-  const displayName = person?.full_name?.trim() || 'Usuário';
-  const firstName = displayName.split(/\s+/)[0];
-  const roleName = roles[0]?.name || 'Usuário';
-  const scope = isAdminMaster ? 'platform' : 'tenant';
+  const displayName = identity.displayName;
+  const roleName = identity.roleName;
+  const contextLabel = identity.contextLabel;
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('pt-BR', {
@@ -53,13 +57,10 @@ export default function DashboardHome() {
     month: 'long',
     year: 'numeric',
   });
-
-  const greeting = useMemo(() => {
-    const hour = now.getHours();
-    if (hour < 12) return 'Bom dia';
-    if (hour < 18) return 'Boa tarde';
-    return 'Boa noite';
-  }, []);
+  const timeStr = now.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   useEffect(() => {
     const supabase = getSupabaseClient();
@@ -74,6 +75,8 @@ export default function DashboardHome() {
         let jobsCount = 0;
         let candidatesCount = 0;
         let applicationsCount = 0;
+        let tenantsCount = 0;
+        const notificationsCount = 0;
         let recentEvents: DashboardStats['recentEvents'] = [];
 
         if (isPlatform) {
@@ -82,8 +85,12 @@ export default function DashboardHome() {
             { count: jCount },
             { count: candCount },
             { count: appCount },
+            { count: tenantCount },
           ] = await Promise.all([
             supabase.from('people').select('*', { count: 'exact', head: true }),
+            supabase
+              .from('companies')
+              .select('*', { count: 'exact', head: true }),
             supabase.from('jobs').select('*', { count: 'exact', head: true }),
             supabase
               .from('candidates')
@@ -91,22 +98,27 @@ export default function DashboardHome() {
             supabase
               .from('applications')
               .select('*', { count: 'exact', head: true }),
+            supabase
+              .from('tenants')
+              .select('*', { count: 'exact', head: true }),
           ]);
+
           peopleCount = pCount || 0;
           jobsCount = jCount || 0;
           candidatesCount = candCount || 0;
           applicationsCount = appCount || 0;
+          tenantsCount = tenantCount || 0;
 
           const companiesResult = await supabase
-            .from('company_relationships')
-            .select('company_id', { count: 'exact', head: true });
+            .from('companies')
+            .select('id', { count: 'exact', head: true });
           companiesCount = companiesResult.count || 0;
 
           const { data: events } = await supabase
             .from('domain_events')
             .select('id, event_type, description, created_at')
             .order('created_at', { ascending: false })
-            .limit(10);
+            .limit(8);
           recentEvents = events || [];
         } else {
           const activeTenantId = currentTenantId || tenantIds[0];
@@ -140,8 +152,8 @@ export default function DashboardHome() {
             applicationsCount = appCount || 0;
 
             const companiesResult = await supabase
-              .from('company_relationships')
-              .select('company_id', { count: 'exact', head: true })
+              .from('companies')
+              .select('id', { count: 'exact', head: true })
               .eq('tenant_id', activeTenantId);
             companiesCount = companiesResult.count || 0;
 
@@ -150,7 +162,7 @@ export default function DashboardHome() {
               .select('id, event_type, description, created_at')
               .eq('tenant_id', activeTenantId)
               .order('created_at', { ascending: false })
-              .limit(10);
+              .limit(8);
             recentEvents = events || [];
           }
         }
@@ -161,6 +173,8 @@ export default function DashboardHome() {
           jobs: jobsCount,
           candidates: candidatesCount,
           applications: applicationsCount,
+          tenants: tenantsCount,
+          notifications: notificationsCount,
           recentEvents,
           loading: false,
         });
@@ -181,6 +195,12 @@ export default function DashboardHome() {
           value: stats.people,
           icon: Users,
           permission: 'people.read',
+        },
+        {
+          label: 'Tenants',
+          value: stats.tenants,
+          icon: Building2,
+          permission: 'tenants.read',
         },
         {
           label: 'Empresas',
@@ -205,6 +225,88 @@ export default function DashboardHome() {
           value: stats.applications,
           icon: Briefcase,
           permission: 'applications.read',
+        },
+      ];
+    }
+
+    const role = roles[0]?.name;
+    if (role === 'rh') {
+      return [
+        {
+          label: 'Funcionários',
+          value: stats.people,
+          icon: Users,
+          permission: 'people.read',
+        },
+        {
+          label: 'Candidatos',
+          value: stats.candidates,
+          icon: Users,
+          permission: 'candidates.read',
+        },
+        {
+          label: 'Vagas',
+          value: stats.jobs,
+          icon: Briefcase,
+          permission: 'jobs.read',
+        },
+        {
+          label: 'Candidaturas',
+          value: stats.applications,
+          icon: Briefcase,
+          permission: 'applications.read',
+        },
+        {
+          label: 'Empresas',
+          value: stats.companies,
+          icon: Building2,
+          permission: 'companies.read',
+        },
+      ];
+    }
+
+    if (role === 'financeiro') {
+      return [
+        {
+          label: 'Contas a pagar',
+          value: stats.jobs,
+          icon: FileText,
+          permission: 'finance.accounts_payable.read',
+        },
+        {
+          label: 'Contas a receber',
+          value: stats.applications,
+          icon: FileText,
+          permission: 'finance.accounts_receivable.read',
+        },
+        {
+          label: 'Vagas',
+          value: stats.jobs,
+          icon: Briefcase,
+          permission: 'jobs.read',
+        },
+        {
+          label: 'Candidaturas',
+          value: stats.applications,
+          icon: Briefcase,
+          permission: 'applications.read',
+        },
+      ];
+    }
+
+    if (role === 'candidato') {
+      return [
+        {
+          label: 'Minhas candidaturas',
+          value: stats.applications,
+          icon: Briefcase,
+          permission: 'applications.read',
+        },
+        {
+          label: 'Vagas disponíveis',
+          value: stats.jobs,
+          icon: Briefcase,
+          permission: 'jobs.read',
         },
       ];
     }
@@ -241,7 +343,7 @@ export default function DashboardHome() {
         permission: 'applications.read',
       },
     ];
-  }, [stats, isAdminMaster]);
+  }, [stats, isAdminMaster, roles]);
 
   const visibleKpis = useMemo(() => {
     return kpis.filter((kpi) =>
@@ -252,20 +354,53 @@ export default function DashboardHome() {
   }, [kpis, activePermissions]);
 
   const quickAccessModules = useMemo(() => {
-    const priorityIds = [
-      'clientes',
-      'vagas',
-      'candidatos',
-      'servicos',
-      'financeiro',
-      'estoque',
-      'suporte',
-      'relatorios',
-    ];
+    const priorityIds = isAdminMaster
+      ? [
+          'tenants',
+          'usuarios',
+          'roles-permissoes',
+          'auditoria',
+          'clientes',
+          'vagas',
+          'candidatos',
+          'financeiro',
+        ]
+      : roles[0]?.name === 'rh'
+        ? [
+            'rh',
+            'vagas',
+            'candidatos',
+            'recrutamento',
+            'processos-seletivos',
+            'documentos',
+            'relatorios',
+          ]
+        : roles[0]?.name === 'financeiro'
+          ? [
+              'financeiro',
+              'fiscal',
+              'contabilidade',
+              'relatorios',
+              'documentos',
+              'suporte',
+            ]
+          : roles[0]?.name === 'candidato'
+            ? ['inicio', 'candidatos', 'vagas', 'documentos', 'suporte']
+            : [
+                'clientes',
+                'vagas',
+                'candidatos',
+                'servicos',
+                'financeiro',
+                'estoque',
+                'suporte',
+                'relatorios',
+              ];
+
     return availableModules
       .filter((m) => priorityIds.includes(m.id))
       .slice(0, 8);
-  }, [availableModules]);
+  }, [availableModules, isAdminMaster, roles]);
 
   const isEmpty = availableModules.length === 0;
 
@@ -279,12 +414,10 @@ export default function DashboardHome() {
       <div className="space-y-8">
         <section>
           <h2 className="text-foreground mb-1 text-xl font-semibold">
-            {greeting}, {firstName}
+            Seja bem-vindo, {displayName}
           </h2>
           <p className="text-muted-foreground text-sm">
-            {roleName.replace(/_/g, ' ')} ·{' '}
-            {scope === 'platform' ? 'Painel Administrativo' : 'Área do Usuário'}{' '}
-            · {dateStr}
+            {roleName} · {contextLabel} · {dateStr} · {timeStr}
           </p>
         </section>
 
