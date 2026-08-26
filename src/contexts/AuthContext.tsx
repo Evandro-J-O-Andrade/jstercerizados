@@ -48,7 +48,7 @@ interface AuthContextType {
       tenantId?: string;
       roleId?: string;
     },
-  ) => Promise<{ error?: string }>;
+  ) => Promise<{ error?: string; status?: 'success' | 'email_pending' }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
   updateProfile: (data: Partial<Person>) => Promise<{ error?: string }>;
   changePassword: (
@@ -146,19 +146,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (personError) throw personError;
       if (!personData) {
-        if (isMountedRef.current) {
-          setPerson(null);
-          setTenantMemberships([]);
-          setCurrentTenantId(null);
-          setTenants([]);
-          setRoles([]);
-          setPermissions([]);
-          setRoleAssignments([]);
-          setFirstLoginState(null);
-          setLegalAcceptances([]);
-          setIsAdminMaster(false);
-        }
-        return;
+        throw new Error(
+          'Identidade não encontrada. Verifique se seu cadastro está completo ou solicite acesso ao administrador.',
+        );
       }
 
       const { data: membershipData } = await supabase
@@ -849,7 +839,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       tenantId?: string;
       roleId?: string;
     },
-  ): Promise<{ error?: string }> => {
+  ): Promise<{ error?: string; status?: 'success' | 'email_pending' }> => {
     setAuthError(null);
 
     const supabase = getSupabaseClient();
@@ -883,64 +873,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: 'Erro ao criar conta. Tente novamente.' };
       }
 
-      if (!data.user.email_confirmed_at) {
-        return { error: 'Verifique seu e-mail para confirmar a conta.' };
-      }
+      const { error: bootstrapError } = await supabase.rpc(
+        'bootstrap_candidate_identity',
+        {
+          p_auth_user_id: data.user.id,
+          p_full_name: profileData.full_name,
+          p_email: profileData.email,
+          p_phone: profileData.phone ?? null,
+          p_tenant_id: profileData.tenantId ?? null,
+          p_role_id: profileData.roleId ?? null,
+        },
+      );
 
-      const { data: personData, error: personError } = await supabase
-        .from('people')
-        .insert({
-          auth_user_id: data.user.id,
-          full_name: profileData.full_name,
-          email: profileData.email,
-          phone: profileData.phone ?? null,
-          status: 'active',
-        })
-        .select('*')
-        .single();
-
-      if (personError || !personData) {
+      if (bootstrapError) {
+        console.error('[AUTH:REGISTER] bootstrap failed', bootstrapError);
         return {
-          error: normalizeError(
-            personError || new Error('Erro ao criar perfil.'),
-          ).userMessage,
+          error: normalizeError(bootstrapError).userMessage,
         };
-      }
-
-      if (profileData.tenantId) {
-        const { error: membershipError } = await supabase
-          .from('tenant_memberships')
-          .insert({
-            person_id: personData.id,
-            tenant_id: profileData.tenantId,
-            role_id: profileData.roleId || null,
-            status: 'active',
-            joined_at: new Date().toISOString(),
-          });
-
-        if (membershipError) {
-          return { error: normalizeError(membershipError).userMessage };
-        }
-      }
-
-      if (profileData.roleId) {
-        const { error: assignmentError } = await supabase
-          .from('role_assignments')
-          .insert({
-            role_id: profileData.roleId,
-            person_id: personData.id,
-            tenant_id: profileData.tenantId || null,
-          });
-
-        if (assignmentError) {
-          return { error: normalizeError(assignmentError).userMessage };
-        }
       }
 
       await loadAuthData(data.user.id);
 
-      return {};
+      if (data.user.email_confirmed_at) {
+        return { status: 'success' };
+      }
+
+      return { status: 'email_pending' };
     } catch (error) {
+      console.error('[AUTH:REGISTER] exception', error);
       return {
         error: normalizeError(error).userMessage,
       };

@@ -107,6 +107,37 @@ export default function Login() {
   }, [authError, loginStatus]);
 
   if (loginStatus === 'success' && isAuthenticated) {
+    if (!person) {
+      return (
+        <div className="flex min-h-[70dvh] items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-md text-center"
+          >
+            <div className="bg-warning/10 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
+              <Shield className="text-warning h-10 w-10" />
+            </div>
+            <h2 className="text-foreground mb-4 text-2xl font-bold">
+              Acesso não concluído
+            </h2>
+            <p className="text-muted-foreground mb-8">
+              Sua identidade não foi encontrada. Verifique se seu cadastro está
+              completo ou solicite acesso ao administrador.
+            </p>
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => window.location.reload()}
+            >
+              Tentar novamente
+            </Button>
+          </motion.div>
+        </div>
+      );
+    }
+
     const firstName = person?.full_name?.split(' ')[0] || 'colaborador';
 
     return (

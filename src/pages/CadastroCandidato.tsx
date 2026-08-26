@@ -54,6 +54,10 @@ export default function CandidateRegister() {
 
       if (result.error) {
         setError(normalizeError(result.error).userMessage);
+      } else if (result.status === 'email_pending') {
+        setError(
+          'Cadastro realizado com sucesso. Verifique seu e-mail para confirmar a conta.',
+        );
       } else {
         navigate('/dashboard');
       }
