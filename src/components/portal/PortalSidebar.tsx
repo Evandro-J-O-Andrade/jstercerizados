@@ -107,6 +107,17 @@ export function PortalSidebar({
   const [collapsed, setCollapsed] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
 
+  const now = new Date();
+  const dateLabel = now.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+  const timeLabel = now.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
   const displayName = identity.displayName;
   const roleLabel = identity.roleName;
 
@@ -295,6 +306,12 @@ export function PortalSidebar({
                 <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
+              </div>
+            )}
+
+            {!collapsed && (
+              <div className="text-muted-foreground mb-3 px-2 text-xs">
+                {dateLabel} • {timeLabel}
               </div>
             )}
 

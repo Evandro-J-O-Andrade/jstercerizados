@@ -50,7 +50,6 @@ export function PortalHeader({
   const primaryRole = roles[0];
   const roleLabel = primaryRole?.name || primaryRole?.name || 'Usuário';
   const displayName = person?.full_name?.trim() || 'Usuário';
-  const firstName = displayName.split(' ')[0];
 
   const contextLabel = activeRole
     ? normalizeRoleScope(activeRole.scope) === 'platform'
@@ -68,6 +67,17 @@ export function PortalHeader({
         ? 'Plataforma'
         : ''
       : '';
+
+  const now = new Date();
+  const dateLabel = now.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+  const timeLabel = now.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   return (
     <header
@@ -91,8 +101,11 @@ export function PortalHeader({
             {moduleTitle ? `${contextLabel} / ${moduleTitle}` : contextLabel}
           </div>
           <h1 className="text-foreground text-lg font-semibold">
-            {person?.full_name ? `Bom dia, ${firstName}` : 'Bem-vindo'}
+            Seja bem-vindo, {displayName}
           </h1>
+          <p className="text-muted-foreground text-xs">
+            {tenantLabel || roleLabel} • {dateLabel} • {timeLabel}
+          </p>
         </div>
         <div className="lg:hidden">
           <div className="text-foreground text-base font-semibold">
@@ -180,6 +193,9 @@ export function PortalHeader({
                     {displayName}
                   </p>
                   <p className="text-muted-foreground text-xs">{roleLabel}</p>
+                  <p className="text-muted-foreground text-xs">
+                    {tenantLabel || contextLabel}
+                  </p>
                 </div>
                 <button
                   type="button"
