@@ -27,7 +27,11 @@ export function getSupabaseClient(): SupabaseClient | null {
     return null;
   }
 
-  client = createClient(url, key);
+  client = createClient(url, key, {
+    auth: {
+      persistSession: false,
+    },
+  });
 
   console.log('[AUTH:DIAGNOSTIC] Supabase client CREATED', {
     hasSupabaseClient: true,

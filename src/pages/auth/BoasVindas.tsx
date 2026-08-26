@@ -148,7 +148,7 @@ function getAreaInfo(
 export default function AuthWelcome() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const { person, roles, isAdminMaster } = useAuth();
+  const { person, roles, isAdminMaster, updateFirstLoginState } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -166,6 +166,11 @@ export default function AuthWelcome() {
     setError('');
 
     try {
+      await updateFirstLoginState({
+        welcome_completed_at: new Date().toISOString(),
+        first_login_completed: true,
+      });
+
       navigate('/dashboard', { replace: true });
     } catch {
       setError('Erro ao acessar. Tente novamente.');

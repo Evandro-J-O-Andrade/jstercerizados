@@ -11,7 +11,6 @@ import {
   Download,
   Eye,
   Edit,
-  Trash2,
   LogOut,
 } from 'lucide-react';
 import type {
@@ -22,16 +21,6 @@ import type {
 } from '@/types/common';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import {
-  mockGetBudgets,
-  mockDeleteBudget,
-  mockGetPartners,
-  mockDeletePartner,
-  mockGetSuppliers,
-  mockDeleteSupplier,
-  mockGetCandidates,
-  mockDeleteCandidate,
-} from '@/services/mock';
 import { STATUS_COLORS, type StatusColorKey } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -85,10 +74,10 @@ export default function Dashboard() {
   const { logout, authError, isAdminMaster } = useAuth();
   const navigate = useNavigate();
 
-  const budgets = mockGetBudgets();
-  const partners = mockGetPartners();
-  const suppliers = mockGetSuppliers();
-  const candidates = mockGetCandidates();
+  const budgets: BudgetRequest[] = [];
+  const partners: Partner[] = [];
+  const suppliers: Supplier[] = [];
+  const candidates: Candidate[] = [];
 
   const stats = [
     {
@@ -171,15 +160,6 @@ export default function Dashboard() {
                         <Button variant="ghost" size="sm" aria-label="Editar">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => mockDeleteBudget(b.id)}
-                          aria-label="Excluir"
-                          className="text-destructive hover:text-destructive/80"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -231,15 +211,6 @@ export default function Dashboard() {
                         <Button variant="ghost" size="sm" aria-label="Editar">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => mockDeletePartner(p.id)}
-                          aria-label="Excluir"
-                          className="text-destructive hover:text-destructive/80"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -290,15 +261,6 @@ export default function Dashboard() {
                         </Button>
                         <Button variant="ghost" size="sm" aria-label="Editar">
                           <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => mockDeleteSupplier(s.id)}
-                          aria-label="Excluir"
-                          className="text-destructive hover:text-destructive/80"
-                        >
-                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>
@@ -354,15 +316,6 @@ export default function Dashboard() {
                         </Button>
                         <Button variant="ghost" size="sm" aria-label="Editar">
                           <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => mockDeleteCandidate(c.id)}
-                          aria-label="Excluir"
-                          className="text-destructive hover:text-destructive/80"
-                        >
-                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>

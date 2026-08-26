@@ -11,7 +11,8 @@ export default function PrimeiroAcessoTermos() {
   const [accepted, setAccepted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const { acceptTerms, isAuthenticated, person, firstLoginState } = useAuth();
+  const { acceptTerms, isAuthenticated, person, resolvePostLoginDestination } =
+    useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,12 +20,6 @@ export default function PrimeiroAcessoTermos() {
       navigate('/login', { replace: true });
     }
   }, [isAuthenticated, person, navigate]);
-
-  useEffect(() => {
-    if (firstLoginState?.first_login_completed) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [firstLoginState, navigate]);
 
   const handleAccept = async () => {
     if (!accepted) return;
@@ -37,7 +32,8 @@ export default function PrimeiroAcessoTermos() {
       if (result.error) {
         setError(result.error);
       } else {
-        navigate('/primeiro-acesso/senha', { replace: true });
+        const target = resolvePostLoginDestination();
+        navigate(target, { replace: true });
       }
     } catch {
       setError('Erro ao registrar aceite dos termos.');

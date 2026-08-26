@@ -17,7 +17,6 @@ const PASSWORD_REQUIREMENTS = [
 ];
 
 export default function PrimeiroAcessoSenha() {
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswords, setShowPasswords] = useState(false);
@@ -41,8 +40,7 @@ export default function PrimeiroAcessoSenha() {
   const meetsRequirements = PASSWORD_REQUIREMENTS.every((req) =>
     req.test(newPassword),
   );
-  const isValid =
-    currentPassword.length > 0 && meetsRequirements && passwordsMatch;
+  const isValid = meetsRequirements && passwordsMatch;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +59,7 @@ export default function PrimeiroAcessoSenha() {
     setIsSubmitting(true);
 
     try {
-      const result = await changePassword(currentPassword, newPassword);
+      const result = await changePassword('', newPassword);
       if (result.error) {
         setError(result.error);
       } else {
@@ -117,18 +115,6 @@ export default function PrimeiroAcessoSenha() {
           )}
 
           <div className="space-y-5">
-            <div className="relative">
-              <Input
-                label="Senha atual"
-                type={showPasswords ? 'text' : 'password'}
-                placeholder="••••••••"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
-            </div>
-
             <div className="relative">
               <Input
                 label="Nova senha"
