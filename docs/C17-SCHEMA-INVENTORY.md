@@ -768,9 +768,26 @@
 - Permissões de finance/fiscal/accounting existem no banco, mas **não existem tabelas correspondentes**.
 - O site público usa RLS policies separadas para jobs publicados (`rls_published_jobs_public.sql`), fora do escopo da gestão.
 
+### Reconciliação com Supabase Cloud
+
+- Esse inventário considera **32 tabelas canônicas** em `supabase/migrations/`.
+- Há referência a **~200 tabelas físicas no Supabase Cloud**, que ainda não foram reconciliadas.
+- Antes de avançar na UI, é necessário comparar Cloud vs canônico para:
+  - Confirmar tabelas realmente existentes;
+  - Identificar tabelas legadas/orfãs;
+  - Mapear `tenant_id` e RLS efetivos.
+
+### Regra canônica de isolamento
+
+- `people` é identidade canônica; não é uma lista global de usuários do sistema.
+- `tenant_id` acompanha todos os domínios: RH, Financeiro, Fiscal, Contabilidade, etc.
+- Acesso a usuários do sistema pertence a **Administração/IAM**, não ao domínio RH.
+- RBAC deve ser respeitado em camadas: rota → permissão → repository → Supabase Auth → RLS → banco.
+
 ---
 
 ## 8. PRÓXIMOS PASSOS (sem implementação)
 
-1. Fechar matriz C1.7-B com domínios → módulos → permissions → rotas → UI potenciais.
-2. Somente depois: C1.7-A (session lifecycle), C1.8 (header/sidebar), C1.9 (dashboard).
+1. Reconciliação Cloud vs canônico: confirmar ~200 tabelas físicas, `tenant_id` e RLS.
+2. Fechar matriz C1.7-B com domínios → módulos → permissions → rotas → UI potenciais.
+3. Somente depois: C1.7-A (session lifecycle), C1.8 (header/sidebar), C1.9 (dashboard).
