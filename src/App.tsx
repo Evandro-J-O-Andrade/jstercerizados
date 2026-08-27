@@ -83,6 +83,7 @@ import ParceirosPage from '@/pages/dashboard/Parceiros';
 import FornecedoresPage from '@/pages/dashboard/Fornecedores';
 import UsuariosPage from '@/pages/dashboard/Usuarios';
 import ProcessosSeletivosPage from '@/pages/dashboard/ProcessosSeletivos';
+import EtapasPage from '@/pages/dashboard/Etapas';
 import ServicosPage from '@/pages/dashboard/Servicos';
 import FinanceiroPage from '@/pages/dashboard/Financeiro';
 import EstoquePage from '@/pages/dashboard/Estoque';
@@ -129,6 +130,7 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   FornecedoresPage,
   UsuariosPage,
   ProcessosSeletivosPage,
+  EtapasPage,
   ServicosPage,
   FinanceiroPage,
   EstoquePage,
@@ -292,6 +294,14 @@ function App() {
               element={
                 <PermissionGuard permission="recruitment.read">
                   <ProcessosSeletivosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="etapas"
+              element={
+                <PermissionGuard permission="recruitment.stage.manage">
+                  <EtapasPage />
                 </PermissionGuard>
               }
             />

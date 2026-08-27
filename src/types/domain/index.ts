@@ -73,3 +73,9 @@ export type {
   RecruitmentProcessCreateInput,
   RecruitmentProcessUpdateInput,
 } from './recruitment-process';
+
+export type {
+  RecruitmentStage,
+  RecruitmentStageCreateInput,
+  RecruitmentStageUpdateInput,
+} from './recruitment-stage';

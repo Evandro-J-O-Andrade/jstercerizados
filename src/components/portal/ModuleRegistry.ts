@@ -945,6 +945,27 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
           },
         ],
       },
+      {
+        id: 'etapas',
+        title: 'Etapas de Recrutamento',
+        description: 'Gerencie etapas dos processos seletivos',
+        route: '/dashboard/etapas',
+        requiredPermissions: ['recruitment.stage.manage'],
+        actions: [
+          {
+            id: 'criar',
+            title: 'Criar etapa',
+            description: 'Nova etapa',
+            permission: 'recruitment.stage.manage',
+          },
+          {
+            id: 'editar',
+            title: 'Editar',
+            description: 'Alterar etapa',
+            permission: 'recruitment.stage.manage',
+          },
+        ],
+      },
     ],
   },
   {

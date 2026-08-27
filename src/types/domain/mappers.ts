@@ -12,6 +12,7 @@ import type {
   Partner,
   BudgetRequest,
   RecruitmentProcess,
+  RecruitmentStage,
 } from '@/types/domain';
 
 export function mapTenant(
@@ -153,4 +154,10 @@ export function mapRecruitmentProcess(
     ...row,
     job: extras?.job,
   };
+}
+
+export function mapRecruitmentStage(
+  row: Database['public']['Tables']['recruitment_stages']['Row'],
+): RecruitmentStage {
+  return { ...row };
 }

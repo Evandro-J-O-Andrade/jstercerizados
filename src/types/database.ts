@@ -1075,6 +1075,41 @@ export interface Database {
           updated_at?: string;
         };
       };
+      recruitment_stages: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          recruitment_process_id: string;
+          name: string;
+          description: string | null;
+          status: 'active' | 'inactive' | 'completed' | 'skipped';
+          order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          recruitment_process_id: string;
+          name: string;
+          description?: string | null;
+          status?: 'active' | 'inactive' | 'completed' | 'skipped';
+          order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          recruitment_process_id?: string;
+          name?: string;
+          description?: string | null;
+          status?: 'active' | 'inactive' | 'completed' | 'skipped';
+          order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       service_orders: {
         Row: {
           id: string;
