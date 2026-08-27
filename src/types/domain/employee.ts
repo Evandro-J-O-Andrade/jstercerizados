@@ -92,9 +92,6 @@ export type EmployeeEducation =
 export type EmployeeExperience =
   Database['public']['Tables']['employee_experiences']['Row'];
 
-export type EmployeeSkill =
-  Database['public']['Tables']['employee_skills']['Row'];
-
 export type EmployeeLanguage =
   Database['public']['Tables']['employee_languages']['Row'];
 
