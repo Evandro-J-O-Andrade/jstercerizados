@@ -106,6 +106,15 @@ export function PortalSidebar({
 
   const [collapsed, setCollapsed] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
+  const [expandedModules, setExpandedModules] = useState<string[]>([]);
+
+  const toggleModule = (moduleId: string) => {
+    setExpandedModules((prev) =>
+      prev.includes(moduleId)
+        ? prev.filter((id) => id !== moduleId)
+        : [...prev, moduleId],
+    );
+  };
 
   const now = new Date();
   const dateLabel = now.toLocaleDateString('pt-BR', {
@@ -239,6 +248,9 @@ export function PortalSidebar({
                       const isActive =
                         location.pathname === module.route ||
                         location.pathname.startsWith(`${module.route}/`);
+                      const hasFeatures =
+                        module.features && module.features.length > 0;
+                      const isExpanded = expandedModules.includes(module.id);
 
                       if (collapsed) {
                         return (
@@ -261,23 +273,125 @@ export function PortalSidebar({
                       }
 
                       return (
-                        <NavLink
-                          key={module.id}
-                          to={module.route}
-                          end
-                          onClick={() => handleNavigate(module.route)}
-                          className={cn(
-                            'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                            isActive
-                              ? 'bg-primary/10 text-primary'
-                              : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                        <div key={module.id}>
+                          <div className="flex items-center gap-1">
+                            <NavLink
+                              to={hasFeatures ? '#' : module.route}
+                              end
+                              onClick={() => {
+                                if (hasFeatures) {
+                                  toggleModule(module.id);
+                                } else {
+                                  handleNavigate(module.route);
+                                }
+                              }}
+                              className={cn(
+                                'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                                isActive
+                                  ? 'bg-primary/10 text-primary'
+                                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                              )}
+                            >
+                              <ModuleIcon name={module.icon} />
+                              <span className="flex-1 text-left">
+                                {module.title}
+                              </span>
+                            </NavLink>
+                          </div>
+                          {hasFeatures && isExpanded && (
+                            <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">
+                              {module.features!.map((feature) => {
+                                const featureActive =
+                                  location.pathname === feature.route ||
+                                  location.pathname.startsWith(
+                                    `${feature.route}/`,
+                                  );
+                                const hasSubFeatures =
+                                  feature.features &&
+                                  feature.features.length > 0;
+                                const isFeatureExpanded =
+                                  expandedModules.includes(feature.id);
+
+                                if (hasSubFeatures) {
+                                  return (
+                                    <div key={feature.id}>
+                                      <button
+                                        type="button"
+                                        onClick={() => toggleModule(feature.id)}
+                                        className={cn(
+                                          'flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
+                                          featureActive
+                                            ? 'text-primary'
+                                            : 'text-muted-foreground hover:text-foreground',
+                                        )}
+                                      >
+                                        <span className="flex-1 text-left">
+                                          {feature.title}
+                                        </span>
+                                        <span className="text-xs">
+                                          {isFeatureExpanded ? '▼' : '▶'}
+                                        </span>
+                                      </button>
+                                      {isFeatureExpanded && (
+                                        <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">
+                                          {feature.features!.map(
+                                            (subFeature) => {
+                                              const subFeatureActive =
+                                                location.pathname ===
+                                                  subFeature.route ||
+                                                location.pathname.startsWith(
+                                                  `${subFeature.route}/`,
+                                                );
+                                              return (
+                                                <NavLink
+                                                  key={subFeature.id}
+                                                  to={subFeature.route}
+                                                  end
+                                                  onClick={() =>
+                                                    handleNavigate(
+                                                      subFeature.route,
+                                                    )
+                                                  }
+                                                  className={cn(
+                                                    'block rounded-lg px-3 py-1.5 text-sm transition-colors',
+                                                    subFeatureActive
+                                                      ? 'bg-primary/10 text-primary'
+                                                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                                  )}
+                                                >
+                                                  {subFeature.title}
+                                                </NavLink>
+                                              );
+                                            },
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                }
+
+                                return (
+                                  <NavLink
+                                    key={feature.id}
+                                    to={feature.route}
+                                    end
+                                    onClick={() =>
+                                      handleNavigate(feature.route)
+                                    }
+                                    className={cn(
+                                      'block rounded-lg px-3 py-1.5 text-sm transition-colors',
+                                      featureActive
+                                        ? 'bg-primary/10 text-primary'
+                                        : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                    )}
+                                  >
+                                    {feature.title}
+                                  </NavLink>
+                                );
+                              })}
+                            </div>
                           )}
-                        >
-                          <ModuleIcon name={module.icon} />
-                          <span className="flex-1 text-left">
-                            {module.title}
-                          </span>
-                        </NavLink>
+                        </div>
                       );
                     })}
                   </div>
