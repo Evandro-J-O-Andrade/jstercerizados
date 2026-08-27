@@ -32,7 +32,6 @@ import IntegracoesPage from '@/pages/dashboard/IntegracoesPage';
 import FiscalPage from '@/pages/dashboard/FiscalPage';
 import ContabilidadePage from '@/pages/dashboard/ContabilidadePage';
 import AuditoriaPage from '@/pages/dashboard/AuditoriaPage';
-import RhPage from '@/pages/dashboard/RhPage';
 import IaPage from '@/pages/dashboard/IaPage';
 import GestaoPage from '@/pages/dashboard/GestaoPage';
 import {
@@ -92,6 +91,7 @@ import IdiomasPage from '@/pages/dashboard/Idiomas';
 import HabilidadesPage from '@/pages/dashboard/Habilidades';
 import DocumentosRhPage from '@/pages/dashboard/DocumentosRh';
 import BancoDeTalentosPage from '@/pages/dashboard/BancoDeTalentos';
+import DashboardRhPage from '@/pages/dashboard/DashboardRh';
 import ServicosPage from '@/pages/dashboard/Servicos';
 import FinanceiroPage from '@/pages/dashboard/Financeiro';
 import EstoquePage from '@/pages/dashboard/Estoque';
@@ -124,7 +124,6 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   FiscalPage,
   ContabilidadePage,
   AuditoriaPage,
-  RhPage,
   IaPage,
   GestaoPage,
   RbacAuditPage,
@@ -147,6 +146,7 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   HabilidadesPage,
   DocumentosRhPage,
   BancoDeTalentosPage,
+  DashboardRhPage,
   ServicosPage,
   FinanceiroPage,
   EstoquePage,
@@ -318,6 +318,14 @@ function App() {
               element={
                 <PermissionGuard permission="recruitment.stage.manage">
                   <EtapasPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="rh"
+              element={
+                <PermissionGuard permission="people.read">
+                  <DashboardRhPage />
                 </PermissionGuard>
               }
             />
