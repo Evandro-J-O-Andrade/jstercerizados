@@ -92,6 +92,8 @@ export function PortalSidebar({ isOpen, onClose, onNavigate }: PortalSidebarProp
   const [collapsed, setCollapsed] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
+  const [expandedFeatures, setExpandedFeatures] = useState<string[]>([]);
+  const [collapsedNodes, setCollapsedNodes] = useState<string[]>([]);
 
   const activeRoute = location.pathname;
 
@@ -134,14 +136,6 @@ export function PortalSidebar({ isOpen, onClose, onNavigate }: PortalSidebarProp
   useEffect(() => {
     ensureExpandedForRoute(activeRoute);
   }, [activeRoute, ensureExpandedForRoute]);
-
-  const toggleModule = (moduleId: string) => {
-    setExpandedModules((prev) =>
-      prev.includes(moduleId)
-        ? prev.filter((id) => id !== moduleId)
-        : [...prev, moduleId],
-    );
-  };
 
   const now = new Date();
   const dateLabel = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -278,7 +272,7 @@ export function PortalSidebar({ isOpen, onClose, onNavigate }: PortalSidebarProp
                             {hasFeatures ? (
                               <button
                                 type="button"
-                                onClick={() => toggleModule(module.id)}
+                                onClick={() => toggleModule(module.id, isModuleRouteExpanded(module))}
                                 className={cn(
                                   'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                                   moduleSelected
