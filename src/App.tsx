@@ -88,6 +88,7 @@ import FuncionariosPage from '@/pages/dashboard/Funcionarios';
 import ExperienciasPage from '@/pages/dashboard/Experiencias';
 import FormacaoPage from '@/pages/dashboard/Formacao';
 import CursosPage from '@/pages/dashboard/Cursos';
+import IdiomasPage from '@/pages/dashboard/Idiomas';
 import ServicosPage from '@/pages/dashboard/Servicos';
 import FinanceiroPage from '@/pages/dashboard/Financeiro';
 import EstoquePage from '@/pages/dashboard/Estoque';
@@ -139,6 +140,7 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   ExperienciasPage,
   FormacaoPage,
   CursosPage,
+  IdiomasPage,
   ServicosPage,
   FinanceiroPage,
   EstoquePage,
@@ -342,6 +344,14 @@ function App() {
               element={
                 <PermissionGuard permission="employees.read">
                   <CursosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="idiomas"
+              element={
+                <PermissionGuard permission="employees.read">
+                  <IdiomasPage />
                 </PermissionGuard>
               }
             />

@@ -86,7 +86,6 @@ export type {
   EmployeeUpdateInput,
   EmployeeDocument,
   EmployeeSkill,
-  EmployeeLanguage,
 } from './employee';
 
 export type {
@@ -106,3 +105,9 @@ export type {
   EmployeeCourseCreateInput,
   EmployeeCourseUpdateInput,
 } from './employee-course';
+
+export type {
+  EmployeeLanguage,
+  EmployeeLanguageCreateInput,
+  EmployeeLanguageUpdateInput,
+} from './employee-language';
