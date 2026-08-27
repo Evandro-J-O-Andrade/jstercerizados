@@ -46,6 +46,7 @@ import {
 } from '@/components/portal/ModuleRegistry';
 import AuthTerms from '@/pages/auth/Termos';
 import AuthWelcome from '@/pages/auth/BoasVindas';
+import AuthCallback from '@/pages/auth/AuthCallback';
 
 const Home = lazy(() => import('@/pages/Home'));
 const Sobre = lazy(() => import('@/pages/Sobre'));
@@ -745,6 +746,10 @@ function App() {
             />
             <Route path="*" element={<DashboardRouteNotFound />} />
           </Route>
+          <Route
+            path="/auth/callback"
+            element={<AuthCallback />}
+          />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/auth/terms" element={<AuthTerms />} />
           <Route path="/auth/welcome" element={<AuthWelcome />} />

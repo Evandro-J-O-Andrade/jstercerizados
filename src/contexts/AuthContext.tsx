@@ -258,6 +258,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLegalAcceptances([]);
         setIsAdminMaster(false);
       }
+      throw error;
     }
   }, []);
 
