@@ -111,13 +111,31 @@ export function PortalSidebar({
   const [collapsed, setCollapsed] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
+  const [expandedFeatures, setExpandedFeatures] = useState<string[]>([]);
+  const [collapsedNodes, setCollapsedNodes] = useState<string[]>([]);
 
   const toggleModule = (moduleId: string) => {
-    setExpandedModules((prev) =>
-      prev.includes(moduleId)
-        ? prev.filter((id) => id !== moduleId)
-        : [...prev, moduleId],
-    );
+    const isOpen = expandedModules.includes(moduleId) || !collapsedNodes.includes(moduleId);
+    if (isOpen) {
+      setExpandedModules((prev) => prev.filter((id) => id !== moduleId));
+      setCollapsedNodes((prev) => (prev.includes(moduleId) ? prev : [...prev, moduleId]));
+      return;
+    }
+
+    setExpandedModules([moduleId]);
+    setCollapsedNodes((prev) => prev.filter((id) => id !== moduleId));
+  };
+
+  const toggleFeature = (featureId: string) => {
+    const isOpen = expandedFeatures.includes(featureId) || !collapsedNodes.includes(featureId);
+    if (isOpen) {
+      setExpandedFeatures((prev) => prev.filter((id) => id !== featureId));
+      setCollapsedNodes((prev) => (prev.includes(featureId) ? prev : [...prev, featureId]));
+      return;
+    }
+
+    setExpandedFeatures([featureId]);
+    setCollapsedNodes((prev) => prev.filter((id) => id !== featureId));
   };
 
   const now = new Date();
@@ -157,6 +175,9 @@ export function PortalSidebar({
   ];
 
   const handleNavigate = (href: string) => {
+    setExpandedModules([]);
+    setExpandedFeatures([]);
+    setCollapsedNodes([]);
     navigate(href);
     onNavigate?.();
     onClose();
@@ -168,22 +189,18 @@ export function PortalSidebar({
     handleNavigate('/dashboard');
   };
 
-  const isExactMatch = (route: string, pathname: string) => {
-    return pathname === route;
-  };
+  const isExactMatch = (route: string, pathname: string) => pathname === route;
 
-  const isChildOf = (parentRoute: string, pathname: string) => {
-    return pathname !== parentRoute && pathname.startsWith(`${parentRoute}/`);
-  };
+  const isChildOf = (parentRoute: string, pathname: string) =>
+    pathname !== parentRoute && pathname.startsWith(`${parentRoute}/`);
 
-  const isModuleSelected = (module: ModuleDefinition) => {
-    return isExactMatch(module.route, location.pathname);
-  };
+  const isModuleSelected = (module: ModuleDefinition) =>
+    isExactMatch(module.route, location.pathname);
 
-  const isModuleExpanded = (module: ModuleDefinition) => {
+  const isModuleRouteExpanded = (module: ModuleDefinition) => {
     if (isExactMatch(module.route, location.pathname)) return true;
-    if (module.features) {
-      return module.features.some((feature) => {
+    return Boolean(
+      module.features?.some((feature) => {
         if (isExactMatch(feature.route, location.pathname)) return true;
         if (feature.features) {
           return feature.features.some(
@@ -193,26 +210,31 @@ export function PortalSidebar({
           );
         }
         return isChildOf(feature.route, location.pathname);
-      });
-    }
-    return isChildOf(module.route, location.pathname);
+      }) || isChildOf(module.route, location.pathname),
+    );
   };
 
-  const isFeatureSelected = (feature: ModuleFeature) => {
-    return isExactMatch(feature.route, location.pathname);
-  };
+  const isModuleExpanded = (module: ModuleDefinition) =>
+    !collapsedNodes.includes(module.id) &&
+    (isModuleRouteExpanded(module) || expandedModules.includes(module.id));
 
-  const isFeatureExpanded = (feature: ModuleFeature) => {
+  const isFeatureSelected = (feature: ModuleFeature) =>
+    isExactMatch(feature.route, location.pathname);
+
+  const isFeatureRouteExpanded = (feature: ModuleFeature) => {
     if (isExactMatch(feature.route, location.pathname)) return true;
-    if (feature.features) {
-      return feature.features.some(
+    return Boolean(
+      feature.features?.some(
         (sub) =>
           isExactMatch(sub.route, location.pathname) ||
           isChildOf(sub.route, location.pathname),
-      );
-    }
-    return isChildOf(feature.route, location.pathname);
+      ) || isChildOf(feature.route, location.pathname),
+    );
   };
+
+  const isFeatureExpanded = (feature: ModuleFeature) =>
+    !collapsedNodes.includes(feature.id) &&
+    (isFeatureRouteExpanded(feature) || expandedFeatures.includes(feature.id));
 
   const sidebarWidth = collapsed ? 'w-16' : 'w-72';
 
@@ -240,9 +262,7 @@ export function PortalSidebar({
                   <p className="text-foreground truncate text-sm font-semibold">
                     {COMPANY.name}
                   </p>
-                  <p className="text-muted-foreground truncate text-xs">
-                    Portal SaaS
-                  </p>
+                  <p className="text-muted-foreground truncate text-xs">Portal SaaS</p>
                 </div>
               </div>
             )}
@@ -259,11 +279,7 @@ export function PortalSidebar({
                 aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
                 className="hidden lg:flex"
               >
-                {collapsed ? (
-                  <PanelLeftOpen className="h-5 w-5" />
-                ) : (
-                  <PanelLeftClose className="h-5 w-5" />
-                )}
+                {collapsed ? <PanelLeftOpen className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
               </Button>
               <Button
                 variant="ghost"
@@ -277,10 +293,7 @@ export function PortalSidebar({
             </div>
           </div>
 
-          <nav
-            className="flex-1 space-y-1 overflow-y-auto p-2"
-            aria-label="Portal"
-          >
+          <nav className="flex-1 space-y-1 overflow-y-auto p-2" aria-label="Portal">
             {categoryOrder.map((category) => {
               const modules = grouped[category];
               if (!modules || modules.length === 0) return null;
@@ -296,11 +309,8 @@ export function PortalSidebar({
                   <div className="space-y-0.5">
                     {modules.map((module) => {
                       const moduleSelected = isModuleSelected(module);
-                      const moduleExpanded =
-                        isModuleExpanded(module) ||
-                        expandedModules.includes(module.id);
-                      const hasFeatures =
-                        module.features && module.features.length > 0;
+                      const moduleExpanded = isModuleExpanded(module);
+                      const hasFeatures = Boolean(module.features?.length);
 
                       if (collapsed) {
                         return (
@@ -328,8 +338,9 @@ export function PortalSidebar({
                             <NavLink
                               to={hasFeatures ? '#' : module.route}
                               end
-                              onClick={() => {
+                              onClick={(event) => {
                                 if (hasFeatures) {
+                                  event.preventDefault();
                                   toggleModule(module.id);
                                 } else {
                                   handleNavigate(module.route);
@@ -343,29 +354,24 @@ export function PortalSidebar({
                               )}
                             >
                               <ModuleIcon name={module.icon} />
-                              <span className="flex-1 text-left">
-                                {module.title}
-                              </span>
+                              <span className="flex-1 text-left">{module.title}</span>
                             </NavLink>
                           </div>
+
                           {hasFeatures && moduleExpanded && (
                             <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">
                               {module.features!.map((feature) => {
-                                const featureSelected =
-                                  isFeatureSelected(feature);
-                                const featureExpanded =
-                                  isFeatureExpanded(feature) ||
-                                  expandedModules.includes(feature.id);
-                                const hasSubFeatures =
-                                  feature.features &&
-                                  feature.features.length > 0;
+                                const featureSelected = isFeatureSelected(feature);
+                                const featureExpanded = isFeatureExpanded(feature);
+                                const hasSubFeatures = Boolean(feature.features?.length);
 
                                 if (hasSubFeatures) {
                                   return (
                                     <div key={feature.id}>
                                       <button
                                         type="button"
-                                        onClick={() => toggleModule(feature.id)}
+                                        onClick={() => toggleFeature(feature.id)}
+                                        aria-expanded={featureExpanded}
                                         className={cn(
                                           'flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
                                           featureSelected
@@ -373,44 +379,33 @@ export function PortalSidebar({
                                             : 'text-muted-foreground hover:text-foreground',
                                         )}
                                       >
-                                        <span className="flex-1 text-left">
-                                          {feature.title}
-                                        </span>
-                                        <span className="text-xs">
-                                          {featureExpanded ? '▼' : '▶'}
-                                        </span>
+                                        <span className="flex-1 text-left">{feature.title}</span>
+                                        <span className="text-xs">{featureExpanded ? '▼' : '▶'}</span>
                                       </button>
                                       {featureExpanded && (
                                         <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">
-                                          {feature.features!.map(
-                                            (subFeature) => {
-                                              const subFeatureSelected =
-                                                isExactMatch(
-                                                  subFeature.route,
-                                                  location.pathname,
-                                                );
-                                              return (
-                                                <NavLink
-                                                  key={subFeature.id}
-                                                  to={subFeature.route}
-                                                  end
-                                                  onClick={() =>
-                                                    handleNavigate(
-                                                      subFeature.route,
-                                                    )
-                                                  }
-                                                  className={cn(
-                                                    'block rounded-lg px-3 py-1.5 text-sm transition-colors',
-                                                    subFeatureSelected
-                                                      ? 'bg-primary/10 text-primary'
-                                                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                                                  )}
-                                                >
-                                                  {subFeature.title}
-                                                </NavLink>
-                                              );
-                                            },
-                                          )}
+                                          {feature.features!.map((subFeature) => {
+                                            const subFeatureSelected = isExactMatch(
+                                              subFeature.route,
+                                              location.pathname,
+                                            );
+                                            return (
+                                              <NavLink
+                                                key={subFeature.id}
+                                                to={subFeature.route}
+                                                end
+                                                onClick={() => handleNavigate(subFeature.route)}
+                                                className={cn(
+                                                  'block rounded-lg px-3 py-1.5 text-sm transition-colors',
+                                                  subFeatureSelected
+                                                    ? 'bg-primary/10 text-primary'
+                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                                )}
+                                              >
+                                                {subFeature.title}
+                                              </NavLink>
+                                            );
+                                          })}
                                         </div>
                                       )}
                                     </div>
@@ -422,9 +417,7 @@ export function PortalSidebar({
                                     key={feature.id}
                                     to={feature.route}
                                     end
-                                    onClick={() =>
-                                      handleNavigate(feature.route)
-                                    }
+                                    onClick={() => handleNavigate(feature.route)}
                                     className={cn(
                                       'block rounded-lg px-3 py-1.5 text-sm transition-colors',
                                       featureSelected
@@ -454,12 +447,8 @@ export function PortalSidebar({
                   {displayName.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-foreground truncate text-sm font-medium">
-                    {displayName}
-                  </p>
-                  <p className="text-muted-foreground truncate text-xs">
-                    {roleLabel}
-                  </p>
+                  <p className="text-foreground truncate text-sm font-medium">{displayName}</p>
+                  <p className="text-muted-foreground truncate text-xs">{roleLabel}</p>
                 </div>
               </div>
             ) : (
@@ -511,20 +500,13 @@ export function PortalSidebar({
               className="bg-card border-border mx-4 w-full max-w-lg rounded-xl border p-6 shadow-xl"
             >
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-foreground text-lg font-semibold">
-                  Escolha seu acesso
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSwitchOpen(false)}
-                >
+                <h2 className="text-foreground text-lg font-semibold">Escolha seu acesso</h2>
+                <Button variant="ghost" size="sm" onClick={() => setSwitchOpen(false)}>
                   <Globe className="h-4 w-4" />
                 </Button>
               </div>
               <p className="text-muted-foreground mb-4 text-sm">
-                Selecione a conta com a qual deseja trabalhar. Sua sessão
-                permanece ativa.
+                Selecione a conta com a qual deseja trabalhar. Sua sessão permanece ativa.
               </p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {availableMemberships.map((membership) => {
@@ -547,23 +529,15 @@ export function PortalSidebar({
                           <Shield className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="text-foreground text-sm font-semibold">
-                            Conta
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            {roleName}
-                          </p>
+                          <p className="text-foreground text-sm font-semibold">Conta</p>
+                          <p className="text-muted-foreground text-xs">{roleName}</p>
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground text-xs">
                           {isActive ? 'Ativo' : 'Selecionar'}
                         </span>
-                        {isActive && (
-                          <span className="text-primary text-xs font-medium">
-                            Atual
-                          </span>
-                        )}
+                        {isActive && <span className="text-primary text-xs font-medium">Atual</span>}
                       </div>
                     </button>
                   );
