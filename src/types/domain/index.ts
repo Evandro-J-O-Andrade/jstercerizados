@@ -85,9 +85,19 @@ export type {
   EmployeeCreateInput,
   EmployeeUpdateInput,
   EmployeeDocument,
-  EmployeeEducation,
-  EmployeeExperience,
   EmployeeSkill,
   EmployeeLanguage,
   EmployeeCourse,
 } from './employee';
+
+export type {
+  EmployeeExperience,
+  EmployeeExperienceCreateInput,
+  EmployeeExperienceUpdateInput,
+} from './employee-experience';
+
+export type {
+  EmployeeEducation,
+  EmployeeEducationCreateInput,
+  EmployeeEducationUpdateInput,
+} from './employee-education';
