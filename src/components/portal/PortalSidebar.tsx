@@ -307,23 +307,6 @@ export function PortalSidebar({ isOpen, onClose, onNavigate }: PortalSidebarProp
                               </NavLink>
                             )}
                           </div>
-=                          <NavLink
-                            to={hasFeatures ? '#' : module.route}
-                            end
-                            onClick={(event) => {
-                              if (hasFeatures) {
-                                event.preventDefault();
-                                toggleModule(module.id, isModuleRouteExpanded(module));
-                              } else {
-                                handleNavigate(module.route);
-                              }
-                            }}
-                            className={cn('flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors', moduleSelected ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}
-                          >
-                            <ModuleIcon name={module.icon} />
-                            <span className="flex-1 text-left">{module.title}</span>
-                          </NavLink>
-
                           {hasFeatures && moduleExpanded && (
                             <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">
                               {module.features!.map((feature) => {
