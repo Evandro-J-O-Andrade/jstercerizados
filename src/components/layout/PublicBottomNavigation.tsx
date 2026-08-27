@@ -44,7 +44,7 @@ const adminNavItems: NavItem[] = [
   { label: 'Configurações', href: '#', icon: Settings },
 ];
 
-export function BottomNavigation() {
+export function PublicBottomNavigation() {
   const { pathname } = useLocation();
   const { isAuthenticated, roles } = useAuth();
 

@@ -1,7 +1,7 @@
 import { type ReactNode } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { BottomNavigation } from '@/components/layout/BottomNavigation';
+import { PublicBottomNavigation } from '@/components/layout/PublicBottomNavigation';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
 interface PublicLayoutProps {
@@ -17,7 +17,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
       <div className="pb-24 lg:pb-0">
         <Footer />
       </div>
-      <BottomNavigation />
+      <PublicBottomNavigation />
     </div>
   );
 }

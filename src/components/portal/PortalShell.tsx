@@ -2,9 +2,7 @@ import { type ReactNode, useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { PortalSidebar } from '@/components/portal/PortalSidebar';
 import { PortalHeader } from '@/components/portal/PortalHeader';
-import { ChatWidget } from '@/components/ui/ChatWidget';
-import { HumanChatWidget } from '@/components/ui/HumanChatWidget';
-import { AccessibilityWidget } from '@/components/ui/AccessibilityWidget';
+import { PortalBottomNavigation } from '@/components/layout/PortalBottomNavigation';
 import { AccountProvider } from '@/contexts/AccountContext';
 import { applyTheme, getStoredTheme } from '@/hooks/useTheme';
 
@@ -15,9 +13,6 @@ interface PortalShellProps {
 
 function PortalShellInner({ moduleTitle, children }: PortalShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
-  const [isHumanChatOpen, setIsHumanChatOpen] = useState(false);
-  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
 
   useEffect(() => {
     applyTheme(getStoredTheme());
@@ -47,26 +42,7 @@ function PortalShellInner({ moduleTitle, children }: PortalShellProps) {
         </main>
       </div>
 
-      <AccessibilityWidget
-        open={isAccessibilityOpen}
-        onOpenChange={setIsAccessibilityOpen}
-        onOpenChat={() => {
-          setIsAccessibilityOpen(false);
-          setIsAiChatOpen(true);
-        }}
-      />
-      <ChatWidget
-        isOpen={isAiChatOpen}
-        onOpenChange={setIsAiChatOpen}
-        onRequestHuman={() => {
-          setIsAccessibilityOpen(false);
-          setIsHumanChatOpen(true);
-        }}
-      />
-      <HumanChatWidget
-        isOpen={isHumanChatOpen}
-        onOpenChange={setIsHumanChatOpen}
-      />
+      <PortalBottomNavigation />
     </div>
   );
 }
