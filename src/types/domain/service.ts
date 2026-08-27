@@ -1,24 +1,32 @@
 export interface ServiceOrder {
   id: string;
   tenant_id: string;
-  company_id: string | null;
-  description: string;
-  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
-  start_date: string | null;
-  end_date: string | null;
-  amount: number;
+  company_service_id: string;
+  status: string;
+  scheduled_at: string | null;
+  completed_at: string | null;
+  quantity: number | null;
+  value: number | null;
+  period_start: string | null;
+  period_end: string | null;
+  location: string | null;
+  notes: string | null;
   created_at: string;
   updated_at: string;
 }
 
 export interface ServiceOrderCreateInput {
   tenant_id: string;
-  company_id?: string | null;
-  description: string;
-  status?: 'open' | 'in_progress' | 'completed' | 'cancelled';
-  start_date?: string | null;
-  end_date?: string | null;
-  amount: number;
+  company_service_id: string;
+  status?: string;
+  scheduled_at?: string | null;
+  completed_at?: string | null;
+  quantity?: number | null;
+  value?: number | null;
+  period_start?: string | null;
+  period_end?: string | null;
+  location?: string | null;
+  notes?: string | null;
 }
 
 export interface Service {
@@ -26,9 +34,12 @@ export interface Service {
   tenant_id: string;
   name: string;
   description: string | null;
-  unit: string;
-  price: number;
-  status: 'active' | 'inactive';
+  short_description: string | null;
+  benefits: string[] | null;
+  image_url: string | null;
+  icon: string | null;
+  category: string;
+  active: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -37,18 +48,22 @@ export interface ServiceCreateInput {
   tenant_id: string;
   name: string;
   description?: string | null;
-  unit: string;
-  price: number;
-  status?: 'active' | 'inactive';
+  short_description?: string | null;
+  benefits?: string[] | null;
+  image_url?: string | null;
+  icon?: string | null;
+  category: string;
+  active?: boolean;
 }
 
 export interface ServiceExecution {
   id: string;
   tenant_id: string;
   service_order_id: string;
-  performed_by: string | null;
+  executed_by: string | null;
   notes: string | null;
-  executed_at: string;
+  started_at: string;
+  finished_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -56,7 +71,8 @@ export interface ServiceExecution {
 export interface ServiceExecutionCreateInput {
   tenant_id: string;
   service_order_id: string;
-  performed_by?: string | null;
+  executed_by?: string | null;
   notes?: string | null;
-  executed_at: string;
+  started_at: string;
+  finished_at?: string | null;
 }

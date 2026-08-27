@@ -1,36 +1,33 @@
 export interface SupportTicket {
   id: string;
   tenant_id: string;
-  company_id: string | null;
-  category_id: string | null;
-  subject: string;
+  category_id: string;
+  title: string;
   description: string;
-  status: 'open' | 'in_progress' | 'resolved' | 'closed';
-  priority: 'low' | 'medium' | 'high';
-  created_by: string | null;
-  assigned_to: string | null;
+  status: string;
+  priority: string;
+  assignee_person_id: string | null;
+  sla_due_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
 export interface SupportTicketCreateInput {
   tenant_id: string;
-  company_id?: string | null;
-  category_id?: string | null;
-  subject: string;
+  category_id: string;
+  title: string;
   description: string;
-  priority?: 'low' | 'medium' | 'high';
-  created_by?: string | null;
-  assigned_to?: string | null;
+  priority?: string;
+  assignee_person_id?: string | null;
+  sla_due_at?: string | null;
 }
 
 export interface SupportTicketMessage {
   id: string;
   tenant_id: string;
   ticket_id: string;
-  author_id: string | null;
-  message: string;
-  attachment_url: string | null;
+  person_id: string;
+  content: string;
   created_at: string;
   updated_at: string;
 }
@@ -38,9 +35,8 @@ export interface SupportTicketMessage {
 export interface SupportTicketMessageCreateInput {
   tenant_id: string;
   ticket_id: string;
-  author_id?: string | null;
-  message: string;
-  attachment_url?: string | null;
+  person_id: string;
+  content: string;
 }
 
 export interface SupportFAQ {
@@ -49,7 +45,8 @@ export interface SupportFAQ {
   question: string;
   answer: string;
   category: string;
-  status: 'active' | 'inactive';
+  is_active: boolean;
+  sort_order: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -59,5 +56,6 @@ export interface SupportFAQCreateInput {
   question: string;
   answer: string;
   category: string;
-  status?: 'active' | 'inactive';
+  is_active?: boolean;
+  sort_order?: number | null;
 }

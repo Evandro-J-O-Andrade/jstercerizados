@@ -1,39 +1,30 @@
 export interface StockMovement {
   id: string;
   tenant_id: string;
-  product_id: string | null;
-  type: 'entry' | 'exit' | 'transfer' | 'adjustment';
+  product_id: string;
   quantity: number;
-  unit_cost: number;
-  total_cost: number;
-  reason: string;
-  reference: string | null;
+  movement_type: string;
+  notes: string | null;
+  reference_id: string | null;
   created_at: string;
-  updated_at: string;
 }
 
 export interface StockMovementCreateInput {
   tenant_id: string;
-  product_id?: string | null;
-  type: 'entry' | 'exit' | 'transfer' | 'adjustment';
+  product_id: string;
   quantity: number;
-  unit_cost: number;
-  total_cost: number;
-  reason: string;
-  reference?: string | null;
+  movement_type: string;
+  notes?: string | null;
+  reference_id?: string | null;
 }
 
 export interface Product {
   id: string;
   tenant_id: string;
   name: string;
-  sku: string | null;
-  description: string | null;
-  unit: string;
-  current_stock: number;
-  min_stock: number;
-  unit_cost: number;
-  status: 'active' | 'inactive';
+  unit: string | null;
+  category: string | null;
+  status: string;
   created_at: string;
   updated_at: string;
 }
@@ -41,11 +32,7 @@ export interface Product {
 export interface ProductCreateInput {
   tenant_id: string;
   name: string;
-  sku?: string | null;
-  description?: string | null;
-  unit: string;
-  current_stock?: number;
-  min_stock?: number;
-  unit_cost: number;
-  status?: 'active' | 'inactive';
+  unit?: string | null;
+  category?: string | null;
+  status?: string;
 }

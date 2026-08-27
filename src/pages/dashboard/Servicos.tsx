@@ -49,7 +49,7 @@ export default function Servicos() {
 
   const kpis = useMemo(() => {
     const totalServices = services.length;
-    const activeServices = services.filter((s) => s.status === 'active').length;
+    const activeServices = services.filter((s) => s.active).length;
     const openOrders = orders.filter((o) => o.status === 'open').length;
     const completedOrders = orders.filter((o) => o.status === 'completed').length;
     return { totalServices, activeServices, openOrders, completedOrders };
@@ -157,8 +157,7 @@ export default function Servicos() {
                 <thead className="bg-muted">
                   <tr>
                     <th className="px-4 py-3 font-medium text-muted-foreground">Nome</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Unidade</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Preço</th>
+                    <th className="px-4 py-3 font-medium text-muted-foreground">Descrição</th>
                     <th className="px-4 py-3 font-medium text-muted-foreground">Status</th>
                   </tr>
                 </thead>
@@ -166,11 +165,10 @@ export default function Servicos() {
                   {filteredServices.map((service) => (
                     <tr key={service.id} className="hover:bg-muted">
                       <td className="px-4 py-3 text-foreground">{service.name}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{service.unit}</td>
-                      <td className="px-4 py-3 text-foreground">{formatCurrency(service.price)}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{service.description ?? '-'}</td>
                       <td className="px-4 py-3">
-                        <Badge variant={service.status === 'active' ? 'success' : 'secondary'}>
-                          {service.status === 'active' ? 'Ativo' : 'Inativo'}
+                        <Badge variant={service.active ? 'success' : 'secondary'}>
+                          {service.active ? 'Ativo' : 'Inativo'}
                         </Badge>
                       </td>
                     </tr>
@@ -217,8 +215,8 @@ export default function Servicos() {
                 <tbody className="divide-y divide-border">
                   {orders.map((order) => (
                     <tr key={order.id} className="hover:bg-muted">
-                      <td className="px-4 py-3 text-foreground">{order.description}</td>
-                      <td className="px-4 py-3 text-foreground">{formatCurrency(order.amount)}</td>
+                      <td className="px-4 py-3 text-foreground">{order.location ?? '-'}</td>
+                      <td className="px-4 py-3 text-foreground">{order.value != null ? formatCurrency(order.value) : '-'}</td>
                       <td className="px-4 py-3">
                         <Badge variant={
                           order.status === 'completed' ? 'success' :

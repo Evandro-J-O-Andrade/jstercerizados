@@ -41,8 +41,7 @@ export default function Estoque() {
     if (search) {
       const term = search.toLowerCase();
       data = data.filter((p) =>
-        p.name.toLowerCase().includes(term) ||
-        (p.sku?.toLowerCase().includes(term) ?? false)
+        p.name.toLowerCase().includes(term)
       );
     }
     return data;
@@ -50,14 +49,9 @@ export default function Estoque() {
 
   const kpis = useMemo(() => {
     const totalProducts = products.length;
-    const lowStock = products.filter((p) => p.current_stock <= p.min_stock).length;
-    const totalValue = products.reduce((sum, p) => sum + p.current_stock * p.unit_cost, 0);
     const totalMovements = movements.length;
-    return { totalProducts, lowStock, totalValue, totalMovements };
+    return { totalProducts, totalMovements };
   }, [products, movements]);
-
-  const formatCurrency = (value: number) =>
-    value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   if (loading) {
     return (
@@ -88,14 +82,6 @@ export default function Estoque() {
         <Card className="p-4">
           <p className="text-xs text-muted-foreground">Produtos</p>
           <p className="text-lg font-semibold text-foreground">{kpis.totalProducts}</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Estoque baixo</p>
-          <p className="text-lg font-semibold text-warning">{kpis.lowStock}</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Valor total</p>
-          <p className="text-lg font-semibold text-foreground">{formatCurrency(kpis.totalValue)}</p>
         </Card>
         <Card className="p-4">
           <p className="text-xs text-muted-foreground">Movimentações</p>
@@ -158,10 +144,8 @@ export default function Estoque() {
                 <thead className="bg-muted">
                   <tr>
                     <th className="px-4 py-3 font-medium text-muted-foreground">Nome</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">SKU</th>
                     <th className="px-4 py-3 font-medium text-muted-foreground">Unidade</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Estoque</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Custo unitário</th>
+                    <th className="px-4 py-3 font-medium text-muted-foreground">Categoria</th>
                     <th className="px-4 py-3 font-medium text-muted-foreground">Status</th>
                   </tr>
                 </thead>
@@ -169,14 +153,8 @@ export default function Estoque() {
                   {filteredProducts.map((product) => (
                     <tr key={product.id} className="hover:bg-muted">
                       <td className="px-4 py-3 text-foreground">{product.name}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{product.sku || '—'}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{product.unit}</td>
-                      <td className="px-4 py-3">
-                        <span className={`font-medium ${product.current_stock <= product.min_stock ? 'text-warning' : 'text-foreground'}`}>
-                          {product.current_stock}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-foreground">{formatCurrency(product.unit_cost)}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{product.unit ?? '-'}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{product.category ?? '-'}</td>
                       <td className="px-4 py-3">
                         <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>
                           {product.status === 'active' ? 'Ativo' : 'Inativo'}
@@ -219,8 +197,7 @@ export default function Estoque() {
                   <tr>
                     <th className="px-4 py-3 font-medium text-muted-foreground">Tipo</th>
                     <th className="px-4 py-3 font-medium text-muted-foreground">Quantidade</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Custo total</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Motivo</th>
+                    <th className="px-4 py-3 font-medium text-muted-foreground">Observação</th>
                     <th className="px-4 py-3 font-medium text-muted-foreground">Data</th>
                   </tr>
                 </thead>
@@ -229,15 +206,14 @@ export default function Estoque() {
                     <tr key={movement.id} className="hover:bg-muted">
                       <td className="px-4 py-3">
                         <Badge variant={
-                          movement.type === 'entry' ? 'success' :
-                          movement.type === 'exit' ? 'danger' : 'secondary'
+                          movement.movement_type === 'entry' ? 'success' :
+                          movement.movement_type === 'exit' ? 'danger' : 'secondary'
                         }>
-                          {movement.type === 'entry' ? 'Entrada' : movement.type === 'exit' ? 'Saída' : 'Ajuste'}
+                          {movement.movement_type === 'entry' ? 'Entrada' : movement.movement_type === 'exit' ? 'Saída' : 'Ajuste'}
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-foreground">{movement.quantity}</td>
-                      <td className="px-4 py-3 text-foreground">{formatCurrency(movement.total_cost)}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{movement.reason}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{movement.notes ?? '-'}</td>
                       <td className="px-4 py-3 text-muted-foreground">{new Date(movement.created_at).toLocaleDateString('pt-BR')}</td>
                     </tr>
                   ))}

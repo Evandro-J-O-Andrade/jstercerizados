@@ -33,7 +33,7 @@ export default function Suporte() {
     if (search) {
       const term = search.toLowerCase();
       data = data.filter((t) =>
-        t.subject.toLowerCase().includes(term) ||
+        t.title.toLowerCase().includes(term) ||
         t.description.toLowerCase().includes(term)
       );
     }
@@ -148,7 +148,7 @@ export default function Suporte() {
             <tbody className="divide-y divide-border">
               {filtered.map((ticket) => (
                 <tr key={ticket.id} className="hover:bg-muted">
-                  <td className="px-4 py-3 text-foreground">{ticket.subject}</td>
+                  <td className="px-4 py-3 text-foreground">{ticket.title}</td>
                   <td className="px-4 py-3">
                     <Badge variant={
                       ticket.priority === 'high' ? 'danger' :
