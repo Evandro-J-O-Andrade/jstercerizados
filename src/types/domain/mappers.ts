@@ -13,6 +13,7 @@ import type {
   BudgetRequest,
   RecruitmentProcess,
   RecruitmentStage,
+  Employee,
 } from '@/types/domain';
 
 export function mapTenant(
@@ -160,4 +161,22 @@ export function mapRecruitmentStage(
   row: Database['public']['Tables']['recruitment_stages']['Row'],
 ): RecruitmentStage {
   return { ...row };
+}
+
+export function mapEmployee(
+  row: Database['public']['Tables']['employees']['Row'],
+  extras?: Partial<Employee>,
+): Employee {
+  return {
+    ...row,
+    person: extras?.person,
+    company: extras?.company ?? null,
+    manager: extras?.manager ?? null,
+    documents: extras?.documents ?? [],
+    education: extras?.education ?? [],
+    experiences: extras?.experiences ?? [],
+    skills: extras?.skills ?? [],
+    languages: extras?.languages ?? [],
+    courses: extras?.courses ?? [],
+  };
 }

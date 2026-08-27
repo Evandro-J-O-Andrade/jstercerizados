@@ -79,3 +79,15 @@ export type {
   RecruitmentStageCreateInput,
   RecruitmentStageUpdateInput,
 } from './recruitment-stage';
+
+export type {
+  Employee,
+  EmployeeCreateInput,
+  EmployeeUpdateInput,
+  EmployeeDocument,
+  EmployeeEducation,
+  EmployeeExperience,
+  EmployeeSkill,
+  EmployeeLanguage,
+  EmployeeCourse,
+} from './employee';
