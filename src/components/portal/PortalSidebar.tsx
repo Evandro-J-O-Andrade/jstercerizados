@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
@@ -111,6 +111,48 @@ export function PortalSidebar({
   const [collapsed, setCollapsed] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
+
+  const activeRoute = location.pathname;
+
+  const ensureExpandedForRoute = useCallback(
+    (route: string) => {
+      setExpandedModules((prev) => {
+        const next = new Set(prev);
+
+        for (const module of availableModules) {
+          if (!module.features?.length) continue;
+
+          const moduleMatches =
+            route === module.route ||
+            route.startsWith(`${module.route}/`);
+
+          if (moduleMatches) {
+            next.add(module.id);
+          }
+
+          for (const feature of module.features) {
+            if (!feature.features?.length) continue;
+
+            const featureMatches =
+              route === feature.route ||
+              route.startsWith(`${feature.route}/`);
+
+            if (featureMatches) {
+              next.add(module.id);
+              next.add(feature.id);
+            }
+          }
+        }
+
+        return Array.from(next);
+      });
+    },
+    [availableModules],
+  );
+
+  useEffect(() => {
+    ensureExpandedForRoute(activeRoute);
+  }, [activeRoute, ensureExpandedForRoute]);
 
   const toggleModule = (moduleId: string) => {
     setExpandedModules((prev) =>
@@ -325,28 +367,43 @@ export function PortalSidebar({
                       return (
                         <div key={module.id}>
                           <div className="flex items-center gap-1">
-                            <NavLink
-                              to={hasFeatures ? '#' : module.route}
-                              end
-                              onClick={() => {
-                                if (hasFeatures) {
-                                  toggleModule(module.id);
-                                } else {
-                                  handleNavigate(module.route);
-                                }
-                              }}
-                              className={cn(
-                                'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                                moduleSelected
-                                  ? 'bg-primary/10 text-primary'
-                                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                              )}
-                            >
-                              <ModuleIcon name={module.icon} />
-                              <span className="flex-1 text-left">
-                                {module.title}
-                              </span>
-                            </NavLink>
+                            {hasFeatures ? (
+                              <button
+                                type="button"
+                                onClick={() => toggleModule(module.id)}
+                                className={cn(
+                                  'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                                  moduleSelected
+                                    ? 'bg-primary/10 text-primary'
+                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                )}
+                              >
+                                <ModuleIcon name={module.icon} />
+                                <span className="flex-1 text-left">
+                                  {module.title}
+                                </span>
+                                <span className="text-xs">
+                                  {moduleExpanded ? '▼' : '▶'}
+                                </span>
+                              </button>
+                            ) : (
+                              <NavLink
+                                to={module.route}
+                                end
+                                onClick={() => handleNavigate(module.route)}
+                                className={cn(
+                                  'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                                  moduleSelected
+                                    ? 'bg-primary/10 text-primary'
+                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                )}
+                              >
+                                <ModuleIcon name={module.icon} />
+                                <span className="flex-1 text-left">
+                                  {module.title}
+                                </span>
+                              </NavLink>
+                            )}
                           </div>
                           {hasFeatures && moduleExpanded && (
                             <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">

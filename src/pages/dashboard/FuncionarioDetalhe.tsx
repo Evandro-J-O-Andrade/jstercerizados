@@ -169,22 +169,22 @@ export default function FuncionarioDetalhe() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate('/dashboard/funcionarios')}
-          className="rounded-lg p-2 hover:bg-gray-100"
+          className="rounded-lg p-2 hover:bg-muted"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-xl font-semibold text-foreground">
             {employee.person?.full_name || 'Funcionário'}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {employee.job_title || 'Sem cargo'}{' '}
             {employee.department ? `• ${employee.department}` : ''}
           </p>
         </div>
       </div>
 
-      <div className="flex gap-2 border-b border-gray-200">
+      <div className="flex gap-2 border-b border-border">
         {tabs.map((tab) => (
           <button
             key={tab.value}
@@ -192,7 +192,7 @@ export default function FuncionarioDetalhe() {
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === tab.value
                 ? 'border-b-2 border-blue-600 text-blue-700'
-                : 'text-gray-500 hover:text-gray-700'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {tab.label}
@@ -202,79 +202,79 @@ export default function FuncionarioDetalhe() {
 
       {activeTab === 'overview' && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-blue-50 p-2 text-blue-700">
                 <Users className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-gray-500">Status</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs text-muted-foreground">Status</p>
+                <p className="text-lg font-semibold text-foreground">
                   {getStatusLabel(employee.status || '')}
                 </p>
               </div>
             </div>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-green-50 p-2 text-green-700">
                 <Briefcase className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-gray-500">Tipo de vínculo</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs text-muted-foreground">Tipo de vínculo</p>
+                <p className="text-lg font-semibold text-foreground">
                   {getEmploymentTypeLabel(employee.employment_type || '')}
                 </p>
               </div>
             </div>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-purple-50 p-2 text-purple-700">
                 <Building2 className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-gray-500">Modalidade</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs text-muted-foreground">Modalidade</p>
+                <p className="text-lg font-semibold text-foreground">
                   {getWorkModeLabel(employee.work_mode || '')}
                 </p>
               </div>
             </div>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-yellow-50 p-2 text-yellow-700">
                 <Calendar className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-gray-500">Data de admissão</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs text-muted-foreground">Data de admissão</p>
+                <p className="text-lg font-semibold text-foreground">
                   {formatDate(employee.hire_date)}
                 </p>
               </div>
             </div>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-emerald-50 p-2 text-emerald-700">
                 <DollarSign className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-gray-500">Salário</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs text-muted-foreground">Salário</p>
+                <p className="text-lg font-semibold text-foreground">
                   {formatCurrency(employee.salary)}
                 </p>
               </div>
             </div>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-gray-50 p-2 text-gray-700">
+              <div className="rounded-lg bg-muted p-2 text-foreground">
                 <FileText className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-gray-500">Matrícula</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs text-muted-foreground">Matrícula</p>
+                <p className="text-lg font-semibold text-foreground">
                   {employee.registration || '—'}
                 </p>
               </div>
@@ -286,23 +286,23 @@ export default function FuncionarioDetalhe() {
       {activeTab === 'experiences' && (
         <div className="space-y-3">
           {experiences.length === 0 ? (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Nenhuma experiência registrada.
             </p>
           ) : (
             experiences.map((exp) => (
               <div
                 key={exp.id}
-                className="rounded-lg border border-gray-200 bg-white p-4"
+                className="rounded-lg border border-border bg-background p-4"
               >
-                <p className="font-medium text-gray-900">{exp.job_title}</p>
-                <p className="text-sm text-gray-600">{exp.company_name}</p>
-                <p className="text-xs text-gray-500">
+                <p className="font-medium text-foreground">{exp.job_title}</p>
+                <p className="text-sm text-muted-foreground">{exp.company_name}</p>
+                <p className="text-xs text-muted-foreground">
                   {formatDate(exp.start_date)}{' '}
                   {exp.end_date ? `- ${formatDate(exp.end_date)}` : '• Atual'}
                 </p>
                 {exp.description && (
-                  <p className="mt-2 text-sm text-gray-700">
+                  <p className="mt-2 text-sm text-foreground">
                     {exp.description}
                   </p>
                 )}
@@ -315,24 +315,24 @@ export default function FuncionarioDetalhe() {
       {activeTab === 'education' && (
         <div className="space-y-3">
           {education.length === 0 ? (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Nenhuma formação registrada.
             </p>
           ) : (
             education.map((edu) => (
               <div
                 key={edu.id}
-                className="rounded-lg border border-gray-200 bg-white p-4"
+                className="rounded-lg border border-border bg-background p-4"
               >
-                <p className="font-medium text-gray-900">{edu.course}</p>
-                <p className="text-sm text-gray-600">{edu.institution}</p>
-                <p className="text-xs text-gray-500">
+                <p className="font-medium text-foreground">{edu.course}</p>
+                <p className="text-sm text-muted-foreground">{edu.institution}</p>
+                <p className="text-xs text-muted-foreground">
                   {formatDate(edu.start_date)}{' '}
                   {edu.end_date ? `- ${formatDate(edu.end_date)}` : ''}{' '}
                   {edu.is_completed ? '• Concluído' : ''}
                 </p>
                 {edu.field_of_study && (
-                  <p className="mt-1 text-sm text-gray-700">
+                  <p className="mt-1 text-sm text-foreground">
                     {edu.field_of_study}
                   </p>
                 )}
@@ -345,18 +345,18 @@ export default function FuncionarioDetalhe() {
       {activeTab === 'courses' && (
         <div className="space-y-3">
           {courses.length === 0 ? (
-            <p className="text-sm text-gray-500">Nenhum curso registrado.</p>
+            <p className="text-sm text-muted-foreground">Nenhum curso registrado.</p>
           ) : (
             courses.map((course) => (
               <div
                 key={course.id}
-                className="rounded-lg border border-gray-200 bg-white p-4"
+                className="rounded-lg border border-border bg-background p-4"
               >
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-foreground">
                   {course.course_name}
                 </p>
-                <p className="text-sm text-gray-600">{course.institution}</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-sm text-muted-foreground">{course.institution}</p>
+                <p className="text-xs text-muted-foreground">
                   {formatDate(course.completion_date)}{' '}
                   {course.hours ? `• ${course.hours}h` : ''}
                 </p>
@@ -369,15 +369,15 @@ export default function FuncionarioDetalhe() {
       {activeTab === 'languages' && (
         <div className="space-y-3">
           {languages.length === 0 ? (
-            <p className="text-sm text-gray-500">Nenhum idioma registrado.</p>
+            <p className="text-sm text-muted-foreground">Nenhum idioma registrado.</p>
           ) : (
             languages.map((lang) => (
               <div
                 key={lang.id}
-                className="rounded-lg border border-gray-200 bg-white p-4"
+                className="rounded-lg border border-border bg-background p-4"
               >
-                <p className="font-medium text-gray-900">{lang.language}</p>
-                <p className="text-xs text-gray-500">
+                <p className="font-medium text-foreground">{lang.language}</p>
+                <p className="text-xs text-muted-foreground">
                   {lang.proficiency} {lang.is_primary ? '• Principal' : ''}
                 </p>
               </div>
@@ -389,7 +389,7 @@ export default function FuncionarioDetalhe() {
       {activeTab === 'skills' && (
         <div className="space-y-3">
           {skills.length === 0 ? (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Nenhuma habilidade registrada.
             </p>
           ) : (
@@ -410,17 +410,17 @@ export default function FuncionarioDetalhe() {
       {activeTab === 'documents' && (
         <div className="space-y-3">
           {documents.length === 0 ? (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Nenhum documento registrado.
             </p>
           ) : (
             documents.map((doc) => (
               <div
                 key={doc.id}
-                className="rounded-lg border border-gray-200 bg-white p-4"
+                className="rounded-lg border border-border bg-background p-4"
               >
-                <p className="font-medium text-gray-900">{doc.document_name}</p>
-                <p className="text-xs text-gray-500">
+                <p className="font-medium text-foreground">{doc.document_name}</p>
+                <p className="text-xs text-muted-foreground">
                   {doc.document_type} {doc.is_verified ? '• Verificado' : ''}
                 </p>
               </div>
@@ -431,3 +431,4 @@ export default function FuncionarioDetalhe() {
     </div>
   );
 }
+

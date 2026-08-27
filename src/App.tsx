@@ -31,6 +31,11 @@ import MonitoramentoPage from '@/pages/dashboard/MonitoramentoPage';
 import IntegracoesPage from '@/pages/dashboard/IntegracoesPage';
 import FiscalPage from '@/pages/dashboard/FiscalPage';
 import ContabilidadePage from '@/pages/dashboard/ContabilidadePage';
+import Estoque from '@/pages/dashboard/Estoque';
+import Almoxarifado from '@/pages/dashboard/Almoxarifado';
+import Servicos from '@/pages/dashboard/Servicos';
+import Suporte from '@/pages/dashboard/Suporte';
+import FaturamentoPage from '@/pages/dashboard/FaturamentoPage';
 import AuditoriaPage from '@/pages/dashboard/AuditoriaPage';
 import IaPage from '@/pages/dashboard/IaPage';
 import GestaoPage from '@/pages/dashboard/GestaoPage';
@@ -44,7 +49,7 @@ import AuthWelcome from '@/pages/auth/BoasVindas';
 
 const Home = lazy(() => import('@/pages/Home'));
 const Sobre = lazy(() => import('@/pages/Sobre'));
-const Servicos = lazy(() => import('@/pages/Servicos'));
+const PublicServicos = lazy(() => import('@/pages/Servicos'));
 const ServicoDetalhe = lazy(() => import('@/pages/ServicoDetalhe'));
 const Vagas = lazy(() => import('@/pages/Vagas'));
 const VagaDetalhe = lazy(() => import('@/pages/VagaDetalhe'));
@@ -57,7 +62,7 @@ const Fornecedores = lazy(() => import('@/pages/Fornecedores'));
 const Clientes = lazy(() => import('@/pages/Clientes'));
 const ProcessoSeletivo = lazy(() => import('@/pages/ProcessoSeletivo'));
 const TrabalheConosco = lazy(() => import('@/pages/TrabalheConosco'));
-const Suporte = lazy(() => import('@/pages/Suporte'));
+const PublicSuporte = lazy(() => import('@/pages/Suporte'));
 const FAQ = lazy(() => import('@/pages/FAQ'));
 const Contato = lazy(() => import('@/pages/Contato'));
 const Privacidade = lazy(() => import('@/pages/Privacidade'));
@@ -102,10 +107,8 @@ import HabilidadesPage from '@/pages/dashboard/Habilidades';
 import DocumentosRhPage from '@/pages/dashboard/DocumentosRh';
 import BancoDeTalentosPage from '@/pages/dashboard/BancoDeTalentos';
 import DashboardRhPage from '@/pages/dashboard/DashboardRh';
-import ServicosPage from '@/pages/dashboard/Servicos';
 import FinanceiroPage from '@/pages/dashboard/FinanceiroPage';
 import EstoquePage from '@/pages/dashboard/Estoque';
-import SuportePage from '@/pages/dashboard/Suporte';
 import RelatoriosPage from '@/pages/dashboard/Relatorios';
 import ConfiguracoesPage from '@/pages/dashboard/Configuracoes';
 import RbacAuditPage from '@/pages/dashboard/RbacAuditPage';
@@ -117,6 +120,19 @@ import ApplicationDetailPage from '@/pages/dashboard/ApplicationDetailPage';
 import SessoesPage from '@/pages/dashboard/SessoesPage';
 import FluxoDeCaixaPage from '@/pages/dashboard/FluxoDeCaixaPage';
 import ContasReceberPage from '@/pages/dashboard/ContasReceberPage';
+import BancosPage from '@/pages/dashboard/BancosPage';
+import CentroCustosPage from '@/pages/dashboard/CentroCustosPage';
+import RelatorioFinanceiroPage from '@/pages/dashboard/relatorios/RelatorioFinanceiroPage';
+import RelatorioRhPage from '@/pages/dashboard/relatorios/RelatorioRhPage';
+import RelatorioRecrutamentoPage from '@/pages/dashboard/relatorios/RelatorioRecrutamentoPage';
+import RelatorioCrmPage from '@/pages/dashboard/relatorios/RelatorioCrmPage';
+import RelatorioFaturamentoPage from '@/pages/dashboard/relatorios/RelatorioFaturamentoPage';
+import RelatorioFiscalPage from '@/pages/dashboard/relatorios/RelatorioFiscalPage';
+import RelatorioContabilidadePage from '@/pages/dashboard/relatorios/RelatorioContabilidadePage';
+import RelatorioEstoquePage from '@/pages/dashboard/relatorios/RelatorioEstoquePage';
+import RelatorioAlmoxarifadoPage from '@/pages/dashboard/relatorios/RelatorioAlmoxarifadoPage';
+import RelatorioServicosPage from '@/pages/dashboard/relatorios/RelatorioServicosPage';
+import RelatorioSuportePage from '@/pages/dashboard/relatorios/RelatorioSuportePage';
 
 const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   DashboardHome,
@@ -168,17 +184,34 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   DocumentosRhPage,
   BancoDeTalentosPage,
   DashboardRhPage,
-  ServicosPage,
   FinanceiroPage,
+  FaturamentoPage,
   EstoquePage,
-  SuportePage,
+  Almoxarifado,
+  Servicos,
+  Suporte,
   RelatoriosPage,
+  BancosPage,
+  CentroCustosPage,
   ConfiguracoesPage,
   CompanyRelationshipsPage,
   SkillsPage,
   NotificationsPage,
   ApplicationDetailPage,
   SessoesPage,
+  FluxoDeCaixaPage,
+  ContasReceberPage,
+  RelatorioFinanceiroPage,
+  RelatorioRhPage,
+  RelatorioRecrutamentoPage,
+  RelatorioCrmPage,
+  RelatorioFaturamentoPage,
+  RelatorioFiscalPage,
+  RelatorioContabilidadePage,
+  RelatorioEstoquePage,
+  RelatorioAlmoxarifadoPage,
+  RelatorioServicosPage,
+  RelatorioSuportePage,
 };
 
 function App() {
@@ -542,6 +575,174 @@ function App() {
                 </PermissionGuard>
               }
             />
+            <Route
+              path="financeiro/bancos"
+              element={
+                <PermissionGuard permission="finance.read">
+                  <BancosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="financeiro/centro-custos"
+              element={
+                <PermissionGuard permission="finance.read">
+                  <CentroCustosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatoriosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/financeiro"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioFinanceiroPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/rh"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioRhPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/recrutamento"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioRecrutamentoPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/crm"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioCrmPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/faturamento"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioFaturamentoPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/fiscal"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioFiscalPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/contabilidade"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioContabilidadePage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/estoque"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioEstoquePage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/almoxarifado"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioAlmoxarifadoPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/servicos"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioServicosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="relatorios/suporte"
+              element={
+                <PermissionGuard permission="reports.read">
+                  <RelatorioSuportePage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="faturamento"
+              element={
+                <PermissionGuard permission="finance.read">
+                  <FaturamentoPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="fiscal"
+              element={
+                <PermissionGuard permission="fiscal.dashboard.read">
+                  <FiscalPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="contabilidade"
+              element={
+                <PermissionGuard permission="accounting.dashboard.read">
+                  <ContabilidadePage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="estoque"
+              element={
+                <PermissionGuard permission="stock.dashboard.read">
+                  <Estoque />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="almoxarifado"
+              element={
+                <PermissionGuard permission="warehouse.dashboard.read">
+                  <Almoxarifado />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="servicos"
+              element={
+                <PermissionGuard permission="service_orders.dashboard.read">
+                  <Servicos />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="suporte"
+              element={
+                <PermissionGuard permission="support.dashboard.read">
+                  <Suporte />
+                </PermissionGuard>
+              }
+            />
             <Route path="*" element={<DashboardRouteNotFound />} />
           </Route>
           <Route path="/onboarding" element={<Onboarding />} />
@@ -578,7 +779,7 @@ function App() {
                       element={<DivulgarVaga />}
                     />
                     <Route path="/candidatos" element={<Candidatos />} />
-                    <Route path="/servicos" element={<Servicos />} />
+                    <Route path="/servicos" element={<PublicServicos />} />
                     <Route
                       path="/servicos/:slug"
                       element={<ServicoDetalhe />}
@@ -597,7 +798,7 @@ function App() {
                     <Route path="/sobre" element={<Sobre />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/blog/:slug" element={<Blog />} />
-                    <Route path="/suporte" element={<Suporte />} />
+                    <Route path="/suporte" element={<PublicSuporte />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/contato" element={<Contato />} />
                     <Route path="/privacidade" element={<Privacidade />} />

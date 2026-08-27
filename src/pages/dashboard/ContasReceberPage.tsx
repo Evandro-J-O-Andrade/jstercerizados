@@ -100,7 +100,7 @@ export default function ContasReceberPage() {
 
   if (loading) {
     return (
-      <p className="text-sm text-gray-500">Carregando contas a receber...</p>
+      <p className="text-sm text-muted-foreground">Carregando contas a receber...</p>
     );
   }
 
@@ -112,10 +112,10 @@ export default function ContasReceberPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-xl font-semibold text-foreground">
             Contas a Receber
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Gerencie recebimentos, vencimentos e status.
           </p>
         </div>
@@ -126,24 +126,24 @@ export default function ContasReceberPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Total em aberto</p>
+        <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <p className="text-xs text-muted-foreground">Total em aberto</p>
           <p className="text-lg font-semibold text-blue-700">
             {formatCurrency(stats.openTotal)}
           </p>
-          <p className="text-xs text-gray-500">{stats.openCount} título(s)</p>
+          <p className="text-xs text-muted-foreground">{stats.openCount} título(s)</p>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Total vencido</p>
+        <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <p className="text-xs text-muted-foreground">Total vencido</p>
           <p className="text-lg font-semibold text-red-700">
             {formatCurrency(stats.overdueTotal)}
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             {stats.overdueCount} título(s)
           </p>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Total recebido</p>
+        <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <p className="text-xs text-muted-foreground">Total recebido</p>
           <p className="text-lg font-semibold text-green-700">
             {formatCurrency(stats.receivedTotal)}
           </p>
@@ -151,8 +151,8 @@ export default function ContasReceberPage() {
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="flex flex-1 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2">
-          <Search className="h-4 w-4 text-gray-400" />
+        <div className="flex flex-1 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+          <Search className="h-4 w-4 text-muted-foreground" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -163,7 +163,7 @@ export default function ContasReceberPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none"
+          className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none"
         >
           <option value="all">Todos os status</option>
           <option value="open">Em aberto</option>
@@ -193,50 +193,50 @@ export default function ContasReceberPage() {
           onAction={() => alert('Abrir formulário de conta a receber')}
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
-            <thead className="bg-gray-50">
+        <div className="overflow-x-auto rounded-lg border border-border">
+          <table className="min-w-full divide-y divide-border bg-background text-sm">
+            <thead className="bg-muted">
               <tr>
-                <th className="px-4 py-2 text-left font-medium text-gray-500">
+                <th className="px-4 py-2 text-left font-medium text-muted-foreground">
                   Descrição
                 </th>
-                <th className="px-4 py-2 text-left font-medium text-gray-500">
+                <th className="px-4 py-2 text-left font-medium text-muted-foreground">
                   Vencimento
                 </th>
-                <th className="px-4 py-2 text-left font-medium text-gray-500">
+                <th className="px-4 py-2 text-left font-medium text-muted-foreground">
                   Valor
                 </th>
-                <th className="px-4 py-2 text-left font-medium text-gray-500">
+                <th className="px-4 py-2 text-left font-medium text-muted-foreground">
                   Status
                 </th>
-                <th className="px-4 py-2 text-left font-medium text-gray-500">
+                <th className="px-4 py-2 text-left font-medium text-muted-foreground">
                   Ações
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-border">
               {items.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 font-medium text-gray-900">
+                <tr key={item.id} className="hover:bg-muted">
+                  <td className="px-4 py-2 font-medium text-foreground">
                     {item.description}
                   </td>
-                  <td className="px-4 py-2 text-gray-600">
+                  <td className="px-4 py-2 text-muted-foreground">
                     {new Date(item.due_date).toLocaleDateString('pt-BR')}
                   </td>
-                  <td className="px-4 py-2 text-gray-900">
+                  <td className="px-4 py-2 text-foreground">
                     {item.amount.toLocaleString('pt-BR', {
                       style: 'currency',
                       currency: 'BRL',
                     })}
                   </td>
                   <td className="px-4 py-2">
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
                       {statusLabels[item.status] ?? item.status}
                     </span>
                   </td>
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-2">
-                      <button className="rounded p-1 text-gray-500 hover:bg-gray-100">
+                      <button className="rounded p-1 text-muted-foreground hover:bg-muted">
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
@@ -267,3 +267,4 @@ export default function ContasReceberPage() {
     </div>
   );
 }
+

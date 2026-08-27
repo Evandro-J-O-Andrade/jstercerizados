@@ -1,0 +1,2589 @@
+{
+  "rbac": {
+    "first_login_state": {
+      "columns": [
+        {
+          "column_name": "person_id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "must_change_password",
+          "data_type": "boolean",
+          "is_nullable": "NO",
+          "column_default": "true"
+        },
+        {
+          "column_name": "terms_version",
+          "data_type": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "privacy_version",
+          "data_type": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "lgpd_consent_version",
+          "data_type": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "first_login_completed",
+          "data_type": "boolean",
+          "is_nullable": "NO",
+          "column_default": "false"
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        },
+        {
+          "column_name": "welcome_completed_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      ],
+      "primary_key": [
+        "person_id"
+      ],
+      "foreign_keys": [
+        {
+          "column_name": "person_id",
+          "foreign_table": "people",
+          "foreign_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "first_login_state_pkey",
+          "indexdef": "CREATE UNIQUE INDEX first_login_state_pkey ON public.first_login_state USING btree (person_id)"
+        },
+        {
+          "indexname": "idx_first_login_state_person_id",
+          "indexdef": "CREATE INDEX idx_first_login_state_person_id ON public.first_login_state USING btree (person_id)"
+        }
+      ],
+      "sample": [
+        {
+          "person_id": "00000000-0000-0000-0000-000000000001",
+          "must_change_password": true,
+          "terms_version": "v1",
+          "privacy_version": "v1",
+          "lgpd_consent_version": "v1",
+          "first_login_completed": false,
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z",
+          "welcome_completed_at": null
+        },
+        {
+          "person_id": "00000000-0000-0000-0000-000000000002",
+          "must_change_password": true,
+          "terms_version": "v1",
+          "privacy_version": "v1",
+          "lgpd_consent_version": "v1",
+          "first_login_completed": false,
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z",
+          "welcome_completed_at": null
+        },
+        {
+          "person_id": "00000000-0000-0000-0000-000000000003",
+          "must_change_password": true,
+          "terms_version": "v1",
+          "privacy_version": "v1",
+          "lgpd_consent_version": "v1",
+          "first_login_completed": false,
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z",
+          "welcome_completed_at": null
+        }
+      ]
+    },
+    "legal_acceptances": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": "uuid_generate_v4()"
+        },
+        {
+          "column_name": "person_id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "tenant_id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "document_type",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "document_version",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "accepted_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        },
+        {
+          "column_name": "ip",
+          "data_type": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "user_agent",
+          "data_type": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "metadata",
+          "data_type": "jsonb",
+          "is_nullable": "NO",
+          "column_default": "'{}'::jsonb"
+        },
+        {
+          "column_name": "actor_person_id",
+          "data_type": "uuid",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "correlation_id",
+          "data_type": "uuid",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "causation_id",
+          "data_type": "uuid",
+          "is_nullable": "YES",
+          "column_default": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column_name": "actor_person_id",
+          "foreign_table": "people",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "person_id",
+          "foreign_table": "people",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "tenant_id",
+          "foreign_table": "tenants",
+          "foreign_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "legal_acceptances_pkey",
+          "indexdef": "CREATE UNIQUE INDEX legal_acceptances_pkey ON public.legal_acceptances USING btree (id)"
+        },
+        {
+          "indexname": "idx_legal_acceptances_tenant_id",
+          "indexdef": "CREATE INDEX idx_legal_acceptances_tenant_id ON public.legal_acceptances USING btree (tenant_id)"
+        },
+        {
+          "indexname": "idx_legal_acceptances_person_id",
+          "indexdef": "CREATE INDEX idx_legal_acceptances_person_id ON public.legal_acceptances USING btree (person_id)"
+        }
+      ],
+      "sample": [
+        {
+          "id": "c52e97ea-de52-454c-8da3-122b5a03f4fd",
+          "person_id": "a9562696-bc73-4369-8d4c-4da0077d57fc",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "document_type": "terms",
+          "document_version": "v1.0",
+          "accepted_at": "2026-08-26T06:16:45.637Z",
+          "ip": null,
+          "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+          "metadata": {},
+          "actor_person_id": null,
+          "correlation_id": null,
+          "causation_id": null
+        }
+      ]
+    },
+    "people": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": "uuid_generate_v4()"
+        },
+        {
+          "column_name": "auth_user_id",
+          "data_type": "uuid",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "full_name",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "email",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "phone",
+          "data_type": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "status",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": "'active'::text"
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "people_pkey",
+          "indexdef": "CREATE UNIQUE INDEX people_pkey ON public.people USING btree (id)"
+        },
+        {
+          "indexname": "people_auth_user_id_key",
+          "indexdef": "CREATE UNIQUE INDEX people_auth_user_id_key ON public.people USING btree (auth_user_id)"
+        },
+        {
+          "indexname": "idx_people_auth_user_id",
+          "indexdef": "CREATE INDEX idx_people_auth_user_id ON public.people USING btree (auth_user_id)"
+        },
+        {
+          "indexname": "idx_people_status",
+          "indexdef": "CREATE INDEX idx_people_status ON public.people USING btree (status)"
+        }
+      ],
+      "sample": [
+        {
+          "id": "db115328-a1ee-4ff4-95e1-33e5c50c9f0f",
+          "auth_user_id": null,
+          "full_name": "Person A",
+          "email": "person-a@test.local",
+          "phone": null,
+          "status": "active",
+          "created_at": "2026-08-22T05:35:12.657Z",
+          "updated_at": "2026-08-22T05:35:12.657Z"
+        },
+        {
+          "id": "1cf61b5c-211b-478d-b102-c6f603c6f9f6",
+          "auth_user_id": null,
+          "full_name": "Person B",
+          "email": "person-b@test.local",
+          "phone": null,
+          "status": "active",
+          "created_at": "2026-08-22T05:35:12.657Z",
+          "updated_at": "2026-08-22T05:35:12.657Z"
+        },
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "auth_user_id": null,
+          "full_name": "Admin Master",
+          "email": "admin@jsempregos.com.br",
+          "phone": null,
+          "status": "active",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        }
+      ]
+    },
+    "permissions": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": "uuid_generate_v4()"
+        },
+        {
+          "column_name": "resource",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "action",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "permissions_pkey",
+          "indexdef": "CREATE UNIQUE INDEX permissions_pkey ON public.permissions USING btree (id)"
+        },
+        {
+          "indexname": "uq_permission_resource_action",
+          "indexdef": "CREATE UNIQUE INDEX uq_permission_resource_action ON public.permissions USING btree (resource, action)"
+        }
+      ],
+      "sample": [
+        {
+          "id": "c49ddf68-ed63-4cf2-b54d-d2251a815272",
+          "resource": "tenants",
+          "action": "create",
+          "description": "Criar tenant",
+          "created_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "bf4e553e-898b-4e0b-a31f-a793a6735bde",
+          "resource": "tenants",
+          "action": "read",
+          "description": "Ler tenant",
+          "created_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "f3427e6f-4a90-4dce-9bdd-41a6198c4aaf",
+          "resource": "tenants",
+          "action": "update",
+          "description": "Atualizar tenant",
+          "created_at": "2026-08-22T05:35:13.661Z"
+        }
+      ]
+    },
+    "role_assignments": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": "uuid_generate_v4()"
+        },
+        {
+          "column_name": "person_id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "role_id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "tenant_id",
+          "data_type": "uuid",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "assigned_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column_name": "person_id",
+          "foreign_table": "people",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "role_id",
+          "foreign_table": "roles",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "tenant_id",
+          "foreign_table": "tenants",
+          "foreign_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "role_assignments_pkey",
+          "indexdef": "CREATE UNIQUE INDEX role_assignments_pkey ON public.role_assignments USING btree (id)"
+        },
+        {
+          "indexname": "uq_role_assignment_person_role_tenant",
+          "indexdef": "CREATE UNIQUE INDEX uq_role_assignment_person_role_tenant ON public.role_assignments USING btree (person_id, role_id, tenant_id)"
+        },
+        {
+          "indexname": "idx_role_assignments_person_id",
+          "indexdef": "CREATE INDEX idx_role_assignments_person_id ON public.role_assignments USING btree (person_id)"
+        },
+        {
+          "indexname": "idx_role_assignments_tenant_id",
+          "indexdef": "CREATE INDEX idx_role_assignments_tenant_id ON public.role_assignments USING btree (tenant_id)"
+        },
+        {
+          "indexname": "idx_role_assignments_person_tenant",
+          "indexdef": "CREATE INDEX idx_role_assignments_person_tenant ON public.role_assignments USING btree (person_id, tenant_id)"
+        }
+      ],
+      "sample": [
+        {
+          "id": "b7945953-7e5b-4bf5-9a27-0f4d69ab2fc9",
+          "person_id": "00000000-0000-0000-0000-000000000001",
+          "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "assigned_at": "2026-08-22T05:35:13.661Z",
+          "created_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "6d3ce812-5505-424f-86ce-fa18b2985f59",
+          "person_id": "00000000-0000-0000-0000-000000000004",
+          "role_id": "7002337d-2742-4d5f-9737-f523fd765a2f",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "assigned_at": "2026-08-22T05:35:13.661Z",
+          "created_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "96b01b40-8908-4208-b336-fd1902fb8f17",
+          "person_id": "00000000-0000-0000-0000-000000000002",
+          "role_id": "10000000-0000-0000-0000-000000000001",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "assigned_at": "2026-08-22T05:35:13.661Z",
+          "created_at": "2026-08-22T05:35:13.661Z"
+        }
+      ]
+    },
+    "role_permissions": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": "uuid_generate_v4()"
+        },
+        {
+          "column_name": "role_id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "permission_id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column_name": "permission_id",
+          "foreign_table": "permissions",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "role_id",
+          "foreign_table": "roles",
+          "foreign_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "role_permissions_pkey",
+          "indexdef": "CREATE UNIQUE INDEX role_permissions_pkey ON public.role_permissions USING btree (id)"
+        },
+        {
+          "indexname": "uq_role_permission",
+          "indexdef": "CREATE UNIQUE INDEX uq_role_permission ON public.role_permissions USING btree (role_id, permission_id)"
+        },
+        {
+          "indexname": "idx_role_permissions_role_id",
+          "indexdef": "CREATE INDEX idx_role_permissions_role_id ON public.role_permissions USING btree (role_id)"
+        },
+        {
+          "indexname": "idx_role_permissions_permission_id",
+          "indexdef": "CREATE INDEX idx_role_permissions_permission_id ON public.role_permissions USING btree (permission_id)"
+        }
+      ],
+      "sample": [
+        {
+          "id": "c7a31066-f659-4ed8-a64b-30f4b0841e69",
+          "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+          "permission_id": "c49ddf68-ed63-4cf2-b54d-d2251a815272",
+          "created_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "7e820817-b27a-4725-9be8-f99b1e8a26b5",
+          "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+          "permission_id": "bf4e553e-898b-4e0b-a31f-a793a6735bde",
+          "created_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "fba8d949-4290-4b72-8276-63286cd37397",
+          "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+          "permission_id": "f3427e6f-4a90-4dce-9bdd-41a6198c4aaf",
+          "created_at": "2026-08-22T05:35:13.661Z"
+        }
+      ]
+    },
+    "roles": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": "uuid_generate_v4()"
+        },
+        {
+          "column_name": "name",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "description",
+          "data_type": "text",
+          "is_nullable": "YES",
+          "column_default": null
+        },
+        {
+          "column_name": "scope",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": "'tenant'::text"
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "roles_pkey",
+          "indexdef": "CREATE UNIQUE INDEX roles_pkey ON public.roles USING btree (id)"
+        },
+        {
+          "indexname": "roles_name_key",
+          "indexdef": "CREATE UNIQUE INDEX roles_name_key ON public.roles USING btree (name)"
+        },
+        {
+          "indexname": "idx_roles_scope",
+          "indexdef": "CREATE INDEX idx_roles_scope ON public.roles USING btree (scope)"
+        }
+      ],
+      "sample": [
+        {
+          "id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+          "name": "admin_master",
+          "description": "Administrador global do sistema",
+          "scope": "global",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "7002337d-2742-4d5f-9737-f523fd765a2f",
+          "name": "operator",
+          "description": "Operador",
+          "scope": "tenant",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "10000000-0000-0000-0000-000000000001",
+          "name": "tenant_admin",
+          "description": "Administrador do tenant",
+          "scope": "tenant",
+          "created_at": "2026-08-22T05:42:35.559Z",
+          "updated_at": "2026-08-22T05:42:35.559Z"
+        }
+      ]
+    },
+    "tenant_memberships": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": "uuid_generate_v4()"
+        },
+        {
+          "column_name": "person_id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "tenant_id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "status",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": "'active'::text"
+        },
+        {
+          "column_name": "joined_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column_name": "person_id",
+          "foreign_table": "people",
+          "foreign_column": "id"
+        },
+        {
+          "column_name": "tenant_id",
+          "foreign_table": "tenants",
+          "foreign_column": "id"
+        }
+      ],
+      "indexes": [
+        {
+          "indexname": "tenant_memberships_pkey",
+          "indexdef": "CREATE UNIQUE INDEX tenant_memberships_pkey ON public.tenant_memberships USING btree (id)"
+        },
+        {
+          "indexname": "uq_tenant_membership_person_tenant",
+          "indexdef": "CREATE UNIQUE INDEX uq_tenant_membership_person_tenant ON public.tenant_memberships USING btree (person_id, tenant_id)"
+        },
+        {
+          "indexname": "idx_tenant_memberships_person_id",
+          "indexdef": "CREATE INDEX idx_tenant_memberships_person_id ON public.tenant_memberships USING btree (person_id)"
+        },
+        {
+          "indexname": "idx_tenant_memberships_tenant_id",
+          "indexdef": "CREATE INDEX idx_tenant_memberships_tenant_id ON public.tenant_memberships USING btree (tenant_id)"
+        },
+        {
+          "indexname": "idx_tenant_memberships_status",
+          "indexdef": "CREATE INDEX idx_tenant_memberships_status ON public.tenant_memberships USING btree (tenant_id, status)"
+        }
+      ],
+      "sample": [
+        {
+          "id": "3f94d936-0559-445b-a4fd-c8df2ecd4906",
+          "person_id": "db115328-a1ee-4ff4-95e1-33e5c50c9f0f",
+          "tenant_id": "c874b8b2-ab32-4478-84f7-29f14878c6f3",
+          "status": "active",
+          "joined_at": "2026-08-22T05:35:12.657Z",
+          "created_at": "2026-08-22T05:35:12.657Z",
+          "updated_at": "2026-08-22T05:35:12.657Z"
+        },
+        {
+          "id": "77905c6e-a382-4ce1-a0d0-e38f98a01278",
+          "person_id": "1cf61b5c-211b-478d-b102-c6f603c6f9f6",
+          "tenant_id": "20ee28ae-724e-40f6-8467-e815251325ed",
+          "status": "active",
+          "joined_at": "2026-08-22T05:35:12.657Z",
+          "created_at": "2026-08-22T05:35:12.657Z",
+          "updated_at": "2026-08-22T05:35:12.657Z"
+        },
+        {
+          "id": "f76409ca-6b89-4c77-bca4-4cadb5087529",
+          "person_id": "00000000-0000-0000-0000-000000000001",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "status": "active",
+          "joined_at": "2026-08-22T05:35:13.661Z",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        }
+      ]
+    },
+    "tenants": {
+      "columns": [
+        {
+          "column_name": "id",
+          "data_type": "uuid",
+          "is_nullable": "NO",
+          "column_default": "uuid_generate_v4()"
+        },
+        {
+          "column_name": "name",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "slug",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": null
+        },
+        {
+          "column_name": "status",
+          "data_type": "text",
+          "is_nullable": "NO",
+          "column_default": "'active'::text"
+        },
+        {
+          "column_name": "created_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        },
+        {
+          "column_name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "is_nullable": "NO",
+          "column_default": "now()"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "indexname": "tenants_pkey",
+          "indexdef": "CREATE UNIQUE INDEX tenants_pkey ON public.tenants USING btree (id)"
+        },
+        {
+          "indexname": "tenants_slug_key",
+          "indexdef": "CREATE UNIQUE INDEX tenants_slug_key ON public.tenants USING btree (slug)"
+        }
+      ],
+      "sample": [
+        {
+          "id": "c874b8b2-ab32-4478-84f7-29f14878c6f3",
+          "name": "Tenant A",
+          "slug": "tenant-a",
+          "status": "active",
+          "created_at": "2026-08-22T05:35:12.657Z",
+          "updated_at": "2026-08-22T05:35:12.657Z"
+        },
+        {
+          "id": "20ee28ae-724e-40f6-8467-e815251325ed",
+          "name": "Tenant B",
+          "slug": "tenant-b",
+          "status": "active",
+          "created_at": "2026-08-22T05:35:12.657Z",
+          "updated_at": "2026-08-22T05:35:12.657Z"
+        },
+        {
+          "id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "name": "J&S Empregos LTDA",
+          "slug": "js-empregos",
+          "status": "active",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        }
+      ]
+    }
+  },
+  "user": {
+    "auth": [
+      {
+        "id": "a78ddef1-5659-404f-9c7c-940c5df0abf1",
+        "email": "evandro_j.o.a@hotmail.com",
+        "raw_user_meta_data": {
+          "full_name": "Evandro Andrade",
+          "email_verified": true
+        },
+        "raw_app_meta_data": {
+          "provider": "email",
+          "providers": [
+            "email"
+          ]
+        },
+        "last_sign_in_at": "2026-08-27T07:06:03.528Z",
+        "created_at": "2026-08-17T07:11:08.143Z"
+      }
+    ],
+    "person_id": "a9562696-bc73-4369-8d4c-4da0077d57fc",
+    "tenant_memberships": [
+      {
+        "id": "9860ab60-0cbc-4c9a-926b-c7a02c4d0186",
+        "person_id": "a9562696-bc73-4369-8d4c-4da0077d57fc",
+        "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+        "status": "active",
+        "joined_at": "2026-08-22T07:32:49.653Z",
+        "created_at": "2026-08-22T07:32:49.653Z",
+        "updated_at": "2026-08-22T07:32:49.653Z"
+      }
+    ],
+    "role_assignments": [
+      {
+        "id": "00c1df51-63fd-4b1b-b41f-e823732de181",
+        "person_id": "a9562696-bc73-4369-8d4c-4da0077d57fc",
+        "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+        "tenant_id": null,
+        "assigned_at": "2026-08-22T07:32:49.653Z",
+        "created_at": "2026-08-22T07:32:49.653Z",
+        "role_name": "admin_master",
+        "role_scope": "global"
+      }
+    ]
+  },
+  "filtered_permissions": [],
+  "user_role_permissions": [
+    {
+      "id": "82281e1c-3ada-4501-829b-6151f20dcd44",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "7df7aa78-e72c-445c-9b96-eebb139fd434",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "applications",
+      "action": "advance",
+      "description": "Avançar status da candidatura"
+    },
+    {
+      "id": "6287b36e-7874-4bcb-b4a8-03104aefb0c1",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "0ba9279d-fda3-4bf6-bd43-3e955807fca8",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "applications",
+      "action": "create",
+      "description": "Registrar candidatura"
+    },
+    {
+      "id": "0650433b-56bf-4da6-b5a3-d78dec68ad23",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "bf9a780e-9cff-467e-9b73-e47524da9016",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "applications",
+      "action": "read",
+      "description": "Visualizar candidaturas"
+    },
+    {
+      "id": "49417f81-9b44-48f1-b279-15fe9eb07950",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "f3adb101-ad88-4e2a-ad4d-5dbc678d0c31",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "applications",
+      "action": "reject",
+      "description": "Rejeitar candidatura"
+    },
+    {
+      "id": "58bd606d-618a-46e7-8da7-bf0738807e82",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "0e63c84e-9963-4d1a-a27d-a96e71e7d078",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "applications",
+      "action": "update",
+      "description": "Atualizar candidatura"
+    },
+    {
+      "id": "9b56e26e-f2a3-4d87-9e8b-114fdbcca55f",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "c39a1771-a08e-4f85-9494-eb596145e020",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "applications.history",
+      "action": "read",
+      "description": "Consultar histórico de status da candidatura"
+    },
+    {
+      "id": "bfd9c93a-93ca-47d1-8fe8-3396dcf88bf9",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "3a4a0bcf-197d-4965-84e5-82e1b864a434",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "audit_logs",
+      "action": "read",
+      "description": "Ler auditoria"
+    },
+    {
+      "id": "4f75f2ac-f8c8-4f49-bf81-3726930960d2",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "38a9d067-5a6e-44ce-818d-cd93aca25f55",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "candidates",
+      "action": "create",
+      "description": "Cadastrar candidato"
+    },
+    {
+      "id": "47d0c33b-6c86-4449-85c7-e0582da9f552",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "21531326-b06b-4b90-89d8-5f163f7dc746",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "candidates",
+      "action": "delete",
+      "description": "Remover candidato"
+    },
+    {
+      "id": "1ca65616-6f9b-4d45-b2a9-0e723858c139",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "a20d723d-a66f-42bf-8d4c-1097ec27ad4a",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "candidates",
+      "action": "read",
+      "description": "Visualizar candidatos"
+    },
+    {
+      "id": "d244e282-6b20-4cf3-9a63-363228f3771a",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "a6c461f6-b8eb-4c2d-97a7-538a4cd46c71",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "candidates",
+      "action": "update",
+      "description": "Editar candidato"
+    },
+    {
+      "id": "5ddcaebb-b26d-4546-8b08-7fe1c5052b7d",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "66eb1a5a-9e97-48f1-af9f-e3297923685a",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "candidates.documents",
+      "action": "manage",
+      "description": "Gerenciar documentos do candidato"
+    },
+    {
+      "id": "bf2a7b35-35cf-489c-bda4-bdf528e44b2f",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "f5afd88e-7edb-4c67-aefd-120a3c0b4c4a",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "candidates.documents",
+      "action": "read",
+      "description": "Consultar documentos do candidato"
+    },
+    {
+      "id": "9947b531-28ea-48e7-a7b2-ffec0860f1e0",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "dafa7382-df7c-4985-95fc-1094959553ad",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "candidates.profile",
+      "action": "read",
+      "description": "Consultar perfil completo do candidato"
+    },
+    {
+      "id": "eb0836e8-4f12-4721-9c73-a9b936decaff",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "3d54245f-f459-4439-a126-643dd2f63882",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "chat",
+      "action": "create",
+      "description": "Criar conversa"
+    },
+    {
+      "id": "f7cfd037-6565-406c-95e8-006b30686532",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "985a91ec-2e21-4bb6-99e6-bba27a17b171",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "chat",
+      "action": "handoff",
+      "description": "Transferir atendimento"
+    },
+    {
+      "id": "f768f468-3af1-40bd-bb79-19ff86581dd3",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "ea802c96-8f3c-4a7f-8206-2fa3d652093d",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "chat",
+      "action": "read",
+      "description": "Ler conversa"
+    },
+    {
+      "id": "7da73861-65c9-40c5-9b49-ad83deb53f63",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "a4eb685e-4786-44da-9424-ba5c717010d2",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "companies",
+      "action": "create",
+      "description": "Criar empresa"
+    },
+    {
+      "id": "d6289f67-e920-431b-a3a6-9d3407da97e9",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "4a0db6f9-a591-47fc-bb0b-4d97fe293129",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "companies",
+      "action": "delete",
+      "description": "Remover empresa"
+    },
+    {
+      "id": "03f416d7-84c2-4c77-acc6-a6c58be1ae48",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "5c9e957d-8a99-4d19-8de1-469a526e85dc",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "companies",
+      "action": "read",
+      "description": "Ler empresa"
+    },
+    {
+      "id": "f0146a71-dd0e-46ee-9c8b-926bdd008d8e",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "73b96008-1e57-4c03-9438-f5d0164df60b",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "companies",
+      "action": "update",
+      "description": "Atualizar empresa"
+    },
+    {
+      "id": "5354464b-e142-4549-8517-da52057422ad",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "0e773490-f9c3-4540-95d0-534226a9896a",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "contracts",
+      "action": "create",
+      "description": "Criar contrato"
+    },
+    {
+      "id": "094d1612-9ad9-448b-ab84-7d97c0ecb802",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "cec25721-f1fe-4560-a86a-d36741b43891",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "contracts",
+      "action": "read",
+      "description": "Ler contrato"
+    },
+    {
+      "id": "e25259e3-b5fc-4230-86b2-ad0fd8b8dbd9",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "9723dca7-7a58-4baa-8a2d-09bed345fe1a",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "contracts",
+      "action": "renew",
+      "description": "Renovar contrato"
+    },
+    {
+      "id": "fa12681f-4255-4932-a5a2-f1d695404458",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "be857fdf-c37a-411b-8353-7e0b5c4f54bb",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "contracts",
+      "action": "update",
+      "description": "Atualizar contrato"
+    },
+    {
+      "id": "1f17bb1d-7194-4569-9bbc-a861363fdf99",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "81a59683-d8d4-4b39-81cd-8468ca7df587",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "dashboard",
+      "action": "read",
+      "description": "Ler dashboard"
+    },
+    {
+      "id": "262fe92c-f327-49f4-acc2-cde041a4969a",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "43d5bac1-92d6-4580-bde9-e3b6ee3c6f26",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "documents",
+      "action": "create",
+      "description": "Criar documento"
+    },
+    {
+      "id": "e868c9ab-0e66-4eb5-b8c2-f14f6843f0d5",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "2f94fb10-9033-472b-9fb1-6d5c47e2b117",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "documents",
+      "action": "read",
+      "description": "Ler documento"
+    },
+    {
+      "id": "8441ba94-cfe2-40f3-9752-4a6261cdd472",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "4adefd0e-da26-40b7-b305-f4bdc5ccec5b",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "documents",
+      "action": "version",
+      "description": "Criar versão de documento"
+    },
+    {
+      "id": "e124bfe1-3823-48d4-9362-28ad279ed3cb",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "615e2f97-ac8b-4c8a-b285-83492aac9fba",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "files",
+      "action": "delete",
+      "description": "Remover arquivo"
+    },
+    {
+      "id": "077a9286-fca4-4bff-8cde-d904103a25a8",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "425055aa-9fea-4203-b869-1d1a77e43016",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "files",
+      "action": "read",
+      "description": "Ler arquivo"
+    },
+    {
+      "id": "1cde07ef-7212-491b-b65b-814eba542e4e",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "90187ae0-dd67-4a9d-a345-bb84c6b9118d",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "files",
+      "action": "upload",
+      "description": "Enviar arquivo"
+    },
+    {
+      "id": "c663ba33-930d-4b31-8323-7171d0d15090",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "84fac669-a441-4d0b-8376-4e192cb8f7b2",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "jobs",
+      "action": "close",
+      "description": "Encerrar vaga"
+    },
+    {
+      "id": "d4aaa7f2-30e6-4d75-a7da-f6d8914a62e6",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "6b059168-da28-4e7d-93b1-2c51f61a54a8",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "jobs",
+      "action": "create",
+      "description": "Criar vaga"
+    },
+    {
+      "id": "4a74e2de-df97-43da-b0f4-44afce5e333a",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "a25cdc41-d02f-4f70-8186-74bcba4db548",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "jobs",
+      "action": "delete",
+      "description": "Excluir vaga"
+    },
+    {
+      "id": "ca959f97-9296-4103-93fd-8260e022288e",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "4966e2b1-c3e9-42b6-b90c-318cb1c90a1d",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "jobs",
+      "action": "publish",
+      "description": "Publicar vaga"
+    },
+    {
+      "id": "dfde47ec-4269-4235-bc7c-c625752f878f",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "bfb3cc55-6af5-402d-a694-05fb36b6ae2f",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "jobs",
+      "action": "read",
+      "description": "Visualizar vagas"
+    },
+    {
+      "id": "26922be3-138b-4b59-9ea7-e53d755d8a0d",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "9df92cfe-86ec-45ef-81be-c00dd639636b",
+      "created_at": "2026-08-23T18:45:45.235Z",
+      "resource": "jobs",
+      "action": "update",
+      "description": "Editar vaga"
+    },
+    {
+      "id": "e7f558f7-482b-47dd-8269-576902db9b7c",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "4ed2eda1-329e-43da-a3b2-88db41a69ce8",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "lgpd",
+      "action": "manage_consent",
+      "description": "Gerenciar consentimento"
+    },
+    {
+      "id": "ffcf1d37-22d8-4abd-bab9-5852c3e14613",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "617354e9-83cb-4a65-9c2d-a435eadec6fa",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "lgpd",
+      "action": "manage_retention",
+      "description": "Gerenciar retenção"
+    },
+    {
+      "id": "6eb91d80-6cff-4c58-a4fa-f19ee5c6bbf0",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "50ccc832-f161-4edb-8e78-0cde150441c6",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "lgpd",
+      "action": "read",
+      "description": "Ler dados LGPD"
+    },
+    {
+      "id": "f7203b65-dbc5-48d4-94ff-1b30142af536",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "1b35aab6-fe73-44e0-8ac1-736a2fbdef4e",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "notifications",
+      "action": "create",
+      "description": "Criar notificação"
+    },
+    {
+      "id": "9991ecee-0a19-4693-98d7-52da7e216b50",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "be4161c2-1a18-4ef3-b231-e2a59c4626e9",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "notifications",
+      "action": "read",
+      "description": "Ler notificação"
+    },
+    {
+      "id": "64f436f2-f73b-46a1-9fa0-4097363efb3c",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "ea7fa862-3f34-40b5-b97c-15c73b46151d",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "people",
+      "action": "create",
+      "description": "Criar pessoa"
+    },
+    {
+      "id": "57e3d834-0f8b-42de-8cc3-49e85b2046be",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "ecb60027-34ff-4d1c-b4cd-86251e95d8c1",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "people",
+      "action": "delete",
+      "description": "Remover pessoa"
+    },
+    {
+      "id": "6847014b-8a44-457e-9926-90475d64c81e",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "0d4761e4-1151-4cc5-b501-0b3907e6eeb9",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "people",
+      "action": "read",
+      "description": "Ler pessoa"
+    },
+    {
+      "id": "609c6236-62fd-4419-842b-e384aed0d2bf",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "9f3ed31c-4e44-46aa-bb57-f848ec5028b5",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "people",
+      "action": "update",
+      "description": "Atualizar pessoa"
+    },
+    {
+      "id": "da13b390-a19a-445d-bef8-91a9dbf6261a",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "2e0a6201-20f4-489b-8e3e-fb042cb7ff01",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "products",
+      "action": "create",
+      "description": "Criar produto"
+    },
+    {
+      "id": "28b113a9-62c1-4872-bcb7-282be29a7ec3",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "02fa198c-5c9f-4c53-9611-f65759e398f9",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "products",
+      "action": "delete",
+      "description": "Remover produto"
+    },
+    {
+      "id": "7966bee1-e6b9-4b22-b0cb-ed1ed7fc0892",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "13322f98-970c-41ff-9903-3a8f922d7f71",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "products",
+      "action": "read",
+      "description": "Ler produto"
+    },
+    {
+      "id": "9c375b20-ce20-479e-8671-c51809a9862c",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "8aba243f-a68f-400f-bed1-40fc0a611fad",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "products",
+      "action": "update",
+      "description": "Atualizar produto"
+    },
+    {
+      "id": "219d1fe1-f2d8-49cc-8d29-7710713e4f5e",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "58369814-3cdf-40bc-9f33-7ad065b51f7d",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "purchase_orders",
+      "action": "confirm",
+      "description": "Confirmar pedido de compra"
+    },
+    {
+      "id": "1b01638d-cff9-438c-a72a-a816b6cce1b6",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "bf709be3-1926-4bad-ae68-8429b2f99794",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "purchase_orders",
+      "action": "create",
+      "description": "Criar pedido de compra"
+    },
+    {
+      "id": "9423a0e4-2c00-43eb-a711-f9868c073820",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "afaa01f4-6ee6-407a-a320-ba31dca7d1a7",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "purchase_orders",
+      "action": "read",
+      "description": "Ler pedido de compra"
+    },
+    {
+      "id": "6107f2fa-05fc-4407-9c6d-c37c743c6523",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "234900b7-5537-41b5-bbf1-2091df6cfbd6",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "purchase_orders",
+      "action": "update",
+      "description": "Atualizar pedido de compra"
+    },
+    {
+      "id": "ae9df1ea-1fd9-4d27-af51-d21f06a559fd",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "96a4d936-2265-4241-aca0-84637b9f541a",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "purchase_receipts",
+      "action": "confirm",
+      "description": "Confirmar recebimento"
+    },
+    {
+      "id": "d5947e35-c07d-4e8a-a786-c1f11dd0113a",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "9afe631f-1a1c-41c2-91db-11ce0af5ee21",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "purchase_receipts",
+      "action": "create",
+      "description": "Criar recebimento"
+    },
+    {
+      "id": "f9ef4c2f-e1ab-45ce-844f-805388c83104",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "ed76790a-c742-4d45-8f9f-38bbe4ed51fe",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "purchase_receipts",
+      "action": "read",
+      "description": "Ler recebimento"
+    },
+    {
+      "id": "2bd0a224-a3b0-4b47-9b06-cd08d387851f",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "9dc7137c-b045-48ba-86a6-3f2e61e86bfe",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment",
+      "action": "advance",
+      "description": "Avançar candidato para próxima etapa"
+    },
+    {
+      "id": "b760ed17-0aa3-4394-aa04-7a612cdce46d",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "b440a270-7bb1-41fc-a31e-e1ee023ba8ba",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment",
+      "action": "create",
+      "description": "Criar processo seletivo"
+    },
+    {
+      "id": "d236240b-5b7b-4550-9a48-208ebe1c1010",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "74586ba9-af4f-4189-a758-096e7c660c65",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment",
+      "action": "delete",
+      "description": "Excluir processo seletivo"
+    },
+    {
+      "id": "ef02f686-2297-4b06-ab8d-0474f532452f",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "5388fb3d-cb91-406c-bebc-51569da01044",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment",
+      "action": "read",
+      "description": "Visualizar processos seletivos"
+    },
+    {
+      "id": "f1881efa-254c-4b84-b345-c7d73aa59cb2",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "3bd52aaf-616c-4547-b08c-960a5af2018b",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment",
+      "action": "reject",
+      "description": "Reprovar candidato"
+    },
+    {
+      "id": "55cca95c-12bd-423f-a3bd-01306a53e344",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "ad6a6d06-0a29-485a-8581-1a04cad8e658",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment",
+      "action": "update",
+      "description": "Editar processo seletivo"
+    },
+    {
+      "id": "5aa65893-60a2-4402-8cbf-ca811528001d",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "4bb5498a-4c66-40e2-abb0-6aff68e115a5",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment_demands",
+      "action": "create",
+      "description": "Abrir nova demanda de recrutamento"
+    },
+    {
+      "id": "11e55534-df42-4750-b4f2-c2853678f665",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "e63e0561-ac4f-40d9-9063-eebc4374dc32",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment_demands",
+      "action": "delete",
+      "description": "Excluir demanda de recrutamento"
+    },
+    {
+      "id": "95a39477-cc4c-4b1b-b6a6-4bd40379feea",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "4c0c9c68-7d0d-4798-bc9f-56d9003e4d57",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment_demands",
+      "action": "read",
+      "description": "Consultar demandas de recrutamento"
+    },
+    {
+      "id": "4b09ec55-6ef7-4037-a16a-00fea020f43d",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "ca9464d2-b43b-4ce7-bf09-0c0367051e33",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment_demands",
+      "action": "update",
+      "description": "Editar demanda de recrutamento"
+    },
+    {
+      "id": "e446f549-b720-4f42-b99b-e82c552cdcb7",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "cbd63735-6a79-4328-af3b-654a4674748a",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "recruitment.stage",
+      "action": "manage",
+      "description": "Gerenciar etapas do processo"
+    },
+    {
+      "id": "0b8307b8-d668-4efc-8fa4-a76cc798e58f",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "1bef5b01-0272-4a14-ad42-fe9d17203a37",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "reports",
+      "action": "read",
+      "description": "Ler relatórios"
+    },
+    {
+      "id": "57f35a79-436d-4182-aed6-c5f10319991b",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "c47a1dd6-4942-429c-8709-6fa9131abee4",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "roles",
+      "action": "create",
+      "description": "Criar role"
+    },
+    {
+      "id": "19d7275b-0b8b-4cce-b6e3-d178b24c0a64",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "11aa3eed-48cd-4f29-ad63-efdd4d76c918",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "roles",
+      "action": "delete",
+      "description": "Remover role"
+    },
+    {
+      "id": "7c3e5815-4101-4294-806a-988452b77c24",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "738d6262-c02d-40ae-b2f9-93af299ed743",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "roles",
+      "action": "read",
+      "description": "Ler role"
+    },
+    {
+      "id": "cecad7bf-50f0-4fae-82f0-a69ea8acc9c9",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "57f35f00-777c-4224-b96a-9bdd6f05cb84",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "roles",
+      "action": "update",
+      "description": "Atualizar role"
+    },
+    {
+      "id": "65c7960e-9f60-497e-ae3b-bbed81582a3c",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "ec80fcb6-bbd7-4e37-b75f-a408c4ecc802",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "security_events",
+      "action": "read",
+      "description": "Ler eventos de segurança"
+    },
+    {
+      "id": "7d4577e0-5802-4c1d-b994-96fe614fa43c",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "90e063b7-6a15-4caa-99b6-e11a419fbf16",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "service_orders",
+      "action": "complete",
+      "description": "Concluir ordem de serviço"
+    },
+    {
+      "id": "7763c38f-d930-4288-b94a-cbf9956eddd6",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "2712e7f0-c117-464e-b6c5-add090f68d85",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "service_orders",
+      "action": "create",
+      "description": "Criar ordem de serviço"
+    },
+    {
+      "id": "d8041cce-2e2a-4799-9c04-1173d4c4b451",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "0eade96f-6d8a-4f9a-a388-ecdf8b7405d7",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "service_orders",
+      "action": "read",
+      "description": "Ler ordem de serviço"
+    },
+    {
+      "id": "ebcbb13f-1f53-4f37-ab25-3af046fd54bc",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "b332c3aa-67e7-43c8-8327-9bcf14471d25",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "service_orders",
+      "action": "update",
+      "description": "Atualizar ordem de serviço"
+    },
+    {
+      "id": "1f2160f6-6b87-494a-9ee4-c8e4e82e3bc8",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "a6671cf6-95d2-4205-956c-71f83a22d90d",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "stock_movements",
+      "action": "create",
+      "description": "Criar movimentação"
+    },
+    {
+      "id": "788b91d1-ebbf-4709-a961-305623f57a25",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "880caed1-8255-4bef-86a2-f1828e7f9536",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "stock_movements",
+      "action": "read",
+      "description": "Ler movimentação"
+    },
+    {
+      "id": "f12209f0-468f-4668-8e43-8887f498821b",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "1c283da0-f29d-4cc4-807b-d5c6c9293e99",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "support_tickets",
+      "action": "create",
+      "description": "Criar ticket"
+    },
+    {
+      "id": "ac088b74-77b2-4439-b4f7-d4d2aed91131",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "9d0faa6a-4ea2-4bab-b2ae-3608d2e20141",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "support_tickets",
+      "action": "read",
+      "description": "Ler ticket"
+    },
+    {
+      "id": "d5e6bffe-6efe-42b3-9d89-aec8c2d2f1df",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "952e6d7f-442c-4428-a220-a8b88c7f244d",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "support_tickets",
+      "action": "resolve",
+      "description": "Resolver ticket"
+    },
+    {
+      "id": "ab27cfca-2621-4f59-81fe-78137ca57dd8",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "34286b88-6a06-4e13-a53d-1b00d601e432",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "support_tickets",
+      "action": "update",
+      "description": "Atualizar ticket"
+    },
+    {
+      "id": "68ff9d60-231c-4ae4-bf18-b0ee3269679d",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "58b8496f-63c2-4789-bb3e-bc5f97515487",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "talent_pool",
+      "action": "manage",
+      "description": "Administrar talentos do banco"
+    },
+    {
+      "id": "af14bb70-d126-4dac-ac73-62e56e7e7996",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "8f0c7fff-d462-4299-9425-dcf060486703",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "talent_pool",
+      "action": "match",
+      "description": "Executar matching candidato-vaga"
+    },
+    {
+      "id": "69583d61-bcbf-45b5-8d74-36ba9a3bff7f",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "fce8a6c5-36f4-44a4-b50c-4812b019fffe",
+      "created_at": "2026-08-23T18:42:55.646Z",
+      "resource": "talent_pool",
+      "action": "read",
+      "description": "Consultar banco de talentos"
+    },
+    {
+      "id": "d7b079f8-2e5b-4133-b1b0-cc4a7c6660c9",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "9da75044-a113-4300-b007-96ba51da349d",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "tasks",
+      "action": "assign",
+      "description": "Atribuir tarefa"
+    },
+    {
+      "id": "c4832707-f8a0-4678-9517-74948c0d48f1",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "7038a064-aa1d-4e88-a3ae-e81a49e975a3",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "tasks",
+      "action": "create",
+      "description": "Criar tarefa"
+    },
+    {
+      "id": "7f4c5dc9-8b2c-47b1-9e0a-2bd9e76543a5",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "20032d59-4bf6-46f9-aff0-78965e34a68e",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "tasks",
+      "action": "read",
+      "description": "Ler tarefa"
+    },
+    {
+      "id": "9bdf4346-537d-4035-b19f-e2fc3f0d356d",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "a7d0c6ac-c07a-47aa-a2f3-781f0474e3d0",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "tasks",
+      "action": "update",
+      "description": "Atualizar tarefa"
+    },
+    {
+      "id": "c7a31066-f659-4ed8-a64b-30f4b0841e69",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "c49ddf68-ed63-4cf2-b54d-d2251a815272",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "tenants",
+      "action": "create",
+      "description": "Criar tenant"
+    },
+    {
+      "id": "9d488c10-06a3-4f71-ad90-91c3a491849c",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "46c37233-614c-4608-badb-01767d4acff1",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "tenants",
+      "action": "delete",
+      "description": "Remover tenant"
+    },
+    {
+      "id": "7e820817-b27a-4725-9be8-f99b1e8a26b5",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "bf4e553e-898b-4e0b-a31f-a793a6735bde",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "tenants",
+      "action": "read",
+      "description": "Ler tenant"
+    },
+    {
+      "id": "fba8d949-4290-4b72-8276-63286cd37397",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "f3427e6f-4a90-4dce-9bdd-41a6198c4aaf",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "resource": "tenants",
+      "action": "update",
+      "description": "Atualizar tenant"
+    }
+  ],
+  "admin_master_links": {
+    "functions": [
+      {
+        "schema": "public",
+        "name": "is_admin_master",
+        "definition": "CREATE OR REPLACE FUNCTION public.is_admin_master()\n RETURNS boolean\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\nBEGIN\n  RETURN EXISTS (\n    SELECT 1\n    FROM public.people p\n    JOIN public.role_assignments ra ON ra.person_id = p.id\n    JOIN public.roles r ON r.id = ra.role_id\n    WHERE p.auth_user_id = auth.uid()\n      AND r.scope = 'global'\n      AND r.name = 'admin_master'\n  );\nEND;\n$function$\n"
+      }
+    ],
+    "triggers": [],
+    "views": [],
+    "policies": [
+      {
+        "schemaname": "public",
+        "tablename": "people",
+        "policyname": "people_member_read",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "SELECT",
+        "qual": "(is_admin_master() OR (auth.uid() = auth_user_id) OR (EXISTS ( SELECT 1\n   FROM tenant_memberships tm\n  WHERE ((tm.person_id = people.id) AND (tm.status = 'active'::text)))))",
+        "with_check": null
+      },
+      {
+        "schemaname": "public",
+        "tablename": "tenant_memberships",
+        "policyname": "tenant_memberships_member_read",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "SELECT",
+        "qual": "(is_admin_master() OR is_tenant_member(tenant_id))",
+        "with_check": null
+      },
+      {
+        "schemaname": "public",
+        "tablename": "tenant_memberships",
+        "policyname": "tenant_memberships_member_update",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "UPDATE",
+        "qual": "(is_admin_master() OR is_tenant_member(tenant_id))",
+        "with_check": "(is_admin_master() OR is_tenant_member(tenant_id))"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "tenant_memberships",
+        "policyname": "tenant_memberships_member_write",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "INSERT",
+        "qual": null,
+        "with_check": "(is_admin_master() OR is_tenant_member(tenant_id))"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "tenant_settings",
+        "policyname": "tenant_settings_member_read",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "SELECT",
+        "qual": "(is_admin_master() OR is_tenant_member(tenant_id))",
+        "with_check": null
+      },
+      {
+        "schemaname": "public",
+        "tablename": "tenant_settings",
+        "policyname": "tenant_settings_member_update",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "UPDATE",
+        "qual": "(is_admin_master() OR is_tenant_member(tenant_id))",
+        "with_check": "(is_admin_master() OR is_tenant_member(tenant_id))"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "tenant_settings",
+        "policyname": "tenant_settings_member_write",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "INSERT",
+        "qual": null,
+        "with_check": "(is_admin_master() OR is_tenant_member(tenant_id))"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "roles",
+        "policyname": "roles_member_read",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "SELECT",
+        "qual": "(is_admin_master() OR (scope = 'tenant'::text))",
+        "with_check": null
+      },
+      {
+        "schemaname": "public",
+        "tablename": "role_assignments",
+        "policyname": "role_assignments_member_read",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "SELECT",
+        "qual": "(is_admin_master() OR is_tenant_member(tenant_id))",
+        "with_check": null
+      },
+      {
+        "schemaname": "public",
+        "tablename": "role_assignments",
+        "policyname": "role_assignments_member_update",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "UPDATE",
+        "qual": "(is_admin_master() OR is_tenant_member(tenant_id))",
+        "with_check": "(is_admin_master() OR is_tenant_member(tenant_id))"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "role_assignments",
+        "policyname": "role_assignments_member_write",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "INSERT",
+        "qual": null,
+        "with_check": "(is_admin_master() OR is_tenant_member(tenant_id))"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "domain_events",
+        "policyname": "domain_events_admin_read",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "SELECT",
+        "qual": "is_admin_master()",
+        "with_check": null
+      },
+      {
+        "schemaname": "public",
+        "tablename": "event_outbox",
+        "policyname": "event_outbox_admin_write",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "INSERT",
+        "qual": null,
+        "with_check": "is_admin_master()"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "first_login_state",
+        "policyname": "first_login_state_member_read",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "SELECT",
+        "qual": "(is_admin_master() OR (EXISTS ( SELECT 1\n   FROM tenant_memberships tm\n  WHERE ((tm.person_id = first_login_state.person_id) AND (tm.status = 'active'::text)))))",
+        "with_check": null
+      },
+      {
+        "schemaname": "public",
+        "tablename": "first_login_state",
+        "policyname": "first_login_state_member_update",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "UPDATE",
+        "qual": "(is_admin_master() OR (EXISTS ( SELECT 1\n   FROM tenant_memberships tm\n  WHERE ((tm.person_id = first_login_state.person_id) AND (tm.status = 'active'::text)))))",
+        "with_check": "(is_admin_master() OR (EXISTS ( SELECT 1\n   FROM tenant_memberships tm\n  WHERE ((tm.person_id = first_login_state.person_id) AND (tm.status = 'active'::text)))))"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "first_login_state",
+        "policyname": "first_login_state_member_write",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "INSERT",
+        "qual": null,
+        "with_check": "(is_admin_master() OR (EXISTS ( SELECT 1\n   FROM tenant_memberships tm\n  WHERE ((tm.person_id = first_login_state.person_id) AND (tm.status = 'active'::text)))))"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "event_deliveries",
+        "policyname": "event_deliveries_admin_write",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "INSERT",
+        "qual": null,
+        "with_check": "is_admin_master()"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "audit_logs",
+        "policyname": "audit_logs_admin_read",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "SELECT",
+        "qual": "is_admin_master()",
+        "with_check": null
+      },
+      {
+        "schemaname": "public",
+        "tablename": "security_events",
+        "policyname": "security_events_admin_read",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "SELECT",
+        "qual": "is_admin_master()",
+        "with_check": null
+      },
+      {
+        "schemaname": "public",
+        "tablename": "security_events",
+        "policyname": "security_events_admin_write",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "INSERT",
+        "qual": null,
+        "with_check": "is_admin_master()"
+      },
+      {
+        "schemaname": "public",
+        "tablename": "role_permissions",
+        "policyname": "role_permissions_member_read",
+        "permissive": "PERMISSIVE",
+        "roles": "{public}",
+        "cmd": "SELECT",
+        "qual": "(is_admin_master() OR (EXISTS ( SELECT 1\n   FROM roles r\n  WHERE ((r.id = role_permissions.role_id) AND (r.scope = 'tenant'::text)))))",
+        "with_check": null
+      }
+    ]
+  },
+  "financial_rls": {
+    "accounts_payable": {
+      "policies": [
+        {
+          "policyname": "accounts_payable_member_read",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "SELECT",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": null
+        },
+        {
+          "policyname": "accounts_payable_member_update",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "UPDATE",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": "is_tenant_member(tenant_id)"
+        },
+        {
+          "policyname": "accounts_payable_member_write",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "INSERT",
+          "qual": null,
+          "with_check": "is_tenant_member(tenant_id)"
+        }
+      ],
+      "sample": []
+    },
+    "accounts_receivable": {
+      "policies": [
+        {
+          "policyname": "accounts_receivable_member_read",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "SELECT",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": null
+        },
+        {
+          "policyname": "accounts_receivable_member_update",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "UPDATE",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": "is_tenant_member(tenant_id)"
+        },
+        {
+          "policyname": "accounts_receivable_member_write",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "INSERT",
+          "qual": null,
+          "with_check": "is_tenant_member(tenant_id)"
+        }
+      ],
+      "sample": []
+    },
+    "bank_reconciliations": {
+      "policies": [
+        {
+          "policyname": "bank_reconciliations_member_read",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "SELECT",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": null
+        },
+        {
+          "policyname": "bank_reconciliations_member_update",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "UPDATE",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": "is_tenant_member(tenant_id)"
+        },
+        {
+          "policyname": "bank_reconciliations_member_write",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "INSERT",
+          "qual": null,
+          "with_check": "is_tenant_member(tenant_id)"
+        }
+      ],
+      "sample": []
+    },
+    "cost_centers": {
+      "policies": [
+        {
+          "policyname": "cost_centers_member_read",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "SELECT",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": null
+        },
+        {
+          "policyname": "cost_centers_member_update",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "UPDATE",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": "is_tenant_member(tenant_id)"
+        },
+        {
+          "policyname": "cost_centers_member_write",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "INSERT",
+          "qual": null,
+          "with_check": "is_tenant_member(tenant_id)"
+        }
+      ],
+      "sample": [
+        {
+          "id": "08624842-c398-4529-9504-b6ff35385b39",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "name": "Administração Central",
+          "code": "ADM",
+          "description": "Centro de custo administrativo",
+          "status": "active",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "d794797f-fa32-4186-b833-aee7486466c8",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "name": "Recursos Humanos",
+          "code": "RH",
+          "description": "Centro de custo de RH",
+          "status": "active",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "2b307ba0-14d7-40f6-bdeb-db8fbacaec32",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "name": "Estoque/Almoxarifado",
+          "code": "EST",
+          "description": "Centro de custo de estoque",
+          "status": "active",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        }
+      ]
+    },
+    "financial_accounts": {
+      "policies": [
+        {
+          "policyname": "financial_accounts_member_read",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "SELECT",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": null
+        },
+        {
+          "policyname": "financial_accounts_member_update",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "UPDATE",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": "is_tenant_member(tenant_id)"
+        },
+        {
+          "policyname": "financial_accounts_member_write",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "INSERT",
+          "qual": null,
+          "with_check": "is_tenant_member(tenant_id)"
+        }
+      ],
+      "sample": []
+    },
+    "financial_categories": {
+      "policies": [
+        {
+          "policyname": "financial_categories_member_read",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "SELECT",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": null
+        },
+        {
+          "policyname": "financial_categories_member_update",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "UPDATE",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": "is_tenant_member(tenant_id)"
+        },
+        {
+          "policyname": "financial_categories_member_write",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "INSERT",
+          "qual": null,
+          "with_check": "is_tenant_member(tenant_id)"
+        }
+      ],
+      "sample": [
+        {
+          "id": "a0439f4a-81ad-4dd8-8958-291b0da3ab89",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "name": "Receita de Serviços",
+          "type": "revenue",
+          "parent_id": null,
+          "description": "Receita proveniente de serviços prestados",
+          "status": "active",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "75cb6ff1-2405-49f4-90b2-3fa2d6522f4b",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "name": "Receita de Produtos",
+          "type": "revenue",
+          "parent_id": null,
+          "description": "Receita proveniente de venda de produtos",
+          "status": "active",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        },
+        {
+          "id": "2abf728b-c5bd-48a3-a3c6-66388f4ffed4",
+          "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+          "name": "Despesa Operacional",
+          "type": "expense",
+          "parent_id": null,
+          "description": "Despesas gerais de operação",
+          "status": "active",
+          "created_at": "2026-08-22T05:35:13.661Z",
+          "updated_at": "2026-08-22T05:35:13.661Z"
+        }
+      ]
+    },
+    "financial_installments": {
+      "policies": [
+        {
+          "policyname": "financial_installments_member_read",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "SELECT",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": null
+        },
+        {
+          "policyname": "financial_installments_member_update",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "UPDATE",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": "is_tenant_member(tenant_id)"
+        },
+        {
+          "policyname": "financial_installments_member_write",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "INSERT",
+          "qual": null,
+          "with_check": "is_tenant_member(tenant_id)"
+        }
+      ],
+      "sample": []
+    },
+    "financial_transactions": {
+      "policies": [
+        {
+          "policyname": "financial_transactions_member_read",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "SELECT",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": null
+        },
+        {
+          "policyname": "financial_transactions_member_update",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "UPDATE",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": "is_tenant_member(tenant_id)"
+        },
+        {
+          "policyname": "financial_transactions_member_write",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "INSERT",
+          "qual": null,
+          "with_check": "is_tenant_member(tenant_id)"
+        }
+      ],
+      "sample": []
+    },
+    "payments": {
+      "policies": [
+        {
+          "policyname": "payments_member_read",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "SELECT",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": null
+        },
+        {
+          "policyname": "payments_member_update",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "UPDATE",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": "is_tenant_member(tenant_id)"
+        },
+        {
+          "policyname": "payments_member_write",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "INSERT",
+          "qual": null,
+          "with_check": "is_tenant_member(tenant_id)"
+        }
+      ],
+      "sample": []
+    },
+    "receipts": {
+      "policies": [
+        {
+          "policyname": "receipts_member_read",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "SELECT",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": null
+        },
+        {
+          "policyname": "receipts_member_update",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "UPDATE",
+          "qual": "is_tenant_member(tenant_id)",
+          "with_check": "is_tenant_member(tenant_id)"
+        },
+        {
+          "policyname": "receipts_member_write",
+          "permissive": "PERMISSIVE",
+          "roles": "{public}",
+          "cmd": "INSERT",
+          "qual": null,
+          "with_check": "is_tenant_member(tenant_id)"
+        }
+      ],
+      "sample": []
+    },
+    "cash_flows": {
+      "exists": false,
+      "policies": [],
+      "sample": null
+    },
+    "bank_accounts": {
+      "exists": false,
+      "policies": [],
+      "sample": null
+    }
+  },
+  "all_public_tables": [
+    "accounts_payable",
+    "accounts_receivable",
+    "administrative_approvals",
+    "administrative_documents",
+    "administrative_requests",
+    "administrative_tasks",
+    "ai_conversations",
+    "ai_messages",
+    "ai_usage",
+    "application_profile_snapshots",
+    "application_status_history",
+    "applications",
+    "audit_logs",
+    "automation_executions",
+    "automation_jobs",
+    "automation_templates",
+    "bank_reconciliations",
+    "calendar_events",
+    "calendar_integrations",
+    "calendars",
+    "candidate_courses",
+    "candidate_documents",
+    "candidate_education",
+    "candidate_experiences",
+    "candidate_languages",
+    "candidate_processes",
+    "candidate_profile_views",
+    "candidate_skills",
+    "candidates",
+    "chat_handoffs",
+    "chat_messages",
+    "chat_participants",
+    "chat_rooms",
+    "companies",
+    "company_contacts",
+    "company_locations",
+    "company_relationships",
+    "company_services",
+    "consents",
+    "contract_status_history",
+    "contracts",
+    "cost_centers",
+    "customer_feedback",
+    "customer_ratings",
+    "customers",
+    "dashboard_layouts",
+    "dashboard_widgets",
+    "data_deletion_requests",
+    "data_export_requests",
+    "data_retention_policies",
+    "departments",
+    "document_links",
+    "document_versions",
+    "domain_events",
+    "email_messages",
+    "email_templates",
+    "employee_contracts",
+    "employee_documents",
+    "employee_positions",
+    "employee_status_history",
+    "employees",
+    "epi_deliveries",
+    "epi_delivery_items",
+    "epi_return_items",
+    "epi_returns",
+    "event_deliveries",
+    "event_outbox",
+    "event_participants",
+    "faqs",
+    "feedback",
+    "file_access_logs",
+    "files",
+    "financial_accounts",
+    "financial_categories",
+    "financial_installment_cancellations",
+    "financial_installment_payments",
+    "financial_installments",
+    "financial_kpis",
+    "financial_transactions",
+    "first_login_state",
+    "fiscal_api_requests",
+    "fiscal_api_responses",
+    "fiscal_configurations",
+    "fiscal_document_events",
+    "fiscal_document_items",
+    "fiscal_document_status_history",
+    "fiscal_documents",
+    "fiscal_integrations",
+    "integration_sync_jobs",
+    "interactions",
+    "interview_feedback",
+    "interview_participants",
+    "interviews",
+    "invoice_items",
+    "invoices",
+    "job_matches",
+    "job_skills",
+    "jobs",
+    "leads",
+    "legal_acceptances",
+    "material_issue_items",
+    "material_issues",
+    "material_return_items",
+    "material_returns",
+    "meeting_room_reservations",
+    "meeting_rooms",
+    "notification_deliveries",
+    "notification_preferences",
+    "notifications",
+    "password_policies",
+    "payments",
+    "people",
+    "permissions",
+    "pos_cancellations",
+    "pos_cash_movements",
+    "pos_cashier_sessions",
+    "pos_cashiers",
+    "pos_daily_closures",
+    "pos_operators",
+    "pos_payments",
+    "pos_returns",
+    "pos_sale_items",
+    "pos_sales",
+    "pos_terminals",
+    "positions",
+    "privacy_requests",
+    "product_categories",
+    "products",
+    "purchase_order_items",
+    "purchase_orders",
+    "purchase_quotation_items",
+    "purchase_quotations",
+    "purchase_receipt_divergences",
+    "purchase_receipt_items",
+    "purchase_receipts",
+    "purchase_request_items",
+    "purchase_requests",
+    "purchase_status_history",
+    "quote_items",
+    "quotes",
+    "receipts",
+    "recruitment_demands",
+    "recruitment_kpis",
+    "recruitment_processes",
+    "recruitment_stages",
+    "report_definitions",
+    "report_executions",
+    "report_schedules",
+    "role_assignments",
+    "role_permissions",
+    "roles",
+    "sale_items",
+    "sales",
+    "security_events",
+    "service_acceptances",
+    "service_attachments",
+    "service_executions",
+    "service_occurrences",
+    "service_order_items",
+    "service_order_status_history",
+    "service_orders",
+    "service_sla",
+    "services",
+    "sessions",
+    "skills",
+    "stage_templates",
+    "stock_balances",
+    "stock_entries",
+    "stock_inventory",
+    "stock_inventory_items",
+    "stock_lots",
+    "stock_movements",
+    "suppliers",
+    "support_ticket_assignments",
+    "support_ticket_categories",
+    "support_ticket_messages",
+    "support_ticket_status_history",
+    "support_tickets",
+    "talent_pool_memberships",
+    "task_attachments",
+    "task_comments",
+    "task_status_history",
+    "tasks",
+    "tax_calculations",
+    "tax_rates",
+    "tenant_memberships",
+    "tenant_settings",
+    "tenants",
+    "third_party_custody",
+    "third_party_custody_items",
+    "validation_results",
+    "warehouse_locations",
+    "warehouses",
+    "webhook_deliveries",
+    "work_order_acceptances",
+    "work_order_assignments",
+    "work_order_attachments",
+    "work_order_checklists",
+    "work_order_materials",
+    "work_order_occurrences",
+    "work_orders"
+  ]
+}

@@ -647,21 +647,15 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
       },
       {
         id: 'relatorios-rh',
-        title: 'Relatórios',
-        description: 'Relatórios de RH e people',
-        route: '/dashboard/relatorios',
-        requiredPermissions: ['domain_events.read'],
+        title: 'Relatórios RH',
+        description: 'Relatórios do módulo de RH',
+        route: '/dashboard/relatorios/rh',
+        requiredPermissions: ['reports.read'],
         actions: [
-          {
-            id: 'gerar',
-            title: 'Gerar',
-            description: 'Gerar relatório',
-            permission: 'reports.generate',
-          },
           {
             id: 'exportar',
             title: 'Exportar',
-            description: 'Exportar relatório',
+            description: 'Exportar relatório RH',
             permission: 'reports.export',
           },
         ],
@@ -878,6 +872,21 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
             title: 'Editar',
             description: 'Alterar etapa',
             permission: 'recruitment.stage.manage',
+          },
+        ],
+      },
+      {
+        id: 'relatorios-recrutamento',
+        title: 'Relatórios de Recrutamento',
+        description: 'Relatórios do módulo de recrutamento',
+        route: '/dashboard/relatorios/recrutamento',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório de recrutamento',
+            permission: 'reports.export',
           },
         ],
       },
@@ -1098,6 +1107,21 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
           },
         ],
       },
+      {
+        id: 'relatorios-crm',
+        title: 'Relatórios CRM',
+        description: 'Relatórios do módulo de CRM',
+        route: '/dashboard/relatorios/crm',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório CRM',
+            permission: 'reports.export',
+          },
+        ],
+      },
     ],
   },
   {
@@ -1198,18 +1222,31 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
         ],
       },
       {
-        id: 'conciliacao',
-        title: 'Conciliação',
-        description: 'Conciliação bancária e confirmações',
-        route: '/dashboard/financeiro/conciliacao',
-        requiredPermissions: ['finance.read'],
-      },
-      {
         id: 'bancos',
         title: 'Bancos',
         description: 'Contas bancárias e movimentações',
         route: '/dashboard/financeiro/bancos',
         requiredPermissions: ['finance.read'],
+        actions: [
+          {
+            id: 'criar',
+            title: 'Nova conta',
+            description: 'Cadastrar conta bancária',
+            permission: 'finance.create',
+          },
+          {
+            id: 'editar',
+            title: 'Editar',
+            description: 'Alterar conta bancária',
+            permission: 'finance.update',
+          },
+          {
+            id: 'excluir',
+            title: 'Excluir',
+            description: 'Remover conta bancária',
+            permission: 'finance.delete',
+          },
+        ],
       },
       {
         id: 'centro-custos',
@@ -1217,6 +1254,41 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
         description: 'Gestão de centros de custo',
         route: '/dashboard/financeiro/centro-custos',
         requiredPermissions: ['finance.read'],
+        actions: [
+          {
+            id: 'criar',
+            title: 'Novo centro',
+            description: 'Cadastrar centro de custo',
+            permission: 'finance.create',
+          },
+          {
+            id: 'editar',
+            title: 'Editar',
+            description: 'Alterar centro de custo',
+            permission: 'finance.update',
+          },
+          {
+            id: 'excluir',
+            title: 'Excluir',
+            description: 'Remover centro de custo',
+            permission: 'finance.delete',
+          },
+        ],
+      },
+      {
+        id: 'relatorios-financeiro',
+        title: 'Relatórios Financeiros',
+        description: 'Demonstrativos e análises financeiras',
+        route: '/dashboard/relatorios/financeiro',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório financeiro',
+            permission: 'reports.export',
+          },
+        ],
       },
     ],
   },
@@ -1318,6 +1390,21 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
           },
         ],
       },
+      {
+        id: 'relatorios-faturamento',
+        title: 'Relatórios de Faturamento',
+        description: 'Relatórios do módulo de faturamento',
+        route: '/dashboard/relatorios/faturamento',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório de faturamento',
+            permission: 'reports.export',
+          },
+        ],
+      },
     ],
   },
   {
@@ -1383,6 +1470,21 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
             title: 'Exportar',
             description: 'Exportar relatórios fiscais',
             permission: 'fiscal.reports.export',
+          },
+        ],
+      },
+      {
+        id: 'relatorios-fiscal',
+        title: 'Relatórios Fiscais',
+        description: 'Relatórios do módulo fiscal',
+        route: '/dashboard/relatorios/fiscal',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório fiscal',
+            permission: 'reports.export',
           },
         ],
       },
@@ -1481,6 +1583,21 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
           },
         ],
       },
+      {
+        id: 'relatorios-contabilidade',
+        title: 'Relatórios Contábeis',
+        description: 'Relatórios do módulo de contabilidade',
+        route: '/dashboard/relatorios/contabilidade',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório contábil',
+            permission: 'reports.export',
+          },
+        ],
+      },
     ],
   },
   {
@@ -1547,6 +1664,21 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
           },
         ],
       },
+      {
+        id: 'relatorios-almoxarifado',
+        title: 'Relatórios de Almoxarifado',
+        description: 'Relatórios do módulo de almoxarifado',
+        route: '/dashboard/relatorios/almoxarifado',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório de almoxarifado',
+            permission: 'reports.export',
+          },
+        ],
+      },
     ],
   },
   {
@@ -1596,6 +1728,21 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
             title: 'Cancelar',
             description: 'Cancelar ordem',
             permission: 'service_orders.cancel',
+          },
+        ],
+      },
+      {
+        id: 'relatorios-estoque',
+        title: 'Relatórios de Estoque',
+        description: 'Relatórios do módulo de estoque',
+        route: '/dashboard/relatorios/estoque',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório de estoque',
+            permission: 'reports.export',
           },
         ],
       },
@@ -1709,6 +1856,21 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
           },
         ],
       },
+      {
+        id: 'relatorios-servicos',
+        title: 'Relatórios de Serviços',
+        description: 'Relatórios do módulo de serviços',
+        route: '/dashboard/relatorios/servicos',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório de serviços',
+            permission: 'reports.export',
+          },
+        ],
+      },
     ],
   },
   {
@@ -1787,14 +1949,29 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
         title: 'Solicitações',
         description: 'Solicitações e chamados internos',
         route: '/dashboard/suporte/solicitacoes',
-        requiredPermissions: ['support_tickets.read'],
+        requiredPermissions: ['support_tickets.read'        ],
+      },
+      {
+        id: 'relatorios-suporte',
+        title: 'Relatórios de Suporte',
+        description: 'Relatórios do módulo de suporte',
+        route: '/dashboard/relatorios/suporte',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório de suporte',
+            permission: 'reports.export',
+          },
+        ],
       },
     ],
   },
   {
     id: 'relatorios',
     title: 'Relatórios',
-    description: 'Relatórios gerais da operação',
+    description: 'Relatório geral e consolidado da operação',
     icon: 'bar-chart-3',
     route: '/dashboard/relatorios',
     category: 'negocio',
@@ -1802,51 +1979,9 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     requiredPermissions: ['reports.read'],
     features: [
       {
-        id: 'relatorios-rh',
-        title: 'RH',
-        description: 'Relatórios de RH',
-        route: '/dashboard/relatorios',
-        requiredPermissions: ['reports.read'],
-        actions: [
-          {
-            id: 'gerar',
-            title: 'Gerar',
-            description: 'Gerar relatório',
-            permission: 'reports.generate',
-          },
-          {
-            id: 'exportar',
-            title: 'Exportar',
-            description: 'Exportar relatório',
-            permission: 'reports.export',
-          },
-        ],
-      },
-      {
-        id: 'relatorios-financeiros',
-        title: 'Financeiro',
-        description: 'Relatórios financeiros',
-        route: '/dashboard/relatorios',
-        requiredPermissions: ['reports.read'],
-        actions: [
-          {
-            id: 'gerar',
-            title: 'Gerar',
-            description: 'Gerar relatório',
-            permission: 'reports.generate',
-          },
-          {
-            id: 'exportar',
-            title: 'Exportar',
-            description: 'Exportar relatório',
-            permission: 'reports.export',
-          },
-        ],
-      },
-      {
-        id: 'relatorios-gestao',
-        title: 'Gestão',
-        description: 'Relatórios gerenciais',
+        id: 'relatorio-geral',
+        title: 'Relatório Geral',
+        description: 'Visão consolidada de todos os módulos',
         route: '/dashboard/relatorios',
         requiredPermissions: ['reports.read'],
         actions: [

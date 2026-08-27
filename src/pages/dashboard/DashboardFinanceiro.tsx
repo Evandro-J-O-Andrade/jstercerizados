@@ -161,16 +161,16 @@ export default function DashboardFinanceiro() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">
+        <h1 className="text-xl font-semibold text-foreground">
           Dashboard Financeiro
         </h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted-foreground">
           Visão consolidada do domínio financeiro.
         </p>
       </div>
 
       {stats.loading ? (
-        <p className="text-sm text-gray-500">Carregando indicadores...</p>
+        <p className="text-sm text-muted-foreground">Carregando indicadores...</p>
       ) : (
         <motion.div
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
@@ -191,15 +191,15 @@ export default function DashboardFinanceiro() {
             return (
               <div
                 key={kpi.label}
-                className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+                className="rounded-xl border border-border bg-background p-4 shadow-sm"
               >
                 <div className="flex items-center gap-3">
                   <div className="rounded-lg bg-blue-50 p-2 text-blue-700">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">{kpi.label}</p>
-                    <p className="text-lg font-semibold text-gray-900">
+                    <p className="text-xs text-muted-foreground">{kpi.label}</p>
+                    <p className="text-lg font-semibold text-foreground">
                       {formattedValue}
                     </p>
                   </div>
@@ -212,3 +212,4 @@ export default function DashboardFinanceiro() {
     </div>
   );
 }
+

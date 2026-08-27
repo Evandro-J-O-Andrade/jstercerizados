@@ -1,4 +1,4 @@
-Ôªøimport { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
@@ -23,8 +23,8 @@ const JOB_STATUS = [
 
 const CONTRACT_TYPE_OPTIONS = [
   { value: 'clt', label: 'CLT' },
-  { value: 'internship', label: 'Est√°gio' },
-  { value: 'temporary', label: 'Tempor√°rio' },
+  { value: 'internship', label: 'Est·gio' },
+  { value: 'temporary', label: 'Tempor·rio' },
   { value: 'freelance', label: 'Freelance' },
   { value: 'contracted', label: 'Contratado' },
   { value: 'cd', label: 'CD' },
@@ -32,12 +32,12 @@ const CONTRACT_TYPE_OPTIONS = [
 
 const WORK_MODE_OPTIONS = [
   { value: 'onsite', label: 'Presencial' },
-  { value: 'hybrid', label: 'H√≠brido' },
+  { value: 'hybrid', label: 'HÌbrido' },
   { value: 'remote', label: 'Remoto' },
 ] as const;
 
 const SALARY_TYPE_OPTIONS = [
-  { value: 'negotiate', label: 'Negoci√°vel' },
+  { value: 'negotiate', label: 'Negoci·vel' },
   { value: 'range', label: 'Faixa' },
   { value: 'monthly', label: 'Mensal' },
 ] as const;
@@ -274,7 +274,7 @@ export default function Vagas() {
             <Search className="text-muted-foreground h-4 w-4" />
             <input
               type="text"
-              placeholder="Buscar por t√≠tulo ou descri√ß√£o..."
+              placeholder="Buscar por tÌtulo ou descriÁ„o..."
               className="bg-transparent text-sm outline-none"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -340,7 +340,7 @@ export default function Vagas() {
               <thead className="bg-muted/50">
                 <tr>
                   <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    T√≠tulo
+                    TÌtulo
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
                     Tipo
@@ -355,7 +355,7 @@ export default function Vagas() {
                     Status
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-right text-xs font-semibold tracking-wider uppercase">
-                    A√ß√µes
+                    AÁıes
                   </th>
                 </tr>
               </thead>
@@ -373,17 +373,17 @@ export default function Vagas() {
                         (opt) => opt.value === job.contract_type,
                       )?.label ||
                         job.contract_type ||
-                        '‚Äî'}
+                        'ó'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
                       {WORK_MODE_OPTIONS.find(
                         (opt) => opt.value === job.work_mode,
                       )?.label ||
                         job.work_mode ||
-                        '‚Äî'}
+                        'ó'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {[job.city, job.state].filter(Boolean).join('/') || '‚Äî'}
+                      {[job.city, job.state].filter(Boolean).join('/') || 'ó'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span
@@ -439,7 +439,7 @@ export default function Vagas() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    T√≠tulo
+                    TÌtulo
                   </label>
                   <input
                     type="text"
@@ -465,7 +465,7 @@ export default function Vagas() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Descri√ß√£o
+                    DescriÁ„o
                   </label>
                   <textarea
                     className="w-full rounded-lg border px-3 py-2 text-sm"
@@ -517,7 +517,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Sal√°rio m√≠nimo
+                    Sal·rio mÌnimo
                   </label>
                   <input
                     type="number"
@@ -530,7 +530,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Sal√°rio m√°ximo
+                    Sal·rio m·ximo
                   </label>
                   <input
                     type="number"
@@ -543,7 +543,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Tipo de sal√°rio
+                    Tipo de sal·rio
                   </label>
                   <select
                     className="w-full rounded-lg border px-3 py-2 text-sm"
@@ -598,7 +598,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Publica√ß√£o
+                    PublicaÁ„o
                   </label>
                   <input
                     type="datetime-local"
@@ -611,7 +611,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Expira√ß√£o
+                    ExpiraÁ„o
                   </label>
                   <input
                     type="datetime-local"
@@ -689,3 +689,4 @@ export default function Vagas() {
     </ModuleWorkspace>
   );
 }
+

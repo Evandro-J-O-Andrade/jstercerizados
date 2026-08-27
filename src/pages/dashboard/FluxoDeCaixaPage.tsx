@@ -103,7 +103,7 @@ export default function FluxoDeCaixaPage() {
 
   if (loading) {
     return (
-      <p className="text-sm text-gray-500">Carregando fluxo de caixa...</p>
+      <p className="text-sm text-muted-foreground">Carregando fluxo de caixa...</p>
     );
   }
 
@@ -115,10 +115,10 @@ export default function FluxoDeCaixaPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-xl font-semibold text-foreground">
             Fluxo de Caixa
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Entradas, saídas e transferências.
           </p>
         </div>
@@ -129,20 +129,20 @@ export default function FluxoDeCaixaPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Entradas</p>
+        <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <p className="text-xs text-muted-foreground">Entradas</p>
           <p className="text-lg font-semibold text-green-700">
             {formatCurrency(totalIncome)}
           </p>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Saídas</p>
+        <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <p className="text-xs text-muted-foreground">Saídas</p>
           <p className="text-lg font-semibold text-red-700">
             {formatCurrency(totalExpense)}
           </p>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Saldo</p>
+        <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <p className="text-xs text-muted-foreground">Saldo</p>
           <p
             className={`text-lg font-semibold ${balance >= 0 ? 'text-green-700' : 'text-red-700'}`}
           >
@@ -152,8 +152,8 @@ export default function FluxoDeCaixaPage() {
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="flex flex-1 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2">
-          <Search className="h-4 w-4 text-gray-400" />
+        <div className="flex flex-1 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+          <Search className="h-4 w-4 text-muted-foreground" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -164,7 +164,7 @@ export default function FluxoDeCaixaPage() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none"
+          className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none"
         >
           <option value="all">Todos os tipos</option>
           <option value="income">Entradas</option>
@@ -197,7 +197,7 @@ export default function FluxoDeCaixaPage() {
             return (
               <motion.div
                 key={item.id}
-                className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+                className="flex items-center justify-between rounded-xl border border-border bg-background p-4 shadow-sm"
                 layout
               >
                 <div className="flex items-center gap-3">
@@ -213,10 +213,10 @@ export default function FluxoDeCaixaPage() {
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-foreground">
                       {item.description || 'Sem descrição'}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {item.date} • {item.category || '—'}{' '}
                       {item.subcategory ? `• ${item.subcategory}` : ''}
                     </p>
@@ -266,3 +266,4 @@ export default function FluxoDeCaixaPage() {
     </div>
   );
 }
+

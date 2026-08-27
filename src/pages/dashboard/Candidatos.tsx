@@ -199,7 +199,7 @@ export default function Candidatos() {
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Total
             </p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-2xl font-semibold text-foreground">
               {candidates.length}
             </p>
           </Card>
@@ -207,7 +207,7 @@ export default function Candidatos() {
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Ativos
             </p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-2xl font-semibold text-foreground">
               {statusCounts['active'] || 0}
             </p>
           </Card>
@@ -215,7 +215,7 @@ export default function Candidatos() {
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Arquivados
             </p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-2xl font-semibold text-foreground">
               {statusCounts['archived'] || 0}
             </p>
           </Card>
@@ -223,7 +223,7 @@ export default function Candidatos() {
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Bloqueados
             </p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-2xl font-semibold text-foreground">
               {statusCounts['blacklisted'] || 0}
             </p>
           </Card>
@@ -504,3 +504,4 @@ export default function Candidatos() {
     </ModuleWorkspace>
   );
 }
+

@@ -124,3 +124,82 @@ export type {
   EmployeeDocumentCreateInput,
   EmployeeDocumentUpdateInput,
 } from './employee-document';
+
+export type {
+  AccountPayable,
+  AccountPayableCreateInput,
+  AccountPayableUpdateInput,
+  AccountReceivable,
+  AccountReceivableCreateInput,
+  AccountReceivableUpdateInput,
+  CashFlow,
+  CashFlowCreateInput,
+  CashFlowUpdateInput,
+  BankAccount,
+  BankAccountCreateInput,
+  BankAccountUpdateInput,
+  CostCenter,
+  CostCenterCreateInput,
+  CostCenterUpdateInput,
+} from './finance';
+
+export type {
+  FiscalDocument,
+  FiscalDocumentCreateInput,
+  FiscalConfiguration,
+  FiscalConfigurationCreateInput,
+} from './fiscal';
+
+export type {
+  AccountingEntry,
+  AccountingEntryCreateInput,
+  ChartOfAccount,
+  ChartOfAccountCreateInput,
+} from './accounting';
+
+export type {
+  StockMovement,
+  StockMovementCreateInput,
+  Product,
+  ProductCreateInput,
+} from './stock';
+
+export type {
+  Warehouse,
+  WarehouseCreateInput,
+  WarehouseEntry,
+  WarehouseEntryCreateInput,
+  WarehouseIssue,
+  WarehouseIssueCreateInput,
+  WarehouseReturn,
+  WarehouseReturnCreateInput,
+  WarehouseCustody,
+  WarehouseCustodyCreateInput,
+  EPI,
+  EPICreateInput,
+} from './warehouse';
+
+export type {
+  ServiceOrder,
+  ServiceOrderCreateInput,
+  ServiceExecution,
+  ServiceExecutionCreateInput,
+} from './service';
+
+export type {
+  SupportTicket,
+  SupportTicketCreateInput,
+  SupportTicketMessage,
+  SupportTicketMessageCreateInput,
+  SupportFAQ,
+  SupportFAQCreateInput,
+} from './support';
+
+export type {
+  Invoice,
+  InvoiceCreateInput,
+  Sale,
+  SaleCreateInput,
+  Quote,
+  QuoteCreateInput,
+} from './billing';

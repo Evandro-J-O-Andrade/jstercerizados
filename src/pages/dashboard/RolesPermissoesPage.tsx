@@ -420,3 +420,4 @@ export default function RolesPermissoesPage() {
     </ModuleWorkspace>
   );
 }
+

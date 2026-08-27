@@ -205,6 +205,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
+      if (adminMaster) {
+        const { data: allPerms } = await supabase
+          .from('permissions')
+          .select('*');
+
+        const allNormalized = normalizePermissions(allPerms || []);
+        const merged = new Map<string, Permission>();
+        for (const perm of [...permissionsData, ...allNormalized]) {
+          const key = `${perm.resource}:${perm.action}`;
+          if (!merged.has(key)) {
+            merged.set(key, perm);
+          }
+        }
+        permissionsData = Array.from(merged.values());
+      }
+
       const { data: firstLoginData } = await supabase
         .from('first_login_state')
         .select('*')
