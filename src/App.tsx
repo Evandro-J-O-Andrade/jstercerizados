@@ -76,6 +76,7 @@ const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
 import { DashboardRouteNotFound } from '@/components/dashboard/DashboardRouter';
 import VisaoGeralPage from '@/pages/dashboard/VisaoGeral';
 import VagasPage from '@/pages/dashboard/Vagas';
+import CandidaturasPage from '@/pages/dashboard/Candidaturas';
 import CandidatosPage from '@/pages/dashboard/Candidatos';
 import EmpresasPage from '@/pages/dashboard/Empresas';
 import ParceirosPage from '@/pages/dashboard/Parceiros';
@@ -121,6 +122,7 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   RolesPermissoesPage,
   VisaoGeralPage,
   VagasPage,
+  CandidaturasPage,
   CandidatosPage,
   EmpresasPage,
   ParceirosPage,
@@ -306,6 +308,14 @@ function App() {
               element={
                 <PermissionGuard permission="jobs.read">
                   <VagasPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="candidaturas"
+              element={
+                <PermissionGuard permission="applications.read">
+                  <CandidaturasPage />
                 </PermissionGuard>
               }
             />

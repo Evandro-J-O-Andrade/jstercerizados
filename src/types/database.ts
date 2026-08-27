@@ -646,30 +646,166 @@ export interface Database {
       applications: {
         Row: {
           id: string;
-          candidate_id: string;
+          tenant_id: string;
           job_id: string;
-          status: 'applied' | 'review' | 'interview' | 'approved' | 'rejected';
-          cover_letter: string | null;
-          created_at: string;
+          candidate_id: string;
+          profile_snapshot: Record<string, unknown> | null;
+          match_score: number | null;
+          match_details: Record<string, unknown> | null;
+          source: string | null;
+          current_stage:
+            | 'submitted'
+            | 'screening'
+            | 'interview'
+            | 'technical_interview'
+            | 'presentation'
+            | 'reference_check'
+            | 'offer'
+            | 'hired'
+            | 'rejected'
+            | 'withdrawn'
+            | 'on_hold';
+          notes: string | null;
+          applied_at: string;
           updated_at: string;
+          created_by: string | null;
         };
         Insert: {
           id?: string;
-          candidate_id: string;
+          tenant_id: string;
           job_id: string;
-          status?: 'applied' | 'review' | 'interview' | 'approved' | 'rejected';
-          cover_letter?: string | null;
-          created_at?: string;
+          candidate_id: string;
+          profile_snapshot?: Record<string, unknown> | null;
+          match_score?: number | null;
+          match_details?: Record<string, unknown> | null;
+          source?: string | null;
+          current_stage?:
+            | 'submitted'
+            | 'screening'
+            | 'interview'
+            | 'technical_interview'
+            | 'presentation'
+            | 'reference_check'
+            | 'offer'
+            | 'hired'
+            | 'rejected'
+            | 'withdrawn'
+            | 'on_hold';
+          notes?: string | null;
+          applied_at?: string;
           updated_at?: string;
+          created_by?: string | null;
         };
         Update: {
           id?: string;
-          candidate_id?: string;
+          tenant_id?: string;
           job_id?: string;
-          status?: 'applied' | 'review' | 'interview' | 'approved' | 'rejected';
-          cover_letter?: string | null;
-          created_at?: string;
+          candidate_id?: string;
+          profile_snapshot?: Record<string, unknown> | null;
+          match_score?: number | null;
+          match_details?: Record<string, unknown> | null;
+          source?: string | null;
+          current_stage?:
+            | 'submitted'
+            | 'screening'
+            | 'interview'
+            | 'technical_interview'
+            | 'presentation'
+            | 'reference_check'
+            | 'offer'
+            | 'hired'
+            | 'rejected'
+            | 'withdrawn'
+            | 'on_hold';
+          notes?: string | null;
+          applied_at?: string;
           updated_at?: string;
+          created_by?: string | null;
+        };
+      };
+      application_status_history: {
+        Row: {
+          id: string;
+          application_id: string;
+          stage:
+            | 'submitted'
+            | 'screening'
+            | 'interview'
+            | 'technical_interview'
+            | 'presentation'
+            | 'reference_check'
+            | 'offer'
+            | 'hired'
+            | 'rejected'
+            | 'withdrawn'
+            | 'on_hold';
+          previous_stage: string | null;
+          next_stage: string | null;
+          changed_by: string | null;
+          reason: string | null;
+          changed_at: string;
+        };
+        Insert: {
+          id?: string;
+          application_id: string;
+          stage:
+            | 'submitted'
+            | 'screening'
+            | 'interview'
+            | 'technical_interview'
+            | 'presentation'
+            | 'reference_check'
+            | 'offer'
+            | 'hired'
+            | 'rejected'
+            | 'withdrawn'
+            | 'on_hold';
+          previous_stage?: string | null;
+          next_stage?: string | null;
+          changed_by?: string | null;
+          reason?: string | null;
+          changed_at?: string;
+        };
+        Update: {
+          id?: string;
+          application_id?: string;
+          stage?:
+            | 'submitted'
+            | 'screening'
+            | 'interview'
+            | 'technical_interview'
+            | 'presentation'
+            | 'reference_check'
+            | 'offer'
+            | 'hired'
+            | 'rejected'
+            | 'withdrawn'
+            | 'on_hold';
+          previous_stage?: string | null;
+          next_stage?: string | null;
+          changed_by?: string | null;
+          reason?: string | null;
+          changed_at?: string;
+        };
+      };
+      application_profile_snapshots: {
+        Row: {
+          id: string;
+          application_id: string;
+          snapshot_data: Record<string, unknown>;
+          captured_at: string;
+        };
+        Insert: {
+          id?: string;
+          application_id: string;
+          snapshot_data?: Record<string, unknown>;
+          captured_at?: string;
+        };
+        Update: {
+          id?: string;
+          application_id?: string;
+          snapshot_data?: Record<string, unknown>;
+          captured_at?: string;
         };
       };
       leads: {
@@ -1195,7 +1331,17 @@ export interface Database {
         'clt' | 'internship' | 'temporary' | 'freelance' | 'contracted' | 'cd';
       work_mode: 'onsite' | 'hybrid' | 'remote';
       application_status:
-        'applied' | 'review' | 'interview' | 'approved' | 'rejected';
+        | 'submitted'
+        | 'screening'
+        | 'interview'
+        | 'technical_interview'
+        | 'presentation'
+        | 'reference_check'
+        | 'offer'
+        | 'hired'
+        | 'rejected'
+        | 'withdrawn'
+        | 'on_hold';
       lead_status: 'new' | 'contacted' | 'proposal' | 'won' | 'lost';
       service_category: 'rh' | 'facilities' | 'terceirizacao' | 'candidato';
       service_status: 'active' | 'inactive';

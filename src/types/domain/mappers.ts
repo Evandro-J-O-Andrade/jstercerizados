@@ -103,8 +103,15 @@ export function mapJob(row: JobRow): Job {
 
 export function mapApplication(
   row: Database['public']['Tables']['applications']['Row'],
+  extras?: Partial<Application>,
 ): Application {
-  return { ...row };
+  return {
+    ...row,
+    job: extras?.job,
+    candidate: extras?.candidate,
+    history: extras?.history ?? [],
+    snapshot: extras?.snapshot ?? null,
+  };
 }
 
 export function mapLead(
