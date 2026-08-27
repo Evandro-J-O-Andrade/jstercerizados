@@ -67,3 +67,9 @@ export type {
   BudgetRequestCreateInput,
   BudgetRequestUpdateInput,
 } from './recruitment';
+
+export type {
+  RecruitmentProcess,
+  RecruitmentProcessCreateInput,
+  RecruitmentProcessUpdateInput,
+} from './recruitment-process';

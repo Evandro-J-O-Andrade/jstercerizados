@@ -288,6 +288,14 @@ function App() {
               }
             />
             <Route
+              path="processos-seletivos"
+              element={
+                <PermissionGuard permission="recruitment.read">
+                  <ProcessosSeletivosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
               path="processos-seletivos/:id"
               element={
                 <PermissionGuard permission="applications.read">

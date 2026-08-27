@@ -11,6 +11,7 @@ import type {
   Supplier,
   Partner,
   BudgetRequest,
+  RecruitmentProcess,
 } from '@/types/domain';
 
 export function mapTenant(
@@ -142,4 +143,14 @@ export function mapBudgetRequest(
   row: Database['public']['Tables']['budget_requests']['Row'],
 ): BudgetRequest {
   return { ...row };
+}
+
+export function mapRecruitmentProcess(
+  row: Database['public']['Tables']['recruitment_processes']['Row'],
+  extras?: Partial<RecruitmentProcess>,
+): RecruitmentProcess {
+  return {
+    ...row,
+    job: extras?.job,
+  };
 }
