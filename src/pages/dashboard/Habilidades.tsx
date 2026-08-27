@@ -48,7 +48,7 @@ export default function Habilidades() {
 
       try {
         const [skillsData, employeesData] = await Promise.all([
-          employeeSkillsRepository.findAll('', currentTenantId),
+          employeeSkillsRepository.findAll(''),
           employeesRepository.findAll(currentTenantId),
         ]);
         if (!cancelled) {
@@ -125,7 +125,6 @@ export default function Habilidades() {
         const updated = await employeeSkillsRepository.update(
           selected.id,
           selected.employee_id,
-          currentTenantId,
           payload as EmployeeSkillUpdateInput,
         );
         if (updated) {
@@ -136,7 +135,6 @@ export default function Habilidades() {
       } else {
         const created = await employeeSkillsRepository.create(
           payload as EmployeeSkillCreateInput,
-          currentTenantId,
         );
         if (created) {
           setSkills((prev) => [created, ...prev]);
@@ -163,11 +161,7 @@ export default function Habilidades() {
     try {
       const skill = skills.find((s) => s.id === id);
       if (!skill) return;
-      await employeeSkillsRepository.remove(
-        id,
-        skill.employee_id,
-        currentTenantId || '',
-      );
+      await employeeSkillsRepository.remove(id, skill.employee_id);
       setSkills((prev) => prev.filter((s) => s.id !== id));
       if (selected?.id === id) {
         setSelected(null);

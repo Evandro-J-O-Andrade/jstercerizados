@@ -46,7 +46,7 @@ export default function Idiomas() {
 
       try {
         const [languagesData, employeesData] = await Promise.all([
-          employeeLanguagesRepository.findAll('', currentTenantId),
+          employeeLanguagesRepository.findAll(''),
           employeesRepository.findAll(currentTenantId),
         ]);
         if (!cancelled) {
@@ -116,7 +116,6 @@ export default function Idiomas() {
         const updated = await employeeLanguagesRepository.update(
           selected.id,
           selected.employee_id,
-          currentTenantId,
           payload as EmployeeLanguageUpdateInput,
         );
         if (updated) {
@@ -127,7 +126,6 @@ export default function Idiomas() {
       } else {
         const created = await employeeLanguagesRepository.create(
           payload as EmployeeLanguageCreateInput,
-          currentTenantId,
         );
         if (created) {
           setLanguages((prev) => [created, ...prev]);
@@ -150,11 +148,7 @@ export default function Idiomas() {
     try {
       const language = languages.find((lang) => lang.id === id);
       if (!language) return;
-      await employeeLanguagesRepository.remove(
-        id,
-        language.employee_id,
-        currentTenantId || '',
-      );
+      await employeeLanguagesRepository.remove(id, language.employee_id);
       setLanguages((prev) => prev.filter((lang) => lang.id !== id));
       if (selected?.id === id) {
         setSelected(null);

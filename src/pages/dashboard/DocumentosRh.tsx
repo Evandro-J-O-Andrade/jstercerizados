@@ -49,7 +49,7 @@ export default function DocumentosRh() {
 
       try {
         const [documentsData, employeesData] = await Promise.all([
-          employeeDocumentsRepository.findAll('', currentTenantId),
+          employeeDocumentsRepository.findAll(''),
           employeesRepository.findAll(currentTenantId),
         ]);
         if (!cancelled) {
@@ -131,7 +131,6 @@ export default function DocumentosRh() {
         const updated = await employeeDocumentsRepository.update(
           selected.id,
           selected.employee_id,
-          currentTenantId,
           payload as EmployeeDocumentUpdateInput,
         );
         if (updated) {
@@ -142,7 +141,6 @@ export default function DocumentosRh() {
       } else {
         const created = await employeeDocumentsRepository.create(
           payload as EmployeeDocumentCreateInput,
-          currentTenantId,
         );
         if (created) {
           setDocuments((prev) => [created, ...prev]);
@@ -169,11 +167,7 @@ export default function DocumentosRh() {
     try {
       const document = documents.find((doc) => doc.id === id);
       if (!document) return;
-      await employeeDocumentsRepository.remove(
-        id,
-        document.employee_id,
-        currentTenantId || '',
-      );
+      await employeeDocumentsRepository.remove(id, document.employee_id);
       setDocuments((prev) => prev.filter((doc) => doc.id !== id));
       if (selected?.id === id) {
         setSelected(null);

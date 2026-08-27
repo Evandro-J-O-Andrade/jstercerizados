@@ -64,20 +64,31 @@ export async function submitCandidateApplication(
 
   const tenantId = await getTenantId();
 
+  const { data: peopleData, error: peopleError } = await supabase
+    .from('people')
+    .select('id')
+    .eq('auth_user_id', (await supabase.auth.getUser()).data.user?.id)
+    .maybeSingle();
+
+  if (peopleError || !peopleData) {
+    throw new Error('Usuário não identificado. Faça login novamente.');
+  }
+
+  const personId = peopleData.id;
+
   const { data: candidate, error: candidateError } = await supabase
     .from('candidates')
     .insert({
       tenant_id: tenantId,
-      name: data.name.trim(),
-      cpf: data.cpf?.trim() || null,
-      rg: data.rg?.trim() || null,
-      phone: data.phone.trim(),
-      email: data.email.trim(),
-      city: data.city.trim(),
-      target_area: data.positions.join(', '),
-      target_role: data.positions[0] || null,
-      experience_summary: data.experience.trim(),
-      status: 'new',
+      person_id: personId,
+      headline: data.positions.join(', '),
+      source: 'site',
+      status: 'active',
+      metadata: {
+        target_area: data.positions.join(', '),
+        target_role: data.positions[0] || null,
+        experience_summary: data.experience.trim(),
+      },
     })
     .select('id')
     .single();
@@ -87,23 +98,6 @@ export async function submitCandidateApplication(
       await supabase.storage.from('curriculos').remove([documentId]);
     }
     throw new Error(normalizeSupabaseError(candidateError));
-  }
-
-  const { error: curriculumError } = await supabase.from('curricula').insert({
-    candidate_id: candidate.id,
-    tenant_id: tenantId,
-    objective: data.resume.trim(),
-    availability: data.availability?.trim() || null,
-    cv_storage_path: documentId || null,
-    status: 'active',
-  });
-
-  if (curriculumError) {
-    await supabase.from('candidates').delete().eq('id', candidate.id);
-    if (documentId) {
-      await supabase.storage.from('curriculos').remove([documentId]);
-    }
-    throw new Error(`Erro ao salvar currículo: ${curriculumError.message}`);
   }
 
   if (documentId && selectedFile) {
@@ -150,7 +144,9 @@ export async function submitCandidateApplication(
 
 async function getTenantId(): Promise<string | null> {
   const supabase = getSupabaseClient();
-  if (!supabase) return null;
+  if (!supabase) {
+    return null;
+  }
 
   const { data, error } = await supabase
     .from('tenants')

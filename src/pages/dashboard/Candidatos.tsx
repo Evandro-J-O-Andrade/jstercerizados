@@ -43,6 +43,11 @@ export default function Candidatos() {
     status: 'active' as Candidate['status'],
   });
 
+  const statusCounts = candidates.reduce<Record<string, number>>((acc, c) => {
+    acc[c.status || 'unknown'] = (acc[c.status || 'unknown'] || 0) + 1;
+    return acc;
+  }, {});
+
   useEffect(() => {
     let cancelled = false;
 
@@ -169,6 +174,10 @@ export default function Candidatos() {
     }
   };
 
+  const getStatusLabel = (value: string) => {
+    return CANDIDATE_STATUS.find((s) => s.value === value)?.label || value;
+  };
+
   return (
     <ModuleWorkspace
       title="Candidatos"
@@ -185,6 +194,41 @@ export default function Candidatos() {
       }
     >
       <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Card className="p-4">
+            <p className="text-muted-foreground text-xs font-semibold uppercase">
+              Total
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {candidates.length}
+            </p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-muted-foreground text-xs font-semibold uppercase">
+              Ativos
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {statusCounts['active'] || 0}
+            </p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-muted-foreground text-xs font-semibold uppercase">
+              Arquivados
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {statusCounts['archived'] || 0}
+            </p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-muted-foreground text-xs font-semibold uppercase">
+              Bloqueados
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {statusCounts['blacklisted'] || 0}
+            </p>
+          </Card>
+        </div>
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2 rounded-lg border px-3 py-1.5">
             <Search className="text-muted-foreground h-4 w-4" />
@@ -277,7 +321,7 @@ export default function Candidatos() {
                             'bg-destructive/10 text-destructive',
                         )}
                       >
-                        {candidate.status}
+                        {getStatusLabel(candidate.status)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">

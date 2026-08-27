@@ -11,17 +11,13 @@ type EmployeeCourseRow =
   Database['public']['Tables']['employee_courses']['Row'];
 
 export class EmployeeCoursesRepository extends SupabaseRepository {
-  async findAll(
-    employeeId: string,
-    tenantId: string,
-  ): Promise<EmployeeCourse[]> {
+  async findAll(employeeId: string): Promise<EmployeeCourse[]> {
     if (!this.supabase) return [];
 
     const { data, error } = await this.supabase
       .from('employee_courses')
       .select('*')
       .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId)
       .order('completion_date', { ascending: false });
 
     if (error) throw error;
@@ -33,15 +29,14 @@ export class EmployeeCoursesRepository extends SupabaseRepository {
   async findById(
     id: string,
     employeeId: string,
-    tenantId: string,
   ): Promise<EmployeeCourse | null> {
     if (!this.supabase) return null;
+
     const { data, error } = await this.supabase
       .from('employee_courses')
       .select('*')
       .eq('id', id)
       .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId)
       .maybeSingle();
 
     if (error) throw error;
@@ -51,14 +46,19 @@ export class EmployeeCoursesRepository extends SupabaseRepository {
 
   async create(
     input: EmployeeCourseCreateInput,
-    tenantId: string,
   ): Promise<EmployeeCourse | null> {
     if (!this.supabase) return null;
+
     const { data, error } = await this.supabase
       .from('employee_courses')
       .insert({
-        ...input,
-        tenant_id: tenantId,
+        employee_id: input.employee_id,
+        course_name: input.course_name,
+        institution: input.institution,
+        completion_date: input.completion_date,
+        expiry_date: input.expiry_date,
+        certificate_url: input.certificate_url,
+        hours: input.hours,
       })
       .select('*')
       .single();
@@ -71,7 +71,6 @@ export class EmployeeCoursesRepository extends SupabaseRepository {
   async update(
     id: string,
     employeeId: string,
-    tenantId: string,
     input: EmployeeCourseUpdateInput,
   ): Promise<EmployeeCourse | null> {
     if (!this.supabase) return null;
@@ -94,7 +93,6 @@ export class EmployeeCoursesRepository extends SupabaseRepository {
       .update(payload)
       .eq('id', id)
       .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId)
       .select('*')
       .single();
 
@@ -103,18 +101,14 @@ export class EmployeeCoursesRepository extends SupabaseRepository {
     return mapEmployeeCourse(data as EmployeeCourseRow);
   }
 
-  async remove(
-    id: string,
-    employeeId: string,
-    tenantId: string,
-  ): Promise<void> {
+  async remove(id: string, employeeId: string): Promise<void> {
     if (!this.supabase) return;
+
     const { error } = await this.supabase
       .from('employee_courses')
       .delete()
       .eq('id', id)
-      .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId);
+      .eq('employee_id', employeeId);
 
     if (error) throw error;
   }

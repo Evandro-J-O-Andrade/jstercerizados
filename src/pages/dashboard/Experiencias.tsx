@@ -49,7 +49,7 @@ export default function Experiencias() {
 
       try {
         const [experiencesData, employeesData] = await Promise.all([
-          employeeExperiencesRepository.findAll('', currentTenantId),
+          employeeExperiencesRepository.findAll(''),
           employeesRepository.findAll(currentTenantId),
         ]);
         if (!cancelled) {
@@ -133,7 +133,6 @@ export default function Experiencias() {
         const updated = await employeeExperiencesRepository.update(
           selected.id,
           selected.employee_id,
-          currentTenantId,
           payload as EmployeeExperienceUpdateInput,
         );
         if (updated) {
@@ -144,7 +143,6 @@ export default function Experiencias() {
       } else {
         const created = await employeeExperiencesRepository.create(
           payload as EmployeeExperienceCreateInput,
-          currentTenantId,
         );
         if (created) {
           setExperiences((prev) => [created, ...prev]);
@@ -173,11 +171,7 @@ export default function Experiencias() {
     try {
       const experience = experiences.find((exp) => exp.id === id);
       if (!experience) return;
-      await employeeExperiencesRepository.remove(
-        id,
-        experience.employee_id,
-        currentTenantId || '',
-      );
+      await employeeExperiencesRepository.remove(id, experience.employee_id);
       setExperiences((prev) => prev.filter((exp) => exp.id !== id));
       if (selected?.id === id) {
         setSelected(null);

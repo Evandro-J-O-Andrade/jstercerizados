@@ -79,6 +79,11 @@ cross join (
     ('candidate_preferences', 'read'), ('candidate_preferences', 'update'),
     ('job_matches', 'read'), ('job_matches', 'create'), ('job_matches', 'update'),
     ('candidate_skills', 'create'), ('candidate_skills', 'read'), ('candidate_skills', 'update'), ('candidate_skills', 'delete'),
+    ('candidate_experiences', 'create'), ('candidate_experiences', 'read'), ('candidate_experiences', 'update'), ('candidate_experiences', 'delete'),
+    ('candidate_education', 'create'), ('candidate_education', 'read'), ('candidate_education', 'update'), ('candidate_education', 'delete'),
+    ('candidate_courses', 'create'), ('candidate_courses', 'read'), ('candidate_courses', 'update'), ('candidate_courses', 'delete'),
+    ('candidate_languages', 'create'), ('candidate_languages', 'read'), ('candidate_languages', 'update'), ('candidate_languages', 'delete'),
+    ('candidate_documents', 'create'), ('candidate_documents', 'read'), ('candidate_documents', 'update'), ('candidate_documents', 'delete'),
     ('skills', 'read'),
     ('role_assignments', 'create'), ('role_assignments', 'read'), ('role_assignments', 'update'), ('role_assignments', 'delete'),
     ('roles', 'read')
@@ -101,7 +106,12 @@ cross join (
     ('notification_deliveries', 'read'), ('notification_deliveries', 'create'), ('notification_deliveries', 'update'),
     ('domain_events', 'read'),
     ('skills', 'read'),
-    ('candidate_skills', 'create'), ('candidate_skills', 'read')
+    ('candidate_skills', 'create'), ('candidate_skills', 'read'),
+    ('candidate_experiences', 'create'), ('candidate_experiences', 'read'),
+    ('candidate_education', 'create'), ('candidate_education', 'read'),
+    ('candidate_courses', 'create'), ('candidate_courses', 'read'),
+    ('candidate_languages', 'create'), ('candidate_languages', 'read'),
+    ('candidate_documents', 'create'), ('candidate_documents', 'read')
 ) as res(resource, action)
 where r.name = 'tenant_admin'
 on conflict (role_id, resource, action) do nothing;
@@ -119,7 +129,12 @@ cross join (
     ('notification_deliveries', 'read'), ('notification_deliveries', 'create'), ('notification_deliveries', 'update'),
     ('domain_events', 'read'),
     ('skills', 'read'),
-    ('candidate_skills', 'read')
+    ('candidate_skills', 'read'),
+    ('candidate_experiences', 'read'),
+    ('candidate_education', 'read'),
+    ('candidate_courses', 'read'),
+    ('candidate_languages', 'read'),
+    ('candidate_documents', 'read')
 ) as res(resource, action)
 where r.name = 'rh_manager'
 on conflict (role_id, resource, action) do nothing;

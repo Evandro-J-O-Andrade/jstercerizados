@@ -77,6 +77,15 @@ import VisaoGeralPage from '@/pages/dashboard/VisaoGeral';
 import VagasPage from '@/pages/dashboard/Vagas';
 import CandidaturasPage from '@/pages/dashboard/Candidaturas';
 import CandidatosPage from '@/pages/dashboard/Candidatos';
+import CandidatoDetalhe from '@/pages/dashboard/CandidatoDetalhe';
+import CandidatoHabilidades from '@/pages/dashboard/CandidatoHabilidades';
+import CandidatoFormacao from '@/pages/dashboard/CandidatoFormacao';
+import CandidatoExperiencias from '@/pages/dashboard/CandidatoExperiencias';
+import CandidatoIdiomas from '@/pages/dashboard/CandidatoIdiomas';
+import CandidatoDocumentos from '@/pages/dashboard/CandidatoDocumentos';
+import CandidatoPreferencias from '@/pages/dashboard/CandidatoPreferencias';
+import CandidatoVisualizacoes from '@/pages/dashboard/CandidatoVisualizacoes';
+import JobMatches from '@/pages/dashboard/JobMatches';
 import EmpresasPage from '@/pages/dashboard/Empresas';
 import ParceirosPage from '@/pages/dashboard/Parceiros';
 import FornecedoresPage from '@/pages/dashboard/Fornecedores';
@@ -84,6 +93,7 @@ import UsuariosPage from '@/pages/dashboard/Usuarios';
 import ProcessosSeletivosPage from '@/pages/dashboard/ProcessosSeletivos';
 import EtapasPage from '@/pages/dashboard/Etapas';
 import FuncionariosPage from '@/pages/dashboard/Funcionarios';
+import FuncionarioDetalhe from '@/pages/dashboard/FuncionarioDetalhe';
 import ExperienciasPage from '@/pages/dashboard/Experiencias';
 import FormacaoPage from '@/pages/dashboard/Formacao';
 import CursosPage from '@/pages/dashboard/Cursos';
@@ -93,7 +103,7 @@ import DocumentosRhPage from '@/pages/dashboard/DocumentosRh';
 import BancoDeTalentosPage from '@/pages/dashboard/BancoDeTalentos';
 import DashboardRhPage from '@/pages/dashboard/DashboardRh';
 import ServicosPage from '@/pages/dashboard/Servicos';
-import FinanceiroPage from '@/pages/dashboard/Financeiro';
+import FinanceiroPage from '@/pages/dashboard/FinanceiroPage';
 import EstoquePage from '@/pages/dashboard/Estoque';
 import SuportePage from '@/pages/dashboard/Suporte';
 import RelatoriosPage from '@/pages/dashboard/Relatorios';
@@ -105,6 +115,8 @@ import SkillsPage from '@/pages/dashboard/SkillsPage';
 import NotificationsPage from '@/pages/dashboard/NotificationsPage';
 import ApplicationDetailPage from '@/pages/dashboard/ApplicationDetailPage';
 import SessoesPage from '@/pages/dashboard/SessoesPage';
+import FluxoDeCaixaPage from '@/pages/dashboard/FluxoDeCaixaPage';
+import ContasReceberPage from '@/pages/dashboard/ContasReceberPage';
 
 const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   DashboardHome,
@@ -132,6 +144,15 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   VagasPage,
   CandidaturasPage,
   CandidatosPage,
+  CandidatoDetalhe,
+  CandidatoHabilidades,
+  CandidatoFormacao,
+  CandidatoExperiencias,
+  CandidatoIdiomas,
+  CandidatoDocumentos,
+  CandidatoPreferencias,
+  CandidatoVisualizacoes,
+  JobMatches,
   EmpresasPage,
   ParceirosPage,
   FornecedoresPage,
@@ -290,18 +311,18 @@ function App() {
               }
             />
             <Route
-              path="habilidades"
-              element={
-                <PermissionGuard permission="skills.read">
-                  <SkillsPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
               path="notificacoes"
               element={
                 <PermissionGuard permission="notifications.read">
                   <NotificationsPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="configuracoes/seguranca/sessoes"
+              element={
+                <PermissionGuard permission="sessions.read">
+                  <SessoesPage />
                 </PermissionGuard>
               }
             />
@@ -322,18 +343,18 @@ function App() {
               }
             />
             <Route
-              path="rh"
-              element={
-                <PermissionGuard permission="people.read">
-                  <DashboardRhPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
               path="funcionarios"
               element={
                 <PermissionGuard permission="employees.read">
                   <FuncionariosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="funcionarios/:id"
+              element={
+                <PermissionGuard permission="employees.read">
+                  <FuncionarioDetalhe />
                 </PermissionGuard>
               }
             />
@@ -410,6 +431,78 @@ function App() {
               }
             />
             <Route
+              path="candidatos/:id"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <CandidatoDetalhe />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="candidatos/habilidades"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <CandidatoHabilidades />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="candidatos/formacao"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <CandidatoFormacao />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="candidatos/experiencias"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <CandidatoExperiencias />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="candidatos/idiomas"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <CandidatoIdiomas />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="candidatos/documentos"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <CandidatoDocumentos />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="candidatos/preferencias"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <CandidatoPreferencias />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="candidatos/visualizacoes"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <CandidatoVisualizacoes />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="matches"
+              element={
+                <PermissionGuard permission="jobs.read">
+                  <JobMatches />
+                </PermissionGuard>
+              }
+            />
+            <Route
               path="vagas"
               element={
                 <PermissionGuard permission="jobs.read">
@@ -422,6 +515,30 @@ function App() {
               element={
                 <PermissionGuard permission="applications.read">
                   <CandidaturasPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="financeiro/contas-pagar"
+              element={
+                <PermissionGuard permission="finance.accounts_payable.read">
+                  <FinanceiroPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="financeiro/contas-receber"
+              element={
+                <PermissionGuard permission="finance.accounts_receivable.read">
+                  <ContasReceberPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="financeiro/fluxo-caixa"
+              element={
+                <PermissionGuard permission="finance.cashflow.read">
+                  <FluxoDeCaixaPage />
                 </PermissionGuard>
               }
             />

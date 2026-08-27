@@ -11,17 +11,13 @@ type EmployeeLanguageRow =
   Database['public']['Tables']['employee_languages']['Row'];
 
 export class EmployeeLanguagesRepository extends SupabaseRepository {
-  async findAll(
-    employeeId: string,
-    tenantId: string,
-  ): Promise<EmployeeLanguage[]> {
+  async findAll(employeeId: string): Promise<EmployeeLanguage[]> {
     if (!this.supabase) return [];
 
     const { data, error } = await this.supabase
       .from('employee_languages')
       .select('*')
       .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId)
       .order('language', { ascending: true });
 
     if (error) throw error;
@@ -33,15 +29,14 @@ export class EmployeeLanguagesRepository extends SupabaseRepository {
   async findById(
     id: string,
     employeeId: string,
-    tenantId: string,
   ): Promise<EmployeeLanguage | null> {
     if (!this.supabase) return null;
+
     const { data, error } = await this.supabase
       .from('employee_languages')
       .select('*')
       .eq('id', id)
       .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId)
       .maybeSingle();
 
     if (error) throw error;
@@ -51,14 +46,16 @@ export class EmployeeLanguagesRepository extends SupabaseRepository {
 
   async create(
     input: EmployeeLanguageCreateInput,
-    tenantId: string,
   ): Promise<EmployeeLanguage | null> {
     if (!this.supabase) return null;
+
     const { data, error } = await this.supabase
       .from('employee_languages')
       .insert({
-        ...input,
-        tenant_id: tenantId,
+        employee_id: input.employee_id,
+        language: input.language,
+        proficiency: input.proficiency,
+        is_primary: input.is_primary,
       })
       .select('*')
       .single();
@@ -71,7 +68,6 @@ export class EmployeeLanguagesRepository extends SupabaseRepository {
   async update(
     id: string,
     employeeId: string,
-    tenantId: string,
     input: EmployeeLanguageUpdateInput,
   ): Promise<EmployeeLanguage | null> {
     if (!this.supabase) return null;
@@ -87,7 +83,6 @@ export class EmployeeLanguagesRepository extends SupabaseRepository {
       .update(payload)
       .eq('id', id)
       .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId)
       .select('*')
       .single();
 
@@ -96,18 +91,14 @@ export class EmployeeLanguagesRepository extends SupabaseRepository {
     return mapEmployeeLanguage(data as EmployeeLanguageRow);
   }
 
-  async remove(
-    id: string,
-    employeeId: string,
-    tenantId: string,
-  ): Promise<void> {
+  async remove(id: string, employeeId: string): Promise<void> {
     if (!this.supabase) return;
+
     const { error } = await this.supabase
       .from('employee_languages')
       .delete()
       .eq('id', id)
-      .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId);
+      .eq('employee_id', employeeId);
 
     if (error) throw error;
   }

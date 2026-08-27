@@ -51,7 +51,7 @@ export default function Formacao() {
 
       try {
         const [educationsData, employeesData] = await Promise.all([
-          employeeEducationsRepository.findAll('', currentTenantId),
+          employeeEducationsRepository.findAll(''),
           employeesRepository.findAll(currentTenantId),
         ]);
         if (!cancelled) {
@@ -136,7 +136,6 @@ export default function Formacao() {
         const updated = await employeeEducationsRepository.update(
           selected.id,
           selected.employee_id,
-          currentTenantId,
           payload as EmployeeEducationUpdateInput,
         );
         if (updated) {
@@ -147,7 +146,6 @@ export default function Formacao() {
       } else {
         const created = await employeeEducationsRepository.create(
           payload as EmployeeEducationCreateInput,
-          currentTenantId,
         );
         if (created) {
           setEducations((prev) => [created, ...prev]);
@@ -175,11 +173,7 @@ export default function Formacao() {
     try {
       const education = educations.find((edu) => edu.id === id);
       if (!education) return;
-      await employeeEducationsRepository.remove(
-        id,
-        education.employee_id,
-        currentTenantId || '',
-      );
+      await employeeEducationsRepository.remove(id, education.employee_id);
       setEducations((prev) => prev.filter((edu) => edu.id !== id));
       if (selected?.id === id) {
         setSelected(null);

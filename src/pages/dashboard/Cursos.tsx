@@ -48,7 +48,7 @@ export default function Cursos() {
 
       try {
         const [coursesData, employeesData] = await Promise.all([
-          employeeCoursesRepository.findAll('', currentTenantId),
+          employeeCoursesRepository.findAll(''),
           employeesRepository.findAll(currentTenantId),
         ]);
         if (!cancelled) {
@@ -126,7 +126,6 @@ export default function Cursos() {
         const updated = await employeeCoursesRepository.update(
           selected.id,
           selected.employee_id,
-          currentTenantId,
           payload as EmployeeCourseUpdateInput,
         );
         if (updated) {
@@ -137,7 +136,6 @@ export default function Cursos() {
       } else {
         const created = await employeeCoursesRepository.create(
           payload as EmployeeCourseCreateInput,
-          currentTenantId,
         );
         if (created) {
           setCourses((prev) => [created, ...prev]);
@@ -163,11 +161,7 @@ export default function Cursos() {
     try {
       const course = courses.find((c) => c.id === id);
       if (!course) return;
-      await employeeCoursesRepository.remove(
-        id,
-        course.employee_id,
-        currentTenantId || '',
-      );
+      await employeeCoursesRepository.remove(id, course.employee_id);
       setCourses((prev) => prev.filter((c) => c.id !== id));
       if (selected?.id === id) {
         setSelected(null);

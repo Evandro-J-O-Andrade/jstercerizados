@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Plus, Search, User, MapPin, Eye } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { talentPoolRepository } from '@/repositories/talent-pool.repository';
+import { candidatesRepository } from '@/repositories/candidates.repository';
 import { cn } from '@/utils';
 import type {
   Candidate,
@@ -51,13 +52,35 @@ export default function BancoDeTalentos() {
       setError(null);
 
       try {
-        const [candidatesData, statsData] = await Promise.all([
-          talentPoolRepository.findCandidates(currentTenantId),
-          talentPoolRepository.getTalentPoolStats(currentTenantId),
+        const [candidatesData, poolData] = await Promise.all([
+          candidatesRepository.findAll(currentTenantId),
+          talentPoolRepository.findByTenant(currentTenantId),
         ]);
+
         if (!cancelled) {
           setCandidates(candidatesData);
-          setStats(statsData);
+
+          const activeCount = poolData.filter(
+            (p) => p.status === 'active',
+          ).length;
+
+          setStats({
+            total: poolData.length,
+            active: activeCount,
+            withExperience: candidatesData.filter(
+              (c) => (c.experiences || []).length > 0,
+            ).length,
+            recentUpdates: candidatesData.filter((c) => {
+              if (!c.updated_at) return false;
+              const updated = new Date(c.updated_at);
+              const now = new Date();
+              const diff = now.getTime() - updated.getTime();
+              return diff < 7 * 24 * 60 * 60 * 1000;
+            }).length,
+            withDocuments: candidatesData.filter(
+              (c) => (c.documents || []).length > 0,
+            ).length,
+          });
         }
       } catch (err) {
         if (!cancelled) {
@@ -83,14 +106,18 @@ export default function BancoDeTalentos() {
 
   const openProfile = async (candidate: Candidate) => {
     try {
-      const fullProfile = await talentPoolRepository.findById(
+      const membership = await talentPoolRepository.findByCandidate(
         candidate.id,
         currentTenantId || '',
       );
-      if (fullProfile) {
-        setSelectedCandidate(fullProfile);
-        setTab('profile');
-      }
+
+      const fullProfile = {
+        ...candidate,
+        talentPool: membership,
+      };
+
+      setSelectedCandidate(fullProfile);
+      setTab('profile');
     } catch (err) {
       setError(
         err instanceof Error

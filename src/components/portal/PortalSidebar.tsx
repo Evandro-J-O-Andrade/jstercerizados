@@ -26,7 +26,11 @@ import { cn } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
-import { type ModuleCategory } from './ModuleRegistry';
+import {
+  type ModuleCategory,
+  type ModuleDefinition,
+  type ModuleFeature,
+} from './ModuleRegistry';
 import { COMPANY } from '@/config';
 
 interface PortalSidebarProps {
@@ -164,6 +168,52 @@ export function PortalSidebar({
     handleNavigate('/dashboard');
   };
 
+  const isExactMatch = (route: string, pathname: string) => {
+    return pathname === route;
+  };
+
+  const isChildOf = (parentRoute: string, pathname: string) => {
+    return pathname !== parentRoute && pathname.startsWith(`${parentRoute}/`);
+  };
+
+  const isModuleSelected = (module: ModuleDefinition) => {
+    return isExactMatch(module.route, location.pathname);
+  };
+
+  const isModuleExpanded = (module: ModuleDefinition) => {
+    if (isExactMatch(module.route, location.pathname)) return true;
+    if (module.features) {
+      return module.features.some((feature) => {
+        if (isExactMatch(feature.route, location.pathname)) return true;
+        if (feature.features) {
+          return feature.features.some(
+            (sub) =>
+              isExactMatch(sub.route, location.pathname) ||
+              isChildOf(sub.route, location.pathname),
+          );
+        }
+        return isChildOf(feature.route, location.pathname);
+      });
+    }
+    return isChildOf(module.route, location.pathname);
+  };
+
+  const isFeatureSelected = (feature: ModuleFeature) => {
+    return isExactMatch(feature.route, location.pathname);
+  };
+
+  const isFeatureExpanded = (feature: ModuleFeature) => {
+    if (isExactMatch(feature.route, location.pathname)) return true;
+    if (feature.features) {
+      return feature.features.some(
+        (sub) =>
+          isExactMatch(sub.route, location.pathname) ||
+          isChildOf(sub.route, location.pathname),
+      );
+    }
+    return isChildOf(feature.route, location.pathname);
+  };
+
   const sidebarWidth = collapsed ? 'w-16' : 'w-72';
 
   return (
@@ -245,12 +295,12 @@ export function PortalSidebar({
                   )}
                   <div className="space-y-0.5">
                     {modules.map((module) => {
-                      const isActive =
-                        location.pathname === module.route ||
-                        location.pathname.startsWith(`${module.route}/`);
+                      const moduleSelected = isModuleSelected(module);
+                      const moduleExpanded =
+                        isModuleExpanded(module) ||
+                        expandedModules.includes(module.id);
                       const hasFeatures =
                         module.features && module.features.length > 0;
-                      const isExpanded = expandedModules.includes(module.id);
 
                       if (collapsed) {
                         return (
@@ -261,7 +311,7 @@ export function PortalSidebar({
                             onClick={() => handleNavigate(module.route)}
                             className={cn(
                               'flex items-center justify-center rounded-lg px-2 py-2 text-sm font-medium transition-colors',
-                              isActive
+                              moduleSelected
                                 ? 'bg-primary/10 text-primary'
                                 : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                             )}
@@ -287,7 +337,7 @@ export function PortalSidebar({
                               }}
                               className={cn(
                                 'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                                isActive
+                                moduleSelected
                                   ? 'bg-primary/10 text-primary'
                                   : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                               )}
@@ -298,19 +348,17 @@ export function PortalSidebar({
                               </span>
                             </NavLink>
                           </div>
-                          {hasFeatures && isExpanded && (
+                          {hasFeatures && moduleExpanded && (
                             <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">
                               {module.features!.map((feature) => {
-                                const featureActive =
-                                  location.pathname === feature.route ||
-                                  location.pathname.startsWith(
-                                    `${feature.route}/`,
-                                  );
+                                const featureSelected =
+                                  isFeatureSelected(feature);
+                                const featureExpanded =
+                                  isFeatureExpanded(feature) ||
+                                  expandedModules.includes(feature.id);
                                 const hasSubFeatures =
                                   feature.features &&
                                   feature.features.length > 0;
-                                const isFeatureExpanded =
-                                  expandedModules.includes(feature.id);
 
                                 if (hasSubFeatures) {
                                   return (
@@ -320,7 +368,7 @@ export function PortalSidebar({
                                         onClick={() => toggleModule(feature.id)}
                                         className={cn(
                                           'flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
-                                          featureActive
+                                          featureSelected
                                             ? 'text-primary'
                                             : 'text-muted-foreground hover:text-foreground',
                                         )}
@@ -329,18 +377,17 @@ export function PortalSidebar({
                                           {feature.title}
                                         </span>
                                         <span className="text-xs">
-                                          {isFeatureExpanded ? '▼' : '▶'}
+                                          {featureExpanded ? '▼' : '▶'}
                                         </span>
                                       </button>
-                                      {isFeatureExpanded && (
+                                      {featureExpanded && (
                                         <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">
                                           {feature.features!.map(
                                             (subFeature) => {
-                                              const subFeatureActive =
-                                                location.pathname ===
-                                                  subFeature.route ||
-                                                location.pathname.startsWith(
-                                                  `${subFeature.route}/`,
+                                              const subFeatureSelected =
+                                                isExactMatch(
+                                                  subFeature.route,
+                                                  location.pathname,
                                                 );
                                               return (
                                                 <NavLink
@@ -354,7 +401,7 @@ export function PortalSidebar({
                                                   }
                                                   className={cn(
                                                     'block rounded-lg px-3 py-1.5 text-sm transition-colors',
-                                                    subFeatureActive
+                                                    subFeatureSelected
                                                       ? 'bg-primary/10 text-primary'
                                                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                                                   )}
@@ -380,7 +427,7 @@ export function PortalSidebar({
                                     }
                                     className={cn(
                                       'block rounded-lg px-3 py-1.5 text-sm transition-colors',
-                                      featureActive
+                                      featureSelected
                                         ? 'bg-primary/10 text-primary'
                                         : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                                     )}

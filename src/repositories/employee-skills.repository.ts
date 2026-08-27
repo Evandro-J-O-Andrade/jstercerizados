@@ -10,17 +10,13 @@ import { mapEmployeeSkill } from '@/types/domain/mappers';
 type EmployeeSkillRow = Database['public']['Tables']['employee_skills']['Row'];
 
 export class EmployeeSkillsRepository extends SupabaseRepository {
-  async findAll(
-    employeeId: string,
-    tenantId: string,
-  ): Promise<EmployeeSkill[]> {
+  async findAll(employeeId: string): Promise<EmployeeSkill[]> {
     if (!this.supabase) return [];
 
     const { data, error } = await this.supabase
       .from('employee_skills')
       .select('*')
       .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId)
       .order('skill_name', { ascending: true });
 
     if (error) throw error;
@@ -30,15 +26,14 @@ export class EmployeeSkillsRepository extends SupabaseRepository {
   async findById(
     id: string,
     employeeId: string,
-    tenantId: string,
   ): Promise<EmployeeSkill | null> {
     if (!this.supabase) return null;
+
     const { data, error } = await this.supabase
       .from('employee_skills')
       .select('*')
       .eq('id', id)
       .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId)
       .maybeSingle();
 
     if (error) throw error;
@@ -46,16 +41,18 @@ export class EmployeeSkillsRepository extends SupabaseRepository {
     return mapEmployeeSkill(data as EmployeeSkillRow);
   }
 
-  async create(
-    input: EmployeeSkillCreateInput,
-    tenantId: string,
-  ): Promise<EmployeeSkill | null> {
+  async create(input: EmployeeSkillCreateInput): Promise<EmployeeSkill | null> {
     if (!this.supabase) return null;
+
     const { data, error } = await this.supabase
       .from('employee_skills')
       .insert({
-        ...input,
-        tenant_id: tenantId,
+        employee_id: input.employee_id,
+        skill_name: input.skill_name,
+        proficiency_level: input.proficiency_level,
+        years_experience: input.years_experience,
+        is_certified: input.is_certified,
+        certification_name: input.certification_name,
       })
       .select('*')
       .single();
@@ -68,7 +65,6 @@ export class EmployeeSkillsRepository extends SupabaseRepository {
   async update(
     id: string,
     employeeId: string,
-    tenantId: string,
     input: EmployeeSkillUpdateInput,
   ): Promise<EmployeeSkill | null> {
     if (!this.supabase) return null;
@@ -89,7 +85,6 @@ export class EmployeeSkillsRepository extends SupabaseRepository {
       .update(payload)
       .eq('id', id)
       .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId)
       .select('*')
       .single();
 
@@ -98,18 +93,14 @@ export class EmployeeSkillsRepository extends SupabaseRepository {
     return mapEmployeeSkill(data as EmployeeSkillRow);
   }
 
-  async remove(
-    id: string,
-    employeeId: string,
-    tenantId: string,
-  ): Promise<void> {
+  async remove(id: string, employeeId: string): Promise<void> {
     if (!this.supabase) return;
+
     const { error } = await this.supabase
       .from('employee_skills')
       .delete()
       .eq('id', id)
-      .eq('employee_id', employeeId)
-      .eq('tenant_id', tenantId);
+      .eq('employee_id', employeeId);
 
     if (error) throw error;
   }
