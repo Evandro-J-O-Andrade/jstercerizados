@@ -19,6 +19,7 @@ import type {
   EmployeeCourse,
   EmployeeLanguage,
   EmployeeSkill,
+  EmployeeDocument,
 } from '@/types/domain';
 
 export function mapTenant(
@@ -213,5 +214,11 @@ export function mapEmployeeLanguage(
 export function mapEmployeeSkill(
   row: Database['public']['Tables']['employee_skills']['Row'],
 ): EmployeeSkill {
+  return { ...row };
+}
+
+export function mapEmployeeDocument(
+  row: Database['public']['Tables']['employee_documents']['Row'],
+): EmployeeDocument {
   return { ...row };
 }

@@ -90,6 +90,7 @@ import FormacaoPage from '@/pages/dashboard/Formacao';
 import CursosPage from '@/pages/dashboard/Cursos';
 import IdiomasPage from '@/pages/dashboard/Idiomas';
 import HabilidadesPage from '@/pages/dashboard/Habilidades';
+import DocumentosRhPage from '@/pages/dashboard/DocumentosRh';
 import ServicosPage from '@/pages/dashboard/Servicos';
 import FinanceiroPage from '@/pages/dashboard/Financeiro';
 import EstoquePage from '@/pages/dashboard/Estoque';
@@ -143,6 +144,7 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   CursosPage,
   IdiomasPage,
   HabilidadesPage,
+  DocumentosRhPage,
   ServicosPage,
   FinanceiroPage,
   EstoquePage,
@@ -362,6 +364,14 @@ function App() {
               element={
                 <PermissionGuard permission="employees.read">
                   <HabilidadesPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="documentos-rh"
+              element={
+                <PermissionGuard permission="employees.read">
+                  <DocumentosRhPage />
                 </PermissionGuard>
               }
             />

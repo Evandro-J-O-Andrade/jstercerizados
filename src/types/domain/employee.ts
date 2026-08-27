@@ -83,9 +83,6 @@ export interface EmployeeUpdateInput {
   notes?: string | null;
 }
 
-export type EmployeeDocument =
-  Database['public']['Tables']['employee_documents']['Row'];
-
 export type EmployeeEducation =
   Database['public']['Tables']['employee_education']['Row'];
 

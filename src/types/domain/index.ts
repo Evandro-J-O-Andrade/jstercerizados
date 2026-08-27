@@ -84,7 +84,6 @@ export type {
   Employee,
   EmployeeCreateInput,
   EmployeeUpdateInput,
-  EmployeeDocument,
 } from './employee';
 
 export type {
@@ -116,3 +115,9 @@ export type {
   EmployeeSkillCreateInput,
   EmployeeSkillUpdateInput,
 } from './employee-skill';
+
+export type {
+  EmployeeDocument,
+  EmployeeDocumentCreateInput,
+  EmployeeDocumentUpdateInput,
+} from './employee-document';
