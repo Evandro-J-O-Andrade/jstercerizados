@@ -50,6 +50,52 @@ export class StockRepository extends SupabaseRepository {
     if (error) throw error;
     return data as Product;
   }
+
+  async updateProduct(tenantId: string, id: string, input: Partial<ProductCreateInput>): Promise<Product> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { data, error } = await this.supabase
+      .from('products')
+      .update(input)
+      .eq('tenant_id', tenantId)
+      .eq('id', id)
+      .select('*')
+      .single();
+    if (error) throw error;
+    return data as Product;
+  }
+
+  async deleteProduct(tenantId: string, id: string): Promise<void> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { error } = await this.supabase
+      .from('products')
+      .delete()
+      .eq('tenant_id', tenantId)
+      .eq('id', id);
+    if (error) throw error;
+  }
+
+  async updateMovement(tenantId: string, id: string, input: Partial<StockMovementCreateInput>): Promise<StockMovement> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { data, error } = await this.supabase
+      .from('stock_movements')
+      .update(input)
+      .eq('tenant_id', tenantId)
+      .eq('id', id)
+      .select('*')
+      .single();
+    if (error) throw error;
+    return data as StockMovement;
+  }
+
+  async deleteMovement(tenantId: string, id: string): Promise<void> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { error } = await this.supabase
+      .from('stock_movements')
+      .delete()
+      .eq('tenant_id', tenantId)
+      .eq('id', id);
+    if (error) throw error;
+  }
 }
 
 export const stockRepository = new StockRepository();

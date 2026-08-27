@@ -18,6 +18,7 @@ export interface SupportTicketCreateInput {
   title: string;
   description: string;
   priority?: string;
+  status?: string;
   assignee_person_id?: string | null;
   sla_due_at?: string | null;
 }

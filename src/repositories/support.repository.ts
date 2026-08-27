@@ -54,6 +54,16 @@ export class SupportRepository extends SupabaseRepository {
     return data as SupportTicket;
   }
 
+  async deleteTicket(id: string, tenantId: string): Promise<void> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { error } = await this.supabase
+      .from('support_tickets')
+      .delete()
+      .eq('id', id)
+      .eq('tenant_id', tenantId);
+    if (error) throw error;
+  }
+
   async findMessages(ticketId: string, tenantId: string): Promise<SupportTicketMessage[]> {
     if (!this.supabase) return [];
     const { data, error } = await this.supabase
