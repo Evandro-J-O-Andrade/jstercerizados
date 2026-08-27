@@ -87,7 +87,6 @@ export type {
   EmployeeDocument,
   EmployeeSkill,
   EmployeeLanguage,
-  EmployeeCourse,
 } from './employee';
 
 export type {
@@ -101,3 +100,9 @@ export type {
   EmployeeEducationCreateInput,
   EmployeeEducationUpdateInput,
 } from './employee-education';
+
+export type {
+  EmployeeCourse,
+  EmployeeCourseCreateInput,
+  EmployeeCourseUpdateInput,
+} from './employee-course';
