@@ -9,6 +9,8 @@ export interface Database {
           email: string;
           phone: string | null;
           document: string | null;
+          city: string | null;
+          state: string | null;
           status: 'active' | 'inactive' | 'pending';
           created_at: string;
           updated_at: string;
@@ -20,6 +22,8 @@ export interface Database {
           email: string;
           phone?: string | null;
           document?: string | null;
+          city?: string | null;
+          state?: string | null;
           status?: 'active' | 'inactive' | 'pending';
           created_at?: string;
           updated_at?: string;
@@ -31,6 +35,8 @@ export interface Database {
           email?: string;
           phone?: string | null;
           document?: string | null;
+          city?: string | null;
+          state?: string | null;
           status?: 'active' | 'inactive' | 'pending';
           created_at?: string;
           updated_at?: string;
@@ -523,6 +529,186 @@ export interface Database {
           candidate_id?: string;
           viewer_id?: string | null;
           viewed_at?: string;
+        };
+      };
+      talent_pool_memberships: {
+        Row: {
+          id: string;
+          candidate_id: string;
+          tenant_id: string;
+          status: 'active' | 'paused' | 'removed';
+          source:
+            | 'direct_signup'
+            | 'application_rejected'
+            | 'recruiter_invitation'
+            | 'import'
+            | 'campaign';
+          consent_status: 'granted' | 'revoked' | 'expired';
+          consented_at: string;
+          consent_source: string | null;
+          consent_version: string | null;
+          joined_at: string;
+          removed_at: string | null;
+          removal_reason: string | null;
+          metadata: Record<string, unknown>;
+          created_at: string;
+          created_by: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          candidate_id: string;
+          tenant_id: string;
+          status?: 'active' | 'paused' | 'removed';
+          source:
+            | 'direct_signup'
+            | 'application_rejected'
+            | 'recruiter_invitation'
+            | 'import'
+            | 'campaign';
+          consent_status?: 'granted' | 'revoked' | 'expired';
+          consented_at?: string;
+          consent_source?: string | null;
+          consent_version?: string | null;
+          joined_at?: string;
+          removed_at?: string | null;
+          removal_reason?: string | null;
+          metadata?: Record<string, unknown>;
+          created_at?: string;
+          created_by?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          candidate_id?: string;
+          tenant_id?: string;
+          status?: 'active' | 'paused' | 'removed';
+          source?:
+            | 'direct_signup'
+            | 'application_rejected'
+            | 'recruiter_invitation'
+            | 'import'
+            | 'campaign';
+          consent_status?: 'granted' | 'revoked' | 'expired';
+          consented_at?: string;
+          consent_source?: string | null;
+          consent_version?: string | null;
+          joined_at?: string;
+          removed_at?: string | null;
+          removal_reason?: string | null;
+          metadata?: Record<string, unknown>;
+          created_at?: string;
+          created_by?: string | null;
+          updated_at?: string;
+        };
+      };
+      candidate_preferences: {
+        Row: {
+          id: string;
+          candidate_id: string;
+          desired_roles: string[] | null;
+          desired_locations: string[] | null;
+          salary_min: number | null;
+          salary_max: number | null;
+          contract_types: string[] | null;
+          shifts: string[] | null;
+          work_modes: string[] | null;
+          max_distance_km: number | null;
+          available_from: string | null;
+          matching_enabled: boolean;
+          receive_match_alerts: boolean;
+          last_match_at: string | null;
+          last_match_version: string | null;
+          preferences_version: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          candidate_id: string;
+          desired_roles?: string[] | null;
+          desired_locations?: string[] | null;
+          salary_min?: number | null;
+          salary_max?: number | null;
+          contract_types?: string[] | null;
+          shifts?: string[] | null;
+          work_modes?: string[] | null;
+          max_distance_km?: number | null;
+          available_from?: string | null;
+          matching_enabled?: boolean;
+          receive_match_alerts?: boolean;
+          last_match_at?: string | null;
+          last_match_version?: string | null;
+          preferences_version?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          candidate_id?: string;
+          desired_roles?: string[] | null;
+          desired_locations?: string[] | null;
+          salary_min?: number | null;
+          salary_max?: number | null;
+          contract_types?: string[] | null;
+          shifts?: string[] | null;
+          work_modes?: string[] | null;
+          max_distance_km?: number | null;
+          available_from?: string | null;
+          matching_enabled?: boolean;
+          receive_match_alerts?: boolean;
+          last_match_at?: string | null;
+          last_match_version?: string | null;
+          preferences_version?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      job_matches: {
+        Row: {
+          id: string;
+          candidate_id: string;
+          job_id: string;
+          tenant_id: string;
+          score: number;
+          reasons: Record<string, unknown>;
+          algorithm_version: string | null;
+          is_eligible: boolean;
+          sent_notification: boolean;
+          invalidated_at: string | null;
+          invalidated_reason: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          candidate_id: string;
+          job_id: string;
+          tenant_id: string;
+          score: number;
+          reasons?: Record<string, unknown>;
+          algorithm_version?: string | null;
+          is_eligible?: boolean;
+          sent_notification?: boolean;
+          invalidated_at?: string | null;
+          invalidated_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          candidate_id?: string;
+          job_id?: string;
+          tenant_id?: string;
+          score?: number;
+          reasons?: Record<string, unknown>;
+          algorithm_version?: string | null;
+          is_eligible?: boolean;
+          sent_notification?: boolean;
+          invalidated_at?: string | null;
+          invalidated_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
       };
       skills: {
@@ -1682,6 +1868,14 @@ export interface Database {
       supplier_status: 'active' | 'inactive';
       partner_status: 'pending' | 'approved' | 'rejected';
       budget_status: 'new' | 'contacted' | 'proposal' | 'won' | 'lost';
+      talent_pool_status: 'active' | 'paused' | 'removed';
+      talent_pool_source:
+        | 'direct_signup'
+        | 'application_rejected'
+        | 'recruiter_invitation'
+        | 'import'
+        | 'campaign';
+      consent_status: 'granted' | 'revoked' | 'expired';
     };
   };
 }

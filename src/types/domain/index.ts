@@ -31,6 +31,9 @@ export type {
   CandidateDocument,
   CandidateSkill,
   CandidateProfileView,
+  TalentPoolMembership,
+  CandidatePreference,
+  JobMatch,
 } from './candidate';
 
 export type {

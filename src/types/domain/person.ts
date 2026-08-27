@@ -5,6 +5,8 @@ export interface Person {
   email: string;
   phone: string | null;
   document: string | null;
+  city: string | null;
+  state: string | null;
   status: 'active' | 'inactive' | 'pending';
   created_at: string;
   updated_at: string;

@@ -91,6 +91,7 @@ import CursosPage from '@/pages/dashboard/Cursos';
 import IdiomasPage from '@/pages/dashboard/Idiomas';
 import HabilidadesPage from '@/pages/dashboard/Habilidades';
 import DocumentosRhPage from '@/pages/dashboard/DocumentosRh';
+import BancoDeTalentosPage from '@/pages/dashboard/BancoDeTalentos';
 import ServicosPage from '@/pages/dashboard/Servicos';
 import FinanceiroPage from '@/pages/dashboard/Financeiro';
 import EstoquePage from '@/pages/dashboard/Estoque';
@@ -145,6 +146,7 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   IdiomasPage,
   HabilidadesPage,
   DocumentosRhPage,
+  BancoDeTalentosPage,
   ServicosPage,
   FinanceiroPage,
   EstoquePage,
@@ -372,6 +374,14 @@ function App() {
               element={
                 <PermissionGuard permission="employees.read">
                   <DocumentosRhPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="banco-de-talentos"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <BancoDeTalentosPage />
                 </PermissionGuard>
               }
             />
