@@ -143,7 +143,10 @@ describe('AUTH-02: AuthContext race condition', () => {
     const trackedSupabase = {
       auth: {
         getSession: vi.fn(() =>
-          Promise.resolve({ data: { session: null }, error: null }),
+          Promise.resolve({
+            data: { session: { user: { id: 'user-1' } } },
+            error: null,
+          }),
         ),
         onAuthStateChange: trackedOnAuthStateChange,
         signInWithPassword: vi.fn(),
