@@ -61,8 +61,9 @@ export default function Suporte() {
     const inProgress = tickets.filter((t) => t.status === 'in_progress').length;
     const resolved = tickets.filter((t) => t.status === 'resolved').length;
     const closed = tickets.filter((t) => t.status === 'closed').length;
-    return { total, open, inProgress, resolved, closed };
-  }, [tickets]);
+    const faqCount = faqs.length;
+    return { total, open, inProgress, resolved, closed, faqCount };
+  }, [tickets, faqs]);
 
   if (loading) {
     return (
@@ -79,7 +80,7 @@ export default function Suporte() {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -266,6 +267,6 @@ export default function Suporte() {
           </div>
         )}
       </Card>
-    </>
+    </div>
   );
 }
