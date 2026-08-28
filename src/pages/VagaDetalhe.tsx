@@ -9,7 +9,7 @@ import { JobApplicationForm } from '@/components/forms/JobApplicationForm';
 import { COMPANY } from '@/config';
 import { ArrowLeft, MapPin, DollarSign } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { jobsRepository } from '@/repositories/jobs.repository';
+import { getSupabaseClient } from '@/lib/supabase';
 
 const CONTRATO_LABELS: Record<string, string> = {
   clt: 'CLT',
@@ -24,11 +24,18 @@ export default function VagaDetalhe() {
     queryKey: ['job', slug],
     queryFn: async () => {
       if (!slug) return null;
-      const job = await jobsRepository.findById(
-        slug,
-        'd480af07-ab6b-4561-ac3a-2a0b0c1267b5',
-      );
-      return job ?? null;
+      const supabase = getSupabaseClient();
+      if (!supabase) return null;
+      const { data, error } = await supabase
+        .from('jobs')
+        .select(
+          'id, title, employment_type, location, salary, benefits, description, requirements',
+        )
+        .eq('id', slug)
+        .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
+        .maybeSingle();
+      if (error) throw error;
+      return data ?? null;
     },
     enabled: Boolean(slug),
   });
@@ -45,7 +52,7 @@ export default function VagaDetalhe() {
     if (!vaga?.benefits) return [];
     return vaga.benefits
       .split(';')
-      .map((item) => item.trim())
+      .map((item: string) => item.trim())
       .filter(Boolean);
   }, [vaga?.benefits]);
 
@@ -209,7 +216,7 @@ export default function VagaDetalhe() {
                     Benefícios
                   </h2>
                   <div className="flex flex-wrap gap-2">
-                    {beneficiosList.map((beneficio) => (
+                    {beneficiosList.map((beneficio: string) => (
                       <span
                         key={beneficio}
                         className="bg-primary/10 text-primary rounded-full px-4 py-2 text-sm font-medium"

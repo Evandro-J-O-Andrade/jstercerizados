@@ -10,7 +10,7 @@ import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { COMPANY } from '@/config';
 import { useQuery } from '@tanstack/react-query';
-import { jobsRepository } from '@/repositories/jobs.repository';
+import { getSupabaseClient } from '@/lib/supabase';
 import { ArrowRight } from 'lucide-react';
 
 export default function Vagas() {
@@ -20,10 +20,28 @@ export default function Vagas() {
 
   const { data: jobs = [] } = useQuery({
     queryKey: ['jobs', 'public'],
-    queryFn: () =>
-      jobsRepository.findAll('d480af07-ab6b-4561-ac3a-2a0b0c1267b5', {
-        status: 'published',
-      }),
+    queryFn: async () => {
+      const supabase = getSupabaseClient();
+      if (!supabase) return [];
+      const { data, error } = await supabase
+        .from('jobs')
+        .select(
+          'id, title, employment_type, location, salary, benefits, status',
+        )
+        .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return (data || []) as Array<{
+        id: string;
+        title: string;
+        employment_type: string;
+        location: string | null;
+        salary: number | null;
+        benefits: string | null;
+        status: string;
+      }>;
+    },
   });
 
   const filteredJobs = useMemo(() => {

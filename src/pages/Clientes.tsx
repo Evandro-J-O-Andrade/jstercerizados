@@ -9,7 +9,7 @@ import { Building2, Users, Phone } from 'lucide-react';
 import { useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/lib/supabase';
-import type { Company } from '@/types/domain';
+import type { CompanyPublic } from '@/types/domain/company';
 
 function useCompanies() {
   return useQuery({
@@ -19,11 +19,11 @@ function useCompanies() {
       if (!supabase) return [];
       const { data, error } = await supabase
         .from('companies')
-        .select('id, legal_name, trading_name, cnpj, status')
+        .select('id, legal_name, status')
         .order('created_at', { ascending: true })
         .limit(50);
       if (error) throw error;
-      return (data || []) as Company[];
+      return (data || []) as CompanyPublic[];
     },
   });
 }
@@ -39,8 +39,6 @@ function ClientCase({
   client: {
     id: string;
     legal_name: string;
-    trading_name: string | null;
-    cnpj: string | null;
     status: string;
   };
   index: number;
@@ -73,33 +71,23 @@ function ClientCase({
           className="absolute inset-0"
         >
           <div className="bg-primary/10 text-primary flex h-full w-full items-center justify-center text-6xl font-bold">
-            {(client.trading_name || client.legal_name).charAt(0).toUpperCase()}
+            {client.legal_name.charAt(0).toUpperCase()}
           </div>
         </motion.div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
         <div className="absolute right-0 bottom-0 left-0 p-6 sm:p-8">
           <h3 className="text-2xl font-bold text-white drop-shadow-md sm:text-3xl">
-            {client.trading_name || client.legal_name}
+            {client.legal_name}
           </h3>
-          {client.legal_name && (
-            <p className="mt-1 text-sm text-white/80">{client.legal_name}</p>
-          )}
         </div>
       </div>
 
       <div className={`${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
         <div className="max-w-xl">
           <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-            {client.trading_name || client.legal_name}
+            {client.legal_name}
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-4">
-            {client.cnpj && (
-              <span className="text-muted-foreground text-sm">
-                {client.cnpj}
-              </span>
-            )}
-          </div>
         </div>
       </div>
     </motion.div>

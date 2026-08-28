@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/lib/supabase';
-import type { Company } from '@/types/domain';
+import type { CompanyPublic } from '@/types/domain/company';
 
 function useCompanies() {
   return useQuery({
@@ -29,11 +29,11 @@ function useCompanies() {
       if (!supabase) return [];
       const { data, error } = await supabase
         .from('companies')
-        .select('id, legal_name, trading_name, cnpj, status')
+        .select('id, legal_name, status')
         .order('created_at', { ascending: true })
         .limit(50);
       if (error) throw error;
-      return (data || []) as Company[];
+      return (data || []) as CompanyPublic[];
     },
   });
 }
@@ -210,12 +210,10 @@ export default function Empresas() {
                         className="bg-card border-border hover:border-primary/30 flex flex-col items-center justify-center rounded-2xl border p-6 transition-all duration-300"
                       >
                         <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold">
-                          {(company.trading_name || company.legal_name)
-                            .charAt(0)
-                            .toUpperCase()}
+                          {company.legal_name.charAt(0).toUpperCase()}
                         </div>
                         <span className="text-foreground mt-3 text-center text-sm font-medium">
-                          {company.trading_name || company.legal_name}
+                          {company.legal_name}
                         </span>
                       </motion.div>
                     ))}

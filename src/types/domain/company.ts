@@ -28,6 +28,12 @@ export interface Company {
   created_by: string | null;
 }
 
+export interface CompanyPublic {
+  id: string;
+  legal_name: string;
+  status: CompanyStatus;
+}
+
 export interface CompanyCreateInput {
   legal_name: string;
   trading_name?: string | null;
