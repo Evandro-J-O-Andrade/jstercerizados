@@ -8,6 +8,10 @@ import type {
   WarehouseIssueCreateInput,
   WarehouseReturn,
   WarehouseReturnCreateInput,
+  WarehouseCustody,
+  WarehouseCustodyCreateInput,
+  EPI,
+  EPICreateInput,
 } from '@/types/domain/warehouse';
 
 export class WarehouseRepository extends SupabaseRepository {
@@ -45,7 +49,11 @@ export class WarehouseRepository extends SupabaseRepository {
     return data as Warehouse;
   }
 
-  async update(id: string, input: Partial<WarehouseCreateInput>, tenantId: string): Promise<Warehouse> {
+  async update(
+    id: string,
+    input: Partial<WarehouseCreateInput>,
+    tenantId: string,
+  ): Promise<Warehouse> {
     if (!this.supabase) throw new Error('Supabase não configurado');
     const { data, error } = await this.supabase
       .from('warehouses')
@@ -123,7 +131,9 @@ export class WarehouseRepository extends SupabaseRepository {
     return (data || []) as WarehouseReturn[];
   }
 
-  async createReturn(input: WarehouseReturnCreateInput): Promise<WarehouseReturn> {
+  async createReturn(
+    input: WarehouseReturnCreateInput,
+  ): Promise<WarehouseReturn> {
     if (!this.supabase) throw new Error('Supabase não configurado');
     const { data, error } = await this.supabase
       .from('warehouse_returns')
@@ -132,6 +142,52 @@ export class WarehouseRepository extends SupabaseRepository {
       .single();
     if (error) throw error;
     return data as WarehouseReturn;
+  }
+
+  async findCustodies(tenantId: string): Promise<WarehouseCustody[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('warehouse_custodies')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('assigned_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as WarehouseCustody[];
+  }
+
+  async createCustody(
+    input: WarehouseCustodyCreateInput,
+  ): Promise<WarehouseCustody> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { data, error } = await this.supabase
+      .from('warehouse_custodies')
+      .insert(input)
+      .select('*')
+      .single();
+    if (error) throw error;
+    return data as WarehouseCustody;
+  }
+
+  async findEPIs(tenantId: string): Promise<EPI[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('epis')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('issued_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as EPI[];
+  }
+
+  async createEPI(input: EPICreateInput): Promise<EPI> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { data, error } = await this.supabase
+      .from('epis')
+      .insert(input)
+      .select('*')
+      .single();
+    if (error) throw error;
+    return data as EPI;
   }
 }
 
