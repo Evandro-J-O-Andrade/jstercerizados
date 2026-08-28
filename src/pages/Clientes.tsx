@@ -71,7 +71,9 @@ function ClientCase({
           className="absolute inset-0"
         >
           <div className="bg-primary/10 text-primary flex h-full w-full items-center justify-center text-6xl font-bold">
-            {client.legal_name.charAt(0).toUpperCase()}
+            {client.legal_name
+              ? client.legal_name.charAt(0).toUpperCase()
+              : '?'}
           </div>
         </motion.div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />

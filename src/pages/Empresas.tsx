@@ -210,10 +210,12 @@ export default function Empresas() {
                         className="bg-card border-border hover:border-primary/30 flex flex-col items-center justify-center rounded-2xl border p-6 transition-all duration-300"
                       >
                         <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold">
-                          {company.legal_name.charAt(0).toUpperCase()}
+                          {company.legal_name
+                            ? company.legal_name.charAt(0).toUpperCase()
+                            : '?'}
                         </div>
                         <span className="text-foreground mt-3 text-center text-sm font-medium">
-                          {company.legal_name}
+                          {company.legal_name || '—'}
                         </span>
                       </motion.div>
                     ))}
