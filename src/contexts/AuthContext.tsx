@@ -339,6 +339,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ) {
         authLoadInFlightRef.current = true;
         try {
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          const { data: sessionData } = await supabase.auth.getSession();
+          if (!sessionData.session) {
+            throw new Error('Sessao invalida na recuperacao.');
+          }
           await loadAuthData(newSession.user.id);
           initialSessionProcessedRef.current = true;
         } catch (identityError) {
@@ -459,6 +464,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(data.user);
 
         try {
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          const { data: sessionData } = await supabase.auth.getSession();
+          if (!sessionData.session) {
+            throw new Error('Sessao invalida apos login.');
+          }
           await loadAuthData(data.user.id);
         } catch (identityError) {
           console.error('[AUTH:LOGIN] identity incomplete', identityError);
