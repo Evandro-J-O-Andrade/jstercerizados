@@ -4,6 +4,8 @@ import type {
   ServiceCreateInput,
   ServiceOrder,
   ServiceOrderCreateInput,
+  ServiceExecution,
+  ServiceExecutionCreateInput,
 } from '@/types/domain/service';
 
 export class ServicesRepository extends SupabaseRepository {
@@ -29,7 +31,11 @@ export class ServicesRepository extends SupabaseRepository {
     return data as Service;
   }
 
-  async updateService(tenantId: string, id: string, input: Partial<ServiceCreateInput>): Promise<Service> {
+  async updateService(
+    tenantId: string,
+    id: string,
+    input: Partial<ServiceCreateInput>,
+  ): Promise<Service> {
     if (!this.supabase) throw new Error('Supabase não configurado');
     const { data, error } = await this.supabase
       .from('services')
@@ -74,7 +80,11 @@ export class ServicesRepository extends SupabaseRepository {
     return data as ServiceOrder;
   }
 
-  async updateOrder(tenantId: string, id: string, input: Partial<ServiceOrderCreateInput>): Promise<ServiceOrder> {
+  async updateOrder(
+    tenantId: string,
+    id: string,
+    input: Partial<ServiceOrderCreateInput>,
+  ): Promise<ServiceOrder> {
     if (!this.supabase) throw new Error('Supabase não configurado');
     const { data, error } = await this.supabase
       .from('service_orders')
@@ -95,6 +105,30 @@ export class ServicesRepository extends SupabaseRepository {
       .eq('tenant_id', tenantId)
       .eq('id', id);
     if (error) throw error;
+  }
+
+  async findExecutions(tenantId: string): Promise<ServiceExecution[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('service_executions')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('started_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as ServiceExecution[];
+  }
+
+  async createExecution(
+    input: ServiceExecutionCreateInput,
+  ): Promise<ServiceExecution> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { data, error } = await this.supabase
+      .from('service_executions')
+      .insert(input)
+      .select('*')
+      .single();
+    if (error) throw error;
+    return data as ServiceExecution;
   }
 }
 
