@@ -23,14 +23,7 @@ export class EmployeesRepository extends SupabaseRepository {
 
     let query = this.supabase
       .from('employees')
-      .select(
-        `
-        *,
-        person:people(*),
-        company:companies(*),
-        manager:employees!manager_id(*)
-      `,
-      )
+      .select('*')
       .eq('tenant_id', tenantId)
       .order('hire_date', { ascending: false });
 
@@ -39,43 +32,26 @@ export class EmployeesRepository extends SupabaseRepository {
     if (filters?.companyId) query = query.eq('company_id', filters.companyId);
     if (filters?.search)
       query = query.or(
-        `job_title.ilike.%${filters.search}%,registration.ilike.%${filters.search}%,person.full_name.ilike.%${filters.search}%`,
+        `job_title.ilike.%${filters.search}%,registration.ilike.%${filters.search}%`,
       );
 
     const { data, error } = await query;
     if (error) throw error;
-    return (data || []).map((row) =>
-      mapEmployee(row as EmployeeRow, {
-        person: row.person,
-        company: row.company,
-        manager: row.manager,
-      }),
-    );
+    return (data || []).map((row) => mapEmployee(row as EmployeeRow));
   }
 
   async findById(id: string, tenantId: string): Promise<Employee | null> {
     if (!this.supabase) return null;
     const { data, error } = await this.supabase
       .from('employees')
-      .select(
-        `
-        *,
-        person:people(*),
-        company:companies(*),
-        manager:employees!manager_id(*)
-      `,
-      )
+      .select('*')
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .maybeSingle();
 
     if (error) throw error;
     if (!data) return null;
-    return mapEmployee(data as EmployeeRow, {
-      person: data.person,
-      company: data.company,
-      manager: data.manager,
-    });
+    return mapEmployee(data as EmployeeRow);
   }
 
   async create(input: EmployeeCreateInput): Promise<Employee | null> {

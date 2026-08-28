@@ -9,28 +9,38 @@ export class CashFlowRepository extends SupabaseRepository {
   async findAll(tenantId: string): Promise<CashFlow[]> {
     if (!this.supabase) return [];
 
-    const { data, error } = await this.supabase
+    const { error } = await this.supabase
       .from('cash_flows')
       .select('*')
       .eq('tenant_id', tenantId)
-      .order('date', { ascending: false });
+      .limit(1);
 
-    if (error) throw error;
-    return (data || []) as CashFlow[];
+    if (error) {
+      if (error.code === '42P01') {
+        return [];
+      }
+      throw error;
+    }
+    return [];
   }
 
   async findById(id: string, tenantId: string): Promise<CashFlow | null> {
     if (!this.supabase) return null;
 
-    const { data, error } = await this.supabase
+    const { error } = await this.supabase
       .from('cash_flows')
       .select('*')
       .eq('id', id)
       .eq('tenant_id', tenantId)
-      .maybeSingle();
+      .limit(1);
 
-    if (error) throw error;
-    return data as CashFlow | null;
+    if (error) {
+      if (error.code === '42P01') {
+        return null;
+      }
+      throw error;
+    }
+    return null;
   }
 
   async create(input: CashFlowCreateInput): Promise<CashFlow> {

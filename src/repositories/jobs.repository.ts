@@ -10,18 +10,12 @@ export class JobsRepository extends SupabaseRepository {
     if (!this.supabase) return [];
     let query = this.supabase
       .from('jobs')
-      .select(
-        `
-        *,
-        company_relationship:company_relationships(*)
-      `,
-      )
+      .select('*')
       .eq('tenant_id', tenantId)
       .order('created_at', { ascending: false });
 
     if (filters?.status) query = query.eq('status', filters.status);
-    if (filters?.companyId)
-      query = query.eq('company_relationship_id', filters.companyId);
+    if (filters?.companyId) query = query.eq('company_id', filters.companyId);
     if (filters?.search) query = query.ilike('title', `%${filters.search}%`);
 
     const { data, error } = await query;
@@ -33,12 +27,7 @@ export class JobsRepository extends SupabaseRepository {
     if (!this.supabase) return null;
     const { data, error } = await this.supabase
       .from('jobs')
-      .select(
-        `
-        *,
-        company_relationship:company_relationships(*)
-      `,
-      )
+      .select('*')
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .maybeSingle();
