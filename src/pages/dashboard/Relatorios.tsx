@@ -12,6 +12,8 @@ import {
   Package,
   Headphones,
   CircleDollarSign,
+  Wrench,
+  UserCog,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/fallback';
@@ -21,6 +23,9 @@ import { companiesRepository } from '@/repositories/companies.repository';
 import { accountsPayableRepository } from '@/repositories/accounts-payable.repository';
 import { accountsReceivableRepository } from '@/repositories/accounts-receivable.repository';
 import { cashFlowRepository } from '@/repositories/cash-flow.repository';
+import { stockRepository } from '@/repositories/stock.repository';
+import { servicesRepository } from '@/repositories/services.repository';
+import { supportRepository } from '@/repositories/support.repository';
 import type { Employee } from '@/types/domain/employee';
 import type { Job } from '@/types/domain/job';
 import type { Company } from '@/types/domain/company';
@@ -47,6 +52,15 @@ export default function RelatoriosPage() {
   const [payables, setPayables] = useState<AccountPayable[]>([]);
   const [receivables, setReceivables] = useState<AccountReceivable[]>([]);
   const [cashFlows, setCashFlows] = useState<CashFlow[]>([]);
+  const [products, setProducts] = useState<
+    { id: string; name: string; category: string | null }[]
+  >([]);
+  const [services, setServices] = useState<
+    { id: string; name: string; active: boolean }[]
+  >([]);
+  const [tickets, setTickets] = useState<
+    { id: string; status: string; priority: string }[]
+  >([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,14 +73,20 @@ export default function RelatoriosPage() {
       accountsPayableRepository.findAll(currentTenantId),
       accountsReceivableRepository.findAll(currentTenantId),
       cashFlowRepository.findAll(currentTenantId),
+      stockRepository.findProducts(currentTenantId),
+      servicesRepository.findServices(currentTenantId),
+      supportRepository.findTickets(currentTenantId),
     ])
-      .then(([emp, jobsData, comp, pay, rec, cf]) => {
+      .then(([emp, jobsData, comp, pay, rec, cf, stock, svc, supp]) => {
         setEmployees(emp);
         setJobs(jobsData);
         setCompanies(comp);
         setPayables(pay);
         setReceivables(rec);
         setCashFlows(cf);
+        setProducts(stock);
+        setServices(svc);
+        setTickets(supp);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -77,7 +97,10 @@ export default function RelatoriosPage() {
 
   const summaries = useMemo<ModuleSummary[]>(() => {
     const totalPayables = payables.reduce((sum, item) => sum + item.amount, 0);
-    const totalReceivables = receivables.reduce((sum, item) => sum + item.amount, 0);
+    const totalReceivables = receivables.reduce(
+      (sum, item) => sum + item.amount,
+      0,
+    );
 
     return [
       {
@@ -147,7 +170,7 @@ export default function RelatoriosPage() {
         id: 'estoque',
         title: 'Estoque',
         icon: Package,
-        total: 0,
+        total: products.length,
         color: 'text-amber-700',
         bg: 'bg-amber-50',
         route: '/dashboard/estoque',
@@ -155,7 +178,7 @@ export default function RelatoriosPage() {
       {
         id: 'almoxarifado',
         title: 'Almoxarifado',
-        icon: Package,
+        icon: Wrench,
         total: 0,
         color: 'text-teal-700',
         bg: 'bg-teal-50',
@@ -164,8 +187,8 @@ export default function RelatoriosPage() {
       {
         id: 'servicos',
         title: 'Serviços',
-        icon: Briefcase,
-        total: 0,
+        icon: UserCog,
+        total: services.length,
         color: 'text-cyan-700',
         bg: 'bg-cyan-50',
         route: '/dashboard/servicos',
@@ -174,27 +197,65 @@ export default function RelatoriosPage() {
         id: 'suporte',
         title: 'Suporte',
         icon: Headphones,
-        total: 0,
+        total: tickets.length,
         color: 'text-pink-700',
         bg: 'bg-pink-50',
         route: '/dashboard/suporte',
       },
     ];
-  }, [employees, jobs, companies, payables, receivables]);
+  }, [
+    employees,
+    jobs,
+    companies,
+    payables,
+    receivables,
+    products,
+    services,
+    tickets,
+  ]);
 
   const financeKpis = useMemo(() => {
     const totalPayables = payables.reduce((sum, item) => sum + item.amount, 0);
-    const totalReceivables = receivables.reduce((sum, item) => sum + item.amount, 0);
-    const totalIncome = cashFlows.filter((item) => item.type === 'income').reduce((sum, item) => sum + item.amount, 0);
-    const totalExpense = cashFlows.filter((item) => item.type === 'expense').reduce((sum, item) => sum + item.amount, 0);
+    const totalReceivables = receivables.reduce(
+      (sum, item) => sum + item.amount,
+      0,
+    );
+    const totalIncome = cashFlows
+      .filter((item) => item.type === 'income')
+      .reduce((sum, item) => sum + item.amount, 0);
+    const totalExpense = cashFlows
+      .filter((item) => item.type === 'expense')
+      .reduce((sum, item) => sum + item.amount, 0);
     const balance = totalIncome - totalExpense;
-    return { totalPayables, totalReceivables, totalIncome, totalExpense, balance };
+    return {
+      totalPayables,
+      totalReceivables,
+      totalIncome,
+      totalExpense,
+      balance,
+    };
   }, [payables, receivables, cashFlows]);
+
+  const operationalKpis = useMemo(() => {
+    const activeEmployees = employees.filter(
+      (item) => item.status === 'active',
+    ).length;
+    const publishedJobs = jobs.filter(
+      (item) => item.status === 'published',
+    ).length;
+    const activeServices = services.filter((item) => item.active).length;
+    const openTickets = tickets.filter(
+      (item) => item.status === 'open' || item.status === 'in_progress',
+    ).length;
+    return { activeEmployees, publishedJobs, activeServices, openTickets };
+  }, [employees, jobs, services, tickets]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-sm text-muted-foreground">Carregando relatório geral...</p>
+        <p className="text-muted-foreground text-sm">
+          Carregando relatório geral...
+        </p>
       </div>
     );
   }
@@ -202,8 +263,10 @@ export default function RelatoriosPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-foreground">Relatório Geral</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-foreground text-xl font-semibold">
+          Relatório Geral
+        </h1>
+        <p className="text-muted-foreground text-sm">
           Visão consolidada de todos os módulos da operação.
         </p>
       </div>
@@ -223,8 +286,10 @@ export default function RelatoriosPage() {
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">{module.title}</p>
-                  <p className="text-lg font-semibold text-foreground">
+                  <p className="text-muted-foreground text-xs">
+                    {module.title}
+                  </p>
+                  <p className="text-foreground text-lg font-semibold">
                     {module.id === 'financeiro'
                       ? formatCurrency(module.total)
                       : module.total}
@@ -238,49 +303,91 @@ export default function RelatoriosPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-4">
-          <h3 className="mb-4 text-sm font-semibold text-foreground">Financeiro</h3>
-      {financeKpis.totalPayables === 0 && financeKpis.totalReceivables === 0 && financeKpis.totalIncome === 0 && financeKpis.totalExpense === 0 ? (
-        <EmptyState
-          title="Sem dados financeiros"
-          description="Quando houver lançamentos, os indicadores aparecerão aqui."
-        />
-      ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-lg border border-border p-3">
-            <p className="text-xs text-muted-foreground">Contas a pagar</p>
-            <p className="text-sm font-semibold text-red-700">{formatCurrency(financeKpis.totalPayables)}</p>
-          </div>
-          <div className="rounded-lg border border-border p-3">
-            <p className="text-xs text-muted-foreground">Contas a receber</p>
-            <p className="text-sm font-semibold text-green-700">{formatCurrency(financeKpis.totalReceivables)}</p>
-          </div>
-          <div className="rounded-lg border border-border p-3">
-            <p className="text-xs text-muted-foreground">Entradas</p>
-            <p className="text-sm font-semibold text-green-700">{formatCurrency(financeKpis.totalIncome)}</p>
-          </div>
-          <div className="rounded-lg border border-border p-3">
-            <p className="text-xs text-muted-foreground">Saídas</p>
-            <p className="text-sm font-semibold text-red-700">{formatCurrency(financeKpis.totalExpense)}</p>
-          </div>
-          <div className="rounded-lg border border-border p-3 sm:col-span-2">
-            <p className="text-xs text-muted-foreground">Saldo</p>
-            <p className={`text-sm font-semibold ${financeKpis.balance >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-              {formatCurrency(financeKpis.balance)}
-            </p>
-          </div>
-        </div>
-      )}
+          <h3 className="text-foreground mb-4 text-sm font-semibold">
+            Financeiro
+          </h3>
+          {financeKpis.totalPayables === 0 &&
+          financeKpis.totalReceivables === 0 &&
+          financeKpis.totalIncome === 0 &&
+          financeKpis.totalExpense === 0 ? (
+            <EmptyState
+              title="Sem dados financeiros"
+              description="Quando houver lançamentos, os indicadores aparecerão aqui."
+            />
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="border-border rounded-lg border p-3">
+                <p className="text-muted-foreground text-xs">Contas a pagar</p>
+                <p className="text-sm font-semibold text-red-700">
+                  {formatCurrency(financeKpis.totalPayables)}
+                </p>
+              </div>
+              <div className="border-border rounded-lg border p-3">
+                <p className="text-muted-foreground text-xs">
+                  Contas a receber
+                </p>
+                <p className="text-sm font-semibold text-green-700">
+                  {formatCurrency(financeKpis.totalReceivables)}
+                </p>
+              </div>
+              <div className="border-border rounded-lg border p-3">
+                <p className="text-muted-foreground text-xs">Entradas</p>
+                <p className="text-sm font-semibold text-green-700">
+                  {formatCurrency(financeKpis.totalIncome)}
+                </p>
+              </div>
+              <div className="border-border rounded-lg border p-3">
+                <p className="text-muted-foreground text-xs">Saídas</p>
+                <p className="text-sm font-semibold text-red-700">
+                  {formatCurrency(financeKpis.totalExpense)}
+                </p>
+              </div>
+              <div className="border-border rounded-lg border p-3 sm:col-span-2">
+                <p className="text-muted-foreground text-xs">Saldo</p>
+                <p
+                  className={`text-sm font-semibold ${financeKpis.balance >= 0 ? 'text-green-700' : 'text-red-700'}`}
+                >
+                  {formatCurrency(financeKpis.balance)}
+                </p>
+              </div>
+            </div>
+          )}
         </Card>
 
         <Card className="p-4">
-          <h3 className="mb-4 text-sm font-semibold text-foreground">Visão rápida</h3>
-          <EmptyState
-            title="Relatórios específicos"
-            description="Acesse cada módulo para ver seus relatórios e indicadores detalhados."
-          />
+          <h3 className="text-foreground mb-4 text-sm font-semibold">
+            Operacional
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="border-border rounded-lg border p-3">
+              <p className="text-muted-foreground text-xs">
+                Funcionários ativos
+              </p>
+              <p className="text-foreground text-sm font-semibold">
+                {operationalKpis.activeEmployees}
+              </p>
+            </div>
+            <div className="border-border rounded-lg border p-3">
+              <p className="text-muted-foreground text-xs">Vagas publicadas</p>
+              <p className="text-foreground text-sm font-semibold">
+                {operationalKpis.publishedJobs}
+              </p>
+            </div>
+            <div className="border-border rounded-lg border p-3">
+              <p className="text-muted-foreground text-xs">Serviços ativos</p>
+              <p className="text-foreground text-sm font-semibold">
+                {operationalKpis.activeServices}
+              </p>
+            </div>
+            <div className="border-border rounded-lg border p-3">
+              <p className="text-muted-foreground text-xs">Chamados abertos</p>
+              <p className="text-foreground text-sm font-semibold">
+                {operationalKpis.openTickets}
+              </p>
+            </div>
+          </div>
         </Card>
       </div>
     </div>
   );
 }
-
