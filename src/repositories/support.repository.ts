@@ -4,6 +4,8 @@ import type {
   SupportTicketCreateInput,
   SupportTicketMessage,
   SupportTicketMessageCreateInput,
+  SupportFAQ,
+  SupportFAQCreateInput,
 } from '@/types/domain/support';
 
 export class SupportRepository extends SupabaseRepository {
@@ -18,7 +20,10 @@ export class SupportRepository extends SupabaseRepository {
     return (data || []) as SupportTicket[];
   }
 
-  async findTicketById(id: string, tenantId: string): Promise<SupportTicket | null> {
+  async findTicketById(
+    id: string,
+    tenantId: string,
+  ): Promise<SupportTicket | null> {
     if (!this.supabase) return null;
     const { data, error } = await this.supabase
       .from('support_tickets')
@@ -41,7 +46,11 @@ export class SupportRepository extends SupabaseRepository {
     return data as SupportTicket;
   }
 
-  async updateTicket(id: string, input: Partial<SupportTicketCreateInput>, tenantId: string): Promise<SupportTicket> {
+  async updateTicket(
+    id: string,
+    input: Partial<SupportTicketCreateInput>,
+    tenantId: string,
+  ): Promise<SupportTicket> {
     if (!this.supabase) throw new Error('Supabase não configurado');
     const { data, error } = await this.supabase
       .from('support_tickets')
@@ -64,7 +73,10 @@ export class SupportRepository extends SupabaseRepository {
     if (error) throw error;
   }
 
-  async findMessages(ticketId: string, tenantId: string): Promise<SupportTicketMessage[]> {
+  async findMessages(
+    ticketId: string,
+    tenantId: string,
+  ): Promise<SupportTicketMessage[]> {
     if (!this.supabase) return [];
     const { data, error } = await this.supabase
       .from('support_ticket_messages')
@@ -76,7 +88,9 @@ export class SupportRepository extends SupabaseRepository {
     return (data || []) as SupportTicketMessage[];
   }
 
-  async createMessage(input: SupportTicketMessageCreateInput): Promise<SupportTicketMessage> {
+  async createMessage(
+    input: SupportTicketMessageCreateInput,
+  ): Promise<SupportTicketMessage> {
     if (!this.supabase) throw new Error('Supabase não configurado');
     const { data, error } = await this.supabase
       .from('support_ticket_messages')
@@ -85,6 +99,28 @@ export class SupportRepository extends SupabaseRepository {
       .single();
     if (error) throw error;
     return data as SupportTicketMessage;
+  }
+
+  async findFAQs(tenantId: string): Promise<SupportFAQ[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('support_faqs')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('sort_order', { ascending: true });
+    if (error) throw error;
+    return (data || []) as SupportFAQ[];
+  }
+
+  async createFAQ(input: SupportFAQCreateInput): Promise<SupportFAQ> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { data, error } = await this.supabase
+      .from('support_faqs')
+      .insert(input)
+      .select('*')
+      .single();
+    if (error) throw error;
+    return data as SupportFAQ;
   }
 }
 
