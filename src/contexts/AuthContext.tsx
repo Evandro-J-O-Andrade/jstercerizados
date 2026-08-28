@@ -338,9 +338,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         !authLoadInFlightRef.current
       ) {
         authLoadInFlightRef.current = true;
-        await loadAuthData(newSession.user.id);
-        initialSessionProcessedRef.current = true;
-        authLoadInFlightRef.current = false;
+        try {
+          await loadAuthData(newSession.user.id);
+          initialSessionProcessedRef.current = true;
+        } catch (identityError) {
+          console.error(
+            '[AUTH] identity incomplete on session restore',
+            identityError,
+          );
+          initialSessionProcessedRef.current = false;
+          await supabase.auth.signOut();
+          if (isMountedRef.current) {
+            setPerson(null);
+            setTenantMemberships([]);
+            setCurrentTenantId(null);
+            setRoles([]);
+            setPermissions([]);
+            setRoleAssignments([]);
+            setFirstLoginState(null);
+            setLegalAcceptances([]);
+            setIsAdminMaster(false);
+            setSession(null);
+            setUser(null);
+          }
+        } finally {
+          authLoadInFlightRef.current = false;
+        }
       } else if (
         authEvent === 'SIGNED_OUT' ||
         authEvent === 'SESSION_EXPIRED' ||

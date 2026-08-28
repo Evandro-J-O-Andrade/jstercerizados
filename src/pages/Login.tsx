@@ -316,6 +316,7 @@ export default function Login() {
                 <Input
                   label="E-mail"
                   type="email"
+                  autoComplete="email"
                   placeholder={flowConfig[accessFlow].placeholderEmail}
                   error={errors.email?.message}
                   {...register('email')}
