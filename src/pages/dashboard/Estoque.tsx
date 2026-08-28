@@ -11,7 +11,7 @@ import { stockRepository } from '@/repositories/stock.repository';
 import type { Product, StockMovement } from '@/types/domain/stock';
 import { useAuth } from '@/contexts/AuthContext';
 
-type Tab = 'products' | 'movements';
+type Tab = 'products' | 'movements' | 'categories';
 
 export default function Estoque() {
   const { currentTenantId } = useAuth();
@@ -29,10 +29,16 @@ export default function Estoque() {
     Promise.all([
       stockRepository.findProducts(currentTenantId),
       stockRepository.findMovements(currentTenantId),
-    ]).then(([p, m]) => {
-      setProducts(p);
-      setMovements(m);
-    }).catch((err) => setError(err instanceof Error ? err.message : 'Erro ao carregar estoque'))
+    ])
+      .then(([p, m]) => {
+        setProducts(p);
+        setMovements(m);
+      })
+      .catch((err) =>
+        setError(
+          err instanceof Error ? err.message : 'Erro ao carregar estoque',
+        ),
+      )
       .finally(() => setLoading(false));
   }, [currentTenantId]);
 
@@ -40,9 +46,7 @@ export default function Estoque() {
     let data = products;
     if (search) {
       const term = search.toLowerCase();
-      data = data.filter((p) =>
-        p.name.toLowerCase().includes(term)
-      );
+      data = data.filter((p) => p.name.toLowerCase().includes(term));
     }
     return data;
   }, [products, search]);
@@ -56,23 +60,30 @@ export default function Estoque() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-sm text-muted-foreground">Carregando estoque...</p>
+        <p className="text-muted-foreground text-sm">Carregando estoque...</p>
       </div>
     );
   }
 
   if (error) {
-    return <ErrorState message={error} onRetry={() => window.location.reload()} />;
+    return (
+      <ErrorState message={error} onRetry={() => window.location.reload()} />
+    );
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Estoque</h1>
-          <p className="text-sm text-muted-foreground">Produtos, materiais e movimentações.</p>
+          <h1 className="text-foreground text-xl font-semibold">Estoque</h1>
+          <p className="text-muted-foreground text-sm">
+            Produtos, materiais e movimentações.
+          </p>
         </div>
-        <Button variant="secondary" onClick={() => alert('Exportar relatório de estoque...')}>
+        <Button
+          variant="secondary"
+          onClick={() => alert('Exportar relatório de estoque...')}
+        >
           <Download className="mr-2 h-4 w-4" />
           Exportar
         </Button>
@@ -80,26 +91,31 @@ export default function Estoque() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Produtos</p>
-          <p className="text-lg font-semibold text-foreground">{kpis.totalProducts}</p>
+          <p className="text-muted-foreground text-xs">Produtos</p>
+          <p className="text-foreground text-lg font-semibold">
+            {kpis.totalProducts}
+          </p>
         </Card>
         <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Movimentações</p>
-          <p className="text-lg font-semibold text-foreground">{kpis.totalMovements}</p>
+          <p className="text-muted-foreground text-xs">Movimentações</p>
+          <p className="text-foreground text-lg font-semibold">
+            {kpis.totalMovements}
+          </p>
         </Card>
       </div>
 
-      <div className="flex gap-2 border-b border-border overflow-x-auto">
+      <div className="border-border flex gap-2 overflow-x-auto border-b">
         {[
           { key: 'products', label: 'Produtos' },
           { key: 'movements', label: 'Movimentações' },
+          { key: 'categories', label: 'Categorias' },
         ].map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key as Tab)}
-            className={`whitespace-nowrap px-4 py-2 text-sm font-medium transition-colors ${
+            className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
               activeTab === tab.key
-                ? 'border-b-2 border-primary text-primary'
+                ? 'border-primary text-primary border-b-2'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -116,8 +132,8 @@ export default function Estoque() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="flex flex-1 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
+            <div className="border-border bg-background flex flex-1 items-center gap-2 rounded-lg border px-3 py-2">
+              <Search className="text-muted-foreground h-4 w-4" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -139,24 +155,44 @@ export default function Estoque() {
               onAction={() => alert('Formulário de novo produto')}
             />
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-border">
+            <div className="border-border overflow-x-auto rounded-xl border">
               <table className="min-w-full text-left text-sm">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Nome</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Unidade</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Categoria</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Status</th>
+                    <th className="text-muted-foreground px-4 py-3 font-medium">
+                      Nome
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 font-medium">
+                      Unidade
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 font-medium">
+                      Categoria
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 font-medium">
+                      Status
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-border divide-y">
                   {filteredProducts.map((product) => (
                     <tr key={product.id} className="hover:bg-muted">
-                      <td className="px-4 py-3 text-foreground">{product.name}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{product.unit ?? '-'}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{product.category ?? '-'}</td>
+                      <td className="text-foreground px-4 py-3">
+                        {product.name}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3">
+                        {product.unit ?? '-'}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3">
+                        {product.category ?? '-'}
+                      </td>
                       <td className="px-4 py-3">
-                        <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>
+                        <Badge
+                          variant={
+                            product.status === 'active'
+                              ? 'success'
+                              : 'secondary'
+                          }
+                        >
                           {product.status === 'active' ? 'Ativo' : 'Inativo'}
                         </Badge>
                       </td>
@@ -191,36 +227,100 @@ export default function Estoque() {
               onAction={() => alert('Formulário de nova movimentação')}
             />
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-border">
+            <div className="border-border overflow-x-auto rounded-xl border">
               <table className="min-w-full text-left text-sm">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Tipo</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Quantidade</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Observação</th>
-                    <th className="px-4 py-3 font-medium text-muted-foreground">Data</th>
+                    <th className="text-muted-foreground px-4 py-3 font-medium">
+                      Tipo
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 font-medium">
+                      Quantidade
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 font-medium">
+                      Observação
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 font-medium">
+                      Data
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-border divide-y">
                   {movements.map((movement) => (
                     <tr key={movement.id} className="hover:bg-muted">
                       <td className="px-4 py-3">
-                        <Badge variant={
-                          movement.movement_type === 'entry' ? 'success' :
-                          movement.movement_type === 'exit' ? 'danger' : 'secondary'
-                        }>
-                          {movement.movement_type === 'entry' ? 'Entrada' : movement.movement_type === 'exit' ? 'Saída' : 'Ajuste'}
+                        <Badge
+                          variant={
+                            movement.movement_type === 'entry'
+                              ? 'success'
+                              : movement.movement_type === 'exit'
+                                ? 'danger'
+                                : 'secondary'
+                          }
+                        >
+                          {movement.movement_type === 'entry'
+                            ? 'Entrada'
+                            : movement.movement_type === 'exit'
+                              ? 'Saída'
+                              : 'Ajuste'}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 text-foreground">{movement.quantity}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{movement.notes ?? '-'}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{new Date(movement.created_at).toLocaleDateString('pt-BR')}</td>
+                      <td className="text-foreground px-4 py-3">
+                        {movement.quantity}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3">
+                        {movement.notes ?? '-'}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3">
+                        {new Date(movement.created_at).toLocaleDateString(
+                          'pt-BR',
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
+        </motion.div>
+      )}
+
+      {activeTab === 'categories' && (
+        <motion.div
+          className="space-y-4"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Card className="p-4">
+            <h3 className="text-foreground mb-3 text-sm font-semibold">
+              Categorias de produtos
+            </h3>
+            {products.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Nenhuma categoria encontrada.
+              </p>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from(
+                  new Set(products.map((p) => p.category).filter(Boolean)),
+                ).map((category) => (
+                  <div
+                    key={category}
+                    className="border-border rounded-xl border p-4"
+                  >
+                    <p className="text-foreground text-sm font-medium">
+                      {category}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {products.filter((p) => p.category === category).length}{' '}
+                      produto(s)
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
         </motion.div>
       )}
     </div>
