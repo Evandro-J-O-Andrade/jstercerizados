@@ -15,12 +15,6 @@ import {
   Calculator,
   Eye,
   Download,
-  FolderOpen,
-  Receipt,
-  Banknote,
-  PieChart,
-  Landmark,
-  Split,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -1088,6 +1082,313 @@ export default function FinanceiroPage() {
           </Card>
         </motion.div>
       )}
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-foreground text-sm font-semibold">
+              Categorias
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => alert('Abrir gestão de categorias')}
+            >
+              Gerenciar
+            </Button>
+          </div>
+          {categories.length === 0 ? (
+            <p className="text-muted-foreground text-xs">
+              Nenhuma categoria cadastrada.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {categories.slice(0, 5).map((item) => (
+                <div
+                  key={item.id}
+                  className="border-border flex items-center justify-between rounded-lg border p-2"
+                >
+                  <div>
+                    <p className="text-foreground text-sm font-medium">
+                      {item.name}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {item.type === 'revenue'
+                        ? 'Receita'
+                        : item.type === 'expense'
+                          ? 'Despesa'
+                          : 'Transferência'}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    {item.status === 'active' ? 'Ativo' : 'Inativo'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-foreground text-sm font-semibold">
+              Centros de custo
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => alert('Abrir gestão de centros de custo')}
+            >
+              Gerenciar
+            </Button>
+          </div>
+          {costCenters.length === 0 ? (
+            <p className="text-muted-foreground text-xs">
+              Nenhum centro de custo cadastrado.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {costCenters.slice(0, 5).map((item) => (
+                <div
+                  key={item.id}
+                  className="border-border flex items-center justify-between rounded-lg border p-2"
+                >
+                  <div>
+                    <p className="text-foreground text-sm font-medium">
+                      {item.name}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      Código: {item.code || '—'}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    {item.status === 'active' ? 'Ativo' : 'Inativo'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-foreground text-sm font-semibold">
+              Notas fiscais
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => alert('Abrir gestão de notas fiscais')}
+            >
+              Gerenciar
+            </Button>
+          </div>
+          {invoices.length === 0 ? (
+            <p className="text-muted-foreground text-xs">
+              Nenhuma nota fiscal cadastrada.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {invoices.slice(0, 5).map((item) => (
+                <div
+                  key={item.id}
+                  className="border-border flex items-center justify-between rounded-lg border p-2"
+                >
+                  <div>
+                    <p className="text-foreground text-sm font-medium">
+                      {item.number}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      Vencimento: {formatDate(item.due_date)}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    {formatCurrency(item.amount)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-foreground text-sm font-semibold">
+              Transações financeiras
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => alert('Abrir gestão de transações')}
+            >
+              Gerenciar
+            </Button>
+          </div>
+          {transactions.length === 0 ? (
+            <p className="text-muted-foreground text-xs">
+              Nenhuma transação registrada.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {transactions.slice(0, 5).map((item) => (
+                <div
+                  key={item.id}
+                  className="border-border flex items-center justify-between rounded-lg border p-2"
+                >
+                  <div>
+                    <p className="text-foreground text-sm font-medium">
+                      {item.description}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {formatDate(item.competence_date)} •{' '}
+                      {item.type === 'credit'
+                        ? 'Crédito'
+                        : item.type === 'debit'
+                          ? 'Débito'
+                          : 'Transferência'}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    {formatCurrency(item.amount)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-foreground text-sm font-semibold">
+              Conciliação bancária
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => alert('Abrir gestão de conciliação')}
+            >
+              Gerenciar
+            </Button>
+          </div>
+          {reconciliations.length === 0 ? (
+            <p className="text-muted-foreground text-xs">
+              Nenhuma conciliação registrada.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {reconciliations.slice(0, 5).map((item) => (
+                <div
+                  key={item.id}
+                  className="border-border flex items-center justify-between rounded-lg border p-2"
+                >
+                  <div>
+                    <p className="text-foreground text-sm font-medium">
+                      {item.bank_account}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {formatDate(item.statement_date)} • Diferença:{' '}
+                      {formatCurrency(item.difference)}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    {item.status === 'completed'
+                      ? 'Concluída'
+                      : item.status === 'pending'
+                        ? 'Pendente'
+                        : 'Divergência'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Card className="p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-foreground text-sm font-semibold">
+              Parcelamentos
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => alert('Abrir gestão de parcelamentos')}
+            >
+              Gerenciar
+            </Button>
+          </div>
+          {installments.length === 0 ? (
+            <p className="text-muted-foreground text-xs">
+              Nenhum parcelamento registrado.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {installments.slice(0, 5).map((item) => (
+                <div
+                  key={item.id}
+                  className="border-border flex items-center justify-between rounded-lg border p-2"
+                >
+                  <div>
+                    <p className="text-foreground text-sm font-medium">
+                      Parcela {item.installment_number}/
+                      {item.total_installments}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      Vencimento: {formatDate(item.due_date)}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    {formatCurrency(item.amount)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      </div>
+
+      <Card className="p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-foreground text-sm font-semibold">
+            Contas financeiras
+          </h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => alert('Abrir gestão de contas financeiras')}
+          >
+            Gerenciar
+          </Button>
+        </div>
+        {financialAccounts.length === 0 ? (
+          <p className="text-muted-foreground text-xs">
+            Nenhuma conta financeira cadastrada.
+          </p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {financialAccounts.slice(0, 6).map((item) => (
+              <div
+                key={item.id}
+                className="border-border rounded-lg border p-3"
+              >
+                <p className="text-foreground text-sm font-medium">
+                  {item.name}
+                </p>
+                <p className="text-muted-foreground text-xs">
+                  {item.bank || 'Sem banco'} •{' '}
+                  {item.account_type === 'checking'
+                    ? 'Corrente'
+                    : item.account_type === 'savings'
+                      ? 'Poupança'
+                      : 'Investimento'}
+                </p>
+                <span className="text-muted-foreground text-xs">
+                  {item.status === 'active' ? 'Ativa' : 'Inativa'}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
 
       <ConfirmDialog
         open={!!deleteId}
