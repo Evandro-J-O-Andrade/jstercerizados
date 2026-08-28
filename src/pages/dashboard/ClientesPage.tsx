@@ -4,17 +4,13 @@ import { Button } from '@/components/ui/Button';
 import { Building2, Plus } from 'lucide-react';
 import { getSupabaseClient } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import type { Company } from '@/types/domain/company';
 
-interface Company {
-  id: string;
-  name: string;
-  type: string;
-  status: string;
-  created_at: string;
-}
+type CrmTab = 'companies' | 'contacts' | 'opportunities';
 
 export default function ClientesPage() {
   const { isAdminMaster, tenantMemberships, currentTenantId } = useAuth();
+  const [activeTab, setActiveTab] = useState<CrmTab>('companies');
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +34,7 @@ export default function ClientesPage() {
         }
 
         const { data } = await query;
-        setCompanies(data || []);
+        setCompanies((data || []) as unknown as Company[]);
       } catch (error) {
         console.error('[CLIENTES] Failed to load:', error);
       } finally {
@@ -64,60 +60,107 @@ export default function ClientesPage() {
     >
       {loading ? (
         <div className="text-muted-foreground text-sm">
-          Carregando clientes...
-        </div>
-      ) : companies.length === 0 ? (
-        <div className="bg-card border-border rounded-xl border p-6 shadow-sm">
-          <p className="text-muted-foreground text-sm">
-            Nenhum cliente encontrado.
-          </p>
+          Carregando dados do CRM...
         </div>
       ) : (
-        <div className="bg-card border-border overflow-hidden rounded-xl border shadow-sm">
-          <table className="divide-border min-w-full divide-y">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                  Nome
-                </th>
-                <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                  Tipo
-                </th>
-                <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                  Status
-                </th>
-                <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                  Criado em
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-border divide-y">
-              {companies.map((company) => (
-                <tr
-                  key={company.id}
-                  className="hover:bg-muted/30 transition-colors"
-                >
-                  <td className="text-foreground px-4 py-3 text-sm font-medium">
-                    {company.name}
-                  </td>
-                  <td className="text-muted-foreground px-4 py-3 text-sm">
-                    {company.type}
-                  </td>
-                  <td className="text-muted-foreground px-4 py-3 text-sm">
-                    <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
-                      {company.status}
-                    </span>
-                  </td>
-                  <td className="text-muted-foreground px-4 py-3 text-sm">
-                    {new Date(company.created_at).toLocaleDateString('pt-BR')}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-6">
+          <div className="border-border flex gap-2 overflow-x-auto border-b">
+            {[
+              { key: 'companies', label: 'Empresas' },
+              { key: 'contacts', label: 'Contatos' },
+              { key: 'opportunities', label: 'Oportunidades' },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key as CrmTab)}
+                className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
+                  activeTab === tab.key
+                    ? 'border-primary text-primary border-b-2'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {activeTab === 'companies' && (
+            <div>
+              {companies.length === 0 ? (
+                <div className="bg-card border-border rounded-xl border p-6 shadow-sm">
+                  <p className="text-muted-foreground text-sm">
+                    Nenhuma empresa encontrada.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-card border-border overflow-hidden rounded-xl border shadow-sm">
+                  <table className="divide-border min-w-full divide-y">
+                    <thead className="bg-muted/50">
+                      <tr>
+                        <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                          Nome
+                        </th>
+                        <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                          Tipo
+                        </th>
+                        <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                          Status
+                        </th>
+                        <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                          Criado em
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-border divide-y">
+                      {companies.map((company) => (
+                        <tr
+                          key={company.id}
+                          className="hover:bg-muted/30 transition-colors"
+                        >
+                          <td className="text-foreground px-4 py-3 text-sm font-medium">
+                            {company.legal_name ||
+                              company.trading_name ||
+                              'Sem nome'}
+                          </td>
+                          <td className="text-muted-foreground px-4 py-3 text-sm">
+                            {company.company_type_id ?? '—'}
+                          </td>
+                          <td className="text-muted-foreground px-4 py-3 text-sm">
+                            <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
+                              {company.status}
+                            </span>
+                          </td>
+                          <td className="text-muted-foreground px-4 py-3 text-sm">
+                            {new Date(company.created_at).toLocaleDateString(
+                              'pt-BR',
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'contacts' && (
+            <div className="bg-card border-border rounded-xl border p-6 shadow-sm">
+              <p className="text-muted-foreground text-sm">
+                Contatos vinculados às empresas aparecerão aqui.
+              </p>
+            </div>
+          )}
+
+          {activeTab === 'opportunities' && (
+            <div className="bg-card border-border rounded-xl border p-6 shadow-sm">
+              <p className="text-muted-foreground text-sm">
+                Oportunidades e funis de CRM aparecerão aqui.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </ModuleWorkspace>
   );
 }
-
