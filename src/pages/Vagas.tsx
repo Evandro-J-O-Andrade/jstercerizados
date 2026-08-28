@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { MapPin, Search, Briefcase } from 'lucide-react';
+import { MapPin, Search, Briefcase, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
@@ -26,7 +26,7 @@ export default function Vagas() {
       const { data, error } = await supabase
         .from('jobs')
         .select(
-          'id, title, employment_type, location, salary, benefits, status',
+          'id, title, employment_type, location, salary, benefits, status, description, requirements, created_at',
         )
         .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
         .eq('status', 'published')
@@ -44,6 +44,9 @@ export default function Vagas() {
         salary: number | null;
         benefits: string | null;
         status: string;
+        description: string | null;
+        requirements: string | null;
+        created_at: string;
       }>;
     },
   });
@@ -63,13 +66,23 @@ export default function Vagas() {
       }
       if (
         modalidadeFilter &&
-        !(job.location || '').includes(modalidadeFilter)
+        !(job.location || '')
+          .toLowerCase()
+          .includes(modalidadeFilter.toLowerCase())
       ) {
         return false;
       }
       return true;
     });
   }, [jobs, searchTerm, tipoFilter, modalidadeFilter]);
+
+  const formatCurrency = (value: number | null) =>
+    value != null && !Number.isNaN(value)
+      ? value.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        })
+      : null;
 
   const vagas = useMemo(() => {
     return filteredJobs.map((job) => {
@@ -96,6 +109,9 @@ export default function Vagas() {
               .filter(Boolean)
           : [],
         slug: job.id,
+        description: job.description,
+        requirements: job.requirements,
+        created_at: job.created_at,
       };
     });
   }, [filteredJobs]);
@@ -240,7 +256,19 @@ export default function Vagas() {
                           : 'Presencial'}
                     </span>
                   )}
+                  {formatCurrency(vaga.salarioMin) && (
+                    <span className="inline-flex items-center gap-1">
+                      <DollarSign className="h-4 w-4" />
+                      {formatCurrency(vaga.salarioMin)}
+                    </span>
+                  )}
                 </div>
+
+                {vaga.description && (
+                  <p className="text-muted-foreground mt-4 line-clamp-3 text-sm">
+                    {vaga.description}
+                  </p>
+                )}
 
                 {vaga.beneficios.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
