@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   Heart,
   ArrowRight,
-  MapPin,
   Phone,
   Wrench,
   Handshake,
@@ -23,11 +22,28 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
-import { mockGetVagas } from '@/services/mock/vagas';
 import { COMPANY } from '@/config';
 import { HERO_SLIDES } from '@/content/homeHero';
-import { CLIENTS_LIST } from '@/mock/clients';
-import { SafeImage } from '@/components/ui/SafeImage';
+import type { Company } from '@/types/domain';
+import { useQuery } from '@tanstack/react-query';
+import { getSupabaseClient } from '@/lib/supabase';
+
+function useCompanies() {
+  return useQuery({
+    queryKey: ['companies'],
+    queryFn: async () => {
+      const supabase = getSupabaseClient();
+      if (!supabase) return [];
+      const { data, error } = await supabase
+        .from('companies')
+        .select('id, trading_name, legal_name, cnpj, status')
+        .order('created_at', { ascending: true })
+        .limit(20);
+      if (error) throw error;
+      return (data || []) as Company[];
+    },
+  });
+}
 
 const heroSlides = HERO_SLIDES.map((slide) => ({
   id: slide.id,
@@ -196,7 +212,7 @@ const facilitiesSolutions = [
 ];
 
 export default function Home() {
-  const destaques = mockGetVagas().slice(0, 4);
+  const { data: companies = [] } = useCompanies();
 
   return (
     <div>
@@ -446,94 +462,6 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 5. VAGAS EM DESTAQUE */}
-      <Section>
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
-            className="mb-12 flex items-end justify-between"
-          >
-            <motion.div variants={revealUp}>
-              <motion.h2
-                variants={revealUp}
-                className="text-foreground text-3xl font-bold sm:text-4xl"
-              >
-                Vagas em Destaque
-              </motion.h2>
-              <motion.p
-                variants={revealUp}
-                className="text-muted-foreground mt-4 max-w-2xl text-lg"
-              >
-                Confira as oportunidades disponíveis no momento.
-              </motion.p>
-            </motion.div>
-            <Link to="/vagas">
-              <Button variant="outline" size="sm">
-                Ver todas as vagas
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
-          >
-            {destaques.map((vaga) => (
-              <motion.div
-                key={vaga.id}
-                variants={staggerItem('up')}
-                className="bg-card shadow-premium group relative flex flex-col rounded-2xl p-6 transition-all duration-300"
-              >
-                <div className="mb-4 flex items-start justify-between">
-                  <div>
-                    <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
-                      {vaga.titulo}
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      {vaga.empresa}
-                    </p>
-                  </div>
-                  <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium">
-                    {vaga.tipoContrato}
-                  </span>
-                </div>
-
-                <div className="text-muted-foreground mb-4 space-y-1 text-sm">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    <span>
-                      {vaga.cidade}, {vaga.estado}
-                    </span>
-                  </div>
-                  <span className="inline-block text-xs">
-                    {vaga.modalidade === 'PRESENCIAL'
-                      ? 'Presencial'
-                      : vaga.modalidade === 'HIBRIDO'
-                        ? 'Híbrido'
-                        : 'Remoto'}
-                  </span>
-                </div>
-
-                <div className="mt-auto flex gap-2">
-                  <Link to={`/vagas/${vaga.slug}`} className="flex-1">
-                    <Button variant="primary" size="sm" className="w-full">
-                      Ver vaga
-                    </Button>
-                  </Link>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </Container>
-      </Section>
-
       {/* 6. DIFERENCIAIS J&S */}
       <Section className="bg-surface-alt">
         <Container>
@@ -739,26 +667,24 @@ export default function Home() {
             variants={staggerReveal(0.1)}
             className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
           >
-            {CLIENTS_LIST.filter((client) => client.name && client.logo).map(
-              (client) => (
+            {companies
+              .filter((company) => company.status === 'active')
+              .map((client) => (
                 <motion.div
                   key={client.id}
                   variants={staggerItem('up')}
                   className="bg-card border-border hover:border-primary/30 flex flex-col items-center justify-center rounded-2xl border p-6 transition-all duration-300"
                 >
-                  <div className="h-16 w-auto">
-                    <SafeImage
-                      src={client.logo!}
-                      alt={client.name!}
-                      className="h-full w-auto object-contain"
-                    />
+                  <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-xl text-lg font-bold">
+                    {(client.trading_name || client.legal_name)
+                      .charAt(0)
+                      .toUpperCase()}
                   </div>
                   <span className="text-foreground mt-3 text-center text-sm font-medium">
-                    {client.name!}
+                    {client.trading_name || client.legal_name}
                   </span>
                 </motion.div>
-              ),
-            )}
+              ))}
           </motion.div>
         </Container>
       </Section>

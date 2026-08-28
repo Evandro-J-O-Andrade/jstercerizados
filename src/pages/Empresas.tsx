@@ -6,10 +6,6 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
-import { CLIENTS_LIST } from '@/mock/clients';
-import { PARTNERS_LOGOS } from '@/mock/partners';
-import { ClientCard } from '@/components/sections/ClientCard';
-import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import {
   Phone,
@@ -21,8 +17,29 @@ import {
   Briefcase,
   Handshake,
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { getSupabaseClient } from '@/lib/supabase';
+import type { Company } from '@/types/domain';
+
+function useCompanies() {
+  return useQuery({
+    queryKey: ['companies'],
+    queryFn: async () => {
+      const supabase = getSupabaseClient();
+      if (!supabase) return [];
+      const { data, error } = await supabase
+        .from('companies')
+        .select('id, legal_name, trading_name, cnpj, status')
+        .order('created_at', { ascending: true })
+        .limit(50);
+      if (error) throw error;
+      return (data || []) as Company[];
+    },
+  });
+}
 
 export default function Empresas() {
+  const { data: companies = [], isLoading } = useCompanies();
   return (
     <div className="min-h-screen">
       <SEO
@@ -173,67 +190,35 @@ export default function Empresas() {
               variants={staggerReveal(0.1)}
               className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
             >
-              {CLIENTS_LIST.filter((client) => client.name && client.logo).map(
-                (client, index) => (
-                  <motion.div key={client.id} variants={staggerItem('up')}>
-                    <ClientCard client={client} index={index} />
-                  </motion.div>
-                ),
-              )}
-            </motion.div>
-          </motion.div>
-
-          {/* Nossos parceiros */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
-            className="mt-24"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-center text-3xl font-bold sm:text-4xl"
-            >
-              Nossos parceiros
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center text-lg"
-            >
-              Construímos uma rede de parceiros estratégicos para ampliar nossas
-              soluções e entregar mais eficiência aos nossos clientes.
-            </motion.p>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={staggerReveal(0.1)}
-              className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-6"
-            >
-              {PARTNERS_LOGOS.map((partner) => (
-                <motion.div
-                  key={partner.name}
-                  variants={staggerItem('up')}
-                  whileHover={{ scale: 1.05 }}
-                  className="group bg-muted/50 border-border/50 relative overflow-hidden rounded-2xl border"
-                >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden">
-                    <SafeImage
-                      src={partner.photo}
-                      fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%232a2a2a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='16'%3EEmpresa%3C/text%3E%3C/svg%3E"
-                      alt={partner.name}
-                      className="h-full w-full object-cover grayscale-[40%] transition-all duration-300 group-hover:grayscale-0"
-                    />
-                  </div>
-                  <div className="p-3 text-center">
-                    <span className="text-foreground text-xs font-semibold">
-                      {partner.name}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
+              {isLoading
+                ? Array.from({ length: 8 }).map((_, i) => (
+                    <motion.div
+                      key={i}
+                      variants={staggerItem('up')}
+                      className="bg-muted/50 border-border/50 rounded-2xl border p-6"
+                    >
+                      <div className="bg-muted mx-auto h-12 w-12 animate-pulse rounded-xl" />
+                      <div className="bg-muted mx-auto mt-4 h-4 w-24 animate-pulse rounded" />
+                    </motion.div>
+                  ))
+                : companies
+                    .filter((company) => company.status === 'active')
+                    .map((company) => (
+                      <motion.div
+                        key={company.id}
+                        variants={staggerItem('up')}
+                        className="bg-card border-border hover:border-primary/30 flex flex-col items-center justify-center rounded-2xl border p-6 transition-all duration-300"
+                      >
+                        <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold">
+                          {(company.trading_name || company.legal_name)
+                            .charAt(0)
+                            .toUpperCase()}
+                        </div>
+                        <span className="text-foreground mt-3 text-center text-sm font-medium">
+                          {company.trading_name || company.legal_name}
+                        </span>
+                      </motion.div>
+                    ))}
             </motion.div>
           </motion.div>
 

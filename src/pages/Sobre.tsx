@@ -4,7 +4,6 @@ import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { COMPANY_TIMELINE } from '@/mock/company';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config';
 import { HERO_ASSETS, SERVICE_IMAGES } from '@/content/assets';
@@ -378,15 +377,14 @@ export default function Sobre() {
           </motion.div>
 
           <div className="relative">
-            {COMPANY_TIMELINE.map((_item, index) => {
-              const chapter = chapters[index];
-              if (!chapter) return null;
-
+            {chapters.map((chapter, index) => {
+              if (index > 0) return <TimelineWebConnector key={chapter.id} />;
               return (
-                <div key={chapter.id} className="relative">
-                  {index > 0 && <TimelineWebConnector />}
-                  <CinematicChapter chapter={chapter} index={index} />
-                </div>
+                <CinematicChapter
+                  key={chapter.id}
+                  chapter={chapter}
+                  index={index}
+                />
               );
             })}
           </div>

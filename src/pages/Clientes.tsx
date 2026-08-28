@@ -4,60 +4,51 @@ import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
-import { CLIENTS_LIST } from '@/mock/clients';
-import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
-import {
-  Building2,
-  Users,
-  Phone,
-  ExternalLink,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
+import { Building2, Users, Phone } from 'lucide-react';
+import { useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getSupabaseClient } from '@/lib/supabase';
+import type { Company } from '@/types/domain';
+
+function useCompanies() {
+  return useQuery({
+    queryKey: ['companies'],
+    queryFn: async () => {
+      const supabase = getSupabaseClient();
+      if (!supabase) return [];
+      const { data, error } = await supabase
+        .from('companies')
+        .select('id, legal_name, trading_name, cnpj, status')
+        .order('created_at', { ascending: true })
+        .limit(50);
+      if (error) throw error;
+      return (data || []) as Company[];
+    },
+  });
+}
 
 function useReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
-    const handler = (event: MediaQueryListEvent) =>
-      setPrefersReducedMotion(event.matches);
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
-  }, []);
-
-  return prefersReducedMotion;
+  return false;
 }
 
 function ClientCase({
   client,
   index,
-  total,
 }: {
   client: {
     id: string;
-    name: string;
-    logo: string | null;
-    image?: string | null;
-    website?: string | null;
-    description?: string | null;
-    socials?: { linkedin?: string; instagram?: string } | null;
+    legal_name: string;
+    trading_name: string | null;
+    cnpj: string | null;
+    status: string;
   };
   index: number;
-  total: number;
 }) {
   const isEven = index % 2 === 0;
   const prefersReducedMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [showIndicators, setShowIndicators] = useState(false);
-
-  const showImage = client.image && imageLoaded;
-  const primaryMedia = showImage ? client.image! : client.logo!;
 
   return (
     <motion.div
@@ -70,8 +61,6 @@ function ClientCase({
       }}
       className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16 ${index % 2 === 1 ? 'direction-rtl' : ''}`}
       style={{ direction: 'ltr' }}
-      onMouseEnter={() => setShowIndicators(true)}
-      onMouseLeave={() => setShowIndicators(false)}
     >
       <div
         className={`relative aspect-[16/10] overflow-hidden rounded-3xl ${index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}
@@ -83,95 +72,32 @@ function ClientCase({
           transition={{ duration: 1.2, ease: [0.25, 0.4, 0.25, 1] }}
           className="absolute inset-0"
         >
-          <SafeImage
-            src={primaryMedia}
-            alt={client.name}
-            className="h-full w-full object-cover transition-all duration-700"
-            onLoad={() => setImageLoaded(true)}
-          />
+          <div className="bg-primary/10 text-primary flex h-full w-full items-center justify-center text-6xl font-bold">
+            {(client.trading_name || client.legal_name).charAt(0).toUpperCase()}
+          </div>
         </motion.div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
         <div className="absolute right-0 bottom-0 left-0 p-6 sm:p-8">
-          {client.logo && (
-            <div className="mb-4 h-12 w-auto">
-              <SafeImage
-                src={client.logo}
-                alt={client.name}
-                className="h-full w-auto object-contain drop-shadow-lg"
-              />
-            </div>
-          )}
           <h3 className="text-2xl font-bold text-white drop-shadow-md sm:text-3xl">
-            {client.name}
+            {client.trading_name || client.legal_name}
           </h3>
+          {client.legal_name && (
+            <p className="mt-1 text-sm text-white/80">{client.legal_name}</p>
+          )}
         </div>
-        {showIndicators && !prefersReducedMotion && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="absolute top-4 right-4 flex flex-col gap-2"
-          >
-            {index > 0 && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-            )}
-            {index < total - 1 && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            )}
-          </motion.div>
-        )}
       </div>
 
       <div className={`${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
         <div className="max-w-xl">
-          {client.description && (
-            <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-              {client.description}
-            </p>
-          )}
+          <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
+            {client.trading_name || client.legal_name}
+          </p>
           <div className="mt-6 flex flex-wrap items-center gap-4">
-            {client.website && (
-              <a
-                href={client.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm font-semibold transition-colors"
-              >
-                Conhecer empresa
-                <ExternalLink className="h-4 w-4" />
-              </a>
-            )}
-            {client.socials?.linkedin && (
-              <a
-                href={client.socials.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                LinkedIn
-              </a>
-            )}
-            {client.socials?.instagram && (
-              <a
-                href={client.socials.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Instagram
-              </a>
+            {client.cnpj && (
+              <span className="text-muted-foreground text-sm">
+                {client.cnpj}
+              </span>
             )}
           </div>
         </div>
@@ -181,8 +107,9 @@ function ClientCase({
 }
 
 export default function Clientes() {
-  const confirmedClients = CLIENTS_LIST.filter(
-    (client) => client.name && client.logo,
+  const { data: companies = [] } = useCompanies();
+  const confirmedClients = companies.filter(
+    (company) => company.status === 'active',
   );
 
   return (
@@ -236,12 +163,7 @@ export default function Clientes() {
         <Container>
           <div className="mt-20 space-y-20">
             {confirmedClients.map((client, index) => (
-              <ClientCase
-                key={client.id}
-                client={client}
-                index={index}
-                total={confirmedClients.length}
-              />
+              <ClientCase key={client.id} client={client} index={index} />
             ))}
           </div>
         </Container>

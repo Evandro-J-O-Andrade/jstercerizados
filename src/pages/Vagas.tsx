@@ -1,65 +1,87 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { MapPin, Search, Filter } from 'lucide-react';
+import { MapPin, Search, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
-import { mockGetVagas } from '@/services/mock/vagas';
 import { COMPANY } from '@/config';
-
-const CONTRATO_LABELS: Record<string, string> = {
-  CLT: 'CLT',
-  ESTAGIO: 'Estágio',
-  TEMPORARIO: 'Temporário',
-  FREELA: 'Freela',
-  TERCEIRIZADO: 'Terceirizado',
-  CD: 'C/D',
-};
+import { useQuery } from '@tanstack/react-query';
+import { jobsRepository } from '@/repositories/jobs.repository';
+import { ArrowRight } from 'lucide-react';
 
 export default function Vagas() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [cidadeFilter, setCidadeFilter] = useState('');
-  const [estadoFilter, setEstadoFilter] = useState('');
-  const [areaFilter, setAreaFilter] = useState('');
   const [tipoFilter, setTipoFilter] = useState('');
   const [modalidadeFilter, setModalidadeFilter] = useState('');
-  const [salarioMin, setSalarioMin] = useState('');
-  const [dataDias, setDataDias] = useState('');
-  const [showMoreFilters, setShowMoreFilters] = useState(false);
+
+  const { data: jobs = [] } = useQuery({
+    queryKey: ['jobs', 'public'],
+    queryFn: () =>
+      jobsRepository.findAll('d480af07-ab6b-4561-ac3a-2a0b0c1267b5', {
+        status: 'published',
+      }),
+  });
+
+  const filteredJobs = useMemo(() => {
+    if (!jobs.length) return [];
+
+    return jobs.filter((job) => {
+      if (
+        searchTerm &&
+        !job.title.toLowerCase().includes(searchTerm.toLowerCase())
+      ) {
+        return false;
+      }
+      if (tipoFilter && job.employment_type !== tipoFilter) {
+        return false;
+      }
+      if (
+        modalidadeFilter &&
+        !(job.location || '').includes(modalidadeFilter)
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [jobs, searchTerm, tipoFilter, modalidadeFilter]);
 
   const vagas = useMemo(() => {
-    return mockGetVagas({
-      search: searchTerm || undefined,
-      cidade: cidadeFilter || undefined,
-      estado: estadoFilter || undefined,
-      tipoContrato: tipoFilter || undefined,
-      modalidade: modalidadeFilter || undefined,
-      salarioMin: salarioMin ? Number(salarioMin) : undefined,
-      dataDias: dataDias ? Number(dataDias) : undefined,
+    return filteredJobs.map((job) => {
+      const location = job.location || '';
+      const isRemote = /remoto|home office|trabalho de casa/i.test(location);
+      const workMode = isRemote ? 'remote' : 'onsite';
+
+      return {
+        id: job.id,
+        titulo: job.title,
+        empresa: null,
+        tipoContrato: job.employment_type,
+        cidade: location,
+        estado: null,
+        salarioMin: job.salary,
+        salarioMax: null,
+        salarioTipo: null,
+        modalidade: workMode,
+        area: null,
+        beneficios: job.benefits
+          ? job.benefits
+              .split(';')
+              .map((b) => b.trim())
+              .filter(Boolean)
+          : [],
+        slug: job.id,
+      };
     });
-  }, [
-    searchTerm,
-    cidadeFilter,
-    estadoFilter,
-    tipoFilter,
-    modalidadeFilter,
-    salarioMin,
-    dataDias,
-  ]);
+  }, [filteredJobs]);
 
   const clearFilters = () => {
     setSearchTerm('');
-    setCidadeFilter('');
-    setEstadoFilter('');
-    setAreaFilter('');
     setTipoFilter('');
     setModalidadeFilter('');
-    setSalarioMin('');
-    setDataDias('');
   };
 
   return (
@@ -106,15 +128,14 @@ export default function Vagas() {
             </motion.p>
           </motion.div>
 
-          {/* Search + Filters */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-6"
+            className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
           >
-            <div className="relative md:col-span-2">
+            <div className="relative md:w-96">
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
               <input
                 type="text"
@@ -124,277 +145,121 @@ export default function Vagas() {
                 className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full rounded-xl border px-4 py-3 pl-10 text-sm transition-colors outline-none focus:ring-2"
               />
             </div>
-            <div className="relative">
-              <MapPin className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Cidade"
-                value={cidadeFilter}
-                onChange={(e) => setCidadeFilter(e.target.value)}
-                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full rounded-xl border px-4 py-3 pl-10 text-sm transition-colors outline-none focus:ring-2"
-              />
-            </div>
-            <select
-              value={tipoFilter}
-              onChange={(e) => setTipoFilter(e.target.value)}
-              className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
-            >
-              <option value="">Todos os contratos</option>
-              <option value="CLT">CLT</option>
-              <option value="ESTAGIO">Estágio</option>
-              <option value="TEMPORARIO">Temporário</option>
-              <option value="TERCEIRIZADO">Terceirizado</option>
-            </select>
-            <select
-              value={modalidadeFilter}
-              onChange={(e) => setModalidadeFilter(e.target.value)}
-              className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
-            >
-              <option value="">Todas as modalidades</option>
-              <option value="PRESENCIAL">Presencial</option>
-              <option value="HIBRIDO">Híbrido</option>
-              <option value="REMOTO">Trabalho de Casa</option>
-            </select>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full"
-              onClick={() => setShowMoreFilters(!showMoreFilters)}
-            >
-              <Filter className="mr-2 h-4 w-4" />
-              {showMoreFilters ? 'Menos filtros' : 'Mais filtros'}
-            </Button>
-          </motion.div>
-
-          {/* Additional Filters */}
-          {showMoreFilters && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4"
-            >
+            <div className="flex flex-wrap items-center gap-3">
               <select
-                value={estadoFilter}
-                onChange={(e) => setEstadoFilter(e.target.value)}
-                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
+                value={tipoFilter}
+                onChange={(e) => setTipoFilter(e.target.value)}
+                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2 md:w-48"
               >
-                <option value="">Todos os estados</option>
-                <option value="SP">SP</option>
-                <option value="RJ">RJ</option>
-                <option value="MG">MG</option>
+                <option value="">Todos os contratos</option>
+                <option value="clt">CLT</option>
+                <option value="temporary">Temporário</option>
+                <option value="internship">Estágio</option>
+                <option value="freelance">Freela</option>
               </select>
               <select
-                value={areaFilter}
-                onChange={(e) => setAreaFilter(e.target.value)}
-                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
+                value={modalidadeFilter}
+                onChange={(e) => setModalidadeFilter(e.target.value)}
+                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2 md:w-48"
               >
-                <option value="">Todas as áreas</option>
-                <option value="producao">Produção</option>
-                <option value="logistica">Logística</option>
-                <option value="administrativo">Administrativo</option>
-                <option value="seguranca">Segurança</option>
-                <option value="limpeza">Limpeza</option>
+                <option value="">Todas as modalidades</option>
+                <option value="onsite">Presencial</option>
+                <option value="hybrid">Híbrido</option>
+                <option value="remote">Remoto</option>
               </select>
-              <select
-                value={salarioMin}
-                onChange={(e) => setSalarioMin(e.target.value)}
-                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
-              >
-                <option value="">Salário mínimo</option>
-                <option value="1500">R$ 1.500+</option>
-                <option value="2000">R$ 2.000+</option>
-                <option value="3000">R$ 3.000+</option>
-                <option value="5000">R$ 5.000+</option>
-              </select>
-              <select
-                value={dataDias}
-                onChange={(e) => setDataDias(e.target.value)}
-                className="border-input bg-surface text-foreground focus:border-primary focus:ring-primary/20 w-full cursor-pointer rounded-xl border px-4 py-3 text-sm transition-colors outline-none focus:ring-2"
-              >
-                <option value="">Todas as datas</option>
-                <option value="7">Últimos 7 dias</option>
-                <option value="30">Últimos 30 dias</option>
-                <option value="90">Últimos 90 dias</option>
-              </select>
-            </motion.div>
-          )}
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="mb-6 flex items-center justify-between"
-          >
-            <p className="text-muted-foreground text-sm">
-              <span className="text-foreground font-medium">
-                {vagas.length}
-              </span>{' '}
-              vaga{vagas.length !== 1 ? 's' : ''} encontrada
-              {vagas.length !== 1 ? 's' : ''}
-            </p>
-            <div className="flex items-center gap-3">
-              <Link to="/trabalhe-conosco">
-                <Button variant="secondary" size="sm">
-                  Cadastrar Currículo
-                </Button>
-              </Link>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                disabled={
-                  !searchTerm &&
-                  !cidadeFilter &&
-                  !estadoFilter &&
-                  !areaFilter &&
-                  !tipoFilter &&
-                  !modalidadeFilter &&
-                  !salarioMin &&
-                  !dataDias
-                }
+                className="rounded-xl"
               >
                 Limpar filtros
               </Button>
             </div>
           </motion.div>
 
-          {/* Vagas Grid */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {vagas.length === 0 ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {vagas.map((vaga) => (
               <motion.div
+                key={vaga.id}
                 variants={staggerItem('up')}
-                className="bg-card shadow-premium col-span-full rounded-2xl p-12 text-center"
+                className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300"
               >
-                <p className="text-muted-foreground">
-                  Nenhuma vaga encontrada com os filtros aplicados.
-                </p>
-              </motion.div>
-            ) : (
-              vagas.map((vaga) => (
-                <motion.div
-                  key={vaga.id}
-                  variants={staggerItem('up')}
-                  whileHover={{ y: -4 }}
-                  className="bg-card border-border shadow-premium group relative flex flex-col rounded-2xl border p-6 transition-all duration-300"
-                >
-                  <div className="mb-4 flex items-start justify-between">
-                    <div>
-                      <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
-                        {vaga.titulo}
-                      </h3>
-                      {vaga.empresa && (
-                        <p className="text-muted-foreground text-sm">
-                          {vaga.empresa}
-                        </p>
-                      )}
-                    </div>
-                    {vaga.tipoContrato && (
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                          vaga.tipoContrato === 'CLT'
-                            ? 'bg-success/10 text-success'
-                            : 'bg-primary/10 text-primary'
-                        }`}
-                      >
-                        {CONTRATO_LABELS[vaga.tipoContrato] ||
-                          vaga.tipoContrato}
-                      </span>
-                    )}
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-foreground text-lg font-semibold">
+                      {vaga.titulo}
+                    </h3>
+                    <p className="text-muted-foreground mt-1 text-sm">
+                      {vaga.empresa || 'J&S Empregos LTDA'}
+                    </p>
                   </div>
-
-                  <div className="mb-4 space-y-2">
-                    {vaga.cidade && vaga.estado && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="text-muted-foreground h-4 w-4" />
-                        <span className="text-muted-foreground">
-                          {vaga.cidade}, {vaga.estado}
-                        </span>
-                      </div>
-                    )}
-                    {vaga.salarioMin && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="text-muted-foreground">R$</span>
-                        <span className="text-muted-foreground">
-                          {vaga.salarioMin.toLocaleString('pt-BR')}
-                          {' – '}
-                          {vaga.salarioMax
-                            ? vaga.salarioMax.toLocaleString('pt-BR')
-                            : 'a combinar'}
-                        </span>
-                      </div>
-                    )}
-                    {vaga.modalidade && (
-                      <span className="text-muted-foreground inline-block text-xs">
-                        {vaga.modalidade === 'PRESENCIAL'
-                          ? 'Presencial'
-                          : vaga.modalidade === 'HIBRIDO'
-                            ? 'Híbrido'
-                            : 'Remoto'}
-                      </span>
-                    )}
-                    {vaga.area && (
-                      <span className="text-muted-foreground/70 inline-block text-xs">
-                        {vaga.area}
-                      </span>
-                    )}
-                  </div>
-
-                  {vaga.beneficios && vaga.beneficios.length > 0 && (
-                    <div className="mb-4">
-                      <p className="text-muted-foreground mb-2 text-xs font-medium">
-                        Benefícios
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {vaga.beneficios.slice(0, 3).map((beneficio) => (
-                          <span
-                            key={beneficio}
-                            className="bg-muted rounded-full px-2 py-0.5 text-xs"
-                          >
-                            {beneficio}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+                  {vaga.tipoContrato && (
+                    <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
+                      {vaga.tipoContrato.toUpperCase()}
+                    </span>
                   )}
+                </div>
 
-                  <div className="mt-auto flex gap-2">
-                    <Link to={`/vagas/${vaga.slug}`} className="flex-1">
-                      <Button variant="primary" size="sm" className="w-full">
-                        Ver vaga
-                      </Button>
-                    </Link>
-                    <Link to={`/vagas/${vaga.slug}`} className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        Candidatar-se
-                      </Button>
-                    </Link>
+                <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-4 text-sm">
+                  {vaga.cidade && (
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="h-4 w-4" />
+                      {vaga.cidade}
+                    </span>
+                  )}
+                  {vaga.modalidade && (
+                    <span className="inline-flex items-center gap-1">
+                      <Briefcase className="h-4 w-4" />
+                      {vaga.modalidade === 'remote'
+                        ? 'Remoto'
+                        : vaga.modalidade === 'hybrid'
+                          ? 'Híbrido'
+                          : 'Presencial'}
+                    </span>
+                  )}
+                </div>
+
+                {vaga.beneficios.length > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {vaga.beneficios.slice(0, 4).map((beneficio) => (
+                      <span
+                        key={beneficio}
+                        className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs"
+                      >
+                        {beneficio}
+                      </span>
+                    ))}
                   </div>
-                </motion.div>
-              ))
-            )}
-          </motion.div>
+                )}
 
-          {vagas.length > 0 && vagas.length < 100 && (
+                <Link
+                  to={`/vagas/${vaga.slug}`}
+                  className="text-primary mt-6 inline-flex items-center gap-1 text-sm font-semibold"
+                >
+                  Ver detalhes
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {vagas.length === 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="mt-12 text-center"
+              className="mt-20 text-center"
             >
-              <p className="text-muted-foreground text-sm">
-                Mostrando {vagas.length} vaga
-                {vagas.length !== 1 ? 's' : ''} de {vagas.length} disponível
-                {vagas.length !== 1 ? 's' : ''}
+              <p className="text-muted-foreground text-lg">
+                Nenhuma vaga encontrada para os filtros selecionados.
               </p>
+              <Button
+                variant="secondary"
+                className="mt-4"
+                onClick={clearFilters}
+              >
+                Limpar filtros
+              </Button>
             </motion.div>
           )}
         </Container>
