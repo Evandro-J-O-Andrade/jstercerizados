@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
-import { Shield, Users } from 'lucide-react';
+import { Shield, Users, Activity } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getSupabaseClient } from '@/lib/supabase';
 import { securityEventRepository } from '@/repositories/security.repository';
@@ -13,6 +13,7 @@ export default function SegurancaPage() {
     { id: string; name: string; scope: string }[]
   >([]);
   const [events, setEvents] = useState<SecurityEvent[]>([]);
+  const [stats, setStats] = useState({ total: 0, today: 0, week: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,9 +36,24 @@ export default function SegurancaPage() {
         ]);
 
         setRoles(rolesResult.data || []);
-        if (Array.isArray(eventsResult)) {
-          setEvents(eventsResult);
-        }
+        const evts = Array.isArray(eventsResult) ? eventsResult : [];
+        setEvents(evts);
+
+        const now = new Date();
+        const todayStart = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        );
+        const weekStart = new Date(todayStart);
+        weekStart.setDate(weekStart.getDate() - 7);
+
+        setStats({
+          total: evts.length,
+          today: evts.filter((e) => new Date(e.created_at) >= todayStart)
+            .length,
+          week: evts.filter((e) => new Date(e.created_at) >= weekStart).length,
+        });
       } catch (error) {
         console.error('[SEGURANCA] Failed to load data:', error);
       } finally {
@@ -94,6 +110,20 @@ export default function SegurancaPage() {
                 </span>
                 <Users className="text-primary h-5 w-5" />
               </div>
+            </Card>
+            <Card className="p-6">
+              <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                Eventos de segurança
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-foreground text-2xl font-semibold">
+                  {stats.total}
+                </span>
+                <Activity className="text-primary h-5 w-5" />
+              </div>
+              <p className="text-muted-foreground mt-2 text-xs">
+                Hoje: {stats.today} | Semana: {stats.week}
+              </p>
             </Card>
           </div>
 
@@ -181,4 +211,3 @@ export default function SegurancaPage() {
     </ModuleWorkspace>
   );
 }
-
