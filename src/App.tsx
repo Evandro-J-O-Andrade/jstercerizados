@@ -8,6 +8,7 @@ import { AuthRoute } from '@/components/auth/AuthRoute';
 import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ToastProvider } from '@/components/feedback';
+import { NavigationProgress } from '@/components/ui/NavigationProgress';
 import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 import { PublicLayout } from '@/components/layout/PublicLayout';
 import { AppShell } from '@/components/layout/AppShell';
@@ -291,6 +292,7 @@ function App() {
   return (
     <ErrorBoundary>
       <ToastProvider>
+        <NavigationProgress />
         <Routes>
           <Route
             path="/dashboard/*"
@@ -746,10 +748,7 @@ function App() {
             />
             <Route path="*" element={<DashboardRouteNotFound />} />
           </Route>
-          <Route
-            path="/auth/callback"
-            element={<AuthCallback />}
-          />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/auth/terms" element={<AuthTerms />} />
           <Route path="/auth/welcome" element={<AuthWelcome />} />
