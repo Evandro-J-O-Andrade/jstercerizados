@@ -28,7 +28,7 @@ const createChain = () => ({
   single: vi.fn().mockReturnThis(),
 });
 
-const mockFrom = vi.fn(() => createChain());
+const mockFrom = vi.fn((_table: string) => createChain());
 
 const mockSupabase = {
   auth: {
@@ -83,7 +83,7 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
     const adminRole = {
       id: 'role-admin-master',
       name: 'admin_master',
-      scope: 'system',
+      scope: 'global',
       description: 'Administrador global do sistema',
     };
 
@@ -112,6 +112,12 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
       error: null,
     });
 
+    const mockTenantsChain = createChain();
+    mockTenantsChain.in.mockResolvedValue({
+      data: [{ id: 'tenant-1', name: 'Tenant 1' }],
+      error: null,
+    });
+
     const mockRoleAssignmentChain = createChain();
     mockRoleAssignmentChain.eq.mockResolvedValue({
       data: [{ id: 'ra-1', role_id: adminRole.id, person_id: 'person-1' }],
@@ -136,13 +142,60 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
       error: null,
     });
 
-    mockFrom
-      .mockReturnValueOnce(mockPeopleChain)
-      .mockReturnValueOnce(mockMembershipChain)
-      .mockReturnValueOnce(mockRoleAssignmentChain)
-      .mockReturnValueOnce(mockRolesChain)
-      .mockReturnValueOnce(mockRolePermsChain)
-      .mockReturnValueOnce(mockPermsChain);
+    const mockFirstLoginChain = createChain();
+    mockFirstLoginChain.maybeSingle.mockResolvedValue({
+      data: {
+        id: 'fls-1',
+        person_id: 'person-1',
+        first_login_completed: true,
+        terms_version: '1.0',
+        must_change_password: false,
+        onboarding_step: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      error: null,
+    });
+
+    const mockLegalAcceptancesChain = createChain();
+    mockLegalAcceptancesChain.order.mockResolvedValue({
+      data: [
+        {
+          id: 'la-1',
+          person_id: 'person-1',
+          document_type: 'terms',
+          document_version: '1.0',
+          accepted_at: new Date().toISOString(),
+          metadata: null,
+        },
+      ],
+      error: null,
+    });
+
+    mockFrom.mockImplementation((table: string) => {
+      switch (table) {
+        case 'people':
+          return mockPeopleChain;
+        case 'tenant_memberships':
+          return mockMembershipChain;
+        case 'tenants':
+          return mockTenantsChain;
+        case 'role_assignments':
+          return mockRoleAssignmentChain;
+        case 'roles':
+          return mockRolesChain;
+        case 'role_permissions':
+          return mockRolePermsChain;
+        case 'permissions':
+          return mockPermsChain;
+        case 'first_login_state':
+          return mockFirstLoginChain;
+        case 'legal_acceptances':
+          return mockLegalAcceptancesChain;
+        default:
+          return createChain();
+      }
+    });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -156,7 +209,7 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
     expect(result.current.tenantMemberships).toHaveLength(1);
     expect(result.current.roles).toHaveLength(1);
     expect(result.current.isAdminMaster).toBe(true);
-    expect(result.current.resolvePostLoginDestination()).toBe('/dashboard');
+    expect(result.current.resolvePostLoginDestination()).toBe('/auth/welcome');
   });
 
   it('falls back to onboarding when authenticated but without RBAC data', async () => {

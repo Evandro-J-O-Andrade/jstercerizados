@@ -108,7 +108,16 @@ describe('AUTH-02: AuthContext race condition', () => {
         this._eq = [col, val];
         return this;
       }),
-      maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+      maybeSingle: vi.fn().mockResolvedValue({
+        data: {
+          id: 'person-1',
+          auth_user_id: 'user-1',
+          full_name: 'Test User',
+          email: 'test@example.com',
+          status: 'active',
+        },
+        error: null,
+      }),
       order: vi.fn().mockReturnThis(),
       in: vi.fn().mockReturnThis(),
       single: vi.fn().mockResolvedValue({ data: null, error: null }),
