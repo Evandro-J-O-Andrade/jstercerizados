@@ -31,7 +31,11 @@ export default function Vagas() {
         .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
         .eq('status', 'published')
         .order('created_at', { ascending: false });
-      if (error) throw error;
+      if (error) {
+        console.error('[Vagas] query error', error);
+        throw error;
+      }
+      console.log('[Vagas] query result', data);
       return (data || []) as Array<{
         id: string;
         title: string;
