@@ -1,25 +1,13 @@
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import {
-  Home,
-  Shield,
-  Briefcase,
-  Users,
-  LayoutDashboard,
-  FileText,
-  Settings,
-  Building2,
-  LogIn,
-} from 'lucide-react';
+import { Home, Shield, Briefcase, Users, Building2, LogIn } from 'lucide-react';
 import { cn } from '@/utils';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  auth?: boolean;
 }
 
 const publicNavItems: NavItem[] = [
@@ -31,30 +19,10 @@ const publicNavItems: NavItem[] = [
   { label: 'Entrar', href: '/login', icon: LogIn },
 ];
 
-const candidateNavItems: NavItem[] = [
-  { label: 'Início', href: '/', icon: Home },
-  { label: 'Vagas', href: '/vagas', icon: Briefcase },
-  { label: 'Currículo', href: '/dashboard/candidato', icon: FileText },
-];
-
-const adminNavItems: NavItem[] = [
-  { label: 'Painel', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Leads', href: '#', icon: FileText },
-  { label: 'Parceiros', href: '#', icon: Users },
-  { label: 'Configurações', href: '#', icon: Settings },
-];
-
 export function PublicBottomNavigation() {
   const { pathname } = useLocation();
-  const { isAuthenticated, roles } = useAuth();
 
-  const isAdmin = roles.some((r) => r.name === 'admin_master');
-
-  const navItems = isAuthenticated
-    ? isAdmin
-      ? adminNavItems
-      : candidateNavItems
-    : publicNavItems;
+  const navItems = publicNavItems;
 
   return (
     <nav className="bg-card border-border fixed right-0 bottom-0 left-0 z-30 border-t backdrop-blur-xl backdrop-saturate-150 lg:hidden">
