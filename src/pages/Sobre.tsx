@@ -378,13 +378,12 @@ export default function Sobre() {
 
           <div className="relative">
             {chapters.map((chapter, index) => {
-              if (index > 0) return <TimelineWebConnector key={chapter.id} />;
+              const showConnector = index > 0 && index < chapters.length;
               return (
-                <CinematicChapter
-                  key={chapter.id}
-                  chapter={chapter}
-                  index={index}
-                />
+                <div key={chapter.id} className="relative">
+                  {showConnector && <TimelineWebConnector />}
+                  <CinematicChapter chapter={chapter} index={index} />
+                </div>
               );
             })}
           </div>

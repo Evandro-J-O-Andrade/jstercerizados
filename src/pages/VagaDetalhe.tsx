@@ -29,7 +29,7 @@ export default function VagaDetalhe() {
       const { data, error } = await supabase
         .from('jobs')
         .select(
-          'id, title, employment_type, location, salary, benefits, description, requirements',
+          'id, title, description, status, employment_type, location, salary, benefits, requirements, published_at, created_at',
         )
         .eq('id', slug)
         .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
@@ -40,13 +40,15 @@ export default function VagaDetalhe() {
     enabled: Boolean(slug),
   });
 
-  const formatCurrency = (value: string | number | null) =>
-    value
-      ? Number(value).toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        })
-      : '';
+  const formatCurrency = (value: string | number | null) => {
+    if (!value) return null;
+    const numeric = Number(value);
+    if (Number.isNaN(numeric)) return null;
+    return numeric.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+  };
 
   const beneficiosList = useMemo(() => {
     if (!vaga?.benefits) return [];

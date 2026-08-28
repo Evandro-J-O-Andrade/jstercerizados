@@ -34,6 +34,14 @@ export interface CompanyPublic {
   status: CompanyStatus;
 }
 
+export interface CustomerPublic {
+  id: string;
+  name: string;
+  legal_name: string | null;
+  document: string | null;
+  status: string;
+}
+
 export interface CompanyCreateInput {
   legal_name: string;
   trading_name?: string | null;

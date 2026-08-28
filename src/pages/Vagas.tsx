@@ -26,7 +26,7 @@ export default function Vagas() {
       const { data, error } = await supabase
         .from('jobs')
         .select(
-          'id, title, employment_type, location, salary, benefits, status, description, requirements, created_at',
+          'id, title, description, status, employment_type, location, salary, benefits, requirements, published_at, created_at',
         )
         .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
         .eq('status', 'published')
@@ -39,13 +39,14 @@ export default function Vagas() {
       return (data || []) as Array<{
         id: string;
         title: string;
-        employment_type: string;
-        location: string | null;
-        salary: number | null;
-        benefits: string | null;
-        status: string;
         description: string | null;
+        status: string;
+        employment_type: string | null;
+        location: string | null;
+        salary: string | null;
+        benefits: string | null;
         requirements: string | null;
+        published_at: string | null;
         created_at: string;
       }>;
     },
@@ -76,45 +77,20 @@ export default function Vagas() {
     });
   }, [jobs, searchTerm, tipoFilter, modalidadeFilter]);
 
-  const formatCurrency = (value: number | null) =>
-    value != null && !Number.isNaN(value)
-      ? value.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        })
-      : null;
-
-  const vagas = useMemo(() => {
-    return filteredJobs.map((job) => {
-      const location = job.location || '';
-      const isRemote = /remoto|home office|trabalho de casa/i.test(location);
-      const workMode = isRemote ? 'remote' : 'onsite';
-
-      return {
-        id: job.id,
-        titulo: job.title,
-        empresa: null,
-        tipoContrato: job.employment_type,
-        cidade: location,
-        estado: null,
-        salarioMin: job.salary,
-        salarioMax: null,
-        salarioTipo: null,
-        modalidade: workMode,
-        area: null,
-        beneficios: job.benefits
-          ? job.benefits
-              .split(';')
-              .map((b) => b.trim())
-              .filter(Boolean)
-          : [],
-        slug: job.id,
-        description: job.description,
-        requirements: job.requirements,
-        created_at: job.created_at,
-      };
+  const formatCurrency = (value: string | null) => {
+    if (!value) return null;
+    const numeric = Number(value);
+    if (Number.isNaN(numeric)) return null;
+    return numeric.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
     });
-  }, [filteredJobs]);
+  };
+
+  const isRemote = (location?: string | null) => {
+    if (!location) return false;
+    return /remoto|home office|trabalho de casa/i.test(location);
+  };
 
   const clearFilters = () => {
     setSearchTerm('');
@@ -217,84 +193,88 @@ export default function Vagas() {
           </motion.div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {vagas.map((vaga) => (
-              <motion.div
-                key={vaga.id}
-                variants={staggerItem('up')}
-                className="bg-card border-border hover:border-primary/30 rounded-2xl border p-6 transition-all duration-300"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="text-foreground text-lg font-semibold">
-                      {vaga.titulo}
-                    </h3>
-                    <p className="text-muted-foreground mt-1 text-sm">
-                      {vaga.empresa || 'J&S Empregos LTDA'}
-                    </p>
-                  </div>
-                  {vaga.tipoContrato && (
-                    <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
-                      {vaga.tipoContrato.toUpperCase()}
-                    </span>
-                  )}
-                </div>
+            {filteredJobs.map((job) => {
+              const salaryFormatted = formatCurrency(job.salary);
+              const location = job.location || '';
+              const remote = isRemote(location);
 
-                <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-4 text-sm">
-                  {vaga.cidade && (
-                    <span className="inline-flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      {vaga.cidade}
-                    </span>
-                  )}
-                  {vaga.modalidade && (
-                    <span className="inline-flex items-center gap-1">
-                      <Briefcase className="h-4 w-4" />
-                      {vaga.modalidade === 'remote'
-                        ? 'Remoto'
-                        : vaga.modalidade === 'hybrid'
-                          ? 'Híbrido'
-                          : 'Presencial'}
-                    </span>
-                  )}
-                  {formatCurrency(vaga.salarioMin) && (
-                    <span className="inline-flex items-center gap-1">
-                      <DollarSign className="h-4 w-4" />
-                      {formatCurrency(vaga.salarioMin)}
-                    </span>
-                  )}
-                </div>
-
-                {vaga.description && (
-                  <p className="text-muted-foreground mt-4 line-clamp-3 text-sm">
-                    {vaga.description}
-                  </p>
-                )}
-
-                {vaga.beneficios.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {vaga.beneficios.slice(0, 4).map((beneficio) => (
-                      <span
-                        key={beneficio}
-                        className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs"
-                      >
-                        {beneficio}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                <Link
-                  to={`/vagas/${vaga.slug}`}
-                  className="text-primary mt-6 inline-flex items-center gap-1 text-sm font-semibold"
+              return (
+                <motion.div
+                  key={job.id}
+                  variants={staggerItem('up')}
+                  className="group bg-card border-border hover:border-primary/30 flex flex-col rounded-2xl border p-6 shadow-sm transition-all duration-300"
                 >
-                  Ver detalhes
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </motion.div>
-            ))}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-foreground group-hover:text-primary text-lg font-semibold transition-colors">
+                        {job.title}
+                      </h3>
+                      {job.description && (
+                        <p className="text-muted-foreground mt-2 line-clamp-2 text-sm">
+                          {job.description}
+                        </p>
+                      )}
+                    </div>
+                    {job.employment_type && (
+                      <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
+                        {job.employment_type.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-4 text-sm">
+                    {location && (
+                      <span className="inline-flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        {location}
+                      </span>
+                    )}
+                    {remote && (
+                      <span className="inline-flex items-center gap-1">
+                        <Briefcase className="h-4 w-4" />
+                        Remoto
+                      </span>
+                    )}
+                    {salaryFormatted && (
+                      <span className="inline-flex items-center gap-1">
+                        <DollarSign className="h-4 w-4" />
+                        {salaryFormatted}
+                      </span>
+                    )}
+                  </div>
+
+                  {job.benefits && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {job.benefits
+                        .split(';')
+                        .map((benefit) => benefit.trim())
+                        .filter(Boolean)
+                        .slice(0, 4)
+                        .map((benefit) => (
+                          <span
+                            key={benefit}
+                            className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs"
+                          >
+                            {benefit}
+                          </span>
+                        ))}
+                    </div>
+                  )}
+
+                  <div className="mt-6">
+                    <Link to={`/vagas/${job.id}`}>
+                      <Button variant="secondary" size="sm" className="w-full">
+                        Ver detalhes
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
 
-          {vagas.length === 0 && (
+          {filteredJobs.length === 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

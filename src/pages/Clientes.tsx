@@ -1,29 +1,28 @@
 ﻿import { motion, useInView } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
-import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
-import { Building2, Users, Phone } from 'lucide-react';
+import { COMPANY } from '@/config';
 import { useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/lib/supabase';
-import type { CompanyPublic } from '@/types/domain/company';
+import type { CustomerPublic } from '@/types/domain/company';
+import { staggerReveal, revealUp } from '@/animations/scroll';
 
-function useCompanies() {
+function useCustomers() {
   return useQuery({
-    queryKey: ['companies'],
+    queryKey: ['customers'],
     queryFn: async () => {
       const supabase = getSupabaseClient();
       if (!supabase) return [];
       const { data, error } = await supabase
-        .from('companies')
-        .select('id, legal_name, status')
+        .from('customers')
+        .select('id, name, legal_name, document, status')
+        .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
         .order('created_at', { ascending: true })
         .limit(50);
       if (error) throw error;
-      return (data || []) as CompanyPublic[];
+      return (data || []) as CustomerPublic[];
     },
   });
 }
@@ -38,7 +37,9 @@ function ClientCase({
 }: {
   client: {
     id: string;
-    legal_name: string;
+    name: string;
+    legal_name: string | null;
+    document: string | null;
     status: string;
   };
   index: number;
@@ -71,25 +72,33 @@ function ClientCase({
           className="absolute inset-0"
         >
           <div className="bg-primary/10 text-primary flex h-full w-full items-center justify-center text-6xl font-bold">
-            {client.legal_name
-              ? client.legal_name.charAt(0).toUpperCase()
-              : '?'}
+            {client.name.charAt(0).toUpperCase()}
           </div>
         </motion.div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
         <div className="absolute right-0 bottom-0 left-0 p-6 sm:p-8">
           <h3 className="text-2xl font-bold text-white drop-shadow-md sm:text-3xl">
-            {client.legal_name}
+            {client.name}
           </h3>
+          {client.legal_name && (
+            <p className="mt-1 text-sm text-white/80">{client.legal_name}</p>
+          )}
         </div>
       </div>
 
       <div className={`${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
         <div className="max-w-xl">
           <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-            {client.legal_name}
+            {client.name}
           </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            {client.document && (
+              <span className="text-muted-foreground text-sm">
+                {client.document}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>
@@ -97,9 +106,9 @@ function ClientCase({
 }
 
 export default function Clientes() {
-  const { data: companies = [] } = useCompanies();
-  const confirmedClients = companies.filter(
-    (company) => company.status === 'active',
+  const { data: customers = [] } = useCustomers();
+  const confirmedClients = customers.filter(
+    (client) => client.status === 'active',
   );
 
   return (
@@ -116,96 +125,47 @@ export default function Clientes() {
           'terceirização',
           'facilities',
         ]}
-        type="WebSite"
       />
-
       <Section className="pt-20 md:pt-28">
         <Container>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mb-12 text-center"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-primary/10 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-3xl font-bold sm:text-4xl"
             >
-              <Building2 className="h-4 w-4" />
-              <span>Relacionamentos J&S</span>
-            </motion.div>
-
-            <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
-              Relacionamentos que constroem confiança
-            </h1>
-            <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
-              A J&S Empregos LTDA conecta empresas e profissionais com soluções
-              em Recursos Humanos, recrutamento, terceirização e facilities.
-              Cada parceiro faz parte da nossa história.
-            </p>
+              Clientes que Confiam na J&S
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Conheça algumas das empresas que escolheram nossas soluções.
+            </motion.p>
           </motion.div>
-        </Container>
-      </Section>
 
-      <Section className="pb-0">
-        <Container>
-          <div className="mt-20 space-y-20">
+          <div className="space-y-24">
             {confirmedClients.map((client, index) => (
               <ClientCase key={client.id} client={client} index={index} />
             ))}
           </div>
-        </Container>
-      </Section>
 
-      <Section className="mt-24">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
-          >
-            <div className="bg-card border-border shadow-premium rounded-3xl border p-8 sm:p-12">
-              <Users className="text-primary mx-auto mb-4 h-12 w-12" />
-              <h2 className="text-foreground text-2xl font-bold sm:text-3xl">
-                Grandes empresas possuem grandes desafios.
-                <br />
-                <span className="text-primary">
-                  A J&S trabalha para que pessoas e processos estejam à altura
-                  deles.
-                </span>
-              </h2>
-              <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
-                Converse com nosso time comercial e entenda como podemos apoiar
-                sua operação com profissionais qualificados e soluções em RH.
+          {confirmedClients.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="mt-20 text-center"
+            >
+              <p className="text-muted-foreground text-lg">
+                Nenhum cliente encontrado no momento.
               </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <Link to="/empresas">
-                  <Button variant="primary" size="lg">
-                    Falar com a J&S
-                  </Button>
-                </Link>
-                <motion.a
-                  href={getWhatsAppUrl(
-                    COMPANY.whatsapp,
-                    WHATSAPP_MESSAGES.comercial,
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button variant="outline" size="lg">
-                    <Phone className="mr-2 h-5 w-5" />
-                    WhatsApp comercial
-                  </Button>
-                </motion.a>
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
         </Container>
       </Section>
     </div>
