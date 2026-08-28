@@ -1,33 +1,33 @@
 import type {
-  CostCenter,
-  CostCenterCreateInput,
-  CostCenterUpdateInput,
+  FinancialCategory,
+  FinancialCategoryCreateInput,
+  FinancialCategoryUpdateInput,
 } from '@/types/domain/finance';
 
-export interface CostCenterRepository {
-  findAll(tenantId: string): Promise<CostCenter[]>;
-  findById(id: string, tenantId: string): Promise<CostCenter | null>;
-  create(input: CostCenterCreateInput): Promise<CostCenter>;
+export interface FinancialCategoryRepository {
+  findAll(tenantId: string): Promise<FinancialCategory[]>;
+  findById(id: string, tenantId: string): Promise<FinancialCategory | null>;
+  create(input: FinancialCategoryCreateInput): Promise<FinancialCategory>;
   update(
     id: string,
-    input: CostCenterUpdateInput,
+    input: FinancialCategoryUpdateInput,
     tenantId: string,
-  ): Promise<CostCenter>;
+  ): Promise<FinancialCategory>;
   remove(id: string, tenantId: string): Promise<void>;
 }
 
-export const costCenterRepository: CostCenterRepository = {
+export const financialCategoryRepository: FinancialCategoryRepository = {
   async findAll(tenantId: string) {
     const { getSupabaseClient } = await import('@/lib/supabase');
     const supabase = getSupabaseClient();
     if (!supabase) return [];
     const { data, error } = await supabase
-      .from('cost_centers')
+      .from('financial_categories')
       .select('*')
       .eq('tenant_id', tenantId)
       .order('name');
     if (error) throw error;
-    return (data || []) as CostCenter[];
+    return (data || []) as FinancialCategory[];
   },
 
   async findById(id: string, tenantId: string) {
@@ -35,41 +35,45 @@ export const costCenterRepository: CostCenterRepository = {
     const supabase = getSupabaseClient();
     if (!supabase) return null;
     const { data, error } = await supabase
-      .from('cost_centers')
+      .from('financial_categories')
       .select('*')
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .maybeSingle();
     if (error) throw error;
-    return data as CostCenter | null;
+    return data as FinancialCategory | null;
   },
 
-  async create(input: CostCenterCreateInput) {
+  async create(input: FinancialCategoryCreateInput) {
     const { getSupabaseClient } = await import('@/lib/supabase');
     const supabase = getSupabaseClient();
     if (!supabase) throw new Error('Supabase não configurado');
     const { data, error } = await supabase
-      .from('cost_centers')
+      .from('financial_categories')
       .insert(input)
       .select()
       .single();
     if (error) throw error;
-    return data as CostCenter;
+    return data as FinancialCategory;
   },
 
-  async update(id: string, input: CostCenterUpdateInput, tenantId: string) {
+  async update(
+    id: string,
+    input: FinancialCategoryUpdateInput,
+    tenantId: string,
+  ) {
     const { getSupabaseClient } = await import('@/lib/supabase');
     const supabase = getSupabaseClient();
     if (!supabase) throw new Error('Supabase não configurado');
     const { data, error } = await supabase
-      .from('cost_centers')
+      .from('financial_categories')
       .update(input)
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .select()
       .single();
     if (error) throw error;
-    return data as CostCenter;
+    return data as FinancialCategory;
   },
 
   async remove(id: string, tenantId: string) {
@@ -77,7 +81,7 @@ export const costCenterRepository: CostCenterRepository = {
     const supabase = getSupabaseClient();
     if (!supabase) return;
     const { error } = await supabase
-      .from('cost_centers')
+      .from('financial_categories')
       .delete()
       .eq('id', id)
       .eq('tenant_id', tenantId);

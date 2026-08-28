@@ -15,6 +15,12 @@ import {
   Calculator,
   Eye,
   Download,
+  FolderOpen,
+  Receipt,
+  Banknote,
+  PieChart,
+  Landmark,
+  Split,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -23,17 +29,45 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState, ErrorState } from '@/components/fallback';
 import { ConfirmDialog } from '@/components/feedback';
-import { accountsPayableRepository } from '@/repositories/accounts-payable.repository';
-import { accountsReceivableRepository } from '@/repositories/accounts-receivable.repository';
-import { cashFlowRepository } from '@/repositories/cash-flow.repository';
+import {
+  accountsPayableRepository,
+  accountsReceivableRepository,
+  cashFlowRepository,
+  financialCategoryRepository,
+  costCenterRepository,
+  invoiceRepository,
+  financialTransactionRepository,
+  bankReconciliationRepository,
+  financialInstallmentRepository,
+  financialAccountRepository,
+} from '@/repositories/finance.repository';
 import type {
   AccountPayable,
   AccountReceivable,
   CashFlow,
+  FinancialCategory,
+  CostCenter,
+  Invoice,
+  FinancialTransaction,
+  BankReconciliation,
+  FinancialInstallment,
+  FinancialAccount,
 } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
 
-type TabValue = 'dashboard' | 'contas-pagar' | 'contas-receber' | 'fluxo-caixa' | 'calculadora';
+type TabValue =
+  | 'dashboard'
+  | 'contas-pagar'
+  | 'contas-receber'
+  | 'fluxo-caixa'
+  | 'calculadora'
+  | 'categorias'
+  | 'centros-custo'
+  | 'notas-fiscais'
+  | 'transacoes'
+  | 'conciliacao'
+  | 'parcelamentos'
+  | 'contas-financeiras';
 
 export default function FinanceiroPage() {
   const { currentTenantId } = useAuth();
@@ -42,6 +76,17 @@ export default function FinanceiroPage() {
   const [payables, setPayables] = useState<AccountPayable[]>([]);
   const [receivables, setReceivables] = useState<AccountReceivable[]>([]);
   const [cashFlows, setCashFlows] = useState<CashFlow[]>([]);
+  const [categories, setCategories] = useState<FinancialCategory[]>([]);
+  const [costCenters, setCostCenters] = useState<CostCenter[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [transactions, setTransactions] = useState<FinancialTransaction[]>([]);
+  const [reconciliations, setReconciliations] = useState<BankReconciliation[]>(
+    [],
+  );
+  const [installments, setInstallments] = useState<FinancialInstallment[]>([]);
+  const [financialAccounts, setFinancialAccounts] = useState<
+    FinancialAccount[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,10 +96,14 @@ export default function FinanceiroPage() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [deleteType, setDeleteType] = useState<'payable' | 'receivable' | 'cashflow' | null>(null);
+  const [deleteType, setDeleteType] = useState<
+    'payable' | 'receivable' | 'cashflow' | null
+  >(null);
 
   const [showForm, setShowForm] = useState(false);
-  const [formType, setFormType] = useState<'payable' | 'receivable' | 'cashflow'>('payable');
+  const [formType, setFormType] = useState<
+    'payable' | 'receivable' | 'cashflow'
+  >('payable');
 
   const [formData, setFormData] = useState({
     description: '',
@@ -71,16 +120,45 @@ export default function FinanceiroPage() {
     setLoading(true);
     setError(null);
     try {
-      const [payablesData, receivablesData, cashFlowsData] = await Promise.all([
+      const [
+        payablesData,
+        receivablesData,
+        cashFlowsData,
+        categoriesData,
+        costCentersData,
+        invoicesData,
+        transactionsData,
+        reconciliationsData,
+        installmentsData,
+        financialAccountsData,
+      ] = await Promise.all([
         accountsPayableRepository.findAll(currentTenantId),
         accountsReceivableRepository.findAll(currentTenantId),
         cashFlowRepository.findAll(currentTenantId),
+        financialCategoryRepository.findAll(currentTenantId),
+        costCenterRepository.findAll(currentTenantId),
+        invoiceRepository.findAll(currentTenantId),
+        financialTransactionRepository.findAll(currentTenantId),
+        bankReconciliationRepository.findAll(currentTenantId),
+        financialInstallmentRepository.findAll(currentTenantId),
+        financialAccountRepository.findAll(currentTenantId),
       ]);
       setPayables(payablesData);
       setReceivables(receivablesData);
       setCashFlows(cashFlowsData);
+      setCategories(categoriesData);
+      setCostCenters(costCentersData);
+      setInvoices(invoicesData);
+      setTransactions(transactionsData);
+      setReconciliations(reconciliationsData);
+      setInstallments(installmentsData);
+      setFinancialAccounts(financialAccountsData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar dados financeiros');
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Erro ao carregar dados financeiros',
+      );
     } finally {
       setLoading(false);
     }
@@ -129,15 +207,30 @@ export default function FinanceiroPage() {
 
   const kpis = useMemo(() => {
     const payableTotal = payables.reduce((sum, item) => sum + item.amount, 0);
-    const payableOpen = payables.filter((item) => item.status === 'open').reduce((sum, item) => sum + item.amount, 0);
-    const payableOverdue = payables.filter((item) => item.status === 'overdue').reduce((sum, item) => sum + item.amount, 0);
+    const payableOpen = payables
+      .filter((item) => item.status === 'open')
+      .reduce((sum, item) => sum + item.amount, 0);
+    const payableOverdue = payables
+      .filter((item) => item.status === 'overdue')
+      .reduce((sum, item) => sum + item.amount, 0);
 
-    const receivableTotal = receivables.reduce((sum, item) => sum + item.amount, 0);
-    const receivableOpen = receivables.filter((item) => item.status === 'open').reduce((sum, item) => sum + item.amount, 0);
-    const receivableOverdue = receivables.filter((item) => item.status === 'overdue').reduce((sum, item) => sum + item.amount, 0);
+    const receivableTotal = receivables.reduce(
+      (sum, item) => sum + item.amount,
+      0,
+    );
+    const receivableOpen = receivables
+      .filter((item) => item.status === 'open')
+      .reduce((sum, item) => sum + item.amount, 0);
+    const receivableOverdue = receivables
+      .filter((item) => item.status === 'overdue')
+      .reduce((sum, item) => sum + item.amount, 0);
 
-    const totalIncome = cashFlows.filter((item) => item.type === 'income').reduce((sum, item) => sum + item.amount, 0);
-    const totalExpense = cashFlows.filter((item) => item.type === 'expense').reduce((sum, item) => sum + item.amount, 0);
+    const totalIncome = cashFlows
+      .filter((item) => item.type === 'income')
+      .reduce((sum, item) => sum + item.amount, 0);
+    const totalExpense = cashFlows
+      .filter((item) => item.type === 'expense')
+      .reduce((sum, item) => sum + item.amount, 0);
     const balance = totalIncome - totalExpense;
 
     return {
@@ -296,7 +389,9 @@ export default function FinanceiroPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-sm text-muted-foreground">Carregando dados financeiros...</p>
+        <p className="text-muted-foreground text-sm">
+          Carregando dados financeiros...
+        </p>
       </div>
     );
   }
@@ -309,15 +404,17 @@ export default function FinanceiroPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">
-            Financeiro
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Gestão completa: contas a pagar, receber, fluxo de caixa e demonstrativos.
+          <h1 className="text-foreground text-xl font-semibold">Financeiro</h1>
+          <p className="text-muted-foreground text-sm">
+            Gestão completa: contas a pagar, receber, fluxo de caixa e
+            demonstrativos.
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => setActiveTab('calculadora')}>
+          <Button
+            variant="secondary"
+            onClick={() => setActiveTab('calculadora')}
+          >
             <Calculator className="mr-2 h-4 w-4" />
             Calculadora
           </Button>
@@ -328,21 +425,28 @@ export default function FinanceiroPage() {
         </div>
       </div>
 
-      <div className="flex gap-2 border-b border-border overflow-x-auto">
+      <div className="border-border flex gap-2 overflow-x-auto border-b">
         {[
           { key: 'dashboard', label: 'Dashboard' },
           { key: 'contas-pagar', label: 'Contas a pagar' },
           { key: 'contas-receber', label: 'Contas a receber' },
           { key: 'fluxo-caixa', label: 'Fluxo de caixa' },
+          { key: 'notas-fiscais', label: 'Notas fiscais' },
+          { key: 'transacoes', label: 'Transações' },
+          { key: 'categorias', label: 'Categorias' },
+          { key: 'centros-custo', label: 'Centros de custo' },
+          { key: 'conciliacao', label: 'Conciliação' },
+          { key: 'parcelamentos', label: 'Parcelamentos' },
+          { key: 'contas-financeiras', label: 'Contas' },
           { key: 'calculadora', label: 'Calculadora' },
         ].map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key as TabValue)}
-            className={`whitespace-nowrap px-4 py-2 text-sm font-medium transition-colors ${
+            className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
               activeTab === tab.key
-                 ? 'border-b-2 border-primary text-primary'
-                 : 'text-muted-foreground hover:text-foreground'
+                ? 'border-primary text-primary border-b-2'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {tab.label}
@@ -359,15 +463,69 @@ export default function FinanceiroPage() {
         >
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              { label: 'Contas a pagar', value: kpis.payableTotal, icon: ArrowUpCircle, color: 'text-red-700', bg: 'bg-red-50' },
-              { label: 'Contas a pagar em aberto', value: kpis.payableOpen, icon: Wallet, color: 'text-orange-700', bg: 'bg-orange-50' },
-              { label: 'Contas a pagar vencidas', value: kpis.payableOverdue, icon: ArrowUpCircle, color: 'text-red-700', bg: 'bg-red-50' },
-              { label: 'Contas a receber', value: kpis.receivableTotal, icon: ArrowDownCircle, color: 'text-green-700', bg: 'bg-green-50' },
-              { label: 'Contas a receber em aberto', value: kpis.receivableOpen, icon: Wallet, color: 'text-emerald-700', bg: 'bg-emerald-50' },
-              { label: 'Contas a receber vencidas', value: kpis.receivableOverdue, icon: ArrowDownCircle, color: 'text-red-700', bg: 'bg-red-50' },
-              { label: 'Entradas do período', value: kpis.totalIncome, icon: TrendingUp, color: 'text-green-700', bg: 'bg-green-50' },
-              { label: 'Saídas do período', value: kpis.totalExpense, icon: TrendingDown, color: 'text-red-700', bg: 'bg-red-50' },
-              { label: 'Saldo do período', value: kpis.balance, icon: CircleDollarSign, color: kpis.balance >= 0 ? 'text-green-700' : 'text-red-700', bg: kpis.balance >= 0 ? 'bg-green-50' : 'bg-red-50' },
+              {
+                label: 'Contas a pagar',
+                value: kpis.payableTotal,
+                icon: ArrowUpCircle,
+                color: 'text-red-700',
+                bg: 'bg-red-50',
+              },
+              {
+                label: 'Contas a pagar em aberto',
+                value: kpis.payableOpen,
+                icon: Wallet,
+                color: 'text-orange-700',
+                bg: 'bg-orange-50',
+              },
+              {
+                label: 'Contas a pagar vencidas',
+                value: kpis.payableOverdue,
+                icon: ArrowUpCircle,
+                color: 'text-red-700',
+                bg: 'bg-red-50',
+              },
+              {
+                label: 'Contas a receber',
+                value: kpis.receivableTotal,
+                icon: ArrowDownCircle,
+                color: 'text-green-700',
+                bg: 'bg-green-50',
+              },
+              {
+                label: 'Contas a receber em aberto',
+                value: kpis.receivableOpen,
+                icon: Wallet,
+                color: 'text-emerald-700',
+                bg: 'bg-emerald-50',
+              },
+              {
+                label: 'Contas a receber vencidas',
+                value: kpis.receivableOverdue,
+                icon: ArrowDownCircle,
+                color: 'text-red-700',
+                bg: 'bg-red-50',
+              },
+              {
+                label: 'Entradas do período',
+                value: kpis.totalIncome,
+                icon: TrendingUp,
+                color: 'text-green-700',
+                bg: 'bg-green-50',
+              },
+              {
+                label: 'Saídas do período',
+                value: kpis.totalExpense,
+                icon: TrendingDown,
+                color: 'text-red-700',
+                bg: 'bg-red-50',
+              },
+              {
+                label: 'Saldo do período',
+                value: kpis.balance,
+                icon: CircleDollarSign,
+                color: kpis.balance >= 0 ? 'text-green-700' : 'text-red-700',
+                bg: kpis.balance >= 0 ? 'bg-green-50' : 'bg-red-50',
+              },
             ].map((kpi) => {
               const Icon = kpi.icon;
               return (
@@ -377,8 +535,10 @@ export default function FinanceiroPage() {
                       <Icon className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">{kpi.label}</p>
-                      <p className="text-lg font-semibold text-foreground">
+                      <p className="text-muted-foreground text-xs">
+                        {kpi.label}
+                      </p>
+                      <p className="text-foreground text-lg font-semibold">
                         {formatCurrency(kpi.value)}
                       </p>
                     </div>
@@ -391,25 +551,44 @@ export default function FinanceiroPage() {
           <div className="grid gap-4 lg:grid-cols-2">
             <Card className="p-4">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground">Contas a pagar recentes</h3>
-                <Button variant="ghost" size="sm" onClick={() => setActiveTab('contas-pagar')}>
+                <h3 className="text-foreground text-sm font-semibold">
+                  Contas a pagar recentes
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveTab('contas-pagar')}
+                >
                   <Eye className="mr-1 h-4 w-4" />
                   Ver todas
                 </Button>
               </div>
               {filteredPayables.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Nenhuma conta a pagar cadastrada.</p>
+                <p className="text-muted-foreground text-sm">
+                  Nenhuma conta a pagar cadastrada.
+                </p>
               ) : (
                 <div className="space-y-2">
                   {filteredPayables.slice(0, 5).map((item) => (
-                    <div key={item.id} className="flex items-center justify-between rounded-lg border border-border p-3">
+                    <div
+                      key={item.id}
+                      className="border-border flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div>
-                        <p className="text-sm font-medium text-foreground">{item.description}</p>
-                        <p className="text-xs text-muted-foreground">Vencimento: {formatDate(item.due_date)}</p>
+                        <p className="text-foreground text-sm font-medium">
+                          {item.description}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          Vencimento: {formatDate(item.due_date)}
+                        </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-red-700">{formatCurrency(item.amount)}</p>
-                        <Badge variant={statusVariant(item.status)}>{statusLabel[item.status] || item.status}</Badge>
+                        <p className="text-sm font-semibold text-red-700">
+                          {formatCurrency(item.amount)}
+                        </p>
+                        <Badge variant={statusVariant(item.status)}>
+                          {statusLabel[item.status] || item.status}
+                        </Badge>
                       </div>
                     </div>
                   ))}
@@ -419,25 +598,44 @@ export default function FinanceiroPage() {
 
             <Card className="p-4">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground">Contas a receber recentes</h3>
-                <Button variant="ghost" size="sm" onClick={() => setActiveTab('contas-receber')}>
+                <h3 className="text-foreground text-sm font-semibold">
+                  Contas a receber recentes
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveTab('contas-receber')}
+                >
                   <Eye className="mr-1 h-4 w-4" />
                   Ver todas
                 </Button>
               </div>
               {filteredReceivables.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Nenhuma conta a receber cadastrada.</p>
+                <p className="text-muted-foreground text-sm">
+                  Nenhuma conta a receber cadastrada.
+                </p>
               ) : (
                 <div className="space-y-2">
                   {filteredReceivables.slice(0, 5).map((item) => (
-                    <div key={item.id} className="flex items-center justify-between rounded-lg border border-border p-3">
+                    <div
+                      key={item.id}
+                      className="border-border flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div>
-                        <p className="text-sm font-medium text-foreground">{item.description}</p>
-                        <p className="text-xs text-muted-foreground">Vencimento: {formatDate(item.due_date)}</p>
+                        <p className="text-foreground text-sm font-medium">
+                          {item.description}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          Vencimento: {formatDate(item.due_date)}
+                        </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-green-700">{formatCurrency(item.amount)}</p>
-                        <Badge variant={statusVariant(item.status)}>{statusLabel[item.status] || item.status}</Badge>
+                        <p className="text-sm font-semibold text-green-700">
+                          {formatCurrency(item.amount)}
+                        </p>
+                        <Badge variant={statusVariant(item.status)}>
+                          {statusLabel[item.status] || item.status}
+                        </Badge>
                       </div>
                     </div>
                   ))}
@@ -448,43 +646,81 @@ export default function FinanceiroPage() {
 
           <Card className="p-4">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-foreground">Fluxo de caixa recente</h3>
-              <Button variant="ghost" size="sm" onClick={() => setActiveTab('fluxo-caixa')}>
+              <h3 className="text-foreground text-sm font-semibold">
+                Fluxo de caixa recente
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setActiveTab('fluxo-caixa')}
+              >
                 <Eye className="mr-1 h-4 w-4" />
                 Ver todos
               </Button>
             </div>
             {filteredCashFlows.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nenhum lançamento de fluxo de caixa registrado.</p>
+              <p className="text-muted-foreground text-sm">
+                Nenhum lançamento de fluxo de caixa registrado.
+              </p>
             ) : (
               <div className="space-y-2">
                 {filteredCashFlows.slice(0, 5).map((item) => (
-                  <div key={item.id} className="flex items-center justify-between rounded-lg border border-border p-3">
+                  <div
+                    key={item.id}
+                    className="border-border flex items-center justify-between rounded-lg border p-3"
+                  >
                     <div className="flex items-center gap-3">
-                      <div className={`rounded-lg p-2 ${
-                        item.type === 'income' ? 'bg-green-50 text-green-700' :
-                        item.type === 'expense' ? 'bg-red-50 text-red-700' :
-                        'bg-blue-50 text-blue-700'
-                      }`}>
-                        {item.type === 'income' ? <ArrowDownCircle className="h-4 w-4" /> :
-                         item.type === 'expense' ? <ArrowUpCircle className="h-4 w-4" /> :
-                         <TrendingUp className="h-4 w-4" />}
+                      <div
+                        className={`rounded-lg p-2 ${
+                          item.type === 'income'
+                            ? 'bg-green-50 text-green-700'
+                            : item.type === 'expense'
+                              ? 'bg-red-50 text-red-700'
+                              : 'bg-blue-50 text-blue-700'
+                        }`}
+                      >
+                        {item.type === 'income' ? (
+                          <ArrowDownCircle className="h-4 w-4" />
+                        ) : item.type === 'expense' ? (
+                          <ArrowUpCircle className="h-4 w-4" />
+                        ) : (
+                          <TrendingUp className="h-4 w-4" />
+                        )}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">{item.description || 'Sem descrição'}</p>
-                        <p className="text-xs text-muted-foreground">{formatDate(item.date)} • {item.category || '—'}</p>
+                        <p className="text-foreground text-sm font-medium">
+                          {item.description || 'Sem descrição'}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {formatDate(item.date)} • {item.category || '—'}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <p className={`text-sm font-semibold ${
-                        item.type === 'income' ? 'text-green-700' :
-                        item.type === 'expense' ? 'text-red-700' :
-                        'text-blue-700'
-                      }`}>
-                        {item.type === 'expense' ? '-' : item.type === 'income' ? '+' : '±'}
+                      <p
+                        className={`text-sm font-semibold ${
+                          item.type === 'income'
+                            ? 'text-green-700'
+                            : item.type === 'expense'
+                              ? 'text-red-700'
+                              : 'text-blue-700'
+                        }`}
+                      >
+                        {item.type === 'expense'
+                          ? '-'
+                          : item.type === 'income'
+                            ? '+'
+                            : '±'}
                         {formatCurrency(item.amount)}
                       </p>
-                      <Button variant="ghost" size="sm" onClick={() => { setDeleteId(item.id); setDeleteType('cashflow'); }}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setDeleteId(item.id);
+                          setDeleteType('cashflow');
+                        }}
+                      >
                         Excluir
                       </Button>
                     </div>
@@ -504,8 +740,8 @@ export default function FinanceiroPage() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="flex flex-1 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
+            <div className="border-border bg-background flex flex-1 items-center gap-2 rounded-lg border px-3 py-2">
+              <Search className="text-muted-foreground h-4 w-4" />
               <input
                 value={searchPayable}
                 onChange={(e) => setSearchPayable(e.target.value)}
@@ -532,24 +768,40 @@ export default function FinanceiroPage() {
                 <motion.div
                   key={item.id}
                   layout
-                  className="flex items-center justify-between rounded-xl border border-border bg-background p-4 shadow-sm"
+                  className="border-border bg-background flex items-center justify-between rounded-xl border p-4 shadow-sm"
                 >
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">{item.description}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-foreground text-sm font-medium">
+                      {item.description}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
                       Vencimento: {formatDate(item.due_date)}
-                      {item.paid_date && ` • Pagamento: ${formatDate(item.paid_date)}`}
+                      {item.paid_date &&
+                        ` • Pagamento: ${formatDate(item.paid_date)}`}
                     </p>
                     {item.notes && (
-                      <p className="mt-1 text-xs text-muted-foreground">Obs: {item.notes}</p>
+                      <p className="text-muted-foreground mt-1 text-xs">
+                        Obs: {item.notes}
+                      </p>
                     )}
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-red-700">{formatCurrency(item.amount)}</p>
-                      <Badge variant={statusVariant(item.status)}>{statusLabel[item.status] || item.status}</Badge>
+                      <p className="text-sm font-semibold text-red-700">
+                        {formatCurrency(item.amount)}
+                      </p>
+                      <Badge variant={statusVariant(item.status)}>
+                        {statusLabel[item.status] || item.status}
+                      </Badge>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => { setDeleteId(item.id); setDeleteType('payable'); }}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setDeleteId(item.id);
+                        setDeleteType('payable');
+                      }}
+                    >
                       Excluir
                     </Button>
                   </div>
@@ -568,8 +820,8 @@ export default function FinanceiroPage() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="flex flex-1 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
+            <div className="border-border bg-background flex flex-1 items-center gap-2 rounded-lg border px-3 py-2">
+              <Search className="text-muted-foreground h-4 w-4" />
               <input
                 value={searchReceivable}
                 onChange={(e) => setSearchReceivable(e.target.value)}
@@ -596,24 +848,40 @@ export default function FinanceiroPage() {
                 <motion.div
                   key={item.id}
                   layout
-                  className="flex items-center justify-between rounded-xl border border-border bg-background p-4 shadow-sm"
+                  className="border-border bg-background flex items-center justify-between rounded-xl border p-4 shadow-sm"
                 >
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">{item.description}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-foreground text-sm font-medium">
+                      {item.description}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
                       Vencimento: {formatDate(item.due_date)}
-                      {item.received_date && ` • Recebimento: ${formatDate(item.received_date)}`}
+                      {item.received_date &&
+                        ` • Recebimento: ${formatDate(item.received_date)}`}
                     </p>
                     {item.notes && (
-                      <p className="mt-1 text-xs text-muted-foreground">Obs: {item.notes}</p>
+                      <p className="text-muted-foreground mt-1 text-xs">
+                        Obs: {item.notes}
+                      </p>
                     )}
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-green-700">{formatCurrency(item.amount)}</p>
-                      <Badge variant={statusVariant(item.status)}>{statusLabel[item.status] || item.status}</Badge>
+                      <p className="text-sm font-semibold text-green-700">
+                        {formatCurrency(item.amount)}
+                      </p>
+                      <Badge variant={statusVariant(item.status)}>
+                        {statusLabel[item.status] || item.status}
+                      </Badge>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => { setDeleteId(item.id); setDeleteType('receivable'); }}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setDeleteId(item.id);
+                        setDeleteType('receivable');
+                      }}
+                    >
                       Excluir
                     </Button>
                   </div>
@@ -633,24 +901,30 @@ export default function FinanceiroPage() {
         >
           <div className="grid gap-4 sm:grid-cols-3">
             <Card className="p-4">
-              <p className="text-xs text-muted-foreground">Entradas</p>
-              <p className="text-lg font-semibold text-green-700">{formatCurrency(kpis.totalIncome)}</p>
+              <p className="text-muted-foreground text-xs">Entradas</p>
+              <p className="text-lg font-semibold text-green-700">
+                {formatCurrency(kpis.totalIncome)}
+              </p>
             </Card>
             <Card className="p-4">
-              <p className="text-xs text-muted-foreground">Saídas</p>
-              <p className="text-lg font-semibold text-red-700">{formatCurrency(kpis.totalExpense)}</p>
+              <p className="text-muted-foreground text-xs">Saídas</p>
+              <p className="text-lg font-semibold text-red-700">
+                {formatCurrency(kpis.totalExpense)}
+              </p>
             </Card>
             <Card className="p-4">
-              <p className="text-xs text-muted-foreground">Saldo</p>
-              <p className={`text-lg font-semibold ${kpis.balance >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+              <p className="text-muted-foreground text-xs">Saldo</p>
+              <p
+                className={`text-lg font-semibold ${kpis.balance >= 0 ? 'text-green-700' : 'text-red-700'}`}
+              >
                 {formatCurrency(kpis.balance)}
               </p>
             </Card>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="flex flex-1 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
+            <div className="border-border bg-background flex flex-1 items-center gap-2 rounded-lg border px-3 py-2">
+              <Search className="text-muted-foreground h-4 w-4" />
               <input
                 value={searchCashFlow}
                 onChange={(e) => setSearchCashFlow(e.target.value)}
@@ -661,7 +935,7 @@ export default function FinanceiroPage() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none"
+              className="border-border bg-background rounded-lg border px-3 py-2 text-sm outline-none"
             >
               <option value="all">Todos os tipos</option>
               <option value="income">Entradas</option>
@@ -685,44 +959,70 @@ export default function FinanceiroPage() {
             <div className="space-y-3">
               {filteredCashFlows.map((item) => {
                 const Icon =
-                  item.type === 'income' ? ArrowDownCircle :
-                  item.type === 'expense' ? ArrowUpCircle :
-                  TrendingUp;
+                  item.type === 'income'
+                    ? ArrowDownCircle
+                    : item.type === 'expense'
+                      ? ArrowUpCircle
+                      : TrendingUp;
 
                 return (
                   <motion.div
                     key={item.id}
                     layout
-                    className="flex items-center justify-between rounded-xl border border-border bg-background p-4 shadow-sm"
+                    className="border-border bg-background flex items-center justify-between rounded-xl border p-4 shadow-sm"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`rounded-lg p-2 ${
-                        item.type === 'income' ? 'bg-green-50 text-green-700' :
-                        item.type === 'expense' ? 'bg-red-50 text-red-700' :
-                        'bg-blue-50 text-blue-700'
-                      }`}>
+                      <div
+                        className={`rounded-lg p-2 ${
+                          item.type === 'income'
+                            ? 'bg-green-50 text-green-700'
+                            : item.type === 'expense'
+                              ? 'bg-red-50 text-red-700'
+                              : 'bg-blue-50 text-blue-700'
+                        }`}
+                      >
                         <Icon className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">{item.description || 'Sem descrição'}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDate(item.date)} • {item.category || '—'} {item.subcategory ? `• ${item.subcategory}` : ''}
+                        <p className="text-foreground text-sm font-medium">
+                          {item.description || 'Sem descrição'}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {formatDate(item.date)} • {item.category || '—'}{' '}
+                          {item.subcategory ? `• ${item.subcategory}` : ''}
                         </p>
                         {item.notes && (
-                          <p className="mt-1 text-xs text-muted-foreground">Obs: {item.notes}</p>
+                          <p className="text-muted-foreground mt-1 text-xs">
+                            Obs: {item.notes}
+                          </p>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <p className={`text-sm font-semibold ${
-                        item.type === 'income' ? 'text-green-700' :
-                        item.type === 'expense' ? 'text-red-700' :
-                        'text-blue-700'
-                      }`}>
-                        {item.type === 'expense' ? '-' : item.type === 'income' ? '+' : '±'}
+                      <p
+                        className={`text-sm font-semibold ${
+                          item.type === 'income'
+                            ? 'text-green-700'
+                            : item.type === 'expense'
+                              ? 'text-red-700'
+                              : 'text-blue-700'
+                        }`}
+                      >
+                        {item.type === 'expense'
+                          ? '-'
+                          : item.type === 'income'
+                            ? '+'
+                            : '±'}
                         {formatCurrency(item.amount)}
                       </p>
-                      <Button variant="ghost" size="sm" onClick={() => { setDeleteId(item.id); setDeleteType('cashflow'); }}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setDeleteId(item.id);
+                          setDeleteType('cashflow');
+                        }}
+                      >
                         Excluir
                       </Button>
                     </div>
@@ -742,18 +1042,19 @@ export default function FinanceiroPage() {
           transition={{ duration: 0.3 }}
         >
           <Card className="p-6">
-            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
+            <h3 className="text-foreground mb-4 flex items-center gap-2 text-lg font-semibold">
               <Calculator className="h-5 w-5" />
               Calculadora Financeira
             </h3>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Área para cálculos e simulações. Os valores abaixo são apenas para consulta e não alteram os registros do sistema.
+            <p className="text-muted-foreground mb-4 text-sm">
+              Área para cálculos e simulações. Os valores abaixo são apenas para
+              consulta e não alteram os registros do sistema.
             </p>
             <FinanceCalculator />
           </Card>
 
           <Card className="p-6">
-            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
+            <h3 className="text-foreground mb-4 flex items-center gap-2 text-lg font-semibold">
               <FileText className="h-5 w-5" />
               Observações e Anotações
             </h3>
@@ -764,15 +1065,21 @@ export default function FinanceiroPage() {
                   id="calc-notes"
                   rows={6}
                   placeholder="Registre aqui suas observações, anotações e comentários sobre o cálculo ou simulação realizada..."
-                  className="mt-1 w-full rounded-lg border border-border p-3 text-sm outline-none focus:border-blue-500"
+                  className="border-border mt-1 w-full rounded-lg border p-3 text-sm outline-none focus:border-blue-500"
                 />
               </div>
               <div className="flex gap-2">
-                <Button variant="secondary" onClick={() => alert('Observações salvas localmente')}>
+                <Button
+                  variant="secondary"
+                  onClick={() => alert('Observações salvas localmente')}
+                >
                   <Download className="mr-2 h-4 w-4" />
                   Salvar anotação
                 </Button>
-                <Button variant="ghost" onClick={() => alert('Cálculo exportado')}>
+                <Button
+                  variant="ghost"
+                  onClick={() => alert('Cálculo exportado')}
+                >
                   <FileText className="mr-2 h-4 w-4" />
                   Exportar cálculo
                 </Button>
@@ -790,17 +1097,22 @@ export default function FinanceiroPage() {
         cancelLabel="Cancelar"
         variant="danger"
         onConfirm={handleDelete}
-        onCancel={() => { setDeleteId(null); setDeleteType(null); }}
+        onCancel={() => {
+          setDeleteId(null);
+          setDeleteType(null);
+        }}
       />
 
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <Card className="w-full max-w-lg p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">
-                {formType === 'payable' ? 'Nova conta a pagar' :
-                 formType === 'receivable' ? 'Nova conta a receber' :
-                 'Novo lançamento de fluxo de caixa'}
+              <h3 className="text-foreground text-lg font-semibold">
+                {formType === 'payable'
+                  ? 'Nova conta a pagar'
+                  : formType === 'receivable'
+                    ? 'Nova conta a receber'
+                    : 'Novo lançamento de fluxo de caixa'}
               </h3>
               <Button variant="ghost" size="sm" onClick={handleCloseForm}>
                 Fechar
@@ -812,7 +1124,9 @@ export default function FinanceiroPage() {
                 <Input
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   placeholder="Descrição do lançamento"
                   required
                 />
@@ -826,7 +1140,9 @@ export default function FinanceiroPage() {
                     step="0.01"
                     min="0"
                     value={formData.amount}
-                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, amount: e.target.value })
+                    }
                     placeholder="0,00"
                     required
                   />
@@ -837,7 +1153,9 @@ export default function FinanceiroPage() {
                     id="due_date"
                     type="date"
                     value={formData.due_date}
-                    onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, due_date: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -849,8 +1167,14 @@ export default function FinanceiroPage() {
                     <select
                       id="type"
                       value={formData.type}
-                      onChange={(e) => setFormData({ ...formData, type: e.target.value as 'income' | 'expense' | 'transfer' })}
-                      className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          type: e.target.value as
+                            'income' | 'expense' | 'transfer',
+                        })
+                      }
+                      className="border-border bg-background mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none"
                     >
                       <option value="income">Entrada</option>
                       <option value="expense">Saída</option>
@@ -862,7 +1186,9 @@ export default function FinanceiroPage() {
                     <Input
                       id="category"
                       value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, category: e.target.value })
+                      }
                       placeholder="Ex: Vendas, Fornecedores"
                     />
                   </div>
@@ -871,7 +1197,12 @@ export default function FinanceiroPage() {
                     <Input
                       id="subcategory"
                       value={formData.subcategory}
-                      onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          subcategory: e.target.value,
+                        })
+                      }
                       placeholder="Ex: Produtos, Serviços"
                     />
                   </div>
@@ -883,18 +1214,22 @@ export default function FinanceiroPage() {
                   id="notes"
                   rows={3}
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                   placeholder="Informações adicionais..."
-                  className="mt-1 w-full rounded-lg border border-border p-3 text-sm outline-none focus:border-blue-500"
+                  className="border-border mt-1 w-full rounded-lg border p-3 text-sm outline-none focus:border-blue-500"
                 />
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="secondary" onClick={handleCloseForm}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleCloseForm}
+                >
                   Cancelar
                 </Button>
-                <Button type="submit">
-                  Salvar
-                </Button>
+                <Button type="submit">Salvar</Button>
               </div>
             </form>
           </Card>
@@ -966,11 +1301,13 @@ function FinanceCalculator() {
         <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
           <p className="text-sm text-blue-700">Valor da parcela:</p>
           <p className="text-2xl font-bold text-blue-900">
-            {result.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            {result.toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            })}
           </p>
         </div>
       )}
     </div>
   );
 }
-

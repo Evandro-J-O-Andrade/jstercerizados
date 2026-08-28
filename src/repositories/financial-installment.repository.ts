@@ -1,33 +1,33 @@
 import type {
-  CostCenter,
-  CostCenterCreateInput,
-  CostCenterUpdateInput,
+  FinancialInstallment,
+  FinancialInstallmentCreateInput,
+  FinancialInstallmentUpdateInput,
 } from '@/types/domain/finance';
 
-export interface CostCenterRepository {
-  findAll(tenantId: string): Promise<CostCenter[]>;
-  findById(id: string, tenantId: string): Promise<CostCenter | null>;
-  create(input: CostCenterCreateInput): Promise<CostCenter>;
+export interface FinancialInstallmentRepository {
+  findAll(tenantId: string): Promise<FinancialInstallment[]>;
+  findById(id: string, tenantId: string): Promise<FinancialInstallment | null>;
+  create(input: FinancialInstallmentCreateInput): Promise<FinancialInstallment>;
   update(
     id: string,
-    input: CostCenterUpdateInput,
+    input: FinancialInstallmentUpdateInput,
     tenantId: string,
-  ): Promise<CostCenter>;
+  ): Promise<FinancialInstallment>;
   remove(id: string, tenantId: string): Promise<void>;
 }
 
-export const costCenterRepository: CostCenterRepository = {
+export const financialInstallmentRepository: FinancialInstallmentRepository = {
   async findAll(tenantId: string) {
     const { getSupabaseClient } = await import('@/lib/supabase');
     const supabase = getSupabaseClient();
     if (!supabase) return [];
     const { data, error } = await supabase
-      .from('cost_centers')
+      .from('financial_installments')
       .select('*')
       .eq('tenant_id', tenantId)
-      .order('name');
+      .order('due_date', { ascending: true });
     if (error) throw error;
-    return (data || []) as CostCenter[];
+    return (data || []) as FinancialInstallment[];
   },
 
   async findById(id: string, tenantId: string) {
@@ -35,41 +35,45 @@ export const costCenterRepository: CostCenterRepository = {
     const supabase = getSupabaseClient();
     if (!supabase) return null;
     const { data, error } = await supabase
-      .from('cost_centers')
+      .from('financial_installments')
       .select('*')
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .maybeSingle();
     if (error) throw error;
-    return data as CostCenter | null;
+    return data as FinancialInstallment | null;
   },
 
-  async create(input: CostCenterCreateInput) {
+  async create(input: FinancialInstallmentCreateInput) {
     const { getSupabaseClient } = await import('@/lib/supabase');
     const supabase = getSupabaseClient();
     if (!supabase) throw new Error('Supabase não configurado');
     const { data, error } = await supabase
-      .from('cost_centers')
+      .from('financial_installments')
       .insert(input)
       .select()
       .single();
     if (error) throw error;
-    return data as CostCenter;
+    return data as FinancialInstallment;
   },
 
-  async update(id: string, input: CostCenterUpdateInput, tenantId: string) {
+  async update(
+    id: string,
+    input: FinancialInstallmentUpdateInput,
+    tenantId: string,
+  ) {
     const { getSupabaseClient } = await import('@/lib/supabase');
     const supabase = getSupabaseClient();
     if (!supabase) throw new Error('Supabase não configurado');
     const { data, error } = await supabase
-      .from('cost_centers')
+      .from('financial_installments')
       .update(input)
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .select()
       .single();
     if (error) throw error;
-    return data as CostCenter;
+    return data as FinancialInstallment;
   },
 
   async remove(id: string, tenantId: string) {
@@ -77,7 +81,7 @@ export const costCenterRepository: CostCenterRepository = {
     const supabase = getSupabaseClient();
     if (!supabase) return;
     const { error } = await supabase
-      .from('cost_centers')
+      .from('financial_installments')
       .delete()
       .eq('id', id)
       .eq('tenant_id', tenantId);
