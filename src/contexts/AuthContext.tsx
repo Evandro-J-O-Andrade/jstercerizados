@@ -438,35 +438,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           await loadAuthData(data.user.id);
         } catch (identityError) {
-          console.warn('[AUTH:LOGIN] identity bootstrap needed', identityError);
-          const fullName =
-            (data.user.user_metadata as Record<string, unknown> | undefined)
-              ?.full_name ||
-            (data.user.user_metadata as Record<string, unknown> | undefined)
-              ?.name ||
-            data.user.email;
-
-          const { error: bootstrapError } = await supabase.rpc(
-            'bootstrap_candidate_identity',
-            {
-              p_auth_user_id: data.user.id,
-              p_full_name: String(fullName),
-              p_email: data.user.email,
-              p_phone: null,
-              p_tenant_id: null,
-              p_role_id: null,
-            },
-          );
-
-          if (bootstrapError) {
-            console.error('[AUTH:LOGIN] bootstrap failed', bootstrapError);
-            authLoadInFlightRef.current = false;
-            return {
-              error: normalizeError(bootstrapError).userMessage,
-            };
-          }
-
-          await loadAuthData(data.user.id);
+          console.error('[AUTH:LOGIN] identity incomplete', identityError);
+          authLoadInFlightRef.current = false;
+          await supabase.auth.signOut();
+          setSession(null);
+          setUser(null);
+          setPerson(null);
+          setTenantMemberships([]);
+          setCurrentTenantId(null);
+          setRoles([]);
+          setPermissions([]);
+          setRoleAssignments([]);
+          setFirstLoginState(null);
+          setLegalAcceptances([]);
+          setIsAdminMaster(false);
+          return {
+            error:
+              'Identidade nao encontrada. Verifique se seu cadastro esta completo ou solicite acesso ao administrador.',
+          };
         }
 
         initialSessionProcessedRef.current = true;
@@ -901,7 +890,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           p_auth_user_id: data.user.id,
           p_full_name: profileData.full_name,
           p_email: profileData.email,
-          p_phone: profileData.phone ?? null,
           p_tenant_id: profileData.tenantId ?? null,
           p_role_id: profileData.roleId ?? null,
         },
@@ -909,6 +897,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (bootstrapError) {
         console.error('[AUTH:REGISTER] bootstrap failed', bootstrapError);
+        await supabase.auth.signOut();
         return {
           error: normalizeError(bootstrapError).userMessage,
         };
