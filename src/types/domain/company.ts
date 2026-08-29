@@ -2,7 +2,6 @@ export type CompanyStatus = 'active' | 'inactive' | 'suspended' | 'pending';
 
 export interface Company {
   id: string;
-  tenant_id: string;
   name: string;
   legal_name: string | null;
   document: string | null;
@@ -12,7 +11,6 @@ export interface Company {
 }
 
 export interface CompanyCreateInput {
-  tenant_id: string;
   name: string;
   legal_name?: string | null;
   document?: string | null;
@@ -20,7 +18,6 @@ export interface CompanyCreateInput {
 }
 
 export interface CompanyUpdateInput {
-  tenant_id?: string;
   name?: string;
   legal_name?: string | null;
   document?: string | null;

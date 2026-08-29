@@ -33,7 +33,6 @@ export function mapCompany(
 ): Company {
   return {
     id: row.id,
-    tenant_id: row.tenant_id,
     name: row.name,
     legal_name: row.legal_name,
     document: row.document,

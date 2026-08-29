@@ -11,10 +11,21 @@ export class CompaniesRepository extends SupabaseRepository {
     filters?: { status?: string; search?: string },
   ): Promise<Company[]> {
     if (!this.supabase) return [];
+
+    const { data: relationships, error: relError } = await this.supabase
+      .from('company_relationships')
+      .select('company_id')
+      .eq('tenant_id', tenantId);
+
+    if (relError) throw relError;
+    if (!relationships || relationships.length === 0) return [];
+
+    const companyIds = relationships.map((r) => r.company_id);
+
     let query = this.supabase
       .from('companies')
       .select('*')
-      .eq('tenant_id', tenantId)
+      .in('id', companyIds)
       .order('created_at', { ascending: false });
 
     if (filters?.status) query = query.eq('status', filters.status);
@@ -30,29 +41,53 @@ export class CompaniesRepository extends SupabaseRepository {
 
   async findById(id: string, tenantId: string): Promise<Company | null> {
     if (!this.supabase) return null;
+
+    const { data: relationship, error: relError } = await this.supabase
+      .from('company_relationships')
+      .select('company_id')
+      .eq('company_id', id)
+      .eq('tenant_id', tenantId)
+      .maybeSingle();
+
+    if (relError) throw relError;
+    if (!relationship) return null;
+
     const { data, error } = await this.supabase
       .from('companies')
       .select('*')
       .eq('id', id)
-      .eq('tenant_id', tenantId)
       .maybeSingle();
     if (error) throw error;
     return data || null;
   }
 
-  async create(input: CompanyCreateInput): Promise<Company> {
+  async create(input: CompanyCreateInput, tenantId: string): Promise<Company> {
     if (!this.supabase) throw new Error('Supabase não configurado');
-    const payload = {
-      ...input,
-      tenant_id: input.tenant_id ?? null,
-    };
-    const { data, error } = await this.supabase
+
+    const { data: company, error: companyError } = await this.supabase
       .from('companies')
-      .insert(payload)
+      .insert({
+        name: input.name,
+        legal_name: input.legal_name ?? null,
+        document: input.document ?? null,
+        status: input.status ?? 'active',
+      })
       .select('*')
       .single();
-    if (error) throw error;
-    return data;
+
+    if (companyError) throw companyError;
+
+    const { error: relError } = await this.supabase
+      .from('company_relationships')
+      .insert({
+        company_id: company.id,
+        tenant_id: tenantId,
+        status: 'active',
+      });
+
+    if (relError) throw relError;
+
+    return company;
   }
 
   async update(
@@ -61,15 +96,27 @@ export class CompaniesRepository extends SupabaseRepository {
     input: CompanyUpdateInput,
   ): Promise<Company> {
     if (!this.supabase) throw new Error('Supabase não configurado');
-    const payload = {
-      ...input,
-      tenant_id: input.tenant_id ?? tenantId,
-    };
+
+    const { data: relationship, error: relError } = await this.supabase
+      .from('company_relationships')
+      .select('company_id')
+      .eq('company_id', id)
+      .eq('tenant_id', tenantId)
+      .maybeSingle();
+
+    if (relError) throw relError;
+    if (!relationship) return null as any;
+
+    const payload: Record<string, unknown> = {};
+    if (input.name !== undefined) payload.name = input.name;
+    if (input.legal_name !== undefined) payload.legal_name = input.legal_name;
+    if (input.document !== undefined) payload.document = input.document;
+    if (input.status !== undefined) payload.status = input.status;
+
     const { data, error } = await this.supabase
       .from('companies')
       .update(payload)
       .eq('id', id)
-      .eq('tenant_id', tenantId)
       .select('*')
       .single();
     if (error) throw error;
@@ -78,10 +125,11 @@ export class CompaniesRepository extends SupabaseRepository {
 
   async delete(id: string, tenantId: string): Promise<void> {
     if (!this.supabase) throw new Error('Supabase não configurado');
+
     const { error } = await this.supabase
-      .from('companies')
+      .from('company_relationships')
       .delete()
-      .eq('id', id)
+      .eq('company_id', id)
       .eq('tenant_id', tenantId);
     if (error) throw error;
   }

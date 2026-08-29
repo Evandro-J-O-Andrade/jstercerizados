@@ -361,6 +361,14 @@ function App() {
               }
             />
             <Route
+              path="empresas"
+              element={
+                <PermissionGuard permission="companies.read">
+                  <EmpresasPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
               path="processos-seletivos"
               element={
                 <PermissionGuard permission="recruitment.read">
