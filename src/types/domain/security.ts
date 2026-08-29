@@ -27,7 +27,7 @@ export interface AuditLog {
 export interface DomainEvent {
   id: string;
   tenant_id: string;
-  event_type: string;
+  event_name: string;
   aggregate_type: string;
   aggregate_id: string;
   actor_person_id: string | null;

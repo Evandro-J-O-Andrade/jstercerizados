@@ -24,8 +24,8 @@ interface DashboardStats {
   notifications: number;
   recentEvents: Array<{
     id: string;
-    event_type: string;
-    description: string;
+    event_name: string;
+    aggregate_type: string;
     created_at: string;
   }>;
   loading: boolean;
@@ -116,7 +116,7 @@ export default function DashboardHome() {
 
           const { data: events } = await supabase
             .from('domain_events')
-            .select('id, event_type, description, created_at')
+            .select('id, event_name, aggregate_type, created_at')
             .order('created_at', { ascending: false })
             .limit(8);
           recentEvents = events || [];
@@ -159,7 +159,7 @@ export default function DashboardHome() {
 
             const { data: events } = await supabase
               .from('domain_events')
-              .select('id, event_type, description, created_at')
+              .select('id, event_name, aggregate_type, created_at')
               .eq('tenant_id', activeTenantId)
               .order('created_at', { ascending: false })
               .limit(8);
@@ -481,10 +481,10 @@ export default function DashboardHome() {
                   >
                     <div className="min-w-0 flex-1">
                       <p className="text-foreground truncate text-sm font-medium">
-                        {event.description || event.event_type}
+                        {event.event_name}
                       </p>
                       <p className="text-muted-foreground truncate text-xs">
-                        {event.event_type}
+                        {event.aggregate_type || '—'}
                       </p>
                     </div>
                     <span className="text-muted-foreground shrink-0 text-xs">
@@ -537,4 +537,3 @@ export default function DashboardHome() {
     </ModuleWorkspace>
   );
 }
-

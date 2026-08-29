@@ -6,8 +6,8 @@ import { getSupabaseClient } from '@/lib/supabase';
 
 interface DomainEvent {
   id: string;
-  event_type: string;
-  description: string;
+  event_name: string;
+  aggregate_type: string;
   created_at: string;
 }
 
@@ -23,7 +23,7 @@ export default function GestaoSaaSPage() {
       try {
         const { data } = await supabase
           .from('domain_events')
-          .select('id, event_type, description, created_at')
+          .select('id, event_name, aggregate_type, created_at')
           .order('created_at', { ascending: false })
           .limit(20);
         setEvents(data || []);
@@ -94,10 +94,10 @@ export default function GestaoSaaSPage() {
                       className="hover:bg-muted/30 transition-colors"
                     >
                       <td className="text-foreground px-4 py-3 text-sm font-medium">
-                        {event.event_type}
+                        {event.event_name}
                       </td>
                       <td className="text-muted-foreground px-4 py-3 text-sm">
-                        {event.description || '—'}
+                        {event.aggregate_type || '—'}
                       </td>
                       <td className="text-muted-foreground px-4 py-3 text-sm">
                         {new Date(event.created_at).toLocaleDateString(
@@ -121,4 +121,3 @@ export default function GestaoSaaSPage() {
     </ModuleWorkspace>
   );
 }
-
