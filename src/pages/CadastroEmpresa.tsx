@@ -21,7 +21,7 @@ const companySchema = z
     email: z.string().email('E-mail inválido'),
     password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
     confirmPassword: z.string().min(6, 'Confirmação de senha é obrigatória'),
-    phone: z.string().optional(),
+    phone: z.string().min(1, 'Telefone é obrigatório'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Senhas não coincidem',

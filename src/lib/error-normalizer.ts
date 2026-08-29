@@ -40,14 +40,15 @@ const USER_MESSAGES: Record<ErrorCategory, string> = {
 
 export function normalizeError(input: unknown): NormalizedError {
   const technicalDetail = normalizeErrorDetail(input);
+  const specificMessage = getSupabaseSpecificMessage(input);
   const category = categorizeError(input);
-  const userMessage = USER_MESSAGES[category];
+  const userMessage = specificMessage ?? USER_MESSAGES[category];
   const canRetry =
     category !== 'auth' &&
     category !== 'permission' &&
     category !== 'not_found';
 
-  if (category !== 'unknown') {
+  if (category !== 'unknown' || specificMessage) {
     logError('Error normalized', {
       category,
       technicalDetail,
@@ -63,6 +64,37 @@ export function normalizeError(input: unknown): NormalizedError {
     technicalDetail,
     canRetry,
   };
+}
+
+function getSupabaseSpecificMessage(input: unknown): string | null {
+  if (typeof input !== 'object' || input === null) return null;
+  const record = input as Record<string, unknown>;
+  const code = typeof record.code === 'string' ? record.code : null;
+  const message =
+    typeof record.message === 'string' ? record.message.toLowerCase() : '';
+
+  if (
+    code === 'email_not_confirmed' ||
+    message.includes('email not confirmed')
+  ) {
+    return 'Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada e spam.';
+  }
+  if (
+    code === 'user_already_exists' ||
+    code === 'email_exists' ||
+    message.includes('already exists') ||
+    message.includes('already registered')
+  ) {
+    return 'Este e-mail já possui uma conta. Faça login ou recupere sua senha.';
+  }
+  if (
+    code === 'weak_password' ||
+    message.includes('weak_password') ||
+    message.includes('password should be')
+  ) {
+    return 'A senha não atende aos requisitos mínimos. Use pelo menos 6 caracteres.';
+  }
+  return null;
 }
 
 function normalizeErrorDetail(input: unknown): string {
