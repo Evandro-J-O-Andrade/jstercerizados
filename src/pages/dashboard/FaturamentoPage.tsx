@@ -338,7 +338,7 @@ export default function FaturamentoPage() {
                         {sale.description}
                       </td>
                       <td className="text-muted-foreground px-4 py-3">
-                        {new Date(sale.sale_date).toLocaleDateString('pt-BR')}
+                        {new Date(sale.issue_date).toLocaleDateString('pt-BR')}
                       </td>
                       <td className="text-foreground px-4 py-3">
                         {formatCurrency(sale.amount)}

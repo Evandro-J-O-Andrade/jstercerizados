@@ -37,7 +37,7 @@ export class BillingRepository extends SupabaseRepository {
       .from('sales')
       .select('*')
       .eq('tenant_id', tenantId)
-      .order('sale_date', { ascending: false });
+      .order('issue_date', { ascending: false });
     if (error) throw error;
     return (data || []) as Sale[];
   }

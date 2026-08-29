@@ -31,7 +31,7 @@ export interface Sale {
   company_id: string | null;
   description: string;
   amount: number;
-  sale_date: string;
+  issue_date: string;
   payment_method: string | null;
   created_at: string;
   updated_at: string;
@@ -42,7 +42,7 @@ export interface SaleCreateInput {
   company_id?: string | null;
   description: string;
   amount: number;
-  sale_date: string;
+  issue_date: string;
   payment_method?: string | null;
 }
 
