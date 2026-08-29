@@ -917,28 +917,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: 'Erro ao criar conta. Tente novamente.' };
       }
 
-      const { error: bootstrapError } = await supabase.rpc(
-        'bootstrap_candidate_identity',
-        {
-          p_auth_user_id: data.user.id,
-          p_full_name: profileData.full_name,
-          p_email: profileData.email,
-          p_tenant_id: profileData.tenantId ?? null,
-          p_role_id: profileData.roleId ?? null,
-        },
-      );
+      if (data.session) {
+        const { error: bootstrapError } = await supabase.rpc(
+          'bootstrap_candidate_identity',
+          {
+            p_auth_user_id: data.user.id,
+            p_full_name: profileData.full_name,
+            p_email: profileData.email,
+            p_tenant_id: profileData.tenantId ?? null,
+            p_role_id: profileData.roleId ?? null,
+          },
+        );
 
-      if (bootstrapError) {
-        console.error('[AUTH:REGISTER] bootstrap failed', bootstrapError);
-        await supabase.auth.signOut();
-        return {
-          error: normalizeError(bootstrapError).userMessage,
-        };
-      }
+        if (bootstrapError) {
+          console.error('[AUTH:REGISTER] bootstrap failed', bootstrapError);
+          await supabase.auth.signOut();
+          return {
+            error: normalizeError(bootstrapError).userMessage,
+          };
+        }
 
-      await loadAuthData(data.user.id);
+        await loadAuthData(data.user.id);
 
-      if (data.user.email_confirmed_at) {
         return { status: 'success' };
       }
 
