@@ -36,7 +36,6 @@ if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
   describe('Empresas — Integration Tests (Supabase Real)', () => {
     let tenantA: string;
     let tenantB: string;
-    let companyId: string;
 
     beforeAll(async () => {
       const { data: tenantsA } = await admin
