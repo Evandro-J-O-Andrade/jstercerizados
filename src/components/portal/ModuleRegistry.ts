@@ -1473,21 +1473,6 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
           },
         ],
       },
-      {
-        id: 'relatorios-fiscal',
-        title: 'Relatórios Fiscais',
-        description: 'Relatórios do módulo fiscal',
-        route: '/dashboard/relatorios/fiscal',
-        requiredPermissions: ['reports.read'],
-        actions: [
-          {
-            id: 'exportar',
-            title: 'Exportar',
-            description: 'Exportar relatório fiscal',
-            permission: 'reports.export',
-          },
-        ],
-      },
     ],
   },
   {
