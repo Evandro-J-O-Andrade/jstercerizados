@@ -22,7 +22,6 @@ import { useAccount } from '@/contexts/AccountContext';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { ModuleIcon } from '@/components/portal/PortalSidebar';
 import { getSupabaseClient } from '@/lib/supabase';
-import { cn } from '@/utils';
 import {
   buildGlobalDashboardKpis,
   type GlobalDashboardStats,
@@ -201,12 +200,7 @@ export default function DashboardHome() {
     [availableModules],
   );
 
-  const operationalHealth = useMemo(() => {
-    const total = stats.serviceOrders + stats.supportTickets;
-    const active = stats.serviceOrders + stats.supportTickets;
-    if (!total) return 100;
-    return Math.max(0, Math.min(100, Math.round(((total - active) / total) * 100)));
-  }, [stats.serviceOrders, stats.supportTickets]);
+  const operationalVolume = stats.serviceOrders + stats.supportTickets;
 
   return (
     <ModuleWorkspace
@@ -331,23 +325,20 @@ export default function DashboardHome() {
             <div className="bg-card border-border rounded-xl border p-5 shadow-sm">
               <div className="mb-5 flex items-center justify-between">
                 <div>
-                  <h3 className="text-foreground font-semibold">Saúde operacional</h3>
-                  <p className="text-muted-foreground text-sm">Resumo dos fluxos operacionais.</p>
+                  <h3 className="text-foreground font-semibold">Volume operacional</h3>
+                  <p className="text-muted-foreground text-sm">Ordens e chamados registrados.</p>
                 </div>
                 <Activity className="text-primary h-5 w-5" />
               </div>
               <div className="flex items-end justify-between gap-4">
                 <div>
-                  <p className="text-foreground text-3xl font-bold">{operationalHealth}%</p>
-                  <p className="text-muted-foreground text-xs">índice operacional</p>
+                  <p className="text-foreground text-3xl font-bold">{formatNumber(operationalVolume)}</p>
+                  <p className="text-muted-foreground text-xs">registros operacionais</p>
                 </div>
                 <div className="text-right text-xs">
                   <p className="text-foreground">{formatNumber(stats.serviceOrders)} ordens</p>
                   <p className="text-muted-foreground">{formatNumber(stats.supportTickets)} chamados</p>
                 </div>
-              </div>
-              <div className="bg-muted mt-4 h-2 overflow-hidden rounded-full">
-                <div className="bg-primary h-full rounded-full transition-all" style={{ width: `${operationalHealth}%` }} />
               </div>
             </div>
 
@@ -387,27 +378,27 @@ export default function DashboardHome() {
         </section>
 
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="bg-card border-border flex items-center gap-4 rounded-xl border p-4">
+          <NavLink to="/dashboard/financeiro" className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors">
             <CircleDollarSign className="text-success h-6 w-6" />
             <div>
               <p className="text-foreground text-sm font-medium">Financeiro</p>
-              <p className="text-muted-foreground text-xs">Acesse o domínio financeiro pelo menu lateral.</p>
+              <p className="text-muted-foreground text-xs">Contas, faturamento e fluxo financeiro.</p>
             </div>
-          </div>
-          <div className="bg-card border-border flex items-center gap-4 rounded-xl border p-4">
+          </NavLink>
+          <NavLink to="/dashboard/estoque" className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors">
             <Package className="text-primary h-6 w-6" />
             <div>
               <p className="text-foreground text-sm font-medium">Estoque</p>
-              <p className="text-muted-foreground text-xs">Produtos e movimentações em um único fluxo.</p>
+              <p className="text-muted-foreground text-xs">Produtos e movimentações.</p>
             </div>
-          </div>
-          <div className="bg-card border-border flex items-center gap-4 rounded-xl border p-4">
+          </NavLink>
+          <NavLink to="/dashboard/relatorios" className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors">
             <FileText className="text-accent h-6 w-6" />
             <div>
               <p className="text-foreground text-sm font-medium">Relatórios</p>
-              <p className="text-muted-foreground text-xs">Consolide os indicadores por domínio.</p>
+              <p className="text-muted-foreground text-xs">Indicadores consolidados por domínio.</p>
             </div>
-          </div>
+          </NavLink>
         </section>
       </div>
     </ModuleWorkspace>
