@@ -207,6 +207,7 @@ export interface Database {
       companies: {
         Row: {
           id: string;
+          tenant_id: string;
           legal_name: string;
           trading_name: string | null;
           cnpj: string | null;
@@ -231,6 +232,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
+          tenant_id?: string;
           legal_name: string;
           trading_name?: string | null;
           cnpj?: string | null;
@@ -254,6 +256,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: {
+          tenant_id?: string;
           legal_name?: string;
           trading_name?: string | null;
           cnpj?: string | null;

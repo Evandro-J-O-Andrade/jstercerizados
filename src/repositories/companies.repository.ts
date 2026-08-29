@@ -20,7 +20,7 @@ export class CompaniesRepository extends SupabaseRepository {
     if (filters?.status) query = query.eq('status', filters.status);
     if (filters?.search)
       query = query.or(
-        `name.ilike.%${filters.search}%,document.ilike.%${filters.search}%`,
+        `legal_name.ilike.%${filters.search}%,cnpj.ilike.%${filters.search}%`,
       );
 
     const { data, error } = await query;
@@ -42,9 +42,13 @@ export class CompaniesRepository extends SupabaseRepository {
 
   async create(input: CompanyCreateInput): Promise<Company> {
     if (!this.supabase) throw new Error('Supabase não configurado');
+    const payload = {
+      ...input,
+      tenant_id: input.tenant_id ?? null,
+    };
     const { data, error } = await this.supabase
       .from('companies')
-      .insert(input)
+      .insert(payload)
       .select('*')
       .single();
     if (error) throw error;
@@ -57,9 +61,13 @@ export class CompaniesRepository extends SupabaseRepository {
     input: CompanyUpdateInput,
   ): Promise<Company> {
     if (!this.supabase) throw new Error('Supabase não configurado');
+    const payload = {
+      ...input,
+      tenant_id: input.tenant_id ?? tenantId,
+    };
     const { data, error } = await this.supabase
       .from('companies')
-      .update(input)
+      .update(payload)
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .select('*')

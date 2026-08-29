@@ -5,6 +5,7 @@ export type CompanySize = 'micro' | 'small' | 'medium' | 'large' | 'enterprise';
 
 export interface Company {
   id: string;
+  tenant_id: string;
   legal_name: string;
   trading_name: string | null;
   cnpj: string | null;
@@ -29,6 +30,7 @@ export interface Company {
 }
 
 export interface CompanyCreateInput {
+  tenant_id: string;
   legal_name: string;
   trading_name?: string | null;
   cnpj?: string | null;
@@ -51,6 +53,7 @@ export interface CompanyCreateInput {
 }
 
 export interface CompanyUpdateInput {
+  tenant_id?: string;
   legal_name?: string;
   trading_name?: string | null;
   cnpj?: string | null;

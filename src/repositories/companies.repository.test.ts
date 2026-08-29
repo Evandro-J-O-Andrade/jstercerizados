@@ -39,10 +39,11 @@ describe('CompaniesRepository', () => {
   });
 
   describe('findAll', () => {
-    it('should return companies scoped by tenant relationships', async () => {
+    it('should return companies scoped by tenant_id', async () => {
       const mockCompanies: Company[] = [
         {
           id: '1',
+          tenant_id: 'tenant-1',
           legal_name: 'Empresa Teste',
           trading_name: 'Teste',
           cnpj: '12345678000100',
@@ -84,9 +85,10 @@ describe('CompaniesRepository', () => {
   });
 
   describe('findById', () => {
-    it('should return a company by id', async () => {
+    it('should return a company by id and tenant_id', async () => {
       const mockCompany: Company = {
         id: '1',
+        tenant_id: 'tenant-1',
         legal_name: 'Empresa Teste',
         trading_name: 'Teste',
         cnpj: '12345678000100',
@@ -114,8 +116,9 @@ describe('CompaniesRepository', () => {
   });
 
   describe('create', () => {
-    it('should create a company with valid data', async () => {
+    it('should create a company with tenant_id', async () => {
       const input: CompanyCreateInput = {
+        tenant_id: 'tenant-1',
         legal_name: 'Empresa Teste',
         trading_name: 'Teste',
         cnpj: '12345678000100',
@@ -139,6 +142,7 @@ describe('CompaniesRepository', () => {
 
     it('should throw raw Supabase error when cnpj already exists', async () => {
       const input: CompanyCreateInput = {
+        tenant_id: 'tenant-1',
         legal_name: 'Empresa Teste',
         trading_name: 'Teste',
         cnpj: '12345678000100',
@@ -163,13 +167,14 @@ describe('CompaniesRepository', () => {
   });
 
   describe('update', () => {
-    it('should update a company', async () => {
+    it('should update a company preserving tenant_id', async () => {
       const input: CompanyUpdateInput = {
         legal_name: 'Empresa Atualizada',
       };
 
       const mockCompany: Company = {
         id: '1',
+        tenant_id: 'tenant-1',
         legal_name: 'Empresa Atualizada',
         trading_name: 'Teste',
         cnpj: '12345678000100',
@@ -182,16 +187,18 @@ describe('CompaniesRepository', () => {
         createQueryBuilder({ data: mockCompany, error: null }),
       );
 
-      const result = await repository.update('1', input);
+      const result = await repository.update('1', 'tenant-1', input);
       expect(result).toEqual(mockCompany);
     });
 
-    it('should throw error when updating non-existent company', async () => {
+    it('should return null when updating non-existent company', async () => {
       mockSupabase.from.mockReturnValueOnce(
         createQueryBuilder({ data: null, error: null }),
       );
 
-      const result = await repository.update('999', { legal_name: 'Teste' });
+      const result = await repository.update('999', 'tenant-1', {
+        legal_name: 'Teste',
+      });
       expect(result).toBeNull();
     });
   });
@@ -202,7 +209,7 @@ describe('CompaniesRepository', () => {
         createQueryBuilder({ data: { id: '1' }, error: null }),
       );
 
-      const result = await repository.delete('1');
+      const result = await repository.delete('1', 'tenant-1');
       expect(result).toBeUndefined();
     });
 
@@ -211,13 +218,13 @@ describe('CompaniesRepository', () => {
         createQueryBuilder({ data: null, error: null }),
       );
 
-      const result = await repository.delete('999');
+      const result = await repository.delete('999', 'tenant-1');
       expect(result).toBeUndefined();
     });
   });
 
   describe('RBAC', () => {
-    it('should only return companies visible to the tenant', async () => {
+    it('should only return companies for the tenant', async () => {
       const builder = createQueryBuilder({ data: [], error: null });
       const eqSpy = vi.fn(() => builder);
       builder.eq = eqSpy;
@@ -225,7 +232,7 @@ describe('CompaniesRepository', () => {
       mockSupabase.from.mockReturnValueOnce(builder);
 
       await repository.findAll('tenant-1');
-      expect(eqSpy).toHaveBeenCalled();
+      expect(eqSpy).toHaveBeenCalledWith('tenant_id', 'tenant-1');
     });
   });
 });
