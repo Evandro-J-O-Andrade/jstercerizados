@@ -108,7 +108,7 @@ BEGIN
 
   IF v_first_login_state_person_id IS NULL THEN
     INSERT INTO public.first_login_state (person_id, must_change_password, first_login_completed)
-    VALUES (v_person_id, true, false)
+    VALUES (v_person_id, false, false)
     RETURNING person_id INTO v_first_login_state_person_id;
   END IF;
 
