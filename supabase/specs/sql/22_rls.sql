@@ -65,6 +65,14 @@ create policy people_member_read on public.people
     )
   );
 
+create policy people_bootstrap_insert on public.people
+  for insert
+  with check (
+    not exists (
+      select 1 from public.people p where p.auth_user_id = people.auth_user_id
+    )
+  );
+
 create policy tenant_memberships_member_read on public.tenant_memberships
   for select
   using (
@@ -77,6 +85,19 @@ create policy tenant_memberships_member_write on public.tenant_memberships
   with check (
     public.is_admin_master()
     or is_tenant_member(tenant_id)
+  );
+
+create policy tenant_memberships_bootstrap_insert on public.tenant_memberships
+  for insert
+  with check (
+    exists (
+      select 1 from public.people p where p.id = tenant_memberships.person_id
+    )
+    and not exists (
+      select 1 from public.tenant_memberships tm
+      where tm.person_id = tenant_memberships.person_id
+        and tm.tenant_id = tenant_memberships.tenant_id
+    )
   );
 
 create policy tenant_memberships_member_update on public.tenant_memberships
@@ -234,6 +255,19 @@ create policy candidates_member_read on public.candidates
 create policy candidates_member_write on public.candidates
   for insert
   with check (is_tenant_member(tenant_id));
+
+create policy candidates_bootstrap_insert on public.candidates
+  for insert
+  with check (
+    exists (
+      select 1 from public.people p where p.id = candidates.person_id
+    )
+    and not exists (
+      select 1 from public.candidates c
+      where c.person_id = candidates.person_id
+        and c.tenant_id = candidates.tenant_id
+    )
+  );
 
 create policy candidates_member_update on public.candidates
   for update
@@ -724,6 +758,18 @@ create policy first_login_state_member_write on public.first_login_state
     or exists (
       select 1 from public.tenant_memberships tm
       where tm.person_id = first_login_state.person_id and tm.status = 'active'
+    )
+  );
+
+create policy first_login_state_bootstrap_insert on public.first_login_state
+  for insert
+  with check (
+    exists (
+      select 1 from public.people p where p.id = first_login_state.person_id
+    )
+    and not exists (
+      select 1 from public.first_login_state fls
+      where fls.person_id = first_login_state.person_id
     )
   );
 
