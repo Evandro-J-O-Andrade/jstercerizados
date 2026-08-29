@@ -100,11 +100,11 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if (authError && loginStatus !== 'loading-profile') {
+    if (authError && loginStatus !== 'loading-profile' && !error) {
       setError(normalizeError(authError).userMessage);
       setLoginStatus('error');
     }
-  }, [authError, loginStatus]);
+  }, [authError, loginStatus, error]);
 
   if (loginStatus === 'success' && isAuthenticated) {
     if (!person) {
