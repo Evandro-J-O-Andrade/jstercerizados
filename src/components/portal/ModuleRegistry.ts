@@ -2369,8 +2369,10 @@ export function getAvailableFeatures(
   const scopes = Array.isArray(scope) ? scope : [scope];
   if (!module.features) return [];
   if (!scopes.includes(module.scope)) return [];
-  return module.features.filter((feature) =>
-    hasModulePermission(permissions, feature.requiredPermissions),
+  return module.features.filter(
+    (feature) =>
+      hasModulePermission(permissions, feature.requiredPermissions) &&
+      feature.route !== module.route,
   );
 }
 
