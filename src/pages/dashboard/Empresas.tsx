@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { FormAlert } from '@/components/ui/FormAlert';
-import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { companiesRepository } from '@/repositories/companies.repository';
@@ -28,7 +27,6 @@ export default function Empresas() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [formData, setFormData] = useState(emptyForm);
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const load = async () => {
     if (!currentTenantId) return;
@@ -87,13 +85,15 @@ export default function Empresas() {
           status: formData.status,
         });
       } else {
-        await companiesRepository.create({
-          tenant_id: currentTenantId,
-          name: formData.name,
-          legal_name: formData.legal_name || null,
-          document: formData.document || null,
-          status: formData.status,
-        });
+        await companiesRepository.create(
+          {
+            name: formData.name,
+            legal_name: formData.legal_name || null,
+            document: formData.document || null,
+            status: formData.status,
+          },
+          currentTenantId,
+        );
       }
 
       setIsFormOpen(false);
@@ -273,7 +273,13 @@ export default function Empresas() {
                   <option value="pending">Pendente</option>
                 </select>
               </div>
-              {formError && <FormAlert type="error" message={formError} />}
+              {formError && (
+                <FormAlert
+                  variant="error"
+                  title="Erro"
+                  description={formError}
+                />
+              )}
               <div className="flex justify-end gap-2">
                 <Button
                   variant="ghost"
