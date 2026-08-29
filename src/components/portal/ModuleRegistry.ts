@@ -18,7 +18,8 @@ export interface ModuleFeature {
   requiredPermissions?: string[];
   actions?: ModuleAction[];
   features?: ModuleFeature[];
-  implementationStatus?: 'active' | 'coming_soon' | 'planned';
+  implementationStatus?:
+    'implemented' | 'coming_soon' | 'beta' | 'disabled' | 'deprecated';
 }
 
 export interface ModuleAction {
