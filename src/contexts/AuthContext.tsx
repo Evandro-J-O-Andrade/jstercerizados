@@ -103,6 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [recoveryMode, setRecoveryMode] = useState(false);
   const initialSessionProcessedRef = useRef(false);
   const isMountedRef = useRef(true);
   const authLoadInFlightRef = useRef(false);
@@ -331,7 +332,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const authEvent = event as string;
 
-      if (
+      if (authEvent === 'PASSWORD_RECOVERY') {
+        console.log('[AUTH] password recovery detected');
+        setRecoveryMode(true);
+        initialSessionProcessedRef.current = false;
+        authLoadInFlightRef.current = false;
+        if (newSession?.user && isMountedRef.current) {
+          try {
+            await loadAuthData(newSession.user.id);
+          } catch (identityError) {
+            console.error(
+              '[AUTH] identity incomplete on recovery',
+              identityError,
+            );
+            await supabase.auth.signOut();
+            if (isMountedRef.current) {
+              setPerson(null);
+              setTenantMemberships([]);
+              setCurrentTenantId(null);
+              setRoles([]);
+              setPermissions([]);
+              setRoleAssignments([]);
+              setFirstLoginState(null);
+              setLegalAcceptances([]);
+              setIsAdminMaster(false);
+              setSession(null);
+              setUser(null);
+              setRecoveryMode(false);
+            }
+          }
+        }
+      } else if (
         authEvent === 'SIGNED_IN' &&
         newSession?.user &&
         !initialSessionProcessedRef.current &&
@@ -377,6 +408,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('[AUTH] onAuthStateChange clear state:', authEvent);
         initialSessionProcessedRef.current = false;
         authLoadInFlightRef.current = false;
+        setRecoveryMode(false);
         if (isMountedRef.current) {
           setPerson(null);
           setTenantMemberships([]);
@@ -580,6 +612,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       console.log('[AUTH:CHANGE_PASSWORD] updateUser:success');
+
+      if (recoveryMode) {
+        setRecoveryMode(false);
+      }
 
       if (person) {
         const { error: stateError } = await supabase
@@ -837,7 +873,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       firstLoginCompleted: firstLoginState?.first_login_completed ?? null,
       termsVersion: firstLoginState?.terms_version ?? null,
       permissionCount: permissions.length,
+      recoveryMode,
     });
+
+    if (recoveryMode) {
+      console.log('[AUTH:FLOW] redirect → /primeiro-acesso/senha (recovery)');
+      return '/primeiro-acesso/senha';
+    }
 
     if (tenantMemberships.length === 0) {
       console.log('[AUTH:FLOW] redirect → /onboarding (sem membership)');
@@ -871,6 +913,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     legalAcceptances,
     hasAnyPermission,
     permissions,
+    recoveryMode,
   ]);
 
   const register = async (
