@@ -18,6 +18,7 @@ export interface ModuleFeature {
   requiredPermissions?: string[];
   actions?: ModuleAction[];
   features?: ModuleFeature[];
+  implementationStatus?: 'active' | 'coming_soon' | 'planned';
 }
 
 export interface ModuleAction {
@@ -1416,7 +1417,68 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     category: 'negocio',
     scope: 'tenant',
     requiredPermissions: ['fiscal.dashboard.read'],
-    features: [],
+    features: [
+      {
+        id: 'notas-fiscais',
+        title: 'Notas fiscais',
+        description: 'Emissão, cancelamento e correção',
+        route: '/dashboard/fiscal/notas-fiscais',
+        requiredPermissions: ['fiscal.invoices.read'],
+        actions: [
+          {
+            id: 'emitir',
+            title: 'Emitir',
+            description: 'Emitir nota fiscal',
+            permission: 'fiscal.invoices.issue',
+          },
+          {
+            id: 'cancelar',
+            title: 'Cancelar',
+            description: 'Cancelar nota fiscal',
+            permission: 'fiscal.invoices.cancel',
+          },
+          {
+            id: 'inutilizar',
+            title: 'Inutilizar',
+            description: 'Inutilizar nota fiscal',
+            permission: 'fiscal.invoices.void',
+          },
+        ],
+        implementationStatus: 'coming_soon',
+      },
+      {
+        id: 'notas-recebidas',
+        title: 'Notas recebidas',
+        description: 'Entradas e importação',
+        route: '/dashboard/fiscal/notas-recebidas',
+        requiredPermissions: ['fiscal.invoices.read'],
+        implementationStatus: 'coming_soon',
+      },
+      {
+        id: 'retencoes',
+        title: 'Retenções',
+        description: 'Controle de retenções tributárias',
+        route: '/dashboard/fiscal/retencoes',
+        requiredPermissions: ['fiscal.taxes.read'],
+        implementationStatus: 'coming_soon',
+      },
+      {
+        id: 'relatorios-fiscais',
+        title: 'Relatórios fiscais',
+        description: 'Obrigações e relatórios tributários',
+        route: '/dashboard/fiscal/relatorios',
+        requiredPermissions: ['fiscal.reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatórios fiscais',
+            permission: 'fiscal.reports.export',
+          },
+        ],
+        implementationStatus: 'coming_soon',
+      },
+    ],
   },
   {
     id: 'contabilidade',
@@ -1810,7 +1872,96 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     category: 'negocio',
     scope: 'tenant',
     requiredPermissions: ['support_tickets.read'],
-    features: [],
+    features: [
+      {
+        id: 'chamados',
+        title: 'Chamados',
+        description: 'Abrir e acompanhar chamados',
+        route: '/dashboard/suporte/chamados',
+        requiredPermissions: ['support_tickets.read'],
+        actions: [
+          {
+            id: 'criar',
+            title: 'Abrir',
+            description: 'Abrir chamado',
+            permission: 'support_tickets.create',
+          },
+          {
+            id: 'editar',
+            title: 'Editar',
+            description: 'Alterar chamado',
+            permission: 'support_tickets.update',
+          },
+          {
+            id: 'resolver',
+            title: 'Resolver',
+            description: 'Resolver chamado',
+            permission: 'support_tickets.resolve',
+          },
+          {
+            id: 'fechar',
+            title: 'Fechar',
+            description: 'Fechar chamado',
+            permission: 'support_tickets.close',
+          },
+        ],
+        implementationStatus: 'coming_soon',
+      },
+      {
+        id: 'faq',
+        title: 'FAQ',
+        description: 'Perguntas frequentes',
+        route: '/dashboard/suporte/faq',
+        requiredPermissions: ['support_tickets.read'],
+        actions: [
+          {
+            id: 'criar',
+            title: 'Criar',
+            description: 'Nova pergunta',
+            permission: 'support_tickets.create',
+          },
+          {
+            id: 'editar',
+            title: 'Editar',
+            description: 'Alterar FAQ',
+            permission: 'support_tickets.update',
+          },
+        ],
+        implementationStatus: 'coming_soon',
+      },
+      {
+        id: 'feedback',
+        title: 'Feedback',
+        description: 'Envie sugestões e feedback',
+        route: '/dashboard/suporte/feedback',
+        requiredPermissions: ['support_tickets.read'],
+        implementationStatus: 'coming_soon',
+      },
+      {
+        id: 'solicitacoes',
+        title: 'Solicitações',
+        description: 'Solicitações e chamados internos',
+        route: '/dashboard/suporte/solicitacoes',
+        requiredPermissions: ['support_tickets.read'],
+        implementationStatus: 'coming_soon',
+      },
+      {
+        id: 'relatorios-suporte',
+        title: 'Relatórios de Suporte',
+        description: 'Relatórios do módulo de suporte',
+        route: '/dashboard/relatorios/suporte',
+        requiredPermissions: ['reports.read'],
+        actions: [
+          {
+            id: 'exportar',
+            title: 'Exportar',
+            description: 'Exportar relatório de suporte',
+            permission: 'reports.export',
+          },
+        ],
+        implementationStatus: 'coming_soon',
+      },
+    ],
   },
   {
     id: 'relatorios',
@@ -1854,7 +2005,94 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     category: 'ia',
     scope: 'tenant',
     requiredPermissions: [],
-    features: [],
+    features: [
+      {
+        id: 'assistente',
+        title: 'Assistente IA',
+        description: 'Configure e utilize o assistente',
+        route: '/dashboard/ia/assistente',
+        requiredPermissions: [],
+        actions: [
+          {
+            id: 'configurar',
+            title: 'Configurar',
+            description: 'Configurar assistente',
+            permission: 'ai.configure',
+          },
+          {
+            id: 'testar',
+            title: 'Testar',
+            description: 'Testar assistente',
+            permission: 'ai.test',
+          },
+        ],
+        implementationStatus: 'coming_soon',
+      },
+      {
+        id: 'automacoes',
+        title: 'Automações',
+        description: 'Workflows e automações',
+        route: '/dashboard/ia/automacoes',
+        requiredPermissions: [],
+        actions: [
+          {
+            id: 'criar',
+            title: 'Criar',
+            description: 'Nova automação',
+            permission: 'automations.create',
+          },
+          {
+            id: 'editar',
+            title: 'Editar',
+            description: 'Alterar automação',
+            permission: 'automations.update',
+          },
+          {
+            id: 'ativar',
+            title: 'Ativar/Desativar',
+            description: 'Ativar ou desativar automação',
+            permission: 'automations.toggle',
+          },
+        ],
+        implementationStatus: 'coming_soon',
+      },
+      {
+        id: 'conversas',
+        title: 'Conversas IA',
+        description: 'Histórico de conversas',
+        route: '/dashboard/ia/conversas',
+        requiredPermissions: [],
+        implementationStatus: 'coming_soon',
+      },
+      {
+        id: 'integracoes-ia',
+        title: 'Integrações',
+        description: 'Webhooks e integrações',
+        route: '/dashboard/ia/integracoes',
+        requiredPermissions: ['integrations.manage'],
+        actions: [
+          {
+            id: 'conectar',
+            title: 'Conectar',
+            description: 'Conectar integração',
+            permission: 'integrations.create',
+          },
+          {
+            id: 'editar',
+            title: 'Editar',
+            description: 'Alterar integração',
+            permission: 'integrations.update',
+          },
+          {
+            id: 'desconectar',
+            title: 'Desconectar',
+            description: 'Remover integração',
+            permission: 'integrations.delete',
+          },
+        ],
+        implementationStatus: 'coming_soon',
+      },
+    ],
   },
   {
     id: 'integracoes',

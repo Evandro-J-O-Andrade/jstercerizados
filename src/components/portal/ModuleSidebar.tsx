@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Clock } from 'lucide-react';
 import { cn } from '@/utils';
 import { type ModuleDefinition, getAvailableFeatures } from './ModuleRegistry';
 import type { Permission } from '@/types/auth';
@@ -33,6 +33,7 @@ export function ModuleSidebar({
             const isActive =
               location.pathname === feature.route ||
               location.pathname.startsWith(`${feature.route}/`);
+            const isComingSoon = feature.implementationStatus === 'coming_soon';
 
             return (
               <NavLink
@@ -41,13 +42,19 @@ export function ModuleSidebar({
                 onClick={() => onNavigate?.(feature.route)}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  isComingSoon
+                    ? 'text-muted-foreground'
+                    : isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                 )}
               >
                 <span className="flex-1">{feature.title}</span>
-                {isActive && <ChevronRight className="ml-auto h-4 w-4" />}
+                {isComingSoon ? (
+                  <Clock className="text-muted-foreground h-3.5 w-3.5" />
+                ) : isActive ? (
+                  <ChevronRight className="ml-auto h-4 w-4" />
+                ) : null}
               </NavLink>
             );
           })}

@@ -78,7 +78,7 @@ const PrimeiroAcessoTermos = lazy(
   () => import('@/pages/primeiro-acesso/Termos'),
 );
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
-import { DashboardRouteNotFound } from '@/components/dashboard/DashboardRouter';
+import ComingSoonPage from '@/pages/dashboard/ComingSoonPage';
 import VisaoGeralPage from '@/pages/dashboard/VisaoGeral';
 import VagasPage from '@/pages/dashboard/Vagas';
 import CandidaturasPage from '@/pages/dashboard/Candidaturas';
@@ -259,7 +259,7 @@ function App() {
             {PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]] ? (
               React.createElement(PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]])
             ) : (
-              <DashboardRouteNotFound />
+              <ComingSoonPage title={module.title} />
             )}
           </PermissionGuard>
         ),
@@ -281,7 +281,7 @@ function App() {
             {PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]] ? (
               React.createElement(PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]])
             ) : (
-              <DashboardRouteNotFound />
+              <ComingSoonPage title={module.title} />
             )}
           </PermissionGuard>
         ),
@@ -744,12 +744,9 @@ function App() {
                 </PermissionGuard>
               }
             />
-            <Route path="*" element={<DashboardRouteNotFound />} />
+            <Route path="*" element={<ComingSoonPage />} />
           </Route>
-          <Route
-            path="/auth/callback"
-            element={<AuthCallback />}
-          />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/auth/terms" element={<AuthTerms />} />
           <Route path="/auth/welcome" element={<AuthWelcome />} />
