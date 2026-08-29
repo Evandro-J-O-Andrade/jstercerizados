@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, LogIn, Eye, EyeOff, Briefcase, Building2 } from 'lucide-react';
@@ -33,6 +33,7 @@ export default function Login() {
   const [accessFlow, setAccessFlow] = useState<AccessFlow>('admin');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginStatus, setLoginStatus] = useState<LoginStatus>('idle');
+  const submittedRef = useRef(false);
   const {
     login,
     isAuthenticated,
@@ -76,6 +77,7 @@ export default function Login() {
     setError('');
     setIsSubmitting(true);
     setLoginStatus('authenticating');
+    submittedRef.current = false;
 
     try {
       console.log('[AUTH:SUBMIT] CALLING LOGIN');
@@ -85,6 +87,7 @@ export default function Login() {
       console.log('[AUTH:SUBMIT] LOGIN RESULT', result);
 
       if (result.error) {
+        submittedRef.current = true;
         setError(normalizeError(result.error).userMessage);
         setLoginStatus('error');
       } else {
@@ -92,6 +95,7 @@ export default function Login() {
       }
     } catch (error) {
       console.error('[AUTH:SUBMIT] UNEXPECTED ERROR', error);
+      submittedRef.current = true;
       setError(normalizeError(error).userMessage);
       setLoginStatus('error');
     } finally {
@@ -100,7 +104,12 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if (authError && loginStatus !== 'loading-profile' && !error) {
+    if (
+      authError &&
+      loginStatus !== 'loading-profile' &&
+      !error &&
+      !submittedRef.current
+    ) {
       setError(normalizeError(authError).userMessage);
       setLoginStatus('error');
     }
