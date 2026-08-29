@@ -964,8 +964,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      console.log('[AUTH:RESET] resetPasswordForEmail start', {
+        email,
         redirectTo: `${window.location.origin}/login?reset=true`,
+      });
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login?reset=true`,
+      });
+
+      console.log('[AUTH:RESET] resetPasswordForEmail result', {
+        hasData: !!data,
+        error: error?.message ?? null,
+        code: (error as any)?.code || null,
+        status: (error as any)?.status || null,
       });
 
       if (error) {
@@ -974,6 +985,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       return {};
     } catch (error) {
+      console.error('[AUTH:RESET] exception', error);
       return {
         error: normalizeError(error).userMessage,
       };

@@ -25,13 +25,16 @@ export default function RecuperarSenha() {
     setIsSubmitting(true);
 
     try {
+      console.log('[RECUPERAR] submit start', { email });
       const result = await resetPassword(email);
+      console.log('[RECUPERAR] submit result', result);
       if (result.error) {
         setError(normalizeError(result.error).userMessage);
       } else {
         setSuccess(true);
       }
-    } catch {
+    } catch (err) {
+      console.error('[RECUPERAR] submit exception', err);
       setError(
         normalizeError(new Error('Erro ao enviar e-mail de recuperação.'))
           .userMessage,

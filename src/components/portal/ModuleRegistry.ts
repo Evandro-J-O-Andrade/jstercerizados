@@ -2439,6 +2439,7 @@ export const MODULE_PAGE_MAP: Record<string, string> = {
   auditoria: 'AuditoriaPage',
   rh: 'RhPage',
   recrutamento: 'Vagas',
+  empresas: 'EmpresasPage', // E2E route
   crm: 'ClientesPage',
   financeiro: 'FinanceiroPage',
   faturamento: 'FaturamentoPage',
@@ -2469,6 +2470,7 @@ export const MODULE_PERMISSION_MAP: Record<string, string> = {
   auditoria: 'audit.read',
   rh: 'people.read',
   recrutamento: 'jobs.read',
+  empresas: 'companies.read',
   crm: 'companies.read',
   financeiro: 'finance.dashboard.read',
   faturamento: 'finance.read',
