@@ -74,7 +74,7 @@ returns trigger as $$
 declare
   v_actor uuid := coalesce(
     current_setting('app.current_person_id', true)::uuid,
-    auth.uid()
+    (select p.id from public.people p where p.auth_user_id = auth.uid())
   );
   v_correlation uuid := coalesce(
     current_setting('app.correlation_id', true)::uuid,
@@ -139,7 +139,7 @@ declare
   v_event_id uuid;
   v_actor uuid := coalesce(
     current_setting('app.current_person_id', true)::uuid,
-    auth.uid()
+    (select p.id from public.people p where p.auth_user_id = auth.uid())
   );
   v_correlation uuid := coalesce(
     current_setting('app.correlation_id', true)::uuid,
