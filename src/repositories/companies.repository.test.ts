@@ -27,12 +27,12 @@ function createQueryBuilder(returnValue: { data: any; error: any }) {
   return builder;
 }
 
-const defaultRelationshipBuilder = createQueryBuilder({
+const defaultCompanyBuilder = createQueryBuilder({
   data: [],
   error: null,
 });
-const defaultCompanyBuilder = createQueryBuilder({
-  data: [],
+const defaultRelationshipBuilder = createQueryBuilder({
+  data: null,
   error: null,
 });
 
@@ -50,13 +50,6 @@ describe('CompaniesRepository', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    defaultRelationshipBuilder.select = () => defaultRelationshipBuilder;
-    defaultRelationshipBuilder.eq = () => defaultRelationshipBuilder;
-    defaultRelationshipBuilder.maybeSingle = () => defaultRelationshipBuilder;
-    defaultRelationshipBuilder.limit = () => defaultRelationshipBuilder;
-    defaultRelationshipBuilder.then = (resolve: any) =>
-      resolve({ data: [], error: null });
-
     defaultCompanyBuilder.select = () => defaultCompanyBuilder;
     defaultCompanyBuilder.eq = () => defaultCompanyBuilder;
     defaultCompanyBuilder.in = () => defaultCompanyBuilder;
@@ -67,15 +60,17 @@ describe('CompaniesRepository', () => {
     defaultCompanyBuilder.then = (resolve: any) =>
       resolve({ data: [], error: null });
 
+    defaultRelationshipBuilder.select = () => defaultRelationshipBuilder;
+    defaultRelationshipBuilder.eq = () => defaultRelationshipBuilder;
+    defaultRelationshipBuilder.maybeSingle = () => defaultRelationshipBuilder;
+    defaultRelationshipBuilder.then = (resolve: any) =>
+      resolve({ data: null, error: null });
+
     repository = new CompaniesRepository(mockSupabase as any);
   });
 
   describe('findAll', () => {
-    it('should return companies scoped by tenant via company_relationships', async () => {
-      const mockRelationships = [
-        { company_id: 'comp-1' },
-        { company_id: 'comp-2' },
-      ];
+    it('should return companies for tenant', async () => {
       const mockCompanies: Company[] = [
         {
           id: 'comp-1',
@@ -86,28 +81,18 @@ describe('CompaniesRepository', () => {
           created_at: '2026-01-01T00:00:00Z',
           updated_at: '2026-01-01T00:00:00Z',
         },
-        {
-          id: 'comp-2',
-          name: 'Empresa B',
-          legal_name: null,
-          document: null,
-          status: 'inactive',
-          created_at: '2026-01-02T00:00:00Z',
-          updated_at: '2026-01-02T00:00:00Z',
-        },
       ];
 
-      defaultRelationshipBuilder.then = (resolve: any) =>
-        resolve({ data: mockRelationships, error: null });
       defaultCompanyBuilder.then = (resolve: any) =>
         resolve({ data: mockCompanies, error: null });
 
       const result = await repository.findAll('tenant-1');
       expect(result).toEqual(mockCompanies);
+      expect(mockSupabase.from).toHaveBeenCalledWith('companies');
     });
 
-    it('should return empty array when no relationships exist', async () => {
-      defaultRelationshipBuilder.then = (resolve: any) =>
+    it('should return empty array when no companies exist', async () => {
+      defaultCompanyBuilder.then = (resolve: any) =>
         resolve({ data: [], error: null });
 
       const result = await repository.findAll('tenant-1');
@@ -126,14 +111,9 @@ describe('CompaniesRepository', () => {
       companyBuilder.then = (resolve: any) =>
         resolve({ data: [], error: null });
 
-      defaultRelationshipBuilder.then = (resolve: any) =>
-        resolve({ data: [{ company_id: 'comp-1' }], error: null });
-
       mockSupabase.from = vi.fn((table: string) => {
-        if (table === 'company_relationships') {
-          return defaultRelationshipBuilder;
-        }
-        return companyBuilder;
+        if (table === 'companies') return companyBuilder;
+        return defaultRelationshipBuilder;
       });
 
       await repository.findAll('tenant-1', { status: 'active' });
@@ -152,14 +132,9 @@ describe('CompaniesRepository', () => {
       companyBuilder.then = (resolve: any) =>
         resolve({ data: [], error: null });
 
-      defaultRelationshipBuilder.then = (resolve: any) =>
-        resolve({ data: [{ company_id: 'comp-1' }], error: null });
-
       mockSupabase.from = vi.fn((table: string) => {
-        if (table === 'company_relationships') {
-          return defaultRelationshipBuilder;
-        }
-        return companyBuilder;
+        if (table === 'companies') return companyBuilder;
+        return defaultRelationshipBuilder;
       });
 
       await repository.findAll('tenant-1', { search: 'teste' });
@@ -168,7 +143,7 @@ describe('CompaniesRepository', () => {
   });
 
   describe('findById', () => {
-    it('should return a company when relationship exists', async () => {
+    it('should return a company when found for tenant', async () => {
       const mockCompany: Company = {
         id: 'comp-1',
         name: 'Empresa Teste',
@@ -179,50 +154,43 @@ describe('CompaniesRepository', () => {
         updated_at: '2026-01-01T00:00:00Z',
       };
 
-      const relBuilder = createQueryBuilder({
-        data: { company_id: 'comp-1' },
-        error: null,
-      });
       const companyBuilder = createQueryBuilder({
         data: mockCompany,
         error: null,
       });
+      const relBuilder = createQueryBuilder({
+        data: { company_id: 'comp-1' },
+        error: null,
+      });
 
       mockSupabase.from = vi.fn((table: string) => {
-        if (table === 'company_relationships') return relBuilder;
-        return companyBuilder;
+        if (table === 'companies') return companyBuilder;
+        return relBuilder;
       });
 
       const result = await repository.findById('comp-1', 'tenant-1');
       expect(result).toEqual(mockCompany);
     });
 
-    it('should return null when relationship does not exist', async () => {
-      const relBuilder = createQueryBuilder({ data: null, error: null });
-      const companyBuilder = createQueryBuilder({
-        data: null,
-        error: null,
-      });
+    it('should return null when company not found for tenant', async () => {
+      const companyBuilder = createQueryBuilder({ data: null, error: null });
 
-      mockSupabase.from = vi.fn((table: string) => {
-        if (table === 'company_relationships') return relBuilder;
-        return companyBuilder;
-      });
+      mockSupabase.from = vi.fn(() => companyBuilder);
 
       const result = await repository.findById('comp-999', 'tenant-1');
       expect(result).toBeNull();
     });
 
-    it('should return null when company not found after relationship check', async () => {
-      const relBuilder = createQueryBuilder({
-        data: { company_id: 'comp-1' },
+    it('should return null when relationship does not exist', async () => {
+      const companyBuilder = createQueryBuilder({
+        data: { id: 'comp-1', tenant_id: 'tenant-1' },
         error: null,
       });
-      const companyBuilder = createQueryBuilder({ data: null, error: null });
+      const relBuilder = createQueryBuilder({ data: null, error: null });
 
       mockSupabase.from = vi.fn((table: string) => {
-        if (table === 'company_relationships') return relBuilder;
-        return companyBuilder;
+        if (table === 'companies') return companyBuilder;
+        return relBuilder;
       });
 
       const result = await repository.findById('comp-1', 'tenant-1');
@@ -231,7 +199,7 @@ describe('CompaniesRepository', () => {
   });
 
   describe('create', () => {
-    it('should create a company without tenant_id and create relationship', async () => {
+    it('should create a company with tenant_id and relationship', async () => {
       const input: CompanyCreateInput = {
         name: 'Empresa Teste',
         legal_name: 'Teste LTDA',
@@ -293,7 +261,7 @@ describe('CompaniesRepository', () => {
   });
 
   describe('update', () => {
-    it('should update a company when relationship exists', async () => {
+    it('should update a company when found for tenant', async () => {
       const input: CompanyUpdateInput = {
         name: 'Empresa Atualizada',
       };
@@ -308,8 +276,8 @@ describe('CompaniesRepository', () => {
         updated_at: '2026-01-02T00:00:00Z',
       };
 
-      const relBuilder = createQueryBuilder({
-        data: { company_id: 'comp-1' },
+      const companyBuilder = createQueryBuilder({
+        data: { id: 'comp-1', tenant_id: 'tenant-1' },
         error: null,
       });
       const companyUpdateBuilder = createQueryBuilder({
@@ -318,18 +286,18 @@ describe('CompaniesRepository', () => {
       });
 
       mockSupabase.from = vi.fn((table: string) => {
-        if (table === 'company_relationships') return relBuilder;
-        return companyUpdateBuilder;
+        if (table === 'companies') return companyUpdateBuilder;
+        return companyBuilder;
       });
 
       const result = await repository.update('comp-1', 'tenant-1', input);
       expect(result).toEqual(mockCompany);
     });
 
-    it('should return null when relationship does not exist', async () => {
-      const relBuilder = createQueryBuilder({ data: null, error: null });
+    it('should return null when company not found for tenant', async () => {
+      const companyBuilder = createQueryBuilder({ data: null, error: null });
 
-      mockSupabase.from = vi.fn(() => relBuilder);
+      mockSupabase.from = vi.fn(() => companyBuilder);
 
       const result = await repository.update('comp-999', 'tenant-1', {
         name: 'Teste',
@@ -339,52 +307,30 @@ describe('CompaniesRepository', () => {
   });
 
   describe('delete', () => {
-    it('should remove company_relationships for the tenant', async () => {
+    it('should remove company when found for tenant', async () => {
+      const companyBuilder = createQueryBuilder({
+        data: { id: 'comp-1' },
+        error: null,
+      });
       const relBuilder = createQueryBuilder({ data: null, error: null });
 
-      mockSupabase.from = vi.fn(() => relBuilder);
+      mockSupabase.from = vi.fn((table: string) => {
+        if (table === 'companies') return companyBuilder;
+        return relBuilder;
+      });
 
       const result = await repository.delete('comp-1', 'tenant-1');
       expect(result).toBeUndefined();
       expect(mockSupabase.from).toHaveBeenCalledWith('company_relationships');
     });
 
-    it('should return undefined when relationship does not exist', async () => {
-      const relBuilder = createQueryBuilder({ data: null, error: null });
+    it('should return undefined when company not found for tenant', async () => {
+      const companyBuilder = createQueryBuilder({ data: null, error: null });
 
-      mockSupabase.from = vi.fn(() => relBuilder);
+      mockSupabase.from = vi.fn(() => companyBuilder);
 
       const result = await repository.delete('comp-999', 'tenant-1');
       expect(result).toBeUndefined();
-    });
-  });
-
-  describe('tenant scoping', () => {
-    it('should query company_relationships for tenant scoping', async () => {
-      const relBuilder = createQueryBuilder({ data: [], error: null });
-      const eqSpy = vi.fn(() => relBuilder);
-      relBuilder.eq = eqSpy;
-      relBuilder.select = () => relBuilder;
-      relBuilder.maybeSingle = () => relBuilder;
-      relBuilder.limit = () => relBuilder;
-      relBuilder.then = (resolve: any) => resolve({ data: [], error: null });
-
-      const companyBuilder = createQueryBuilder({ data: [], error: null });
-      companyBuilder.select = () => companyBuilder;
-      companyBuilder.in = () => companyBuilder;
-      companyBuilder.eq = () => companyBuilder;
-      companyBuilder.order = () => companyBuilder;
-      companyBuilder.maybeSingle = () => companyBuilder;
-      companyBuilder.then = (resolve: any) =>
-        resolve({ data: [], error: null });
-
-      mockSupabase.from = vi.fn((table: string) => {
-        if (table === 'company_relationships') return relBuilder;
-        return companyBuilder;
-      });
-
-      await repository.findAll('tenant-1');
-      expect(eqSpy).toHaveBeenCalledWith('tenant_id', 'tenant-1');
     });
   });
 });

@@ -12,20 +12,10 @@ export class CompaniesRepository extends SupabaseRepository {
   ): Promise<Company[]> {
     if (!this.supabase) return [];
 
-    const { data: relationships, error: relError } = await this.supabase
-      .from('company_relationships')
-      .select('company_id')
-      .eq('tenant_id', tenantId);
-
-    if (relError) throw relError;
-    if (!relationships || relationships.length === 0) return [];
-
-    const companyIds = relationships.map((r) => r.company_id);
-
     let query = this.supabase
       .from('companies')
       .select('*')
-      .in('id', companyIds)
+      .eq('tenant_id', tenantId)
       .order('created_at', { ascending: false });
 
     if (filters?.status) query = query.eq('status', filters.status);
@@ -42,23 +32,28 @@ export class CompaniesRepository extends SupabaseRepository {
   async findById(id: string, tenantId: string): Promise<Company | null> {
     if (!this.supabase) return null;
 
+    const { data, error } = await this.supabase
+      .from('companies')
+      .select('*')
+      .eq('id', id)
+      .eq('tenant_id', tenantId)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+
     const { data: relationship, error: relError } = await this.supabase
       .from('company_relationships')
       .select('company_id')
       .eq('company_id', id)
-      .eq('tenant_id', tenantId)
+      .eq('relationship_type', 'customer')
+      .eq('status', 'active')
       .maybeSingle();
 
     if (relError) throw relError;
     if (!relationship) return null;
 
-    const { data, error } = await this.supabase
-      .from('companies')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-    if (error) throw error;
-    return data || null;
+    return data;
   }
 
   async create(input: CompanyCreateInput, tenantId: string): Promise<Company> {
@@ -67,6 +62,7 @@ export class CompaniesRepository extends SupabaseRepository {
     const { data: company, error: companyError } = await this.supabase
       .from('companies')
       .insert({
+        tenant_id: tenantId,
         name: input.name,
         legal_name: input.legal_name ?? null,
         document: input.document ?? null,
@@ -81,7 +77,7 @@ export class CompaniesRepository extends SupabaseRepository {
       .from('company_relationships')
       .insert({
         company_id: company.id,
-        tenant_id: tenantId,
+        relationship_type: 'customer',
         status: 'active',
       });
 
@@ -97,15 +93,15 @@ export class CompaniesRepository extends SupabaseRepository {
   ): Promise<Company> {
     if (!this.supabase) throw new Error('Supabase não configurado');
 
-    const { data: relationship, error: relError } = await this.supabase
-      .from('company_relationships')
-      .select('company_id')
-      .eq('company_id', id)
+    const { data: existing, error: findError } = await this.supabase
+      .from('companies')
+      .select('id, tenant_id')
+      .eq('id', id)
       .eq('tenant_id', tenantId)
       .maybeSingle();
 
-    if (relError) throw relError;
-    if (!relationship) return null as any;
+    if (findError) throw findError;
+    if (!existing) return null as any;
 
     const payload: Record<string, unknown> = {};
     if (input.name !== undefined) payload.name = input.name;
@@ -126,11 +122,21 @@ export class CompaniesRepository extends SupabaseRepository {
   async delete(id: string, tenantId: string): Promise<void> {
     if (!this.supabase) throw new Error('Supabase não configurado');
 
+    const { data: existing, error: findError } = await this.supabase
+      .from('companies')
+      .select('id')
+      .eq('id', id)
+      .eq('tenant_id', tenantId)
+      .maybeSingle();
+
+    if (findError) throw findError;
+    if (!existing) return;
+
     const { error } = await this.supabase
       .from('company_relationships')
       .delete()
       .eq('company_id', id)
-      .eq('tenant_id', tenantId);
+      .eq('relationship_type', 'customer');
     if (error) throw error;
   }
 }
