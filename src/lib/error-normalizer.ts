@@ -26,16 +26,16 @@ const USER_MESSAGES: Record<ErrorCategory, string> = {
   network: 'Verifique sua conexão com a internet e tente novamente.',
   timeout:
     'A operação está demorando mais que o esperado. Tente novamente em alguns instantes.',
-  auth: 'Sua sessão expirou. Faça login novamente para continuar.',
-  permission: 'Você não tem permissão para acessar este recurso.',
-  not_found: 'O conteúdo que você procura não foi encontrado.',
+  auth: 'Sua sessao expirou. Faca login novamente para continuar.',
+  permission: 'Voce nao tem permissao para acessar este recurso.',
+  not_found: 'O conteudo que voce procura nao foi encontrado.',
   server:
-    'Tivemos um problema inesperado. Nossa equipe já pode verificar o ocorrido.',
+    'Tivemos um problema inesperado. Nossa equipe ja pode verificar o ocorrido.',
   upstream:
-    'Serviço temporariamente indisponível. Tente novamente em alguns instantes.',
+    'Servico temporariamente indisponivel. Tente novamente em alguns instantes.',
   rate_limit:
-    'Muitas solicitações em um curto período. Aguarde um momento e tente novamente.',
-  unknown: 'Não foi possível concluir esta ação. Tente novamente.',
+    'Muitas solicitacoes em um curto periodo. Aguarde um momento e tente novamente.',
+  unknown: 'Nao foi possivel concluir esta acao. Tente novamente.',
 };
 
 export function normalizeError(input: unknown): NormalizedError {
@@ -88,11 +88,21 @@ function getSupabaseSpecificMessage(input: unknown): string | null {
     return 'Este e-mail já possui uma conta. Faça login ou recupere sua senha.';
   }
   if (
+    code === 'invalid_credentials' ||
+    message.includes('invalid login credentials') ||
+    message.includes('invalid_credentials')
+  ) {
+    return 'E-mail ou senha incorretos.';
+  }
+  if (code === 'user_not_found' || message.includes('user not found')) {
+    return 'Usuario nao encontrado. Verifique o e-mail ou solicite acesso.';
+  }
+  if (
     code === 'weak_password' ||
     message.includes('weak_password') ||
     message.includes('password should be')
   ) {
-    return 'A senha não atende aos requisitos mínimos. Use pelo menos 6 caracteres.';
+    return 'A senha nao atende aos requisitos minimos. Use pelo menos 6 caracteres.';
   }
   return null;
 }
