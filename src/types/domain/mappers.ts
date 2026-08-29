@@ -31,7 +31,16 @@ export function mapTenant(
 export function mapCompany(
   row: Database['public']['Tables']['companies']['Row'],
 ): Company {
-  return { ...row };
+  return {
+    id: row.id,
+    tenant_id: row.tenant_id,
+    name: row.name,
+    legal_name: row.legal_name,
+    document: row.document,
+    status: row.status,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
 }
 
 export function mapCandidate(

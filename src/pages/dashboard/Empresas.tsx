@@ -81,27 +81,12 @@ export default function Empresas() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-foreground text-lg font-semibold">
-                    {company.legal_name}
+                    {company.legal_name || company.name}
                   </h3>
-                  {company.trading_name && (
-                    <p className="text-muted-foreground mt-1">
-                      {company.trading_name}
-                    </p>
-                  )}
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {company.cnpj && (
+                    {company.document && (
                       <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
-                        CNPJ: {company.cnpj}
-                      </span>
-                    )}
-                    {company.website && (
-                      <span className="bg-accent/10 text-accent rounded-full px-3 py-1 text-xs font-medium">
-                        {company.website}
-                      </span>
-                    )}
-                    {company.industry && (
-                      <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs font-medium">
-                        {company.industry}
+                        Documento: {company.document}
                       </span>
                     )}
                   </div>
@@ -128,4 +113,3 @@ export default function Empresas() {
     </ModuleWorkspace>
   );
 }
-

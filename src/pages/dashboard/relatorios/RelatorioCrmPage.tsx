@@ -20,7 +20,8 @@ export default function RelatorioCrmPage() {
   useEffect(() => {
     if (!currentTenantId) return;
     setLoading(true);
-    companiesRepository.findAll(currentTenantId)
+    companiesRepository
+      .findAll(currentTenantId)
       .then(setCompanies)
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -30,10 +31,11 @@ export default function RelatorioCrmPage() {
     let data = companies;
     if (search) {
       const term = search.toLowerCase();
-      data = data.filter((item) =>
-        item.legal_name?.toLowerCase().includes(term) ||
-        item.trading_name?.toLowerCase().includes(term) ||
-        item.cnpj?.includes(term)
+      data = data.filter(
+        (item) =>
+          item.legal_name?.toLowerCase().includes(term) ||
+          item.name?.toLowerCase().includes(term) ||
+          item.document?.includes(term),
       );
     }
     if (statusFilter !== 'all') {
@@ -53,7 +55,9 @@ export default function RelatorioCrmPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-sm text-muted-foreground">Carregando relatórios...</p>
+        <p className="text-muted-foreground text-sm">
+          Carregando relatórios...
+        </p>
       </div>
     );
   }
@@ -62,10 +66,17 @@ export default function RelatorioCrmPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Relatórios CRM</h1>
-          <p className="text-sm text-muted-foreground">Demonstrativos e análises do módulo de CRM.</p>
+          <h1 className="text-foreground text-xl font-semibold">
+            Relatórios CRM
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Demonstrativos e análises do módulo de CRM.
+          </p>
         </div>
-        <Button variant="secondary" onClick={() => alert('Exportando relatório CRM...')}>
+        <Button
+          variant="secondary"
+          onClick={() => alert('Exportando relatório CRM...')}
+        >
           <Download className="mr-2 h-4 w-4" />
           Exportar
         </Button>
@@ -73,26 +84,30 @@ export default function RelatorioCrmPage() {
 
       <div className="grid gap-4 sm:grid-cols-4">
         <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Total</p>
-          <p className="text-lg font-semibold text-foreground">{kpis.total}</p>
+          <p className="text-muted-foreground text-xs">Total</p>
+          <p className="text-foreground text-lg font-semibold">{kpis.total}</p>
         </Card>
         <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Ativas</p>
+          <p className="text-muted-foreground text-xs">Ativas</p>
           <p className="text-lg font-semibold text-green-700">{kpis.active}</p>
         </Card>
         <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Inativas</p>
-          <p className="text-lg font-semibold text-muted-foreground">{kpis.inactive}</p>
+          <p className="text-muted-foreground text-xs">Inativas</p>
+          <p className="text-muted-foreground text-lg font-semibold">
+            {kpis.inactive}
+          </p>
         </Card>
         <Card className="p-4">
-          <p className="text-xs text-muted-foreground">Suspensas</p>
-          <p className="text-lg font-semibold text-orange-700">{kpis.suspended}</p>
+          <p className="text-muted-foreground text-xs">Suspensas</p>
+          <p className="text-lg font-semibold text-orange-700">
+            {kpis.suspended}
+          </p>
         </Card>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="flex flex-1 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="border-border bg-background flex flex-1 items-center gap-2 rounded-lg border px-3 py-2">
+          <Search className="text-muted-foreground h-4 w-4" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -103,7 +118,7 @@ export default function RelatorioCrmPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none"
+          className="border-border bg-background rounded-lg border px-3 py-2 text-sm outline-none"
         >
           <option value="all">Todos os status</option>
           <option value="active">Ativa</option>
@@ -113,27 +128,56 @@ export default function RelatorioCrmPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState title="Nenhum registro" description="Não há dados para exibir no relatório." />
+        <EmptyState
+          title="Nenhum registro"
+          description="Não há dados para exibir no relatório."
+        />
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <div className="border-border overflow-x-auto rounded-xl border">
           <table className="min-w-full text-left text-sm">
             <thead className="bg-muted">
               <tr>
-                <th className="px-4 py-3 font-medium text-muted-foreground">Razão Social</th>
-                <th className="px-4 py-3 font-medium text-muted-foreground">Nome Fantasia</th>
-                <th className="px-4 py-3 font-medium text-muted-foreground">CNPJ</th>
-                <th className="px-4 py-3 font-medium text-muted-foreground">Status</th>
+                <th className="text-muted-foreground px-4 py-3 font-medium">
+                  Razão Social
+                </th>
+                <th className="text-muted-foreground px-4 py-3 font-medium">
+                  Nome Fantasia
+                </th>
+                <th className="text-muted-foreground px-4 py-3 font-medium">
+                  CNPJ
+                </th>
+                <th className="text-muted-foreground px-4 py-3 font-medium">
+                  Status
+                </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-border divide-y">
               {filtered.map((item) => (
                 <tr key={item.id} className="hover:bg-muted">
-                  <td className="px-4 py-3 text-foreground">{item.legal_name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{item.trading_name || '—'}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{item.cnpj || '—'}</td>
+                  <td className="text-foreground px-4 py-3">
+                    {item.legal_name || item.name || '—'}
+                  </td>
+                  <td className="text-muted-foreground px-4 py-3">
+                    {item.name || '—'}
+                  </td>
+                  <td className="text-muted-foreground px-4 py-3">
+                    {item.document || '—'}
+                  </td>
                   <td className="px-4 py-3">
-                    <Badge variant={item.status === 'active' ? 'default' : item.status === 'inactive' ? 'secondary' : 'outline'}>
-                      {item.status === 'active' ? 'Ativa' : item.status === 'inactive' ? 'Inativa' : 'Suspensa'}
+                    <Badge
+                      variant={
+                        item.status === 'active'
+                          ? 'default'
+                          : item.status === 'inactive'
+                            ? 'secondary'
+                            : 'outline'
+                      }
+                    >
+                      {item.status === 'active'
+                        ? 'Ativa'
+                        : item.status === 'inactive'
+                          ? 'Inativa'
+                          : 'Suspensa'}
                     </Badge>
                   </td>
                 </tr>
@@ -145,5 +189,3 @@ export default function RelatorioCrmPage() {
     </div>
   );
 }
-
-

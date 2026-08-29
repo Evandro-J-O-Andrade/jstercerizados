@@ -44,9 +44,9 @@ describe('CompaniesRepository', () => {
         {
           id: '1',
           tenant_id: 'tenant-1',
-          legal_name: 'Empresa Teste',
-          trading_name: 'Teste',
-          cnpj: '12345678000100',
+          name: 'Empresa Teste',
+          legal_name: 'Teste LTDA',
+          document: '12345678000100',
           status: 'active',
           created_at: '2026-01-01T00:00:00Z',
           updated_at: '2026-01-01T00:00:00Z',
@@ -72,7 +72,7 @@ describe('CompaniesRepository', () => {
       expect(eqSpy).toHaveBeenCalledWith('status', 'active');
     });
 
-    it('should search by legal_name or cnpj', async () => {
+    it('should search by name or document', async () => {
       const builder = createQueryBuilder({ data: [], error: null });
       const orSpy = vi.fn(() => builder);
       builder.or = orSpy;
@@ -89,9 +89,9 @@ describe('CompaniesRepository', () => {
       const mockCompany: Company = {
         id: '1',
         tenant_id: 'tenant-1',
-        legal_name: 'Empresa Teste',
-        trading_name: 'Teste',
-        cnpj: '12345678000100',
+        name: 'Empresa Teste',
+        legal_name: 'Teste LTDA',
+        document: '12345678000100',
         status: 'active',
         created_at: '2026-01-01T00:00:00Z',
         updated_at: '2026-01-01T00:00:00Z',
@@ -119,9 +119,9 @@ describe('CompaniesRepository', () => {
     it('should create a company with tenant_id', async () => {
       const input: CompanyCreateInput = {
         tenant_id: 'tenant-1',
-        legal_name: 'Empresa Teste',
-        trading_name: 'Teste',
-        cnpj: '12345678000100',
+        name: 'Empresa Teste',
+        legal_name: 'Teste LTDA',
+        document: '12345678000100',
         status: 'active',
       };
 
@@ -140,12 +140,12 @@ describe('CompaniesRepository', () => {
       expect(result).toEqual(mockCompany);
     });
 
-    it('should throw raw Supabase error when cnpj already exists', async () => {
+    it('should throw raw Supabase error when document already exists', async () => {
       const input: CompanyCreateInput = {
         tenant_id: 'tenant-1',
-        legal_name: 'Empresa Teste',
-        trading_name: 'Teste',
-        cnpj: '12345678000100',
+        name: 'Empresa Teste',
+        legal_name: 'Teste LTDA',
+        document: '12345678000100',
         status: 'active',
       };
 
@@ -155,13 +155,13 @@ describe('CompaniesRepository', () => {
           error: {
             code: '23505',
             message:
-              'duplicate key value violates unique constraint "companies_cnpj_key"',
+              'duplicate key value violates unique constraint "companies_document_key"',
           },
         }),
       );
 
       await expect(repository.create(input)).rejects.toThrow(
-        'duplicate key value violates unique constraint "companies_cnpj_key"',
+        'duplicate key value violates unique constraint "companies_document_key"',
       );
     });
   });
@@ -169,15 +169,15 @@ describe('CompaniesRepository', () => {
   describe('update', () => {
     it('should update a company preserving tenant_id', async () => {
       const input: CompanyUpdateInput = {
-        legal_name: 'Empresa Atualizada',
+        name: 'Empresa Atualizada',
       };
 
       const mockCompany: Company = {
         id: '1',
         tenant_id: 'tenant-1',
-        legal_name: 'Empresa Atualizada',
-        trading_name: 'Teste',
-        cnpj: '12345678000100',
+        name: 'Empresa Atualizada',
+        legal_name: 'Teste LTDA',
+        document: '12345678000100',
         status: 'active',
         created_at: '2026-01-01T00:00:00Z',
         updated_at: '2026-01-02T00:00:00Z',
@@ -197,7 +197,7 @@ describe('CompaniesRepository', () => {
       );
 
       const result = await repository.update('999', 'tenant-1', {
-        legal_name: 'Teste',
+        name: 'Teste',
       });
       expect(result).toBeNull();
     });

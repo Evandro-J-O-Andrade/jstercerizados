@@ -22,7 +22,7 @@ export default function ClientesPage() {
       try {
         let query = supabase
           .from('companies')
-          .select('id, name, type, status, created_at')
+          .select('id, name, legal_name, document, status, created_at')
           .order('created_at', { ascending: false });
 
         if (!isAdminMaster) {
@@ -118,12 +118,10 @@ export default function ClientesPage() {
                           className="hover:bg-muted/30 transition-colors"
                         >
                           <td className="text-foreground px-4 py-3 text-sm font-medium">
-                            {company.legal_name ||
-                              company.trading_name ||
-                              'Sem nome'}
+                            {company.legal_name || company.name || 'Sem nome'}
                           </td>
                           <td className="text-muted-foreground px-4 py-3 text-sm">
-                            {company.company_type_id ?? '—'}
+                            {company.document ? 'Cliente' : '—'}
                           </td>
                           <td className="text-muted-foreground px-4 py-3 text-sm">
                             <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
