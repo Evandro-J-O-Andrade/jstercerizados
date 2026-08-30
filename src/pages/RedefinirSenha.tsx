@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { SEO } from '@/components/ui/SEO';
 import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 const PASSWORD_REQUIREMENTS = [
   { label: 'Mínimo de 8 caracteres', test: (p: string) => p.length >= 8 },
@@ -17,11 +18,13 @@ const PASSWORD_REQUIREMENTS = [
 ];
 
 export default function RedefinirSenha() {
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswords, setShowPasswords] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
   const { user, changePassword, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -35,11 +38,17 @@ export default function RedefinirSenha() {
   const meetsRequirements = PASSWORD_REQUIREMENTS.every((req) =>
     req.test(newPassword),
   );
-  const isValid = meetsRequirements && passwordsMatch;
+  const isValid =
+    meetsRequirements && passwordsMatch && currentPassword.trim().length > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!currentPassword.trim()) {
+      setError('Informe sua senha atual.');
+      return;
+    }
 
     if (!passwordsMatch) {
       setError('As senhas não coincidem.');
@@ -51,10 +60,19 @@ export default function RedefinirSenha() {
       return;
     }
 
+    if (!turnstileToken) {
+      setError('Validação de segurança obrigatória.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const result = await changePassword('', newPassword);
+      const result = await changePassword(
+        currentPassword,
+        newPassword,
+        turnstileToken,
+      );
       if (result.error) {
         setError(result.error);
       } else {
@@ -106,6 +124,18 @@ export default function RedefinirSenha() {
                 {error}
               </div>
             )}
+
+            <div className="relative">
+              <Input
+                label="Senha atual"
+                type={showPasswords ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
 
             <div className="relative">
               <Input
@@ -180,6 +210,14 @@ export default function RedefinirSenha() {
                   );
                 })}
               </ul>
+            </div>
+
+            <div className="flex justify-center">
+              <Turnstile
+                siteKey="1x00000000000000000000AA"
+                onSuccess={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken('')}
+              />
             </div>
 
             <div className="mt-8">
