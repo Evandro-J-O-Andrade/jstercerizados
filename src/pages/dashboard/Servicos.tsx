@@ -1,31 +1,326 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Plus, Search, Download } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { EmptyState, ErrorState } from '@/components/fallback';
+import { useState, useEffect } from 'react';
+import {
+  ModulePage,
+  type ColumnDef,
+  type FilterDef,
+} from '@/components/modules/ModulePage';
 import { servicesRepository } from '@/repositories/services.repository';
+import { useAuth } from '@/contexts/AuthContext';
 import type {
   Service,
   ServiceOrder,
   ServiceExecution,
+  ServiceCreateInput,
+  ServiceOrderCreateInput,
+  ServiceExecutionCreateInput,
 } from '@/types/domain/service';
-import { useAuth } from '@/contexts/AuthContext';
+import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+
+const SERVICES_COLUMNS: ColumnDef<Service>[] = [
+  { key: 'name', header: 'Nome', sortable: true },
+  { key: 'category', header: 'Categoria', sortable: true },
+  {
+    key: 'active',
+    header: 'Ativo',
+    render: (item) => (item.active ? 'Sim' : 'Não'),
+  },
+  {
+    key: 'created_at',
+    header: 'Criado em',
+    render: (item) => new Date(item.created_at).toLocaleDateString('pt-BR'),
+    sortable: true,
+  },
+];
+
+const SERVICES_FILTERS: FilterDef[] = [
+  { key: 'category', label: 'Categoria', type: 'text' },
+  {
+    key: 'active',
+    label: 'Ativo',
+    type: 'select',
+    options: [
+      { value: 'true', label: 'Sim' },
+      { value: 'false', label: 'Não' },
+    ],
+  },
+];
+
+const ORDERS_COLUMNS: ColumnDef<ServiceOrder>[] = [
+  { key: 'company_service_id', header: 'Serviço', sortable: true },
+  { key: 'status', header: 'Status', sortable: true },
+  {
+    key: 'scheduled_at',
+    header: 'Agendamento',
+    render: (item) =>
+      item.scheduled_at
+        ? new Date(item.scheduled_at).toLocaleDateString('pt-BR')
+        : '-',
+    sortable: true,
+  },
+  {
+    key: 'value',
+    header: 'Valor',
+    render: (item) =>
+      item.value
+        ? item.value.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          })
+        : '-',
+    sortable: true,
+  },
+  {
+    key: 'created_at',
+    header: 'Criado em',
+    render: (item) => new Date(item.created_at).toLocaleDateString('pt-BR'),
+    sortable: true,
+  },
+];
+
+const ORDERS_FILTERS: FilterDef[] = [
+  { key: 'status', label: 'Status', type: 'text' },
+];
+
+const EXECUTIONS_COLUMNS: ColumnDef<ServiceExecution>[] = [
+  { key: 'service_order_id', header: 'Ordem', sortable: true },
+  {
+    key: 'started_at',
+    header: 'Início',
+    render: (item) =>
+      item.started_at ? new Date(item.started_at).toLocaleString('pt-BR') : '-',
+    sortable: true,
+  },
+  {
+    key: 'finished_at',
+    header: 'Fim',
+    render: (item) =>
+      item.finished_at
+        ? new Date(item.finished_at).toLocaleString('pt-BR')
+        : '-',
+    sortable: true,
+  },
+  {
+    key: 'created_at',
+    header: 'Criado em',
+    render: (item) => new Date(item.created_at).toLocaleDateString('pt-BR'),
+    sortable: true,
+  },
+];
+
+const EXECUTIONS_FILTERS: FilterDef[] = [];
 
 type Tab = 'services' | 'orders' | 'executions';
 
+function ServiceForm({
+  form,
+  setForm,
+}: {
+  form: ServiceCreateInput;
+  setForm: (form: ServiceCreateInput) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="text-foreground text-sm font-medium">Nome</label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">Categoria</label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.category}
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">Descrição</label>
+        <textarea
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.description ?? ''}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <input
+          id="active"
+          type="checkbox"
+          checked={form.active}
+          onChange={(e) => setForm({ ...form, active: e.target.checked })}
+        />
+        <label htmlFor="active" className="text-foreground text-sm">
+          Ativo
+        </label>
+      </div>
+    </div>
+  );
+}
+
+function OrderForm({
+  form,
+  setForm,
+}: {
+  form: ServiceOrderCreateInput;
+  setForm: (form: ServiceOrderCreateInput) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="text-foreground text-sm font-medium">Serviço</label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.company_service_id}
+          onChange={(e) =>
+            setForm({ ...form, company_service_id: e.target.value })
+          }
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">Status</label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.status ?? ''}
+          onChange={(e) => setForm({ ...form, status: e.target.value })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">
+          Agendamento
+        </label>
+        <input
+          type="datetime-local"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.scheduled_at ?? ''}
+          onChange={(e) => setForm({ ...form, scheduled_at: e.target.value })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">Valor</label>
+        <input
+          type="number"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.value ?? ''}
+          onChange={(e) => setForm({ ...form, value: Number(e.target.value) })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">
+          Período início
+        </label>
+        <input
+          type="date"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.period_start ?? ''}
+          onChange={(e) => setForm({ ...form, period_start: e.target.value })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">
+          Período fim
+        </label>
+        <input
+          type="date"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.period_end ?? ''}
+          onChange={(e) => setForm({ ...form, period_end: e.target.value })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">Local</label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.location ?? ''}
+          onChange={(e) => setForm({ ...form, location: e.target.value })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">
+          Observações
+        </label>
+        <textarea
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.notes ?? ''}
+          onChange={(e) => setForm({ ...form, notes: e.target.value })}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ExecutionForm({
+  form,
+  setForm,
+}: {
+  form: ServiceExecutionCreateInput;
+  setForm: (form: ServiceExecutionCreateInput) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="text-foreground text-sm font-medium">
+          Ordem de serviço
+        </label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.service_order_id}
+          onChange={(e) =>
+            setForm({ ...form, service_order_id: e.target.value })
+          }
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">
+          Executado por
+        </label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.executed_by ?? ''}
+          onChange={(e) => setForm({ ...form, executed_by: e.target.value })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">Início</label>
+        <input
+          type="datetime-local"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.started_at}
+          onChange={(e) => setForm({ ...form, started_at: e.target.value })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">Fim</label>
+        <input
+          type="datetime-local"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.finished_at ?? ''}
+          onChange={(e) => setForm({ ...form, finished_at: e.target.value })}
+        />
+      </div>
+      <div>
+        <label className="text-foreground text-sm font-medium">Notas</label>
+        <textarea
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.notes ?? ''}
+          onChange={(e) => setForm({ ...form, notes: e.target.value })}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function Servicos() {
   const { currentTenantId } = useAuth();
-  const [activeTab, setActiveTab] = useState<Tab>('services');
+  const [tab, setTab] = useState<Tab>('services');
   const [services, setServices] = useState<Service[]>([]);
   const [orders, setOrders] = useState<ServiceOrder[]>([]);
   const [executions, setExecutions] = useState<ServiceExecution[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState('');
 
   useEffect(() => {
     if (!currentTenantId) return;
@@ -49,34 +344,45 @@ export default function Servicos() {
       .finally(() => setLoading(false));
   }, [currentTenantId]);
 
-  const filteredServices = useMemo(() => {
-    let data = services;
-    if (search) {
-      const term = search.toLowerCase();
-      data = data.filter((s) => s.name.toLowerCase().includes(term));
-    }
-    return data;
-  }, [services, search]);
+  const moduleDef: ModuleDefinition = {
+    id: 'servicos',
+    title: 'Serviços',
+    description: 'Catálogo, ordens e execuções.',
+    icon: 'briefcase',
+    route: '/servicos',
+    category: 'negocio',
+    scope: 'tenant',
+  };
 
-  const kpis = useMemo(() => {
-    const totalServices = services.length;
-    const activeServices = services.filter((s) => s.active).length;
-    const openOrders = orders.filter((o) => o.status === 'open').length;
-    const completedOrders = orders.filter(
-      (o) => o.status === 'completed',
-    ).length;
-    const totalExecutions = executions.length;
-    return {
-      totalServices,
-      activeServices,
-      openOrders,
-      completedOrders,
-      totalExecutions,
-    };
-  }, [services, orders, executions]);
+  const serviceDefaultForm: ServiceCreateInput = {
+    tenant_id: currentTenantId || '',
+    name: '',
+    category: '',
+    active: true,
+    description: '',
+    short_description: '',
+    benefits: [],
+    image_url: '',
+    icon: '',
+  };
 
-  const formatCurrency = (value: number) =>
-    value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const orderDefaultForm: ServiceOrderCreateInput = {
+    tenant_id: currentTenantId || '',
+    company_service_id: '',
+    status: 'open',
+    quantity: 1,
+    value: 0,
+    location: '',
+    notes: '',
+  };
+
+  const executionDefaultForm: ServiceExecutionCreateInput = {
+    tenant_id: currentTenantId || '',
+    service_order_id: '',
+    executed_by: '',
+    notes: '',
+    started_at: new Date().toISOString(),
+  };
 
   if (loading) {
     return (
@@ -88,7 +394,9 @@ export default function Servicos() {
 
   if (error) {
     return (
-      <ErrorState message={error} onRetry={() => window.location.reload()} />
+      <div className="flex flex-col items-center justify-center gap-3 py-12 text-red-600">
+        <p>{error}</p>
+      </div>
     );
   }
 
@@ -98,49 +406,9 @@ export default function Servicos() {
         <div>
           <h1 className="text-foreground text-xl font-semibold">Serviços</h1>
           <p className="text-muted-foreground text-sm">
-            Catálogo e ordens de serviço.
+            Catálogo, ordens e execuções.
           </p>
         </div>
-        <Button
-          variant="secondary"
-          onClick={() => alert('Exportar relatório de serviços...')}
-        >
-          <Download className="mr-2 h-4 w-4" />
-          Exportar
-        </Button>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Serviços cadastrados</p>
-          <p className="text-foreground text-lg font-semibold">
-            {kpis.totalServices}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Serviços ativos</p>
-          <p className="text-success text-lg font-semibold">
-            {kpis.activeServices}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Ordens abertas</p>
-          <p className="text-warning text-lg font-semibold">
-            {kpis.openOrders}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Ordens concluídas</p>
-          <p className="text-success text-lg font-semibold">
-            {kpis.completedOrders}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Execuções</p>
-          <p className="text-foreground text-lg font-semibold">
-            {kpis.totalExecutions}
-          </p>
-        </Card>
       </div>
 
       <div className="border-border flex gap-2 overflow-x-auto border-b">
@@ -148,244 +416,145 @@ export default function Servicos() {
           { key: 'services', label: 'Serviços' },
           { key: 'orders', label: 'Ordens' },
           { key: 'executions', label: 'Execuções' },
-        ].map((tab) => (
+        ].map((t) => (
           <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key as Tab)}
+            key={t.key}
+            onClick={() => setTab(t.key as Tab)}
             className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
-              activeTab === tab.key
+              tab === t.key
                 ? 'border-primary text-primary border-b-2'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            {tab.label}
+            {t.label}
           </button>
         ))}
       </div>
 
-      {activeTab === 'services' && (
-        <motion.div
-          className="space-y-4"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="border-border bg-background flex flex-1 items-center gap-2 rounded-lg border px-3 py-2">
-              <Search className="text-muted-foreground h-4 w-4" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar serviços..."
-                className="w-full bg-transparent text-sm outline-none"
-              />
-            </div>
-            <Button onClick={() => alert('Formulário de novo serviço')}>
-              <Plus className="mr-2 h-4 w-4" />
-              Novo serviço
-            </Button>
-          </div>
-
-          {filteredServices.length === 0 ? (
-            <EmptyState
-              title="Nenhum serviço cadastrado"
-              description="Quando houver serviços registrados, eles aparecerão aqui."
-              actionLabel="Novo serviço"
-              onAction={() => alert('Formulário de novo serviço')}
+      {tab === 'services' && (
+        <ModulePage
+          title="Serviços"
+          description="Catálogo de serviços."
+          module={moduleDef}
+          permissions={[
+            {
+              id: 'services.read',
+              name: 'services.read',
+              module: 'services',
+              resource: 'services',
+              action: 'read',
+              created_at: new Date().toISOString(),
+            },
+          ]}
+          columns={SERVICES_COLUMNS}
+          filters={SERVICES_FILTERS}
+          fetchData={async (tenantId) =>
+            servicesRepository.findServices(tenantId)
+          }
+          createItem={async (tenantId, input) =>
+            servicesRepository.createService({ ...input, tenant_id: tenantId })
+          }
+          updateItem={async (tenantId, id, input) =>
+            servicesRepository.updateService(tenantId, id, input)
+          }
+          deleteItem={async (tenantId, id) =>
+            servicesRepository.deleteService(tenantId, id)
+          }
+          getItemId={(item) => item.id}
+          emptyMessage="Nenhum serviço cadastrado."
+          renderForm={(form, setForm) => (
+            <ServiceForm
+              form={form as ServiceCreateInput}
+              setForm={setForm as (form: ServiceCreateInput) => void}
             />
-          ) : (
-            <div className="border-border overflow-x-auto rounded-xl border">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Nome
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Descrição
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-border divide-y">
-                  {filteredServices.map((service) => (
-                    <tr key={service.id} className="hover:bg-muted">
-                      <td className="text-foreground px-4 py-3">
-                        {service.name}
-                      </td>
-                      <td className="text-muted-foreground px-4 py-3">
-                        {service.description ?? '-'}
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge
-                          variant={service.active ? 'success' : 'secondary'}
-                        >
-                          {service.active ? 'Ativo' : 'Inativo'}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
           )}
-        </motion.div>
+          defaultForm={serviceDefaultForm}
+        />
       )}
 
-      {activeTab === 'orders' && (
-        <motion.div
-          className="space-y-4"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="flex justify-end">
-            <Button
-              onClick={() => alert('Formulário de nova ordem de serviço')}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Nova ordem
-            </Button>
-          </div>
-
-          {orders.length === 0 ? (
-            <EmptyState
-              title="Nenhuma ordem de serviço registrada"
-              description="Quando houver ordens registradas, elas aparecerão aqui."
-              actionLabel="Nova ordem"
-              onAction={() => alert('Formulário de nova ordem de serviço')}
+      {tab === 'orders' && (
+        <ModulePage
+          title="Ordens de Serviço"
+          description="Ordens e acompanhamento."
+          module={moduleDef}
+          permissions={[
+            {
+              id: 'service_orders.read',
+              name: 'service_orders.read',
+              module: 'services',
+              resource: 'service_orders',
+              action: 'read',
+              created_at: new Date().toISOString(),
+            },
+          ]}
+          columns={ORDERS_COLUMNS}
+          filters={ORDERS_FILTERS}
+          fetchData={async (tenantId) =>
+            servicesRepository.findOrders(tenantId)
+          }
+          createItem={async (tenantId, input) =>
+            servicesRepository.createOrder({ ...input, tenant_id: tenantId })
+          }
+          updateItem={async (tenantId, id, input) =>
+            servicesRepository.updateOrder(tenantId, id, input)
+          }
+          deleteItem={async (tenantId, id) =>
+            servicesRepository.deleteOrder(tenantId, id)
+          }
+          getItemId={(item) => item.id}
+          emptyMessage="Nenhuma ordem registrada."
+          renderForm={(form, setForm) => (
+            <OrderForm
+              form={form as ServiceOrderCreateInput}
+              setForm={setForm as (form: ServiceOrderCreateInput) => void}
             />
-          ) : (
-            <div className="border-border overflow-x-auto rounded-xl border">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Descrição
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Valor
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Status
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Data criação
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-border divide-y">
-                  {orders.map((order) => (
-                    <tr key={order.id} className="hover:bg-muted">
-                      <td className="text-foreground px-4 py-3">
-                        {order.location ?? '-'}
-                      </td>
-                      <td className="text-foreground px-4 py-3">
-                        {order.value != null
-                          ? formatCurrency(order.value)
-                          : '-'}
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge
-                          variant={
-                            order.status === 'completed'
-                              ? 'success'
-                              : order.status === 'in_progress'
-                                ? 'warning'
-                                : order.status === 'cancelled'
-                                  ? 'danger'
-                                  : 'secondary'
-                          }
-                        >
-                          {order.status === 'completed'
-                            ? 'Concluída'
-                            : order.status === 'in_progress'
-                              ? 'Em andamento'
-                              : order.status === 'cancelled'
-                                ? 'Cancelada'
-                                : 'Aberta'}
-                        </Badge>
-                      </td>
-                      <td className="text-muted-foreground px-4 py-3">
-                        {new Date(order.created_at).toLocaleDateString('pt-BR')}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
           )}
-        </motion.div>
+          defaultForm={orderDefaultForm}
+        />
       )}
 
-      {activeTab === 'executions' && (
-        <motion.div
-          className="space-y-4"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="flex justify-end">
-            <Button onClick={() => alert('Formulário de nova execução')}>
-              <Plus className="mr-2 h-4 w-4" />
-              Nova execução
-            </Button>
-          </div>
-
-          {executions.length === 0 ? (
-            <EmptyState
-              title="Nenhuma execução registrada"
-              description="Quando houver execuções, elas aparecerão aqui."
-              actionLabel="Nova execução"
-              onAction={() => alert('Formulário de nova execução')}
+      {tab === 'executions' && (
+        <ModulePage
+          title="Execuções"
+          description="Execuções de serviço."
+          module={moduleDef}
+          permissions={[
+            {
+              id: 'service_executions.read',
+              name: 'service_executions.read',
+              module: 'services',
+              resource: 'service_executions',
+              action: 'read',
+              created_at: new Date().toISOString(),
+            },
+          ]}
+          columns={EXECUTIONS_COLUMNS}
+          filters={EXECUTIONS_FILTERS}
+          fetchData={async (tenantId) =>
+            servicesRepository.findExecutions(tenantId)
+          }
+          createItem={async (tenantId, input) =>
+            servicesRepository.createExecution({
+              ...input,
+              tenant_id: tenantId,
+            })
+          }
+          updateItem={async (tenantId, id, input) =>
+            servicesRepository.updateExecution(tenantId, id, input)
+          }
+          deleteItem={async (tenantId, id) =>
+            servicesRepository.deleteExecution(tenantId, id)
+          }
+          getItemId={(item) => item.id}
+          emptyMessage="Nenhuma execução registrada."
+          renderForm={(form, setForm) => (
+            <ExecutionForm
+              form={form as ServiceExecutionCreateInput}
+              setForm={setForm as (form: ServiceExecutionCreateInput) => void}
             />
-          ) : (
-            <div className="border-border overflow-x-auto rounded-xl border">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Ordem
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Executado por
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Início
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 font-medium">
-                      Fim
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-border divide-y">
-                  {executions.map((execution) => (
-                    <tr key={execution.id} className="hover:bg-muted">
-                      <td className="text-foreground px-4 py-3">
-                        {execution.service_order_id}
-                      </td>
-                      <td className="text-foreground px-4 py-3">
-                        {execution.executed_by || '—'}
-                      </td>
-                      <td className="text-muted-foreground px-4 py-3">
-                        {new Date(execution.started_at).toLocaleString('pt-BR')}
-                      </td>
-                      <td className="text-muted-foreground px-4 py-3">
-                        {execution.finished_at
-                          ? new Date(execution.finished_at).toLocaleString(
-                              'pt-BR',
-                            )
-                          : '—'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
           )}
-        </motion.div>
+          defaultForm={executionDefaultForm}
+        />
       )}
     </div>
   );
