@@ -74,6 +74,7 @@ const Login = lazy(() => import('@/pages/Login'));
 const CadastroCandidato = lazy(() => import('@/pages/CadastroCandidato'));
 const CadastroEmpresa = lazy(() => import('@/pages/CadastroEmpresa'));
 const RecuperarSenha = lazy(() => import('@/pages/RecuperarSenha'));
+const RedefinirSenha = lazy(() => import('@/pages/RedefinirSenha'));
 const Onboarding = lazy(() => import('@/pages/Onboarding'));
 const PrimeiroAcessoTermos = lazy(
   () => import('@/pages/primeiro-acesso/Termos'),
@@ -827,6 +828,10 @@ function App() {
                     <Route
                       path="/recuperar-senha"
                       element={<RecuperarSenha />}
+                    />
+                    <Route
+                      path="/redefinir-senha"
+                      element={<RedefinirSenha />}
                     />
                     <Route
                       path="/cadastro/candidato"

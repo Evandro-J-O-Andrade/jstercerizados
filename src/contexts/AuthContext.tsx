@@ -54,6 +54,7 @@ interface AuthContextType {
   changePassword: (
     currentPassword: string,
     newPassword: string,
+    turnstileToken?: string,
   ) => Promise<{ error?: string; destination?: string }>;
   acceptTerms: (
     documentType: string,
@@ -566,8 +567,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const changePassword = async (
-    _currentPassword: string,
+    currentPassword: string,
     newPassword: string,
+    _turnstileToken?: string,
   ): Promise<{ error?: string; destination?: string }> => {
     const supabase = getSupabaseClient();
     if (!supabase) {
@@ -585,6 +587,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      if (currentPassword && user.email) {
+        const { error: verifyError } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password: currentPassword,
+        });
+
+        if (verifyError) {
+          return {
+            error: 'Senha atual inválida. Verifique e tente novamente.',
+          };
+        }
+      }
+
       console.log('[AUTH:CHANGE_PASSWORD] iniciando troca de senha', {
         hasSession: !!user,
         userId: user.id,
@@ -1009,10 +1024,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log('[AUTH:RESET] resetPasswordForEmail start', {
         email,
-        redirectTo: `${window.location.origin}/login?reset=true`,
+        redirectTo: `${window.location.origin}/redefinir-senha`,
       });
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/login?reset=true`,
+        redirectTo: `${window.location.origin}/redefinir-senha`,
       });
 
       console.log('[AUTH:RESET] resetPasswordForEmail result', {
