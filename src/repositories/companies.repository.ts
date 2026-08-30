@@ -20,7 +20,7 @@ export class CompaniesRepository extends SupabaseRepository {
     if (filters?.status) query = query.eq('status', filters.status);
     if (filters?.search)
       query = query.or(
-        `name.ilike.%${filters.search}%,document.ilike.%${filters.search}%`,
+        `legal_name.ilike.%${filters.search}%,cnpj.ilike.%${filters.search}%`,
       );
 
     const { data, error } = await query;

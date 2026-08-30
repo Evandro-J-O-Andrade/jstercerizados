@@ -31,10 +31,8 @@ export default function VagaDetalhe() {
         .select(
           `
           id, title, description, status, employment_type, location, salary, benefits, requirements, published_at, created_at,
-          company_id,
           companies (
             id,
-            name,
             legal_name,
             status
           )
@@ -43,12 +41,14 @@ export default function VagaDetalhe() {
         .eq('id', slug)
         .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
         .maybeSingle();
-      if (error) throw error;
+      if (error) {
+        console.error('[VagaDetalhe] query error', error);
+        return null;
+      }
       return (
         ((data ?? null) as typeof data & {
           companies: Array<{
             id: string;
-            name: string;
             legal_name: string | null;
             status: string;
           }> | null;
@@ -179,10 +179,12 @@ export default function VagaDetalhe() {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6"
             >
-              {vaga.companies?.[0]?.name && (
+              {vaga.companies?.[0]?.legal_name && (
                 <div className="flex items-center gap-3">
                   <Building2 className="text-primary h-5 w-5" />
-                  <span className="text-sm">{vaga.companies[0].name}</span>
+                  <span className="text-sm">
+                    {vaga.companies[0].legal_name}
+                  </span>
                 </div>
               )}
               {vaga.location && (

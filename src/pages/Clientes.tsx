@@ -1,55 +1,86 @@
 ﻿import { motion, useInView } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
-import { COMPANY } from '@/config';
-import { useRef } from 'react';
+import { SafeImage } from '@/components/ui/SafeImage';
+import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
+import {
+  Building2,
+  Users,
+  Phone,
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/lib/supabase';
-import { staggerReveal, revealUp } from '@/animations/scroll';
+import { getClientLogo } from '@/utils/clientLogos';
 
-function useCustomers() {
+function useReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    const handler = (event: MediaQueryListEvent) =>
+      setPrefersReducedMotion(event.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  return prefersReducedMotion;
+}
+
+type DbCompany = {
+  id: string;
+  name: string;
+  legal_name: string | null;
+  cnpj: string | null;
+  status: string;
+  created_at: string;
+};
+
+type Client = {
+  id: string;
+  name: string;
+  logo: string | null;
+  image?: string | null;
+  website?: string | null;
+  description?: string | null;
+};
+
+function useClients() {
   return useQuery({
-    queryKey: ['customers'],
+    queryKey: ['clients-home'],
     queryFn: async () => {
       const supabase = getSupabaseClient();
       if (!supabase) return [];
       const { data, error } = await supabase
-        .from('company_relationships')
-        .select(
-          `
-          id,
-          relationship_type,
-          status,
-          started_at,
-          ended_at,
-          created_at,
-          companies (
-            id,
-            name,
-            legal_name,
-            status
-          )
-        `,
-        )
-        .eq('relationship_type', 'customer')
-        .eq('status', 'active')
+        .from('companies')
+        .select('id, name, legal_name, cnpj, status, created_at')
         .order('created_at', { ascending: true });
-      if (error) throw error;
-      return (data || []) as Array<{
-        id: string;
-        relationship_type: string;
-        status: string;
-        started_at: string | null;
-        ended_at: string | null;
-        created_at: string;
-        companies: Array<{
-          id: string;
-          name: string;
-          legal_name: string | null;
-          status: string;
-        }> | null;
-      }>;
+      if (error) {
+        console.error('[Clientes] query error', error);
+        return [];
+      }
+      const rows = (data || []) as DbCompany[];
+      return rows
+        .filter((company) => company.status === 'active')
+        .map((company) => {
+          const displayName = company.name || company.legal_name || 'Sem nome';
+          const logo = getClientLogo(displayName);
+          return {
+            id: company.id,
+            name: displayName,
+            logo,
+            image: logo,
+            website: null,
+            description: company.cnpj ? `CNPJ: ${company.cnpj}` : null,
+          } satisfies Client;
+        });
     },
   });
 }
@@ -57,32 +88,28 @@ function useCustomers() {
 function ClientCase({
   client,
   index,
+  total,
 }: {
   client: {
     id: string;
-    relationship_type: string;
-    status: string;
-    started_at: string | null;
-    ended_at: string | null;
-    created_at: string;
-    companies: Array<{
-      id: string;
-      name: string;
-      legal_name: string | null;
-      status: string;
-    }> | null;
+    name: string;
+    logo: string | null;
+    image?: string | null;
+    website?: string | null;
+    description?: string | null;
   };
   index: number;
+  total: number;
 }) {
   const isEven = index % 2 === 0;
+  const prefersReducedMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [showIndicators, setShowIndicators] = useState(false);
 
-  const displayName =
-    client.companies?.[0]?.name ||
-    client.companies?.[0]?.legal_name ||
-    'Sem nome';
-  const legalName = client.companies?.[0]?.legal_name;
+  const showImage = client.image && imageLoaded;
+  const primaryMedia = showImage ? client.image! : client.logo!;
 
   return (
     <motion.div
@@ -90,43 +117,95 @@ function ClientCase({
       initial={{ opacity: 0, x: isEven ? -80 : 80 }}
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{
-        duration: 0.9,
+        duration: prefersReducedMotion ? 0.3 : 0.9,
         ease: [0.25, 0.4, 0.25, 1],
       }}
       className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16 ${index % 2 === 1 ? 'direction-rtl' : ''}`}
       style={{ direction: 'ltr' }}
+      onMouseEnter={() => setShowIndicators(true)}
+      onMouseLeave={() => setShowIndicators(false)}
     >
       <div
         className={`relative aspect-[16/10] overflow-hidden rounded-3xl ${index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}
       >
         <motion.div
           initial={{ scale: 1 }}
-          whileInView={{ scale: 1.05 }}
+          whileInView={prefersReducedMotion ? {} : { scale: 1.05 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 1.2, ease: [0.25, 0.4, 0.25, 1] }}
           className="absolute inset-0"
         >
-          <div className="bg-primary/10 text-primary flex h-full w-full items-center justify-center text-6xl font-bold">
-            {displayName.charAt(0).toUpperCase()}
-          </div>
+          <SafeImage
+            src={primaryMedia}
+            alt={client.name}
+            className="h-full w-full object-cover transition-all duration-700"
+            onLoad={() => setImageLoaded(true)}
+          />
         </motion.div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
         <div className="absolute right-0 bottom-0 left-0 p-6 sm:p-8">
-          <h3 className="text-2xl font-bold text-white drop-shadow-md sm:text-3xl">
-            {displayName}
-          </h3>
-          {legalName && (
-            <p className="mt-1 text-sm text-white/80">{legalName}</p>
+          {client.logo && (
+            <div className="mb-4 h-12 w-auto">
+              <SafeImage
+                src={client.logo}
+                alt={client.name}
+                className="h-full w-auto object-contain drop-shadow-lg"
+              />
+            </div>
           )}
+          <h3 className="text-2xl font-bold text-white drop-shadow-md sm:text-3xl">
+            {client.name}
+          </h3>
         </div>
+        {showIndicators && !prefersReducedMotion && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute top-4 right-4 flex flex-col gap-2"
+          >
+            {index > 0 && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+            )}
+            {index < total - 1 && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            )}
+          </motion.div>
+        )}
       </div>
 
       <div className={`${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
         <div className="max-w-xl">
-          <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-            {displayName}
-          </p>
+          {client.description && (
+            <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
+              {client.description}
+            </p>
+          )}
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            {client.website && (
+              <a
+                href={client.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm font-semibold transition-colors"
+              >
+                Conhecer empresa
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>
@@ -134,10 +213,7 @@ function ClientCase({
 }
 
 export default function Clientes() {
-  const { data: customers = [] } = useCustomers();
-  const confirmedClients = customers.filter(
-    (client) => client.status === 'active',
-  );
+  const { data: clients = [], isLoading, error } = useClients();
 
   return (
     <div className="min-h-screen">
@@ -154,46 +230,127 @@ export default function Clientes() {
           'facilities',
         ]}
       />
+
       <Section className="pt-20 md:pt-28">
         <Container>
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
-            className="mb-12 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
           >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Clientes que Confiam na J&S
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Conheça algumas das empresas que escolheram nossas soluções.
-            </motion.p>
-          </motion.div>
-
-          <div className="space-y-24">
-            {confirmedClients.map((client, index) => (
-              <ClientCase key={client.id} client={client} index={index} />
-            ))}
-          </div>
-
-          {confirmedClients.length === 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              className="mt-20 text-center"
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-primary/10 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
             >
-              <p className="text-muted-foreground text-lg">
-                Nenhum cliente encontrado no momento.
-              </p>
+              <Building2 className="h-4 w-4" />
+              <span>Relacionamentos J&S</span>
             </motion.div>
+
+            <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
+              Relacionamentos que constroem confiança
+            </h1>
+            <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
+              A J&S Empregos LTDA conecta empresas e profissionais com soluções
+              em Recursos Humanos, recrutamento, terceirização e facilities.
+              Cada parceiro faz parte da nossa história.
+            </p>
+          </motion.div>
+        </Container>
+      </Section>
+
+      <Section className="pb-0">
+        <Container>
+          {isLoading ? (
+            <div className="mt-20 space-y-20">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="border-muted/60 rounded-3xl border border-dashed p-6"
+                >
+                  <div className="flex animate-pulse flex-col gap-4">
+                    <div className="bg-muted h-64 w-full rounded-2xl" />
+                    <div className="bg-muted h-4 w-48 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="mt-20 text-center">
+              <p className="text-muted-foreground">
+                Não foi possível carregar os relacionamentos agora.
+              </p>
+            </div>
+          ) : clients.length === 0 ? (
+            <div className="mt-20 text-center">
+              <p className="text-muted-foreground">
+                Nenhum relacionamento encontrado no momento.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-20 space-y-20">
+              {clients.map((client, index) => (
+                <ClientCase
+                  key={client.id}
+                  client={client}
+                  index={index}
+                  total={clients.length}
+                />
+              ))}
+            </div>
           )}
+        </Container>
+      </Section>
+
+      <Section className="mt-24">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <div className="bg-card border-border shadow-premium rounded-3xl border p-8 sm:p-12">
+              <Users className="text-primary mx-auto mb-4 h-12 w-12" />
+              <h2 className="text-foreground text-2xl font-bold sm:text-3xl">
+                Grandes empresas possuem grandes desafios.
+                <br />
+                <span className="text-primary">
+                  A J&S trabalha para que pessoas e processos estejam à altura
+                  deles.
+                </span>
+              </h2>
+              <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
+                Converse com nosso time comercial e entenda como podemos apoiar
+                sua operação com profissionais qualificados e soluções em RH.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <Link to="/empresas">
+                  <Button variant="primary" size="lg">
+                    Falar com a J&S
+                  </Button>
+                </Link>
+                <motion.a
+                  href={getWhatsAppUrl(
+                    COMPANY.whatsapp,
+                    WHATSAPP_MESSAGES.comercial,
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button variant="outline" size="lg">
+                    <Phone className="mr-2 h-5 w-5" />
+                    WhatsApp comercial
+                  </Button>
+                </motion.a>
+              </div>
+            </div>
+          </motion.div>
         </Container>
       </Section>
     </div>

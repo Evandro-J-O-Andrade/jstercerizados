@@ -6,6 +6,7 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
+import { ClientCard } from '@/components/sections/ClientCard';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import {
   Phone,
@@ -19,27 +20,125 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/lib/supabase';
-import type { CompanyPublic } from '@/types/domain/company';
+import { getClientLogo } from '@/utils/clientLogos';
 
-function useCompanies() {
+type DbClient = {
+  id: string;
+  name: string;
+  legal_name: string | null;
+  cnpj: string | null;
+  status: string;
+  created_at: string;
+};
+
+type Client = {
+  id: string;
+  name: string;
+  logo: string | null;
+  image?: string | null;
+  website?: string | null;
+  description?: string | null;
+};
+
+function useClients() {
   return useQuery({
-    queryKey: ['companies'],
+    queryKey: ['clients-empresas'],
     queryFn: async () => {
       const supabase = getSupabaseClient();
       if (!supabase) return [];
       const { data, error } = await supabase
         .from('companies')
-        .select('id, legal_name, status')
-        .order('created_at', { ascending: true })
-        .limit(50);
-      if (error) throw error;
-      return (data || []) as CompanyPublic[];
+        .select('id, name, legal_name, cnpj, status, created_at')
+        .order('created_at', { ascending: true });
+      if (error) {
+        console.error('[Empresas] query error', error);
+        return [];
+      }
+      const rows = (data || []) as DbClient[];
+      return rows
+        .filter((company) => company.status === 'active')
+        .map((company) => {
+          const displayName = company.name || company.legal_name || 'Sem nome';
+          const logo = getClientLogo(displayName);
+          return {
+            id: company.id,
+            name: displayName,
+            logo,
+            image: logo,
+            website: null,
+            description: company.cnpj ? `CNPJ: ${company.cnpj}` : null,
+          } satisfies Client;
+        });
+    },
+  });
+}
+
+function usePartners() {
+  return useQuery({
+    queryKey: ['partners-empresas'],
+    queryFn: async () => {
+      const supabase = getSupabaseClient();
+      if (!supabase) return [];
+      const { data, error } = await supabase
+        .from('company_relationships')
+        .select(
+          `
+          id,
+          relationship_type,
+          status,
+          start_date,
+          end_date,
+          created_at,
+          companies (
+            id,
+            name,
+            legal_name,
+            status
+          )
+        `,
+        )
+        .eq('relationship_type', 'partner')
+        .eq('status', 'active')
+        .order('created_at', { ascending: true });
+      if (error) {
+        console.error('[Empresas] partners query error', error);
+        return [];
+      }
+      const rows = (data || []) as Array<{
+        id: string;
+        relationship_type: string;
+        status: string;
+        start_date: string | null;
+        end_date: string | null;
+        created_at: string;
+        companies: Array<{
+          id: string;
+          name: string;
+          legal_name: string | null;
+          status: string;
+        }> | null;
+      }>;
+      return rows.map((rel) => {
+        const company = rel.companies?.[0];
+        const displayName = company?.name || company?.legal_name || 'Sem nome';
+        const logo = getClientLogo(displayName);
+        return {
+          id: rel.id,
+          name: displayName,
+          logo,
+          image: logo,
+          website: null,
+          description: company?.legal_name || displayName,
+        } satisfies Client;
+      });
     },
   });
 }
 
 export default function Empresas() {
-  const { data: companies = [], isLoading } = useCompanies();
+  const { data: clients = [], isLoading: clientsLoading } = useClients();
+  const { data: partners = [], isLoading: partnersLoading } = usePartners();
+
   return (
     <div className="min-h-screen">
       <SEO
@@ -190,36 +289,102 @@ export default function Empresas() {
               variants={staggerReveal(0.1)}
               className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
             >
-              {isLoading
-                ? Array.from({ length: 8 }).map((_, i) => (
-                    <motion.div
-                      key={i}
-                      variants={staggerItem('up')}
-                      className="bg-muted/50 border-border/50 rounded-2xl border p-6"
-                    >
-                      <div className="bg-muted mx-auto h-12 w-12 animate-pulse rounded-xl" />
-                      <div className="bg-muted mx-auto mt-4 h-4 w-24 animate-pulse rounded" />
-                    </motion.div>
-                  ))
-                : companies
-                    .filter((company) => company.status === 'active')
-                    .map((company) => (
-                      <motion.div
-                        key={company.id}
-                        variants={staggerItem('up')}
-                        className="bg-card border-border hover:border-primary/30 flex flex-col items-center justify-center rounded-2xl border p-6 transition-all duration-300"
-                      >
-                        <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold">
-                          {company.legal_name
-                            ? company.legal_name.charAt(0).toUpperCase()
-                            : '?'}
-                        </div>
-                        <span className="text-foreground mt-3 text-center text-sm font-medium">
-                          {company.legal_name || '—'}
-                        </span>
-                      </motion.div>
-                    ))}
+              {clientsLoading ? (
+                Array.from({ length: 8 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    variants={staggerItem('up')}
+                    className="bg-muted/50 border-border/50 rounded-2xl border p-6"
+                  >
+                    <div className="bg-muted mx-auto h-12 w-12 animate-pulse rounded-xl" />
+                    <div className="bg-muted mx-auto mt-4 h-4 w-24 animate-pulse rounded" />
+                  </motion.div>
+                ))
+              ) : clients.length === 0 ? (
+                <div className="text-muted-foreground col-span-full text-center">
+                  Nenhum cliente encontrado no momento.
+                </div>
+              ) : (
+                clients.map((client, index) => (
+                  <motion.div key={client.id} variants={staggerItem('up')}>
+                    <ClientCard client={client} index={index} />
+                  </motion.div>
+                ))
+              )}
             </motion.div>
+          </motion.div>
+
+          {/* Nossos parceiros */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mt-24"
+          >
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground text-center text-3xl font-bold sm:text-4xl"
+            >
+              Nossos parceiros
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center text-lg"
+            >
+              Construímos uma rede de parceiros estratégicos para ampliar nossas
+              soluções e entregar mais eficiência aos nossos clientes.
+            </motion.p>
+
+            {partnersLoading ? (
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={staggerReveal(0.1)}
+                className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
+              >
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    variants={staggerItem('up')}
+                    className="bg-muted/50 border-border/50 rounded-2xl border p-6"
+                  >
+                    <div className="bg-muted mx-auto h-12 w-12 animate-pulse rounded-xl" />
+                    <div className="bg-muted mx-auto mt-4 h-4 w-24 animate-pulse rounded" />
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : partners.length > 0 ? (
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={staggerReveal(0.1)}
+                className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
+              >
+                {partners.map((partner) => (
+                  <motion.div key={partner.id} variants={staggerItem('up')}>
+                    <ClientCard client={partner} index={0} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mt-10 flex justify-center"
+              >
+                <Link to="/parceiros">
+                  <Button variant="secondary" size="lg">
+                    <Briefcase className="mr-2 h-5 w-5" />
+                    Quero ser parceiro
+                  </Button>
+                </Link>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Fornecedores */}

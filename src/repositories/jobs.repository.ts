@@ -15,7 +15,8 @@ export class JobsRepository extends SupabaseRepository {
       .order('created_at', { ascending: false });
 
     if (filters?.status) query = query.eq('status', filters.status);
-    if (filters?.companyId) query = query.eq('company_id', filters.companyId);
+    if (filters?.companyId)
+      query = query.eq('company_relationship_id', filters.companyId);
     if (filters?.search) query = query.ilike('title', `%${filters.search}%`);
 
     const { data, error } = await query;

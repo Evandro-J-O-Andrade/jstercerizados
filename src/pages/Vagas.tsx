@@ -24,7 +24,11 @@ export default function Vagas() {
   const [tipoFilter, setTipoFilter] = useState('');
   const [modalidadeFilter, setModalidadeFilter] = useState('');
 
-  const { data: jobs = [] } = useQuery({
+  const {
+    data: jobs = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['jobs', 'public'],
     queryFn: async () => {
       const supabase = getSupabaseClient();
@@ -44,10 +48,8 @@ export default function Vagas() {
           requirements,
           published_at,
           created_at,
-          company_id,
           companies (
             id,
-            name,
             legal_name,
             status
           )
@@ -58,7 +60,7 @@ export default function Vagas() {
         .order('created_at', { ascending: false });
       if (error) {
         console.error('[Vagas] query error', error);
-        throw error;
+        return [];
       }
       return (data || []) as Array<{
         id: string;
@@ -72,10 +74,8 @@ export default function Vagas() {
         requirements: string | null;
         published_at: string | null;
         created_at: string;
-        company_id: string | null;
         companies: Array<{
           id: string;
-          name: string;
           legal_name: string | null;
           status: string;
         }> | null;
@@ -214,103 +214,124 @@ export default function Vagas() {
           </motion.div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredJobs.map((job) => {
-              const location = job.location || '';
-              const remote = isRemote(location);
-
-              return (
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, i) => (
                 <motion.div
-                  key={job.id}
+                  key={i}
                   variants={staggerItem('up')}
-                  className="group bg-card border-border shadow-premium relative flex flex-col rounded-2xl border p-6 transition-all duration-300"
+                  className="bg-muted/50 border-border/50 rounded-2xl border p-6"
                 >
-                  <div className="mb-4 flex items-start justify-between">
-                    <div>
-                      <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
-                        {job.title}
-                      </h3>
-                      {job.companies?.[0]?.name && (
-                        <p className="text-muted-foreground text-sm">
-                          {job.companies[0].name}
-                        </p>
+                  <div className="bg-muted mx-auto h-40 w-full animate-pulse rounded-xl" />
+                  <div className="bg-muted mx-auto mt-4 h-4 w-24 animate-pulse rounded" />
+                </motion.div>
+              ))
+            ) : error ? (
+              <div className="text-muted-foreground col-span-full text-center">
+                Não foi possível carregar as vagas agora.
+              </div>
+            ) : filteredJobs.length === 0 ? (
+              <div className="text-muted-foreground col-span-full text-center">
+                Nenhuma vaga encontrada para os filtros selecionados.
+              </div>
+            ) : (
+              filteredJobs.map((job) => {
+                const location = job.location || '';
+                const remote = isRemote(location);
+
+                return (
+                  <motion.div
+                    key={job.id}
+                    variants={staggerItem('up')}
+                    className="group bg-card border-border shadow-premium relative flex flex-col rounded-2xl border p-6 transition-all duration-300"
+                  >
+                    <div className="mb-4 flex items-start justify-between">
+                      <div>
+                        <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
+                          {job.title}
+                        </h3>
+                        {job.companies?.[0]?.legal_name && (
+                          <p className="text-muted-foreground text-sm">
+                            {job.companies[0].legal_name}
+                          </p>
+                        )}
+                      </div>
+                      {job.employment_type && (
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                            job.employment_type === 'clt'
+                              ? 'bg-success/10 text-success'
+                              : 'bg-primary/10 text-primary'
+                          }`}
+                        >
+                          {CONTRATO_LABELS[job.employment_type] ||
+                            job.employment_type.toUpperCase()}
+                        </span>
                       )}
                     </div>
-                    {job.employment_type && (
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                          job.employment_type === 'clt'
-                            ? 'bg-success/10 text-success'
-                            : 'bg-primary/10 text-primary'
-                        }`}
-                      >
-                        {CONTRATO_LABELS[job.employment_type] ||
-                          job.employment_type.toUpperCase()}
-                      </span>
-                    )}
-                  </div>
 
-                  <div className="mb-4 space-y-2">
-                    {location && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="text-muted-foreground h-4 w-4" />
-                        <span className="text-muted-foreground">
-                          {location}
+                    <div className="mb-4 space-y-2">
+                      {location && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <MapPin className="text-muted-foreground h-4 w-4" />
+                          <span className="text-muted-foreground">
+                            {location}
+                          </span>
+                        </div>
+                      )}
+                      {job.salary && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <DollarSign className="text-muted-foreground h-4 w-4" />
+                          <span className="text-muted-foreground">
+                            {job.salary}
+                          </span>
+                        </div>
+                      )}
+                      {remote && (
+                        <span className="text-muted-foreground inline-block text-xs">
+                          Remoto
                         </span>
-                      </div>
-                    )}
-                    {job.salary && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <DollarSign className="text-muted-foreground h-4 w-4" />
-                        <span className="text-muted-foreground">
-                          {job.salary}
-                        </span>
-                      </div>
-                    )}
-                    {remote && (
-                      <span className="text-muted-foreground inline-block text-xs">
-                        Remoto
-                      </span>
-                    )}
-                  </div>
-
-                  {job.benefits && (
-                    <div className="mb-4">
-                      <p className="text-muted-foreground mb-2 text-xs font-medium">
-                        Benefícios
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {job.benefits
-                          .split(';')
-                          .map((benefit) => benefit.trim())
-                          .filter(Boolean)
-                          .slice(0, 3)
-                          .map((beneficio) => (
-                            <span
-                              key={beneficio}
-                              className="bg-muted rounded-full px-2 py-0.5 text-xs"
-                            >
-                              {beneficio}
-                            </span>
-                          ))}
-                      </div>
+                      )}
                     </div>
-                  )}
 
-                  <div className="mt-auto flex gap-2">
-                    <Link to={`/vagas/${job.id}`} className="flex-1">
-                      <Button variant="primary" size="sm" className="w-full">
-                        Ver vaga
-                      </Button>
-                    </Link>
-                    <Link to={`/vagas/${job.id}`} className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        Candidatar-se
-                      </Button>
-                    </Link>
-                  </div>
-                </motion.div>
-              );
-            })}
+                    {job.benefits && (
+                      <div className="mb-4">
+                        <p className="text-muted-foreground mb-2 text-xs font-medium">
+                          Benefícios
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {job.benefits
+                            .split(';')
+                            .map((benefit) => benefit.trim())
+                            .filter(Boolean)
+                            .slice(0, 3)
+                            .map((beneficio) => (
+                              <span
+                                key={beneficio}
+                                className="bg-muted rounded-full px-2 py-0.5 text-xs"
+                              >
+                                {beneficio}
+                              </span>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-auto flex gap-2">
+                      <Link to={`/vagas/${job.id}`} className="flex-1">
+                        <Button variant="primary" size="sm" className="w-full">
+                          Ver vaga
+                        </Button>
+                      </Link>
+                      <Link to={`/vagas/${job.id}`} className="flex-1">
+                        <Button variant="outline" size="sm" className="w-full">
+                          Candidatar-se
+                        </Button>
+                      </Link>
+                    </div>
+                  </motion.div>
+                );
+              })
+            )}
           </div>
 
           {filteredJobs.length === 0 && (

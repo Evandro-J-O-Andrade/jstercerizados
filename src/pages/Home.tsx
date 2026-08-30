@@ -11,11 +11,10 @@ import {
   CheckCircle2,
   Heart,
   ArrowRight,
+  MapPin,
   Phone,
   Wrench,
   Handshake,
-  MapPin,
-  DollarSign,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
@@ -26,26 +25,10 @@ import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { COMPANY } from '@/config';
 import { HERO_SLIDES } from '@/content/homeHero';
-import type { CompanyPublic } from '@/types/domain/company';
+import { SafeImage } from '@/components/ui/SafeImage';
 import { useQuery } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/lib/supabase';
-
-function useCompanies() {
-  return useQuery({
-    queryKey: ['companies'],
-    queryFn: async () => {
-      const supabase = getSupabaseClient();
-      if (!supabase) return [];
-      const { data, error } = await supabase
-        .from('companies')
-        .select('id, legal_name, status')
-        .order('created_at', { ascending: true })
-        .limit(20);
-      if (error) throw error;
-      return (data || []) as CompanyPublic[];
-    },
-  });
-}
+import { getClientLogo } from '@/utils/clientLogos';
 
 const heroSlides = HERO_SLIDES.map((slide) => ({
   id: slide.id,
@@ -213,8 +196,144 @@ const facilitiesSolutions = [
   },
 ];
 
+type DbCompany = {
+  id: string;
+  name: string;
+  legal_name: string | null;
+  cnpj: string | null;
+  status: string;
+  created_at: string;
+};
+
+type Client = {
+  id: string;
+  name: string;
+  logo: string | null;
+  image?: string | null;
+  website?: string | null;
+  description?: string | null;
+};
+
+function useClients() {
+  return useQuery({
+    queryKey: ['clients-home'],
+    queryFn: async () => {
+      const supabase = getSupabaseClient();
+      if (!supabase) return [];
+      const { data, error } = await supabase
+        .from('companies')
+        .select('id, name, legal_name, cnpj, status, created_at')
+        .order('created_at', { ascending: true });
+      if (error) {
+        console.error('[Home] clients query error', error);
+        return [];
+      }
+      const rows = (data || []) as DbCompany[];
+      return rows
+        .filter((company) => company.status === 'active')
+        .map((company) => {
+          const displayName = company.name || company.legal_name || 'Sem nome';
+          const logo = getClientLogo(displayName);
+          return {
+            id: company.id,
+            name: displayName,
+            logo,
+            image: logo,
+            website: null,
+            description: company.cnpj ? `CNPJ: ${company.cnpj}` : null,
+          } satisfies Client;
+        });
+    },
+  });
+}
+
+type FeaturedJob = {
+  id: string;
+  titulo: string;
+  empresa: string;
+  tipoContrato: string;
+  cidade: string;
+  estado: string;
+  modalidade: string;
+  slug: string;
+};
+
+function useFeaturedJobs() {
+  return useQuery({
+    queryKey: ['jobs', 'public-featured'],
+    queryFn: async () => {
+      const supabase = getSupabaseClient();
+      if (!supabase) return [];
+      const { data, error } = await supabase
+        .from('jobs')
+        .select(
+          'id, title, status, employment_type, location, salary, benefits, requirements, created_at, company_relationship_id, companies(legal_name)',
+        )
+        .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(4);
+      if (error) {
+        console.error('[Home] jobs query error', error);
+        return [];
+      }
+      const rows = (data || []) as Array<{
+        id: string;
+        title: string;
+        status: string;
+        employment_type: string | null;
+        location: string | null;
+        salary: string | null;
+        benefits: string | null;
+        requirements: string | null;
+        created_at: string;
+        company_relationship_id: string | null;
+        companies: Array<{ legal_name: string }> | null;
+      }>;
+      return rows.map((job) => {
+        const companyName = job.companies?.[0]?.legal_name || 'J&S Empregos';
+        const location = job.location || '';
+        const parts = location
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        const cidade = parts[0] || '';
+        const estado = parts[1] || '';
+        const modalidade = job.location?.toLowerCase().includes('remoto')
+          ? 'REMOTO'
+          : job.location?.toLowerCase().includes('híbrido') ||
+              job.location?.toLowerCase().includes('hibrido')
+            ? 'HIBRIDO'
+            : 'PRESENCIAL';
+        const tipoContrato = job.employment_type
+          ? job.employment_type.toUpperCase()
+          : 'CLT';
+        return {
+          id: job.id,
+          titulo: job.title,
+          empresa: companyName,
+          tipoContrato,
+          cidade,
+          estado,
+          modalidade,
+          slug: job.id,
+        } satisfies FeaturedJob;
+      });
+    },
+  });
+}
+
 export default function Home() {
-  const { data: companies = [] } = useCompanies();
+  const {
+    data: clients = [],
+    isLoading: clientsLoading,
+    error: clientsError,
+  } = useClients();
+  const {
+    data: destaques = [],
+    isLoading: jobsLoading,
+    error: jobsError,
+  } = useFeaturedJobs();
 
   return (
     <div>
@@ -464,6 +583,115 @@ export default function Home() {
         </Container>
       </Section>
 
+      {/* 5. VAGAS EM DESTAQUE */}
+      <Section>
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="mb-12 flex items-end justify-between"
+          >
+            <motion.div variants={revealUp}>
+              <motion.h2
+                variants={revealUp}
+                className="text-foreground text-3xl font-bold sm:text-4xl"
+              >
+                Vagas em Destaque
+              </motion.h2>
+              <motion.p
+                variants={revealUp}
+                className="text-muted-foreground mt-4 max-w-2xl text-lg"
+              >
+                Confira as oportunidades disponíveis no momento.
+              </motion.p>
+            </motion.div>
+            <Link to="/vagas">
+              <Button variant="outline" size="sm">
+                Ver todas as vagas
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={staggerReveal(0.1)}
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
+          >
+            {jobsLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <motion.div
+                  key={i}
+                  variants={staggerItem('up')}
+                  className="bg-muted/50 border-border/50 rounded-2xl border p-6"
+                >
+                  <div className="bg-muted mx-auto h-40 w-full animate-pulse rounded-xl" />
+                  <div className="bg-muted mx-auto mt-4 h-4 w-24 animate-pulse rounded" />
+                </motion.div>
+              ))
+            ) : jobsError ? (
+              <div className="text-muted-foreground col-span-full text-center">
+                Não foi possível carregar as vagas em destaque agora.
+              </div>
+            ) : destaques.length === 0 ? (
+              <div className="text-muted-foreground col-span-full text-center">
+                Nenhuma vaga em destaque no momento.
+              </div>
+            ) : (
+              destaques.map((vaga) => (
+                <motion.div
+                  key={vaga.id}
+                  variants={staggerItem('up')}
+                  className="bg-card shadow-premium group relative flex flex-col rounded-2xl p-6 transition-all duration-300"
+                >
+                  <div className="mb-4 flex items-start justify-between">
+                    <div>
+                      <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
+                        {vaga.titulo}
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        {vaga.empresa}
+                      </p>
+                    </div>
+                    <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium">
+                      {vaga.tipoContrato}
+                    </span>
+                  </div>
+
+                  <div className="text-muted-foreground mb-4 space-y-1 text-sm">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      <span>
+                        {vaga.cidade}, {vaga.estado}
+                      </span>
+                    </div>
+                    <span className="inline-block text-xs">
+                      {vaga.modalidade === 'PRESENCIAL'
+                        ? 'Presencial'
+                        : vaga.modalidade === 'HIBRIDO'
+                          ? 'Híbrido'
+                          : 'Remoto'}
+                    </span>
+                  </div>
+
+                  <div className="mt-auto flex gap-2">
+                    <Link to={`/vagas/${vaga.slug}`} className="flex-1">
+                      <Button variant="primary" size="sm" className="w-full">
+                        Ver vaga
+                      </Button>
+                    </Link>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </motion.div>
+        </Container>
+      </Section>
+
       {/* 6. DIFERENCIAIS J&S */}
       <Section className="bg-surface-alt">
         <Container>
@@ -669,61 +897,49 @@ export default function Home() {
             variants={staggerReveal(0.1)}
             className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
           >
-            {companies
-              .filter((company) => company.status === 'active')
-              .map((client) => (
+            {clientsLoading ? (
+              Array.from({ length: 8 }).map((_, i) => (
                 <motion.div
-                  key={client.id}
+                  key={i}
                   variants={staggerItem('up')}
-                  className="bg-card border-border hover:border-primary/30 flex flex-col items-center justify-center rounded-2xl border p-6 transition-all duration-300"
+                  className="bg-muted/50 border-border/50 rounded-2xl border p-6"
                 >
-                  <div className="bg-primary/10 text-primary flex h-16 w-16 items-center justify-center rounded-xl text-lg font-bold">
-                    {client.legal_name
-                      ? client.legal_name.charAt(0).toUpperCase()
-                      : '?'}
-                  </div>
-                  <span className="text-foreground mt-3 text-center text-sm font-medium">
-                    {client.legal_name || '—'}
-                  </span>
+                  <div className="bg-muted mx-auto h-12 w-12 animate-pulse rounded-xl" />
+                  <div className="bg-muted mx-auto mt-4 h-4 w-24 animate-pulse rounded" />
                 </motion.div>
-              ))}
+              ))
+            ) : clientsError ? (
+              <div className="text-muted-foreground col-span-full text-center">
+                Não foi possível carregar os clientes agora.
+              </div>
+            ) : clients.filter((client) => client.name && client.logo)
+                .length === 0 ? (
+              <div className="text-muted-foreground col-span-full text-center">
+                Nenhum cliente cadastrado no momento.
+              </div>
+            ) : (
+              clients
+                .filter((client) => client.name && client.logo)
+                .map((client) => (
+                  <motion.div
+                    key={client.id}
+                    variants={staggerItem('up')}
+                    className="bg-card border-border hover:border-primary/30 flex flex-col items-center justify-center rounded-2xl border p-6 transition-all duration-300"
+                  >
+                    <div className="h-16 w-auto">
+                      <SafeImage
+                        src={client.logo!}
+                        alt={client.name!}
+                        className="h-full w-auto object-contain"
+                      />
+                    </div>
+                    <span className="text-foreground mt-3 text-center text-sm font-medium">
+                      {client.name!}
+                    </span>
+                  </motion.div>
+                ))
+            )}
           </motion.div>
-        </Container>
-      </Section>
-
-      {/* 8. VAGAS EM DESTAQUE */}
-      <Section>
-        <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
-            className="mb-12 flex items-end justify-between"
-          >
-            <motion.div variants={revealUp}>
-              <motion.h2
-                variants={revealUp}
-                className="text-foreground text-3xl font-bold sm:text-4xl"
-              >
-                Vagas em Destaque
-              </motion.h2>
-              <motion.p
-                variants={revealUp}
-                className="text-muted-foreground mt-4 max-w-2xl text-lg"
-              >
-                Confira as oportunidades disponíveis no momento.
-              </motion.p>
-            </motion.div>
-            <Link to="/vagas">
-              <Button variant="outline" size="sm">
-                Ver todas as vagas
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </motion.div>
-
-          <FeaturedJobs />
         </Container>
       </Section>
 
@@ -771,139 +987,6 @@ export default function Home() {
           </motion.div>
         </Container>
       </Section>
-    </div>
-  );
-}
-
-function FeaturedJobs() {
-  const { data: jobs = [] } = useQuery({
-    queryKey: ['jobs', 'public-featured'],
-    queryFn: async () => {
-      const supabase = getSupabaseClient();
-      if (!supabase) return [];
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(
-          'id, title, description, status, employment_type, location, salary, benefits, requirements, created_at',
-        )
-        .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(6);
-      if (error) throw error;
-      return (data || []) as Array<{
-        id: string;
-        title: string;
-        description: string | null;
-        status: string;
-        employment_type: string | null;
-        location: string | null;
-        salary: string | null;
-        benefits: string | null;
-        requirements: string | null;
-        created_at: string;
-      }>;
-    },
-  });
-
-  const contractLabel = (type?: string | null) => {
-    if (!type) return null;
-    const map: Record<string, string> = {
-      clt: 'CLT',
-      temporary: 'Temporário',
-      internship: 'Estágio',
-      freelance: 'Freela',
-    };
-    return map[type.toLowerCase()] || type;
-  };
-
-  const contractBadgeClass = (type?: string | null) => {
-    const base = 'rounded-full px-3 py-1 text-xs font-medium';
-    switch (type?.toLowerCase()) {
-      case 'clt':
-        return `${base} bg-success/10 text-success`;
-      case 'temporary':
-        return `${base} bg-warning/10 text-warning`;
-      case 'internship':
-        return `${base} bg-primary/10 text-primary`;
-      case 'freelance':
-        return `${base} bg-secondary/10 text-secondary`;
-      default:
-        return `${base} bg-muted text-muted-foreground`;
-    }
-  };
-
-  return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {jobs.map((job) => {
-        const benefits = job.benefits
-          ? job.benefits
-              .split(';')
-              .map((b) => b.trim())
-              .filter(Boolean)
-          : [];
-
-        return (
-          <motion.div
-            key={job.id}
-            variants={staggerItem('up')}
-            className="group bg-card border-border hover:border-primary/30 flex flex-col rounded-2xl border p-6 shadow-sm transition-all duration-300"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <h3 className="text-foreground group-hover:text-primary text-lg font-semibold transition-colors">
-                  {job.title}
-                </h3>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  {COMPANY.name}
-                </p>
-              </div>
-              {contractLabel(job.employment_type) && (
-                <span className={contractBadgeClass(job.employment_type)}>
-                  {contractLabel(job.employment_type)}
-                </span>
-              )}
-            </div>
-
-            <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-4 text-sm">
-              {job.location && (
-                <span className="inline-flex items-center gap-1">
-                  <MapPin className="h-4 w-4" />
-                  {job.location}
-                </span>
-              )}
-              {job.salary && (
-                <span className="inline-flex items-center gap-1">
-                  <DollarSign className="h-4 w-4" />
-                  {job.salary}
-                </span>
-              )}
-            </div>
-
-            {benefits.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {benefits.slice(0, 4).map((benefit) => (
-                  <span
-                    key={benefit}
-                    className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs"
-                  >
-                    {benefit}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="mt-6">
-              <Link to={`/vagas/${job.id}`}>
-                <Button variant="secondary" size="sm" className="w-full">
-                  Ver vaga
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        );
-      })}
     </div>
   );
 }
