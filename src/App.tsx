@@ -39,6 +39,7 @@ import FaturamentoPage from '@/pages/dashboard/FaturamentoPage';
 import AuditoriaPage from '@/pages/dashboard/AuditoriaPage';
 import IaPage from '@/pages/dashboard/IaPage';
 import GestaoPage from '@/pages/dashboard/GestaoPage';
+import GlobalDashboardPage from '@/pages/dashboard/GlobalDashboardPage';
 import {
   MODULE_PAGE_MAP,
   MODULE_PERMISSION_MAP,
@@ -328,6 +329,14 @@ function App() {
                 element={route.element}
               />
             ))}
+            <Route
+              path="global"
+              element={
+                <PermissionGuard permission="domain_events.read">
+                  <GlobalDashboardPage />
+                </PermissionGuard>
+              }
+            />
             <Route
               path="rbac-auditoria"
               element={

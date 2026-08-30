@@ -44,6 +44,25 @@ export interface ModuleDefinition {
 
 export const PORTAL_MODULES: ModuleDefinition[] = [
   {
+    id: 'admin-master',
+    title: 'Visão Global',
+    description: 'Painel global da plataforma para admin_master',
+    icon: 'globe',
+    route: '/dashboard/global',
+    category: 'plataforma',
+    scope: 'platform',
+    requiredPermissions: ['domain_events.read'],
+    features: [
+      {
+        id: 'dashboard-global',
+        title: 'Dashboard Global',
+        description: 'Visão executiva da plataforma',
+        route: '/dashboard/global',
+        requiredPermissions: ['domain_events.read'],
+      },
+    ],
+  },
+  {
     id: 'inicio',
     title: 'Início',
     description: 'Resumo da sua operação',
@@ -2430,6 +2449,7 @@ export { CATEGORY_META };
 
 export const MODULE_PAGE_MAP: Record<string, string> = {
   inicio: 'DashboardHome',
+  'admin-master': 'GlobalDashboardPage',
   tenants: 'TenantsPage',
   onboarding: 'OnboardingPage',
   assinaturas: 'AssinaturasPage',
@@ -2439,7 +2459,7 @@ export const MODULE_PAGE_MAP: Record<string, string> = {
   auditoria: 'AuditoriaPage',
   rh: 'RhPage',
   recrutamento: 'Vagas',
-  empresas: 'EmpresasPage', // E2E route
+  empresas: 'EmpresasPage',
   crm: 'ClientesPage',
   financeiro: 'FinanceiroPage',
   faturamento: 'FaturamentoPage',
@@ -2461,6 +2481,7 @@ export const MODULE_PAGE_MAP: Record<string, string> = {
 
 export const MODULE_PERMISSION_MAP: Record<string, string> = {
   inicio: '',
+  'admin-master': 'domain_events.read',
   tenants: 'tenants.read',
   onboarding: 'tenants.read',
   assinaturas: 'finance.read',
