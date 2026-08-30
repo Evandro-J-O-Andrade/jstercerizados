@@ -13,8 +13,8 @@ import type { Company } from '@/types/domain/company';
 
 const emptyForm = {
   name: '',
-  legal_name: '',
-  document: '',
+  trading_name: '',
+  cnpj: '',
   status: 'active' as Company['status'],
 };
 
@@ -59,8 +59,8 @@ export default function Empresas() {
     setEditingCompany(company);
     setFormData({
       name: company.name,
-      legal_name: company.legal_name || '',
-      document: company.document || '',
+      trading_name: company.trading_name || '',
+      cnpj: company.cnpj || '',
       status: company.status,
     });
     setFormError(null);
@@ -80,16 +80,16 @@ export default function Empresas() {
       if (editingCompany) {
         await companiesRepository.update(editingCompany.id, currentTenantId, {
           name: formData.name,
-          legal_name: formData.legal_name || null,
-          document: formData.document || null,
+          trading_name: formData.trading_name || null,
+          cnpj: formData.cnpj || null,
           status: formData.status,
         });
       } else {
         await companiesRepository.create(
           {
             name: formData.name,
-            legal_name: formData.legal_name || null,
-            document: formData.document || null,
+            trading_name: formData.trading_name || null,
+            cnpj: formData.cnpj || null,
             status: formData.status,
           },
           currentTenantId,
@@ -158,15 +158,15 @@ export default function Empresas() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-foreground text-lg font-semibold">
-                    {company.legal_name || company.name}
+                    {company.trading_name || company.name}
                   </h3>
                   <p className="text-muted-foreground mt-1 text-sm">
                     {company.name}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {company.document && (
+                    {company.cnpj && (
                       <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
-                        Documento: {company.document}
+                        CNPJ: {company.cnpj}
                       </span>
                     )}
                   </div>
@@ -227,28 +227,28 @@ export default function Empresas() {
                 />
               </div>
               <div>
-                <Label htmlFor="legal_name">Razão Social</Label>
+                <Label htmlFor="trading_name">Razão Social</Label>
                 <Input
-                  id="legal_name"
-                  value={formData.legal_name}
+                  id="trading_name"
+                  value={formData.trading_name}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      legal_name: e.target.value,
+                      trading_name: e.target.value,
                     }))
                   }
                   placeholder="Razão social"
                 />
               </div>
               <div>
-                <Label htmlFor="document">Documento</Label>
+                <Label htmlFor="cnpj">CNPJ</Label>
                 <Input
-                  id="document"
-                  value={formData.document}
+                  id="cnpj"
+                  value={formData.cnpj}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      document: e.target.value,
+                      cnpj: e.target.value,
                     }))
                   }
                   placeholder="CNPJ"

@@ -34,8 +34,8 @@ export function mapCompany(
   return {
     id: row.id,
     name: row.name,
-    legal_name: row.legal_name,
-    document: row.document,
+    trading_name: row.trading_name,
+    cnpj: row.cnpj,
     status: row.status,
     created_at: row.created_at,
     updated_at: row.updated_at,

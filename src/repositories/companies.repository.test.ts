@@ -75,8 +75,8 @@ describe('CompaniesRepository', () => {
         {
           id: 'comp-1',
           name: 'Empresa Teste',
-          legal_name: 'Teste LTDA',
-          document: '12345678000100',
+          trading_name: 'Teste LTDA',
+          cnpj: '12345678000100',
           status: 'active',
           created_at: '2026-01-01T00:00:00Z',
           updated_at: '2026-01-01T00:00:00Z',
@@ -147,8 +147,8 @@ describe('CompaniesRepository', () => {
       const mockCompany: Company = {
         id: 'comp-1',
         name: 'Empresa Teste',
-        legal_name: 'Teste LTDA',
-        document: '12345678000100',
+        trading_name: 'Teste LTDA',
+        cnpj: '12345678000100',
         status: 'active',
         created_at: '2026-01-01T00:00:00Z',
         updated_at: '2026-01-01T00:00:00Z',
@@ -202,16 +202,16 @@ describe('CompaniesRepository', () => {
     it('should create a company with tenant_id and relationship', async () => {
       const input: CompanyCreateInput = {
         name: 'Empresa Teste',
-        legal_name: 'Teste LTDA',
-        document: '12345678000100',
+        trading_name: 'Teste LTDA',
+        cnpj: '12345678000100',
         status: 'active',
       };
 
       const mockCompany: Company = {
         id: 'comp-new',
         name: 'Empresa Teste',
-        legal_name: 'Teste LTDA',
-        document: '12345678000100',
+        trading_name: 'Teste LTDA',
+        cnpj: '12345678000100',
         status: 'active',
         created_at: '2026-01-01T00:00:00Z',
         updated_at: '2026-01-01T00:00:00Z',
@@ -235,11 +235,11 @@ describe('CompaniesRepository', () => {
       expect(result).toEqual(mockCompany);
     });
 
-    it('should throw raw Supabase error when document already exists', async () => {
+    it('should throw raw Supabase error when cnpj already exists', async () => {
       const input: CompanyCreateInput = {
         name: 'Empresa Teste',
-        legal_name: 'Teste LTDA',
-        document: '12345678000100',
+        trading_name: 'Teste LTDA',
+        cnpj: '12345678000100',
         status: 'active',
       };
 
@@ -248,14 +248,14 @@ describe('CompaniesRepository', () => {
         error: {
           code: '23505',
           message:
-            'duplicate key value violates unique constraint "companies_document_key"',
+            'duplicate key value violates unique constraint "companies_cnpj_key"',
         },
       });
 
       mockSupabase.from = vi.fn(() => companyInsertBuilder);
 
       await expect(repository.create(input, 'tenant-1')).rejects.toThrow(
-        'duplicate key value violates unique constraint "companies_document_key"',
+        'duplicate key value violates unique constraint "companies_cnpj_key"',
       );
     });
   });
@@ -269,8 +269,8 @@ describe('CompaniesRepository', () => {
       const mockCompany: Company = {
         id: 'comp-1',
         name: 'Empresa Atualizada',
-        legal_name: 'Teste LTDA',
-        document: '12345678000100',
+        trading_name: 'Teste LTDA',
+        cnpj: '12345678000100',
         status: 'active',
         created_at: '2026-01-01T00:00:00Z',
         updated_at: '2026-01-02T00:00:00Z',

@@ -81,12 +81,12 @@ export default function Clientes() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-foreground text-lg font-semibold">
-                    {item.legal_name || item.name}
+                    {item.trading_name || item.name}
                   </h3>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {item.document && (
+                    {item.cnpj && (
                       <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
-                        Documento: {item.document}
+                        CNPJ: {item.cnpj}
                       </span>
                     )}
                   </div>

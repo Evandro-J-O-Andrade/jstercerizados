@@ -18,7 +18,6 @@ export class PartnersRepository extends SupabaseRepository {
         created_at,
         companies (
           id,
-          legal_name,
           trading_name,
           cnpj,
           industry,
@@ -44,7 +43,7 @@ export class PartnersRepository extends SupabaseRepository {
       return {
         id: item.id,
         tenant_id: item.tenant_id,
-        name: company?.trading_name || company?.legal_name || 'Sem nome',
+        name: company?.trading_name || 'Sem nome',
         trading_name: company?.trading_name,
         cnpj: company?.cnpj,
         industry: company?.industry,
@@ -75,7 +74,6 @@ export class PartnersRepository extends SupabaseRepository {
         created_at,
         companies (
           id,
-          legal_name,
           trading_name,
           cnpj,
           industry,
@@ -95,7 +93,7 @@ export class PartnersRepository extends SupabaseRepository {
     return {
       id: data.id,
       tenant_id: data.tenant_id,
-      name: company?.trading_name || company?.legal_name || 'Sem nome',
+      name: company?.trading_name || 'Sem nome',
       trading_name: company?.trading_name,
       cnpj: company?.cnpj,
       industry: company?.industry,

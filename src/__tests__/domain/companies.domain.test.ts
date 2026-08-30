@@ -36,7 +36,7 @@ describe('Empresas — Domínio', () => {
     it('empresa global não possui tenant_id', () => {
       const company = {
         id: 'company-x',
-        legal_name: 'Empresa Global',
+        trading_name: 'Empresa Global',
         cnpj: '12345678000100',
       };
 
@@ -75,7 +75,7 @@ describe('Empresas — Domínio', () => {
 
   describe('COMP-007', () => {
     it('remoção/inativação do relacionamento não exclui a empresa global', () => {
-      const company = { id: 'company-x', legal_name: 'Empresa Global' };
+      const company = { id: 'company-x', trading_name: 'Empresa Global' };
       const relationship = {
         id: 'rel-1',
         company_id: 'company-x',

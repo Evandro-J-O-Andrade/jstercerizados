@@ -63,7 +63,7 @@ if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
         const companyId = relationships[0].company_id;
         const { data: company, error: companyError } = await admin
           .from('companies')
-          .select('id, name, legal_name, document, status')
+          .select('id, name, trading_name, cnpj, status')
           .eq('id', companyId)
           .single();
 
@@ -123,7 +123,7 @@ if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
     it('EMP-INT-004: empresa global não possui tenant_id', async () => {
       const { data, error } = await admin
         .from('companies')
-        .select('id, name, legal_name, document, status')
+        .select('id, name, trading_name, cnpj, status')
         .limit(1);
 
       expect(error).toBeNull();
@@ -135,7 +135,7 @@ if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
     it('EMP-INT-005: repository não consulta companies.tenant_id', async () => {
       const { data, error } = await admin
         .from('companies')
-        .select('id, name, legal_name, document, status')
+        .select('id, name, trading_name, cnpj, status')
         .limit(1);
 
       expect(error).toBeNull();
@@ -175,7 +175,7 @@ if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
         const companyId = existing[0].company_id;
         const before = await admin
           .from('companies')
-          .select('id, name, legal_name, document, status')
+          .select('id, name, trading_name, cnpj, status')
           .eq('id', companyId)
           .single();
 

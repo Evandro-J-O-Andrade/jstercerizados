@@ -21,7 +21,7 @@ export class CompaniesRepository extends SupabaseRepository {
     if (filters?.status) query = query.eq('status', filters.status);
     if (filters?.search)
       query = query.or(
-        `name.ilike.%${filters.search}%,legal_name.ilike.%${filters.search}%,document.ilike.%${filters.search}%`,
+        `name.ilike.%${filters.search}%,trading_name.ilike.%${filters.search}%,cnpj.ilike.%${filters.search}%`,
       );
 
     const { data, error } = await query;
@@ -64,8 +64,8 @@ export class CompaniesRepository extends SupabaseRepository {
       .insert({
         tenant_id: tenantId,
         name: input.name,
-        legal_name: input.legal_name ?? null,
-        document: input.document ?? null,
+        trading_name: input.trading_name ?? null,
+        cnpj: input.cnpj ?? null,
         status: input.status ?? 'active',
       })
       .select('*')
@@ -105,8 +105,9 @@ export class CompaniesRepository extends SupabaseRepository {
 
     const payload: Record<string, unknown> = {};
     if (input.name !== undefined) payload.name = input.name;
-    if (input.legal_name !== undefined) payload.legal_name = input.legal_name;
-    if (input.document !== undefined) payload.document = input.document;
+    if (input.trading_name !== undefined)
+      payload.trading_name = input.trading_name;
+    if (input.cnpj !== undefined) payload.cnpj = input.cnpj;
     if (input.status !== undefined) payload.status = input.status;
 
     const { data, error } = await this.supabase

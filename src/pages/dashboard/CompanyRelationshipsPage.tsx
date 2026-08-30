@@ -44,7 +44,6 @@ export default function CompanyRelationshipsPage() {
             created_at,
             companies (
               id,
-              legal_name,
               trading_name,
               cnpj,
               status
@@ -142,9 +141,7 @@ export default function CompanyRelationshipsPage() {
                   <tr key={item.id} className="hover:bg-muted/30">
                     <td className="px-4 py-3 text-sm">
                       <div className="text-foreground font-medium">
-                        {company?.trading_name ||
-                          company?.legal_name ||
-                          'Sem nome'}
+                        {company?.trading_name || 'Sem nome'}
                       </div>
                       <div className="text-muted-foreground text-xs">
                         {company?.cnpj}
@@ -178,4 +175,3 @@ export default function CompanyRelationshipsPage() {
     </ModuleWorkspace>
   );
 }
-

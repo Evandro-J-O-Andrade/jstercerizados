@@ -33,9 +33,9 @@ export default function RelatorioCrmPage() {
       const term = search.toLowerCase();
       data = data.filter(
         (item) =>
-          item.legal_name?.toLowerCase().includes(term) ||
+          item.trading_name?.toLowerCase().includes(term) ||
           item.name?.toLowerCase().includes(term) ||
-          item.document?.includes(term),
+          item.cnpj?.includes(term),
       );
     }
     if (statusFilter !== 'all') {
@@ -155,13 +155,13 @@ export default function RelatorioCrmPage() {
               {filtered.map((item) => (
                 <tr key={item.id} className="hover:bg-muted">
                   <td className="text-foreground px-4 py-3">
-                    {item.legal_name || item.name || '—'}
+                    {item.trading_name || item.name || '—'}
                   </td>
                   <td className="text-muted-foreground px-4 py-3">
                     {item.name || '—'}
                   </td>
                   <td className="text-muted-foreground px-4 py-3">
-                    {item.document || '—'}
+                    {item.cnpj || '—'}
                   </td>
                   <td className="px-4 py-3">
                     <Badge
