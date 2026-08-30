@@ -60,7 +60,7 @@ export default function CompanyRegister() {
           'Cadastro realizado com sucesso. Verifique seu e-mail para confirmar a conta.',
         );
       } else {
-        navigate('/dashboard');
+        navigate('/auth/welcome');
       }
     } catch (err) {
       setError(normalizeError(err).userMessage);

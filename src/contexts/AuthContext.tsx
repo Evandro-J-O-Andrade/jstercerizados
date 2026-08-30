@@ -466,6 +466,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
           }
 
+          console.log('[AUTH:LOGIN] bootstrap success', {
+            authUserId: data.user.id,
+            tenantId: null,
+            roleId: null,
+          });
+
           await loadAuthData(data.user.id);
         }
 
@@ -927,6 +933,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           error: normalizeError(bootstrapError).userMessage,
         };
       }
+
+      console.log('[AUTH:REGISTER] bootstrap success', {
+        authUserId: data.user.id,
+        email: profileData.email,
+        tenantId: profileData.tenantId ?? null,
+        roleId: profileData.roleId ?? null,
+      });
 
       if (data.user.email_confirmed_at) {
         await loadAuthData(data.user.id);
