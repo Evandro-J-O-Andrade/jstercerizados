@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { MapPin, Search, Briefcase, DollarSign } from 'lucide-react';
+import { MapPin, Search, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
@@ -11,7 +11,13 @@ import { staggerItem } from '@/animations/fade';
 import { COMPANY } from '@/config';
 import { useQuery } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/lib/supabase';
-import { ArrowRight } from 'lucide-react';
+
+const CONTRATO_LABELS: Record<string, string> = {
+  clt: 'CLT',
+  temporary: 'Temporário',
+  internship: 'Estágio',
+  freelance: 'Freela',
+};
 
 export default function Vagas() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,7 +32,26 @@ export default function Vagas() {
       const { data, error } = await supabase
         .from('jobs')
         .select(
-          'id, title, description, status, employment_type, location, salary, benefits, requirements, published_at, created_at',
+          `
+          id,
+          title,
+          description,
+          status,
+          employment_type,
+          location,
+          salary,
+          benefits,
+          requirements,
+          published_at,
+          created_at,
+          company_id,
+          companies (
+            id,
+            name,
+            legal_name,
+            status
+          )
+        `,
         )
         .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
         .eq('status', 'published')
@@ -35,7 +60,6 @@ export default function Vagas() {
         console.error('[Vagas] query error', error);
         throw error;
       }
-      console.log('[Vagas] query result', data);
       return (data || []) as Array<{
         id: string;
         title: string;
@@ -48,6 +72,13 @@ export default function Vagas() {
         requirements: string | null;
         published_at: string | null;
         created_at: string;
+        company_id: string | null;
+        companies: Array<{
+          id: string;
+          name: string;
+          legal_name: string | null;
+          status: string;
+        }> | null;
       }>;
     },
   });
@@ -76,16 +107,6 @@ export default function Vagas() {
       return true;
     });
   }, [jobs, searchTerm, tipoFilter, modalidadeFilter]);
-
-  const formatCurrency = (value: string | null) => {
-    if (!value) return null;
-    const numeric = Number(value);
-    if (Number.isNaN(numeric)) return null;
-    return numeric.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    });
-  };
 
   const isRemote = (location?: string | null) => {
     if (!location) return false;
@@ -194,7 +215,6 @@ export default function Vagas() {
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredJobs.map((job) => {
-              const salaryFormatted = formatCurrency(job.salary);
               const location = job.location || '';
               const remote = isRemote(location);
 
@@ -202,70 +222,89 @@ export default function Vagas() {
                 <motion.div
                   key={job.id}
                   variants={staggerItem('up')}
-                  className="group bg-card border-border hover:border-primary/30 flex flex-col rounded-2xl border p-6 shadow-sm transition-all duration-300"
+                  className="group bg-card border-border shadow-premium relative flex flex-col rounded-2xl border p-6 transition-all duration-300"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-foreground group-hover:text-primary text-lg font-semibold transition-colors">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div>
+                      <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
                         {job.title}
                       </h3>
-                      {job.description && (
-                        <p className="text-muted-foreground mt-2 line-clamp-2 text-sm">
-                          {job.description}
+                      {job.companies?.[0]?.name && (
+                        <p className="text-muted-foreground text-sm">
+                          {job.companies[0].name}
                         </p>
                       )}
                     </div>
                     {job.employment_type && (
-                      <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
-                        {job.employment_type.toUpperCase()}
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                          job.employment_type === 'clt'
+                            ? 'bg-success/10 text-success'
+                            : 'bg-primary/10 text-primary'
+                        }`}
+                      >
+                        {CONTRATO_LABELS[job.employment_type] ||
+                          job.employment_type.toUpperCase()}
                       </span>
                     )}
                   </div>
 
-                  <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-4 text-sm">
+                  <div className="mb-4 space-y-2">
                     {location && (
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {location}
-                      </span>
+                      <div className="flex items-center gap-2 text-sm">
+                        <MapPin className="text-muted-foreground h-4 w-4" />
+                        <span className="text-muted-foreground">
+                          {location}
+                        </span>
+                      </div>
+                    )}
+                    {job.salary && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <DollarSign className="text-muted-foreground h-4 w-4" />
+                        <span className="text-muted-foreground">
+                          {job.salary}
+                        </span>
+                      </div>
                     )}
                     {remote && (
-                      <span className="inline-flex items-center gap-1">
-                        <Briefcase className="h-4 w-4" />
+                      <span className="text-muted-foreground inline-block text-xs">
                         Remoto
-                      </span>
-                    )}
-                    {salaryFormatted && (
-                      <span className="inline-flex items-center gap-1">
-                        <DollarSign className="h-4 w-4" />
-                        {salaryFormatted}
                       </span>
                     )}
                   </div>
 
                   {job.benefits && (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {job.benefits
-                        .split(';')
-                        .map((benefit) => benefit.trim())
-                        .filter(Boolean)
-                        .slice(0, 4)
-                        .map((benefit) => (
-                          <span
-                            key={benefit}
-                            className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs"
-                          >
-                            {benefit}
-                          </span>
-                        ))}
+                    <div className="mb-4">
+                      <p className="text-muted-foreground mb-2 text-xs font-medium">
+                        Benefícios
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {job.benefits
+                          .split(';')
+                          .map((benefit) => benefit.trim())
+                          .filter(Boolean)
+                          .slice(0, 3)
+                          .map((beneficio) => (
+                            <span
+                              key={beneficio}
+                              className="bg-muted rounded-full px-2 py-0.5 text-xs"
+                            >
+                              {beneficio}
+                            </span>
+                          ))}
+                      </div>
                     </div>
                   )}
 
-                  <div className="mt-6">
-                    <Link to={`/vagas/${job.id}`}>
-                      <Button variant="secondary" size="sm" className="w-full">
-                        Ver detalhes
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                  <div className="mt-auto flex gap-2">
+                    <Link to={`/vagas/${job.id}`} className="flex-1">
+                      <Button variant="primary" size="sm" className="w-full">
+                        Ver vaga
+                      </Button>
+                    </Link>
+                    <Link to={`/vagas/${job.id}`} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full">
+                        Candidatar-se
                       </Button>
                     </Link>
                   </div>

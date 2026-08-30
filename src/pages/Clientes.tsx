@@ -6,7 +6,6 @@ import { COMPANY } from '@/config';
 import { useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/lib/supabase';
-import type { CustomerPublic } from '@/types/domain/company';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 
 function useCustomers() {
@@ -16,19 +15,43 @@ function useCustomers() {
       const supabase = getSupabaseClient();
       if (!supabase) return [];
       const { data, error } = await supabase
-        .from('customers')
-        .select('id, name, legal_name, document, status')
-        .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
-        .order('created_at', { ascending: true })
-        .limit(50);
+        .from('company_relationships')
+        .select(
+          `
+          id,
+          relationship_type,
+          status,
+          started_at,
+          ended_at,
+          created_at,
+          companies (
+            id,
+            name,
+            legal_name,
+            status
+          )
+        `,
+        )
+        .eq('relationship_type', 'customer')
+        .eq('status', 'active')
+        .order('created_at', { ascending: true });
       if (error) throw error;
-      return (data || []) as CustomerPublic[];
+      return (data || []) as Array<{
+        id: string;
+        relationship_type: string;
+        status: string;
+        started_at: string | null;
+        ended_at: string | null;
+        created_at: string;
+        companies: Array<{
+          id: string;
+          name: string;
+          legal_name: string | null;
+          status: string;
+        }> | null;
+      }>;
     },
   });
-}
-
-function useReducedMotion() {
-  return false;
 }
 
 function ClientCase({
@@ -37,17 +60,29 @@ function ClientCase({
 }: {
   client: {
     id: string;
-    name: string;
-    legal_name: string | null;
-    document: string | null;
+    relationship_type: string;
     status: string;
+    started_at: string | null;
+    ended_at: string | null;
+    created_at: string;
+    companies: Array<{
+      id: string;
+      name: string;
+      legal_name: string | null;
+      status: string;
+    }> | null;
   };
   index: number;
 }) {
   const isEven = index % 2 === 0;
-  const prefersReducedMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+
+  const displayName =
+    client.companies?.[0]?.name ||
+    client.companies?.[0]?.legal_name ||
+    'Sem nome';
+  const legalName = client.companies?.[0]?.legal_name;
 
   return (
     <motion.div
@@ -55,7 +90,7 @@ function ClientCase({
       initial={{ opacity: 0, x: isEven ? -80 : 80 }}
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{
-        duration: prefersReducedMotion ? 0.3 : 0.9,
+        duration: 0.9,
         ease: [0.25, 0.4, 0.25, 1],
       }}
       className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16 ${index % 2 === 1 ? 'direction-rtl' : ''}`}
@@ -66,23 +101,23 @@ function ClientCase({
       >
         <motion.div
           initial={{ scale: 1 }}
-          whileInView={prefersReducedMotion ? {} : { scale: 1.05 }}
+          whileInView={{ scale: 1.05 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 1.2, ease: [0.25, 0.4, 0.25, 1] }}
           className="absolute inset-0"
         >
           <div className="bg-primary/10 text-primary flex h-full w-full items-center justify-center text-6xl font-bold">
-            {client.name.charAt(0).toUpperCase()}
+            {displayName.charAt(0).toUpperCase()}
           </div>
         </motion.div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
         <div className="absolute right-0 bottom-0 left-0 p-6 sm:p-8">
           <h3 className="text-2xl font-bold text-white drop-shadow-md sm:text-3xl">
-            {client.name}
+            {displayName}
           </h3>
-          {client.legal_name && (
-            <p className="mt-1 text-sm text-white/80">{client.legal_name}</p>
+          {legalName && (
+            <p className="mt-1 text-sm text-white/80">{legalName}</p>
           )}
         </div>
       </div>
@@ -90,15 +125,8 @@ function ClientCase({
       <div className={`${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
         <div className="max-w-xl">
           <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-            {client.name}
+            {displayName}
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-4">
-            {client.document && (
-              <span className="text-muted-foreground text-sm">
-                {client.document}
-              </span>
-            )}
-          </div>
         </div>
       </div>
     </motion.div>

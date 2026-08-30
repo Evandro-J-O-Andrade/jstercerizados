@@ -559,6 +559,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       console.log('[AUTH:CHANGE_PASSWORD] updateUser:success');
 
+      const { data: refreshedSession, error: refreshError } =
+        await supabase.auth.getSession();
+
+      if (refreshError || !refreshedSession?.session) {
+        console.error('[AUTH:CHANGE_PASSWORD] session refresh failed', {
+          error: refreshError?.message ?? null,
+        });
+
+        return {
+          error: 'Sessão encerrada por segurança. Faça login novamente.',
+        };
+      }
+
+      setSession(refreshedSession.session);
+      setUser(refreshedSession.session.user);
+
       if (person) {
         const { error: stateError } = await supabase
           .from('first_login_state')
@@ -581,9 +597,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      if (user) {
-        await loadAuthData(user.id);
-      }
+      await loadAuthData(refreshedSession.session.user.id);
 
       console.log('[AUTH:CHANGE_PASSWORD] identity:reloaded');
 
@@ -914,9 +928,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
 
-      await loadAuthData(data.user.id);
-
       if (data.user.email_confirmed_at) {
+        await loadAuthData(data.user.id);
         return { status: 'success' };
       }
 

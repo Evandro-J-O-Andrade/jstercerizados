@@ -7,7 +7,7 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { JobApplicationForm } from '@/components/forms/JobApplicationForm';
 import { COMPANY } from '@/config';
-import { ArrowLeft, MapPin, DollarSign } from 'lucide-react';
+import { ArrowLeft, MapPin, DollarSign, Building2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getSupabaseClient } from '@/lib/supabase';
 
@@ -29,26 +29,34 @@ export default function VagaDetalhe() {
       const { data, error } = await supabase
         .from('jobs')
         .select(
-          'id, title, description, status, employment_type, location, salary, benefits, requirements, published_at, created_at',
+          `
+          id, title, description, status, employment_type, location, salary, benefits, requirements, published_at, created_at,
+          company_id,
+          companies (
+            id,
+            name,
+            legal_name,
+            status
+          )
+        `,
         )
         .eq('id', slug)
         .eq('tenant_id', 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5')
         .maybeSingle();
       if (error) throw error;
-      return data ?? null;
+      return (
+        ((data ?? null) as typeof data & {
+          companies: Array<{
+            id: string;
+            name: string;
+            legal_name: string | null;
+            status: string;
+          }> | null;
+        }) ?? null
+      );
     },
     enabled: Boolean(slug),
   });
-
-  const formatCurrency = (value: string | number | null) => {
-    if (!value) return null;
-    const numeric = Number(value);
-    if (Number.isNaN(numeric)) return null;
-    return numeric.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    });
-  };
 
   const beneficiosList = useMemo(() => {
     if (!vaga?.benefits) return [];
@@ -171,6 +179,12 @@ export default function VagaDetalhe() {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6"
             >
+              {vaga.companies?.[0]?.name && (
+                <div className="flex items-center gap-3">
+                  <Building2 className="text-primary h-5 w-5" />
+                  <span className="text-sm">{vaga.companies[0].name}</span>
+                </div>
+              )}
               {vaga.location && (
                 <div className="flex items-center gap-3">
                   <MapPin className="text-primary h-5 w-5" />
@@ -180,7 +194,7 @@ export default function VagaDetalhe() {
               {vaga.salary && (
                 <div className="flex items-center gap-3">
                   <DollarSign className="text-primary h-5 w-5" />
-                  <span className="text-sm">{formatCurrency(vaga.salary)}</span>
+                  <span className="text-sm">{vaga.salary}</span>
                 </div>
               )}
             </motion.div>
