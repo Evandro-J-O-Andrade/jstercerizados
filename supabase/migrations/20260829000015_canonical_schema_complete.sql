@@ -1,0 +1,24 @@
+-- =============================================================================
+-- FASE 3 — COMPLETUDE DO SCHEMA CANÔNICO
+-- =============================================================================
+-- Migration de marcação: todas as tabelas e políticas do schema canônico
+-- foram aplicadas.
+--
+-- Sequência de migrations desta fase:
+--  20260829000001_tenant_memberships_canonical.sql
+--  20260829000002_people_canonical.sql
+--  20260829000003_auth_policies_canonical.sql
+--  20260829000004_companies_canonical.sql
+--  20260829000005_candidates_canonical.sql
+--  20260829000006_jobs_canonical.sql
+--  20260829000007_recruitment_demands_canonical.sql
+--  20260829000008_job_matches_canonical.sql
+--  20260829000009_interview_followups_canonical.sql
+--  20260829000010_notifications_canonical.sql
+--  20260829000011_activity_logs_canonical.sql
+--  20260829000012_file_uploads_canonical.sql
+--  20260829000013_audit_policies_canonical.sql
+--  20260829000014_test_fixtures.sql
+-- =============================================================================
+
+-- Nenhuma alteração estrutural aqui; apenas marcação de completude.

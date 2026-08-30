@@ -130,6 +130,33 @@ export class ServicesRepository extends SupabaseRepository {
     if (error) throw error;
     return data as ServiceExecution;
   }
+
+  async updateExecution(
+    tenantId: string,
+    id: string,
+    input: Partial<ServiceExecutionCreateInput>,
+  ): Promise<ServiceExecution> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { data, error } = await this.supabase
+      .from('service_executions')
+      .update(input)
+      .eq('tenant_id', tenantId)
+      .eq('id', id)
+      .select('*')
+      .single();
+    if (error) throw error;
+    return data as ServiceExecution;
+  }
+
+  async deleteExecution(tenantId: string, id: string): Promise<void> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { error } = await this.supabase
+      .from('service_executions')
+      .delete()
+      .eq('tenant_id', tenantId)
+      .eq('id', id);
+    if (error) throw error;
+  }
 }
 
 export const servicesRepository = new ServicesRepository();
