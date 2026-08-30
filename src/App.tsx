@@ -108,6 +108,7 @@ import IdiomasPage from '@/pages/dashboard/Idiomas';
 import HabilidadesPage from '@/pages/dashboard/Habilidades';
 import DocumentosRhPage from '@/pages/dashboard/DocumentosRh';
 import BancoDeTalentosPage from '@/pages/dashboard/BancoDeTalentos';
+import CandidateDashboard from '@/pages/dashboard/CandidateDashboard';
 import DashboardRhPage from '@/pages/dashboard/DashboardRh';
 import FinanceiroPage from '@/pages/dashboard/FinanceiroPage';
 import EstoquePage from '@/pages/dashboard/Estoque';
@@ -315,6 +316,7 @@ function App() {
                     'it_admin',
                     'support',
                     'viewer',
+                    'candidato',
                   ]}
                 >
                   <AppShell />
@@ -745,6 +747,7 @@ function App() {
                 </PermissionGuard>
               }
             />
+            <Route path="candidato" element={<CandidateDashboard />} />
             <Route path="*" element={<DashboardRouteNotFound />} />
           </Route>
           <Route path="/auth/callback" element={<AuthCallback />} />

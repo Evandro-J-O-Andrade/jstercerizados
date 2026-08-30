@@ -171,7 +171,10 @@ export default function AuthWelcome() {
         first_login_completed: true,
       });
 
-      navigate('/dashboard', { replace: true });
+      const roleNames = roles.map((r) => r.name.toLowerCase());
+      const isCandidate = roleNames.some((n) => n.includes('candidato'));
+      const destination = isCandidate ? '/dashboard/candidato' : '/dashboard';
+      navigate(destination, { replace: true });
     } catch {
       setError('Erro ao acessar. Tente novamente.');
     } finally {
