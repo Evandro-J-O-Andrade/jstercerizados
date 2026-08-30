@@ -1,10 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { ModulePage, type ColumnDef, type FilterDef } from '@/components/modules/ModulePage';
+import {
+  ModulePage,
+  type ColumnDef,
+  type FilterDef,
+} from '@/components/modules/ModulePage';
 import { servicesRepository } from '@/repositories/services.repository';
 import { useAuth } from '@/contexts/AuthContext';
-import type { Service, ServiceOrder, ServiceExecution, ServiceCreateInput, ServiceOrderCreateInput, ServiceExecutionCreateInput } from '@/types/domain/service';
+import type {
+  Service,
+  ServiceOrder,
+  ServiceExecution,
+  ServiceCreateInput,
+  ServiceOrderCreateInput,
+  ServiceExecutionCreateInput,
+} from '@/types/domain/service';
 import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
 
 type Tab = 'services' | 'orders' | 'executions';
@@ -12,21 +23,62 @@ type Tab = 'services' | 'orders' | 'executions';
 const SERVICES_COLUMNS: ColumnDef<Service>[] = [
   { key: 'name', header: 'Nome', sortable: true },
   { key: 'category', header: 'Categoria', sortable: true },
-  { key: 'active', header: 'Ativo', render: (item) => item.active ? 'Sim' : 'Não' },
-  { key: 'created_at', header: 'Criado em', render: (item) => new Date(item.created_at).toLocaleDateString('pt-BR'), sortable: true },
+  {
+    key: 'active',
+    header: 'Ativo',
+    render: (item) => (item.active ? 'Sim' : 'Não'),
+  },
+  {
+    key: 'created_at',
+    header: 'Criado em',
+    render: (item) => new Date(item.created_at).toLocaleDateString('pt-BR'),
+    sortable: true,
+  },
 ];
 
 const SERVICES_FILTERS: FilterDef[] = [
   { key: 'category', label: 'Categoria', type: 'text' },
-  { key: 'active', label: 'Ativo', type: 'select', options: [{ value: 'true', label: 'Sim' }, { value: 'false', label: 'Não' }] },
+  {
+    key: 'active',
+    label: 'Ativo',
+    type: 'select',
+    options: [
+      { value: 'true', label: 'Sim' },
+      { value: 'false', label: 'Não' },
+    ],
+  },
 ];
 
 const ORDERS_COLUMNS: ColumnDef<ServiceOrder>[] = [
   { key: 'company_service_id', header: 'Serviço', sortable: true },
   { key: 'status', header: 'Status', sortable: true },
-  { key: 'scheduled_at', header: 'Agendamento', render: (item) => item.scheduled_at ? new Date(item.scheduled_at).toLocaleDateString('pt-BR') : '-', sortable: true },
-  { key: 'value', header: 'Valor', render: (item) => item.value ? item.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-', sortable: true },
-  { key: 'created_at', header: 'Criado em', render: (item) => new Date(item.created_at).toLocaleDateString('pt-BR'), sortable: true },
+  {
+    key: 'scheduled_at',
+    header: 'Agendamento',
+    render: (item) =>
+      item.scheduled_at
+        ? new Date(item.scheduled_at).toLocaleDateString('pt-BR')
+        : '-',
+    sortable: true,
+  },
+  {
+    key: 'value',
+    header: 'Valor',
+    render: (item) =>
+      item.value
+        ? item.value.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          })
+        : '-',
+    sortable: true,
+  },
+  {
+    key: 'created_at',
+    header: 'Criado em',
+    render: (item) => new Date(item.created_at).toLocaleDateString('pt-BR'),
+    sortable: true,
+  },
 ];
 
 const ORDERS_FILTERS: FilterDef[] = [
@@ -35,97 +87,227 @@ const ORDERS_FILTERS: FilterDef[] = [
 
 const EXECUTIONS_COLUMNS: ColumnDef<ServiceExecution>[] = [
   { key: 'service_order_id', header: 'Ordem', sortable: true },
-  { key: 'started_at', header: 'Início', render: (item) => item.started_at ? new Date(item.started_at).toLocaleString('pt-BR') : '-', sortable: true },
-  { key: 'finished_at', header: 'Fim', render: (item) => item.finished_at ? new Date(item.finished_at).toLocaleString('pt-BR') : '-', sortable: true },
-  { key: 'created_at', header: 'Criado em', render: (item) => new Date(item.created_at).toLocaleDateString('pt-BR'), sortable: true },
+  {
+    key: 'started_at',
+    header: 'Início',
+    render: (item) =>
+      item.started_at ? new Date(item.started_at).toLocaleString('pt-BR') : '-',
+    sortable: true,
+  },
+  {
+    key: 'finished_at',
+    header: 'Fim',
+    render: (item) =>
+      item.finished_at
+        ? new Date(item.finished_at).toLocaleString('pt-BR')
+        : '-',
+    sortable: true,
+  },
+  {
+    key: 'created_at',
+    header: 'Criado em',
+    render: (item) => new Date(item.created_at).toLocaleDateString('pt-BR'),
+    sortable: true,
+  },
 ];
 
 const EXECUTIONS_FILTERS: FilterDef[] = [];
 
-function ServiceForm({ form, setForm }: { form: ServiceCreateInput; setForm: (form: ServiceCreateInput) => void }) {
+function ServiceForm({
+  form,
+  setForm,
+}: {
+  form: ServiceCreateInput;
+  setForm: (form: ServiceCreateInput) => void;
+}) {
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-sm font-medium text-foreground">Nome</label>
-        <input className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">Nome</label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Categoria</label>
-        <input className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">Categoria</label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.category}
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Descrição</label>
-        <textarea className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.description ?? ''} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">Descrição</label>
+        <textarea
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.description ?? ''}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
       </div>
       <div className="flex items-center gap-2">
-        <input id="active" type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} />
-        <label htmlFor="active" className="text-sm text-foreground">Ativo</label>
+        <input
+          id="active"
+          type="checkbox"
+          checked={form.active}
+          onChange={(e) => setForm({ ...form, active: e.target.checked })}
+        />
+        <label htmlFor="active" className="text-foreground text-sm">
+          Ativo
+        </label>
       </div>
     </div>
   );
 }
 
-function OrderForm({ form, setForm }: { form: ServiceOrderCreateInput; setForm: (form: ServiceOrderCreateInput) => void }) {
+function OrderForm({
+  form,
+  setForm,
+}: {
+  form: ServiceOrderCreateInput;
+  setForm: (form: ServiceOrderCreateInput) => void;
+}) {
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-sm font-medium text-foreground">Serviço</label>
-        <input className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.company_service_id} onChange={(e) => setForm({ ...form, company_service_id: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">Serviço</label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.company_service_id}
+          onChange={(e) =>
+            setForm({ ...form, company_service_id: e.target.value })
+          }
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Status</label>
-        <input className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.status ?? ''} onChange={(e) => setForm({ ...form, status: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">Status</label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.status ?? ''}
+          onChange={(e) => setForm({ ...form, status: e.target.value })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Agendamento</label>
-        <input type="datetime-local" className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.scheduled_at ?? ''} onChange={(e) => setForm({ ...form, scheduled_at: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">
+          Agendamento
+        </label>
+        <input
+          type="datetime-local"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.scheduled_at ?? ''}
+          onChange={(e) => setForm({ ...form, scheduled_at: e.target.value })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Valor</label>
-        <input type="number" className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.value ?? ''} onChange={(e) => setForm({ ...form, value: Number(e.target.value) })} />
+        <label className="text-foreground text-sm font-medium">Valor</label>
+        <input
+          type="number"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.value ?? ''}
+          onChange={(e) => setForm({ ...form, value: Number(e.target.value) })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Período início</label>
-        <input type="date" className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.period_start ?? ''} onChange={(e) => setForm({ ...form, period_start: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">
+          Período início
+        </label>
+        <input
+          type="date"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.period_start ?? ''}
+          onChange={(e) => setForm({ ...form, period_start: e.target.value })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Período fim</label>
-        <input type="date" className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.period_end ?? ''} onChange={(e) => setForm({ ...form, period_end: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">
+          Período fim
+        </label>
+        <input
+          type="date"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.period_end ?? ''}
+          onChange={(e) => setForm({ ...form, period_end: e.target.value })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Local</label>
-        <input className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.location ?? ''} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">Local</label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.location ?? ''}
+          onChange={(e) => setForm({ ...form, location: e.target.value })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Observações</label>
-        <textarea className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.notes ?? ''} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">
+          Observações
+        </label>
+        <textarea
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.notes ?? ''}
+          onChange={(e) => setForm({ ...form, notes: e.target.value })}
+        />
       </div>
     </div>
   );
 }
 
-function ExecutionForm({ form, setForm }: { form: ServiceExecutionCreateInput; setForm: (form: ServiceExecutionCreateInput) => void }) {
+function ExecutionForm({
+  form,
+  setForm,
+}: {
+  form: ServiceExecutionCreateInput;
+  setForm: (form: ServiceExecutionCreateInput) => void;
+}) {
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-sm font-medium text-foreground">Ordem de serviço</label>
-        <input className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.service_order_id} onChange={(e) => setForm({ ...form, service_order_id: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">
+          Ordem de serviço
+        </label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.service_order_id}
+          onChange={(e) =>
+            setForm({ ...form, service_order_id: e.target.value })
+          }
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Executado por</label>
-        <input className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.executed_by ?? ''} onChange={(e) => setForm({ ...form, executed_by: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">
+          Executado por
+        </label>
+        <input
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.executed_by ?? ''}
+          onChange={(e) => setForm({ ...form, executed_by: e.target.value })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Início</label>
-        <input type="datetime-local" className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.started_at} onChange={(e) => setForm({ ...form, started_at: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">Início</label>
+        <input
+          type="datetime-local"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.started_at}
+          onChange={(e) => setForm({ ...form, started_at: e.target.value })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Fim</label>
-        <input type="datetime-local" className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.finished_at ?? ''} onChange={(e) => setForm({ ...form, finished_at: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">Fim</label>
+        <input
+          type="datetime-local"
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.finished_at ?? ''}
+          onChange={(e) => setForm({ ...form, finished_at: e.target.value })}
+        />
       </div>
       <div>
-        <label className="text-sm font-medium text-foreground">Notas</label>
-        <textarea className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={form.notes ?? ''} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+        <label className="text-foreground text-sm font-medium">Notas</label>
+        <textarea
+          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+          value={form.notes ?? ''}
+          onChange={(e) => setForm({ ...form, notes: e.target.value })}
+        />
       </div>
     </div>
   );
@@ -180,7 +362,9 @@ export default function Servicos() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-foreground text-xl font-semibold">Serviços</h1>
-          <p className="text-muted-foreground text-sm">Catálogo, ordens e execuções.</p>
+          <p className="text-muted-foreground text-sm">
+            Catálogo, ordens e execuções.
+          </p>
         </div>
       </div>
 
@@ -194,7 +378,9 @@ export default function Servicos() {
             key={t.key}
             onClick={() => setTab(t.key as Tab)}
             className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
-              tab === t.key ? 'border-primary text-primary border-b-2' : 'text-muted-foreground hover:text-foreground'
+              tab === t.key
+                ? 'border-primary text-primary border-b-2'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {t.label}
@@ -207,16 +393,38 @@ export default function Servicos() {
           title="Serviços"
           description="Catálogo de serviços."
           module={moduleDef}
-          permissions={[{ id: 'services.read', name: 'services.read', module: 'services', resource: 'services', action: 'read', created_at: new Date().toISOString() }]}
+          permissions={[
+            {
+              id: 'services.read',
+              name: 'services.read',
+              module: 'services',
+              resource: 'services',
+              action: 'read',
+              created_at: new Date().toISOString(),
+            },
+          ]}
           columns={SERVICES_COLUMNS}
           filters={SERVICES_FILTERS}
-          fetchData={async (tenantId) => servicesRepository.findServices(tenantId)}
-          createItem={async (tenantId, input) => servicesRepository.createService({ ...input, tenant_id: tenantId })}
-          updateItem={async (tenantId, id, input) => servicesRepository.updateService(tenantId, id, input)}
-          deleteItem={async (tenantId, id) => servicesRepository.deleteService(tenantId, id)}
+          fetchData={async (tenantId) =>
+            servicesRepository.findServices(tenantId)
+          }
+          createItem={async (tenantId, input) =>
+            servicesRepository.createService({ ...input, tenant_id: tenantId })
+          }
+          updateItem={async (tenantId, id, input) =>
+            servicesRepository.updateService(tenantId, id, input)
+          }
+          deleteItem={async (tenantId, id) =>
+            servicesRepository.deleteService(tenantId, id)
+          }
           getItemId={(item) => item.id}
           emptyMessage="Nenhum serviço cadastrado."
-          renderForm={(form, setForm) => <ServiceForm form={form as ServiceCreateInput} setForm={setForm as (form: ServiceCreateInput) => void} />}
+          renderForm={(form, setForm) => (
+            <ServiceForm
+              form={form as ServiceCreateInput}
+              setForm={setForm as (form: ServiceCreateInput) => void}
+            />
+          )}
           defaultForm={serviceDefaultForm}
         />
       )}
@@ -226,16 +434,38 @@ export default function Servicos() {
           title="Ordens de Serviço"
           description="Ordens e acompanhamento."
           module={moduleDef}
-          permissions={[{ id: 'service_orders.read', name: 'service_orders.read', module: 'services', resource: 'service_orders', action: 'read', created_at: new Date().toISOString() }]}
+          permissions={[
+            {
+              id: 'service_orders.read',
+              name: 'service_orders.read',
+              module: 'services',
+              resource: 'service_orders',
+              action: 'read',
+              created_at: new Date().toISOString(),
+            },
+          ]}
           columns={ORDERS_COLUMNS}
           filters={ORDERS_FILTERS}
-          fetchData={async (tenantId) => servicesRepository.findOrders(tenantId)}
-          createItem={async (tenantId, input) => servicesRepository.createOrder({ ...input, tenant_id: tenantId })}
-          updateItem={async (tenantId, id, input) => servicesRepository.updateOrder(tenantId, id, input)}
-          deleteItem={async (tenantId, id) => servicesRepository.deleteOrder(tenantId, id)}
+          fetchData={async (tenantId) =>
+            servicesRepository.findOrders(tenantId)
+          }
+          createItem={async (tenantId, input) =>
+            servicesRepository.createOrder({ ...input, tenant_id: tenantId })
+          }
+          updateItem={async (tenantId, id, input) =>
+            servicesRepository.updateOrder(tenantId, id, input)
+          }
+          deleteItem={async (tenantId, id) =>
+            servicesRepository.deleteOrder(tenantId, id)
+          }
           getItemId={(item) => item.id}
           emptyMessage="Nenhuma ordem registrada."
-          renderForm={(form, setForm) => <OrderForm form={form as ServiceOrderCreateInput} setForm={setForm as (form: ServiceOrderCreateInput) => void} />}
+          renderForm={(form, setForm) => (
+            <OrderForm
+              form={form as ServiceOrderCreateInput}
+              setForm={setForm as (form: ServiceOrderCreateInput) => void}
+            />
+          )}
           defaultForm={orderDefaultForm}
         />
       )}
@@ -245,16 +475,41 @@ export default function Servicos() {
           title="Execuções"
           description="Execuções de serviço."
           module={moduleDef}
-          permissions={[{ id: 'service_executions.read', name: 'service_executions.read', module: 'services', resource: 'service_executions', action: 'read', created_at: new Date().toISOString() }]}
+          permissions={[
+            {
+              id: 'service_executions.read',
+              name: 'service_executions.read',
+              module: 'services',
+              resource: 'service_executions',
+              action: 'read',
+              created_at: new Date().toISOString(),
+            },
+          ]}
           columns={EXECUTIONS_COLUMNS}
           filters={EXECUTIONS_FILTERS}
-          fetchData={async (tenantId) => servicesRepository.findExecutions(tenantId)}
-          createItem={async (tenantId, input) => servicesRepository.createExecution({ ...input, tenant_id: tenantId })}
-          updateItem={async (tenantId, id, input) => servicesRepository.updateExecution(tenantId, id, input)}
-          deleteItem={async (tenantId, id) => servicesRepository.deleteExecution(tenantId, id)}
+          fetchData={async (tenantId) =>
+            servicesRepository.findExecutions(tenantId)
+          }
+          createItem={async (tenantId, input) =>
+            servicesRepository.createExecution({
+              ...input,
+              tenant_id: tenantId,
+            })
+          }
+          updateItem={async (tenantId, id, input) =>
+            servicesRepository.updateExecution(tenantId, id, input)
+          }
+          deleteItem={async (tenantId, id) =>
+            servicesRepository.deleteExecution(tenantId, id)
+          }
           getItemId={(item) => item.id}
           emptyMessage="Nenhuma execução registrada."
-          renderForm={(form, setForm) => <ExecutionForm form={form as ServiceExecutionCreateInput} setForm={setForm as (form: ServiceExecutionCreateInput) => void} />}
+          renderForm={(form, setForm) => (
+            <ExecutionForm
+              form={form as ServiceExecutionCreateInput}
+              setForm={setForm as (form: ServiceExecutionCreateInput) => void}
+            />
+          )}
           defaultForm={executionDefaultForm}
         />
       )}
