@@ -39,7 +39,7 @@ supabase migration up --include-all
 Conectar no Supabase SQL Editor e executar:
 
 ```sql
-SELECT id, name, is_global, description
+SELECT id, name, scope, description
 FROM public.roles
 WHERE name = 'candidato';
 ```
@@ -47,7 +47,7 @@ WHERE name = 'candidato';
 **Esperado:**
 
 - `name` = `candidato`
-- `is_global` = `false`
+- `scope` = `tenant`
 - `description` = `Candidato`
 
 ---

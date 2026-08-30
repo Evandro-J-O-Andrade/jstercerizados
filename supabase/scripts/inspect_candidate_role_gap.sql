@@ -13,7 +13,7 @@ SELECT
   'ROLE' AS check_type,
   id,
   name,
-  is_global,
+  scope,
   description
 FROM public.roles
 WHERE name = 'candidato';
@@ -69,7 +69,7 @@ SELECT
   p.email,
   ra.role_id,
   r.name AS role_name,
-  r.is_global,
+  r.scope,
   ra.tenant_id,
   t.slug AS tenant_slug,
   ra.assigned_at

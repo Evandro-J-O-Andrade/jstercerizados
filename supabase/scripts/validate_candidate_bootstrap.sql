@@ -124,7 +124,7 @@ WHERE tm.person_id IN (
 
 -- 5.4 role_assignments — MUST link to role 'candidato'
 SELECT 'POST_REG' AS phase, 'role_assignments' AS entity,
-  ra.id, ra.person_id, ra.role_id, r.name AS role_name, r.is_global,
+  ra.id, ra.person_id, ra.role_id, r.name AS role_name, r.scope,
   ra.tenant_id, t.slug, ra.assigned_at
 FROM public.role_assignments ra
 JOIN public.roles r ON r.id = ra.role_id
@@ -249,6 +249,7 @@ HAVING count(*) > 1;
 -- 8.1 Permissions assigned to 'candidato' role
 SELECT 'RBAC' AS phase, 'candidate_permissions' AS entity,
   r.name AS role_name,
+  r.scope,
   p.name AS permission_name,
   p.module
 FROM public.role_permissions rp

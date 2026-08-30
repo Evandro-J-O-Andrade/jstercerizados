@@ -28,9 +28,9 @@ BEGIN;
 -- 1. Ensure role 'candidato' exists (idempotent)
 -- =============================================================================
 
-INSERT INTO public.roles (name, is_global, description)
-VALUES ('candidato', FALSE, 'Candidato')
-ON CONFLICT (is_global, name) DO NOTHING;
+INSERT INTO public.roles (name, scope, description)
+VALUES ('candidato', 'tenant', 'Candidato')
+ON CONFLICT (scope, name) DO NOTHING;
 
 -- =============================================================================
 -- 2. Backfill role_assignments for candidates without one
@@ -46,7 +46,7 @@ WITH role_candidato AS (
   SELECT id AS role_id
   FROM public.roles
   WHERE name = 'candidato'
-    AND is_global = FALSE
+    AND scope = 'tenant'
 ),
 candidates_without_role AS (
   -- Candidates without any role_assignment

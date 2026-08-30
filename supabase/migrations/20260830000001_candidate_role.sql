@@ -16,9 +16,9 @@ BEGIN;
 -- 1. ROLE: candidate (idempotent)
 -- =============================================================================
 
-INSERT INTO public.roles (name, is_global, description)
-VALUES ('candidato', FALSE, 'Candidato')
-ON CONFLICT (is_global, name) DO NOTHING;
+INSERT INTO public.roles (name, scope, description)
+VALUES ('candidato', 'tenant', 'Candidato')
+ON CONFLICT (scope, name) DO NOTHING;
 
 -- =============================================================================
 -- 2. BOOTSTRAP FUNCTION — defaults for public candidate registration
@@ -67,7 +67,7 @@ BEGIN
     SELECT id INTO v_effective_role_id
     FROM public.roles
     WHERE name = 'candidato'
-      AND is_global = FALSE
+      AND scope = 'tenant'
     LIMIT 1;
   ELSE
     v_effective_role_id := p_role_id;
