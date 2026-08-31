@@ -307,7 +307,47 @@ Com base nos DELETEs auditados e na existência de dados parciais:
 | Talent Pool      | ✅  |          ?          |   🟡    | RLS usa `recruiter` sem CHECK             |
 | Candidate filhas | ✅  |          ?          |   🟡    | Migration existe; validar se foi aplicada |
 
-## 9. Próximos Passos
+## 10. Consolidação e Limpeza de Migrations
+
+### 10.1 Colisões de timestamp resolvidas
+
+| Timestamp conflitante | Arquivos envolvidos                                                  | Resolução                                                            |
+| --------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `20260824000000`      | `fix_is_tenant_member.sql` + `fix_rls_infrastructure_grants.sql`     | Renomeado para `20260824000002_fix_rls_infrastructure_grants.sql`    |
+| `20260830000001`      | `auth_people_sync.sql` + `reconcile_applications.sql`                | Renomeado para `20260830000200_reconcile_applications.sql`           |
+| `20260830000002`      | `reconcile_recruitment_demands.sql` + `candidate_bootstrap_role.sql` | Renomeado para `20260830000400_candidate_bootstrap_role.sql`         |
+| `20260830000003`      | `candidate_bootstrap_role.sql` + `reconcile_job_matches.sql`         | Renomeado para `20260830000500_reconcile_job_matches.sql`            |
+| `20260830000004`      | `reconcile_notifications.sql`                                        | Renomeado para `20260830000600_reconcile_notifications.sql`          |
+| `20260830000005`      | `services_catalog.sql`                                               | Renomeado para `20260830000700_services_catalog.sql`                 |
+| `20260830000006`      | `company_services_link.sql`                                          | Renomeado para `20260830000800_company_services_link.sql`            |
+| `20260830000007`      | `service_orders_relationship.sql`                                    | Renomeado para `20260830000900_service_orders_relationship.sql`      |
+| `20260830000008`      | `recruitment_demands_service_link.sql`                               | Renomeado para `20260830001000_recruitment_demands_service_link.sql` |
+| `20260830000009`      | `storage_services_images.sql`                                        | Renomeado para `20260830001100_storage_services_images.sql`          |
+
+### 10.2 Migrations mortas removidas
+
+- `20260831000002_reconcile_companies_services.sql` — duplicata de propósito; consolidava services, storage e vínculos que já existem em migrations separadas, além de quebrar a ordenação (timestamp 20260831 ficava após migrations de 20260830 que dependem de `services`).
+- `20260830000400_candidate_bootstrap_role.sql` — função `bootstrap_candidate_from_auth_user()` não é usada em nenhum trigger nem no frontend; já existe `bootstrap_candidate_identity` em `20260826000001_candidate_bootstrap.sql`.
+
+### 10.3 Nova migration criada
+
+- `20260829000001_services.sql` — cria a tabela `services` com schema canônico completo, RLS, políticas e trigger `updated_at`. Resolve o gap onde `20260830000700_services_catalog.sql` era executada sem a tabela existir.
+
+### 10.4 Ajustes de segurança
+
+- Removido `SET LOCAL row_security = off;` de `20260830000400_candidate_bootstrap_role.sql` antes de removê-la.
+- Adicionado `DROP TRIGGER IF EXISTS ...` antes de cada `CREATE TRIGGER` em `20260830000100_auth_people_sync.sql` para permitir reexecução segura.
+- Mantidas políticas de storage em `20260830001100_storage_services_images.sql` com verificação de `tenant_membership` ativa para escrita; leitura pública permanece apenas para bucket `services-images` conforme regra P1.1.
+
+### 10.5 Estado final
+
+- Nenhuma colisão de timestamp.
+- Sem migrations duplicadas de propósito.
+- Ordem de aplicação coerente: core → identity → companies → candidates → jobs → applications → rbac → storage → services → vínculos → storage images → company_social_links.
+- `company_relationship_types` já possuía RLS/policies em `20260816000300_companies.sql`.
+- `company_social_links` permanece idempotente com RLS e integridade tenant/company em `20260831000001_company_social_links.sql`.
+
+## 11. Próximos Passos
 
 1. Executar query no Supabase real:
    ```sql
@@ -320,3 +360,4 @@ Com base nos DELETEs auditados e na existência de dados parciais:
 3. Verificar se `candidate_experiences`, `candidate_education`, `candidate_courses`, `candidate_languages`, `candidate_documents` existem no banco real.
 4. Verificar `auth.logins` ou logs do Supabase para identificar quem executou os DELETEs em 25/08 às 16:23.
 5. Após confirmação, corrigir CHECK constraint antes de qualquer rebuild.
+6. Aplicar migrations na ordem canônica consolidada e validar RLS/policies de `company_relationship_types` e `company_social_links` conforme regras P0.
