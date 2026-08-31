@@ -164,6 +164,59 @@ Tabelas criadas:
 - **Git**: ✅ Migration existe
 - **Supabase real**: ❓ Não confirmado — precisa de query direta
 
+## 3.1 COMPANY SOCIAL LINKS
+
+### 3.1.1 Migration existente
+
+Arquivo: `supabase/migrations/20260831000001_company_social_links.sql`
+
+Tabela criada:
+
+- `company_social_links` com colunas: `id`, `tenant_id`, `company_id`, `platform`, `url`, `is_active`, `display_order`, `created_at`, `updated_at`
+
+### 3.1.2 Separação arquitetônica
+
+**Redes sociais da empresa** são URLs oficiais e ficam em `company_social_links`:
+
+- Instagram, Facebook, LinkedIn, YouTube, TikTok, WhatsApp, Website
+- Acesso por platform + URL
+- RLS própria com `is_tenant_member(tenant_id)`
+- Integridade: `tenant_id` → `companies.tenant_id` via `company_id`
+
+**Imagens/arquivos do sistema** são outra coisa e não entram em `company_social_links`:
+
+- `storage/file_uploads` → URLs
+- `companies.logo_url`, `services.card_image_url`, `blog_posts.cover_image_url`, etc.
+- Cada entidade mantém suas próprias URLs de mídia
+
+### 3.1.3 Status
+
+- **Git**: ✅ Migration existe
+- **Supabase real**: ❓ Não confirmado — precisa de query direta
+
+## 3.2 Tabelas Filhas de Candidato
+
+### 3.2.1 Migration existente
+
+Arquivo: `supabase/migrations/20260827001300_candidate_child_tables.sql`
+
+Tabelas criadas:
+
+- `candidate_experiences`
+- `candidate_education`
+- `candidate_courses`
+- `candidate_languages`
+- `candidate_documents`
+
+### 3.2.2 Referência no código
+
+`src/types/domain/candidate.ts` e repositories correspondentes usam essas tabelas.
+
+### 3.2.3 Status
+
+- **Git**: ✅ Migration existe
+- **Supabase real**: ❓ Não confirmado — precisa de query direta
+
 ## 4. Scripts Administrativos
 
 ### 4.1 `tmp_apply_migrations.cjs`

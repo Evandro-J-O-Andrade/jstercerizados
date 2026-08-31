@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS public.company_social_links (
   platform        text NOT NULL,
   url             text NOT NULL,
   is_active       boolean NOT NULL DEFAULT true,
+  display_order   integer NOT NULL DEFAULT 0,
   created_at      timestamptz NOT NULL DEFAULT now(),
   updated_at      timestamptz NOT NULL DEFAULT now()
 );
@@ -43,6 +44,10 @@ ALTER TABLE public.company_social_links
     'whatsapp',
     'other'
   ));
+
+ALTER TABLE public.company_social_links
+  ADD CONSTRAINT company_social_links_url_check
+  CHECK (url ~* '^https?://');
 
 ALTER TABLE public.company_social_links
   ADD CONSTRAINT company_social_links_company_platform_unique
