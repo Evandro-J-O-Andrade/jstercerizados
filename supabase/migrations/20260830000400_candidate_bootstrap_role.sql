@@ -19,8 +19,6 @@ declare
   v_person_id uuid;
   v_candidate_role_id uuid;
 begin
-  SET LOCAL row_security = off;
-
   select t.id into v_tenant_id
   from public.tenants t
   where t.slug = 'js-empregos'

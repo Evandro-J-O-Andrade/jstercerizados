@@ -49,6 +49,7 @@ begin
 end;
 $$;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row
@@ -56,9 +57,9 @@ create trigger on_auth_user_created
 
 -- 2. Function: handle_auth_user_updated()
 create or replace function public.handle_auth_user_updated()
-returns trigger
-language plpgsql
-security definer
+  returns trigger
+  language plpgsql
+  security definer
 as $$
 begin
   if new.email is distinct from old.email then
@@ -71,6 +72,7 @@ begin
 end;
 $$;
 
+drop trigger if exists on_auth_user_updated on auth.users;
 create trigger on_auth_user_updated
   after update of email on auth.users
   for each row
@@ -78,9 +80,9 @@ create trigger on_auth_user_updated
 
 -- 3. Function: handle_auth_user_deleted()
 create or replace function public.handle_auth_user_deleted()
-returns trigger
-language plpgsql
-security definer
+  returns trigger
+  language plpgsql
+  security definer
 as $$
 begin
   update public.people
@@ -91,6 +93,7 @@ begin
 end;
 $$;
 
+drop trigger if exists on_auth_user_deleted on auth.users;
 create trigger on_auth_user_deleted
   after delete on auth.users
   for each row

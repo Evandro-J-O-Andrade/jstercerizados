@@ -22,36 +22,43 @@ CREATE TABLE IF NOT EXISTS public.company_social_links (
 );
 
 -- -----------------------------------------------------------------------------
--- 2. CONSTRAINTS
+-- 2. CONSTRAINTS (idempotent)
 -- -----------------------------------------------------------------------------
 
-ALTER TABLE public.company_social_links
-  ADD CONSTRAINT company_social_links_tenant_id_fkey
-  FOREIGN KEY (tenant_id) REFERENCES public.tenants(id) ON DELETE CASCADE;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'company_social_links_tenant_id_fkey') THEN
+    ALTER TABLE public.company_social_links
+      ADD CONSTRAINT company_social_links_tenant_id_fkey
+      FOREIGN KEY (tenant_id) REFERENCES public.tenants(id) ON DELETE CASCADE;
+  END IF;
 
-ALTER TABLE public.company_social_links
-  ADD CONSTRAINT company_social_links_company_id_fkey
-  FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'company_social_links_company_id_fkey') THEN
+    ALTER TABLE public.company_social_links
+      ADD CONSTRAINT company_social_links_company_id_fkey
+      FOREIGN KEY (company_id) REFERENCES public.companies(id) ON DELETE CASCADE;
+  END IF;
 
-ALTER TABLE public.company_social_links
-  ADD CONSTRAINT company_social_links_platform_check
-  CHECK (platform IN (
-    'instagram',
-    'facebook',
-    'linkedin',
-    'youtube',
-    'tiktok',
-    'whatsapp',
-    'other'
-  ));
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'company_social_links_platform_check') THEN
+    ALTER TABLE public.company_social_links
+      ADD CONSTRAINT company_social_links_platform_check
+      CHECK (platform IN (
+        'instagram', 'facebook', 'linkedin', 'youtube', 'tiktok', 'whatsapp', 'other'
+      ));
+  END IF;
 
-ALTER TABLE public.company_social_links
-  ADD CONSTRAINT company_social_links_url_check
-  CHECK (url ~* '^https?://');
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'company_social_links_url_check') THEN
+    ALTER TABLE public.company_social_links
+      ADD CONSTRAINT company_social_links_url_check
+      CHECK (url ~* '^https?://');
+  END IF;
 
-ALTER TABLE public.company_social_links
-  ADD CONSTRAINT company_social_links_company_platform_unique
-  UNIQUE (company_id, platform);
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'company_social_links_company_platform_unique') THEN
+    ALTER TABLE public.company_social_links
+      ADD CONSTRAINT company_social_links_company_platform_unique
+      UNIQUE (company_id, platform);
+  END IF;
+END $$;
 
 -- -----------------------------------------------------------------------------
 -- 3. INDEXES
@@ -64,18 +71,26 @@ CREATE INDEX IF NOT EXISTS idx_company_social_links_company_id
   ON public.company_social_links (company_id);
 
 -- -----------------------------------------------------------------------------
--- 4. RLS
+-- 4. RLS (idempotent policies)
 -- -----------------------------------------------------------------------------
 
 ALTER TABLE public.company_social_links ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS company_social_links_member_read ON public.company_social_links;
 CREATE POLICY company_social_links_member_read
   ON public.company_social_links
   FOR SELECT
   USING (
     is_tenant_member(tenant_id)
+    AND EXISTS (
+      SELECT 1
+      FROM public.companies c
+      WHERE c.id = company_social_links.company_id
+        AND is_tenant_member(c.tenant_id)
+    )
   );
 
+DROP POLICY IF EXISTS company_social_links_member_write ON public.company_social_links;
 CREATE POLICY company_social_links_member_write
   ON public.company_social_links
   FOR INSERT
@@ -89,6 +104,7 @@ CREATE POLICY company_social_links_member_write
     )
   );
 
+DROP POLICY IF EXISTS company_social_links_member_update ON public.company_social_links;
 CREATE POLICY company_social_links_member_update
   ON public.company_social_links
   FOR UPDATE
@@ -111,6 +127,7 @@ CREATE POLICY company_social_links_member_update
     )
   );
 
+DROP POLICY IF EXISTS company_social_links_member_delete ON public.company_social_links;
 CREATE POLICY company_social_links_member_delete
   ON public.company_social_links
   FOR DELETE
@@ -125,9 +142,10 @@ CREATE POLICY company_social_links_member_delete
   );
 
 -- -----------------------------------------------------------------------------
--- 5. TRIGGER — updated_at
+-- 5. TRIGGER — updated_at (idempotent)
 -- -----------------------------------------------------------------------------
 
+DROP TRIGGER IF EXISTS update_company_social_links_updated_at ON public.company_social_links;
 CREATE TRIGGER update_company_social_links_updated_at
   BEFORE UPDATE ON public.company_social_links
   FOR EACH ROW
