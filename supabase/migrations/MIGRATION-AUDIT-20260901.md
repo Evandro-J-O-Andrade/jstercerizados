@@ -5,16 +5,16 @@
 
 ## 1. Estado do Working Tree
 
-| Item                 | Status                                                            |
-| -------------------- | ----------------------------------------------------------------- |
-| Branch               | `main`                                                            |
-| HEAD                 | `0ed62af`                                                         |
-| Remote `origin/main` | `0ed62af` (in sync)                                               |
-| Working tree         | Clean (após resolução de conflitos de stash)                      |
-| Arquivo base local   | `supabase/schema.sql` (~1300 linhas, referência)                  |
-| Diretório spec       | `supabase/specs/sql/` (referência, não aplicado por ordem)        |
-| Legacy local         | `supabase/migrations/_legacy/20250101_chat.sql`                   |
-| Legacy local         | `supabase/legacy/20250102_storage.sql`, `20250102_talent_rls.sql` |
+| Item                 | Status                                                              |
+| -------------------- | ------------------------------------------------------------------- |
+| Branch               | `main`                                                              |
+| HEAD                 | `3c4442e` (feat: add Media/Storage v1 canonical baseline migration) |
+| Remote `origin/main` | `3c4442e` (in sync)                                                 |
+| Working tree         | Clean (após resolução de conflitos de stash)                        |
+| Arquivo base local   | `supabase/schema.sql` (~1300 linhas, referência)                    |
+| Diretório spec       | `supabase/specs/sql/` (referência, não aplicado por ordem)          |
+| Legacy local         | `supabase/migrations/_legacy/20250101_chat.sql`                     |
+| Legacy local         | `supabase/legacy/20250102_storage.sql`, `20250102_talent_rls.sql`   |
 
 ## 2. Migrations Aplicadas no Supabase Real (schema_migrations)
 
@@ -74,6 +74,13 @@
 | 20260830000400_candidate_bootstrap_role.sql      | **Removida do repo** (0ed62af) | `candidate` role e function já existem via outras migrations                                        |
 | 20260830000700_services_catalog.sql              | **Removida do repo** (0ed62af) | Substituída por `20260829000001_services.sql`                                                       |
 | 20260830001100_storage_services_images.sql       | Não                            | Bucket `services-images` e policies NÃO existem                                                     |
+| 20260901000001_media_storage_v1.sql              | Não                            | `media_assets`, buckets `public-media`/`avatars`/`private-documents` e policies NÃO existem         |
+
+### 2.3 Hoje (01/09) — Media/Storage v1 (não aplicada)
+
+| Arquivo local                         | Alteração principal                                                             | Aplicada? | Confirmado no DB?                         |
+| ------------------------------------- | ------------------------------------------------------------------------------- | --------- | ----------------------------------------- |
+| `20260901000001_media_storage_v1.sql` | `media_assets` table, 3 storage buckets + policies, companies cols, service FKs | Não       | `media_assets` NÃO existe; buckets vazios |
 
 ## 3. Matriz: Arquivo → Alteração → Aplicada? → Pode executar?
 
@@ -93,6 +100,7 @@
 | `20260830001000_recruitment_demands_service_link.sql` | ADD COLUMN service_id + FK                                 | Sim (v. 20260901081231)    | Coluna confirmada                      | ❌ Não          | Já aplicada                                                                         |
 | `20260830001100_storage_services_images.sql`          | Bucket services-images + 4 policies                        | Não (no schema_migrations) | Bucket e policies NÃO existem          | ✅ Sim, preciso | NUNCA aplicada                                                                      |
 | `20260831000001_company_social_links.sql`             | CREATE TABLE company_social_links                          | Sim (v. 20260901081251)    | Tabela e colunas confirmadas           | ❌ Não          | Já aplicada                                                                         |
+| `20260901000001_media_storage_v1.sql`                 | media_assets table, 3 buckets + policies, companies cols   | Não (no schema_migrations) | NÃO existe; buckets vazios             | ✅ Sim, preciso | NUNCA aplicada; commit 3c4442e                                                      |
 
 ### Arquivos históricos (NÃO TOCAR)
 
@@ -172,6 +180,7 @@
 | 1   | `20260830000100_auth_people_sync.sql`              | ✅ `create or replace` + `create trigger`     | Executar via CLI                                        |
 | 2   | `20260830001100_storage_services_images.sql`       | ✅ `ON CONFLICT DO NOTHING` + `IF NOT EXISTS` | Executar via CLI                                        |
 | 3   | `20260824000002_fix_rls_infrastructure_grants.sql` | ✅ `CREATE OR REPLACE` + `GRANT`              | Executar via CLI (funções já corretas, mas idempotente) |
+| 4   | `20260901000001_media_storage_v1.sql`              | ✅ `IF NOT EXISTS` + `ON CONFLICT DO NOTHING` | Executar via CLI                                        |
 
 ### ⚠️ REVISAR — Tabela já existe, migração é no-op
 
@@ -187,6 +196,7 @@ APLICAR SOMENTE:
   supabase/migrations/20260829000001_services.sql
   supabase/migrations/20260830000100_auth_people_sync.sql
   supabase/migrations/20260830001100_storage_services_images.sql
+  supabase/migrations/20260901000001_media_storage_v1.sql
 
 NÃO EXECUTAR:
   - Todas as migrations históricas (20260816* – 20260828*)
@@ -197,7 +207,7 @@ NÃO EXECUTAR:
 
 COMANDO SEGURO:
   npx supabase db push --dry-run   # verifica antes de aplicar
-  npx supabase db push            # aplica somente as 4 pendentes
+  npx supabase db push            # aplica somente as 5 pendentes
 ```
 
 ## 8. Observações
