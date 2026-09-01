@@ -347,17 +347,56 @@ Com base nos DELETEs auditados e na existência de dados parciais:
 - `company_relationship_types` já possuía RLS/policies em `20260816000300_companies.sql`.
 - `company_social_links` permanece idempotente com RLS e integridade tenant/company em `20260831000001_company_social_links.sql`.
 
-## 11. Próximos Passos
+## 11. Media/Storage v1 — Nova Arquitetura (2026-09-01)
+
+### 11.1 Migration criada
+
+- `20260901000001_media_storage_v1.sql` — baseline canônico de mídia
+
+### 11.2 O que mudou
+
+| Legado                     | Nova arquitetura                  |
+| -------------------------- | --------------------------------- |
+| `company-logos` bucket     | `public-media` bucket             |
+| `service-images` bucket    | `public-media` bucket             |
+| URLs diretas nas entidades | `media_assets` table centralizada |
+
+### 11.3 Estrutura
+
+```
+media_assets (catálogo central)
+├── bucket_id (public-media | avatars | private-documents)
+├── storage_path, file_url
+├── entity_type (service, company, job, blog_post, page, avatar, document)
+├── entity_id
+└── uploaded_by
+
+Buckets:
+├── public-media (10MB, imagens públicas)
+├── avatars (5MB, fotos de perfil)
+└── private-documents (20MB, docs privados)
+```
+
+### 11.4 Empresas — reconciliação preservada
+
+- `description`, `short_description`, `company_segment` adicionados
+- `document` → `cnpj` reconciliação (preserva document)
+- CNPJ validation constraint
+- Índices em cnpj e website
+
+### 11.5 Relacionamentos de Services — preservados
+
+- `company_services.service_id` → services.id
+- `service_orders.company_relationship_id` → company_relationships.id
+- `recruitment_demands.service_id` → services.id + urgency
+
+## 12. Próximos Passos
 
 1. Executar query no Supabase real:
    ```sql
    SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;
    ```
-2. Executar query para verificar CHECK constraint:
-   ```sql
-   SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conrelid = 'tenant_memberships'::regclass;
-   ```
-3. Verificar se `candidate_experiences`, `candidate_education`, `candidate_courses`, `candidate_languages`, `candidate_documents` existem no banco real.
-4. Verificar `auth.logins` ou logs do Supabase para identificar quem executou os DELETEs em 25/08 às 16:23.
-5. Após confirmação, corrigir CHECK constraint antes de qualquer rebuild.
-6. Aplicar migrations na ordem canônica consolidada e validar RLS/policies de `company_relationship_types` e `company_social_links` conforme regras P0.
+2. Verificar se `media_assets` existe no banco real
+3. Verificar buckets: `public-media`, `avatars`, `private-documents`
+4. Aplicar `20260901000001_media_storage_v1.sql` no Supabase
+5. Criar branch `feature/media-storage-v1` para implementação do frontend
