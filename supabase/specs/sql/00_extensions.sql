@@ -1,6 +1,13 @@
--- 00_extensions.sql
--- Extensões base do PostgreSQL/Supabase
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: extensions
+-- STATUS: scaffold
+-- SOURCE: supabase/specs/sql/00_extensions.sql
+-- DEPENDENCIES: none
+-- ============================================================
 
-create extension if not exists "uuid-ossp";
-create extension if not exists "pgcrypto";
-create extension if not exists "btree_gist";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "btree_gist";

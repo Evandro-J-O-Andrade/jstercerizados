@@ -11,6 +11,6 @@ export const STATUS_COLORS = {
 export type StatusColorKey = keyof typeof STATUS_COLORS;
 
 export const ROLE_COLORS = {
-  admin: 'bg-primary/10 text-primary',
+  admin_master: 'bg-primary/10 text-primary',
   viewer: 'bg-muted text-muted-foreground',
 } as const;
