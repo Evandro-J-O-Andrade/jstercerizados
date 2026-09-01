@@ -112,6 +112,3 @@ BEGIN
       );
   END IF;
 END $$;
-
-COMMENT ON TABLE storage.buckets IS
-  'Bucket `services-images` criado para uploads de card/hero de serviços.';

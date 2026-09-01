@@ -94,7 +94,11 @@ CREATE POLICY services_member_write
       JOIN public.permissions p ON p.id = rp.permission_id
       JOIN public.people pe ON pe.id = ra.person_id
       WHERE pe.auth_user_id = auth.uid()
-        AND p.code IN ('services.create', 'services.update', 'services.delete')
+        AND (p.resource, p.action) IN (
+          ('services', 'create'),
+          ('services', 'update'),
+          ('services', 'delete')
+        )
     )
   );
 

@@ -9,6 +9,22 @@
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
+-- 0. HELPER: current_person_id()
+-- -----------------------------------------------------------------------------
+-- Returns the current person's UUID from app context or auth.uid() join.
+-- Required by RLS policies below. Matches pattern in specs/sql/21_functions_triggers.sql.
+
+CREATE OR REPLACE FUNCTION public.current_person_id()
+RETURNS uuid
+LANGUAGE sql
+AS $$
+  SELECT coalesce(
+    current_setting('app.current_person_id', true)::uuid,
+    (select p.id from public.people p where p.auth_user_id = auth.uid())
+  )
+$$;
+
+-- -----------------------------------------------------------------------------
 -- 1. MEDIA_ASSETS — Central media catalog
 -- -----------------------------------------------------------------------------
 
