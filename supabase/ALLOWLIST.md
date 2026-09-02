@@ -108,16 +108,28 @@ causa erro ou poluição:
 
 ---
 
-## 2. 🟢 Próxima migration: Platform Hardening + CMS + Media + Identity v1
+## 2. 🟢 Próximo pacote: Platform Consolidation V1 (8 migrations)
 
-**Arquivo proposto (timestamp a definir):**
+**Arquivos no disco:**
 
 ```
-20260902xxxxxx_platform_hardening_v1.sql
+supabase/migrations/20260902000001_01_schema_reconciliation.sql
+supabase/migrations/20260902000002_02_identity_rbac.sql
+supabase/migrations/20260902000003_03_cms_media.sql
+supabase/migrations/20260902000004_04_integration_contracts.sql
+supabase/migrations/20260902000005_05_providers.sql
+supabase/migrations/20260902000006_06_rls_security.sql
+supabase/migrations/20260902000007_07_events_outbox.sql
+supabase/migrations/20260902000008_08_forms.sql
 ```
 
-**Status:** SPEC pendente de OK explícito do usuário. SQL só será gerado após
-a aprovação do desenho descrito em [`supabase/HARDENING-SPEC.md`](./HARDENING-SPEC.md).
+**Status:** SPEC + migrations gerados. Aguardando OK explícito do usuário
+para `git push origin main` e aplicação individual no Supabase.
+
+**Detalhes em [`HARDENING-SPEC.md`](./HARDENING-SPEC.md) e [`GAP-MATRIX.md`](./GAP-MATRIX.md).**
+
+**O pacote monolítico anterior (`d9f9764` / `20260902000000_platform_hardening_v1.sql`)
+foi revertido e movido para `supabase/migrations/_superseded/` antes do push.**
 
 **Princípios inegociáveis:**
 
@@ -125,25 +137,11 @@ a aprovação do desenho descrito em [`supabase/HARDENING-SPEC.md`](./HARDENING-
 - ❌ NÃO apagar dados
 - ❌ NÃO renomear colunas existentes
 - ❌ NÃO criar role `candidato` (já existe `candidate`)
+- ❌ NÃO guardar segredos de integração em colunas públicas
 - ✅ Adicionar apenas o que falta
 - ✅ Tornar tudo idempotente
-- ✅ Tudo dentro de uma única transação
-- ✅ Tudo reversível (rollback por seção)
-
-**8 seções propostas (resumo):**
-
-| §   | Seção         | Conteúdo                                                                                                                                                                      |
-| --- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 01  | Identity/RBAC | Reparar cadeia quebrada: `people → tenant_memberships → role_assignments → candidate`                                                                                         |
-| 02  | CMS           | Fechar publicação/SEO/ordenação de `services`, `jobs`, `companies`, `blog_posts`, `media_assets`                                                                              |
-| 03  | Media         | Padronizar `entity_type`/`entity_id`/`bucket_id`/`storage_path`/`is_primary`                                                                                                  |
-| 04  | Forms         | Contratos canônicos: CNPJ, CPF, telefone, endereço, descrição, títulos, SEO, upload, anexos                                                                                   |
-| 05  | FKs           | Revisar relacionamentos por domínio (tenant, company, person, candidate, job, service, contract, employee, supplier, financial, stock, work_order, support, chat, automation) |
-| 06  | RLS           | Garantir `tenant A ≠ tenant B` em toda tabela operacional                                                                                                                     |
-| 07  | Security      | Corrigir Advisor: policies ausentes em `tenants`/`company_relationship_types`, `SECURITY DEFINER`, `search_path`, `EXECUTE`                                                   |
-| 08  | Integration   | `domain_events` como contrato de saída; **nada de n8n dentro do banco**                                                                                                       |
-
-**Detalhes em [`HARDENING-SPEC.md`](./HARDENING-SPEC.md).**
+- ✅ Cada migration com BEGIN/COMMIT próprio (se uma falhar, anteriores continuam firmes)
+- ✅ Cada migration com ROLLBACK PLAN documentado no topo
 
 ---
 

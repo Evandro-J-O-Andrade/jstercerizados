@@ -1,247 +1,137 @@
-# Platform Hardening + CMS + Media + Identity v1 — SPEC
+# Platform Consolidation V1 — SPEC (rev. 2026-09-02)
 
-**Data:** 2026-09-02
-**Status:** AGUARDANDO OK EXPLÍCITO do usuário antes de gerar SQL
-**Migration proposta:** `20260902xxxxxx_platform_hardening_v1.sql`
+**Status:** AGUARDANDO OK EXPLÍCITO para geração final do pacote e aplicação
 
 ---
 
-## Objetivo
+## Arquitetura de migrations
 
-Consolidar o Supabase `okxqfyoqbhcmflpurfrw` (projeto `js-empregos`) em um
-**único arquivo transacional e idempotente**, sem recriar nada, sem apagar
-dados, sem renomear colunas. Resolve as 8 pendências da SUPABASE GATE.
+Em vez de uma única migration monolítica, o pacote é dividido em **8 migrations pequenas, auditáveis e reversíveis**, aplicadas em ordem:
 
----
+| #   | Arquivo                                       | Seção                                                                                                                                             | Linhas | Risco |
+| --- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ----- |
+| 01  | `20260902000001_01_schema_reconciliation.sql` | Schema reconciliation (índices, blog_posts SEO, media_assets CHECK, bucket deprecated)                                                            | ~70    | 🟢    |
+| 02  | `20260902000002_02_identity_rbac.sql`         | `repair_candidate_chain` utilitária (manual)                                                                                                      | ~120   | 🟢    |
+| 03  | `20260902000003_03_cms_media.sql`             | `media_for_entity`, `set_primary_media`                                                                                                           | ~75    | 🟢    |
+| 04  | `20260902000004_04_integration_contracts.sql` | `integration_connections`, `integration_credentials`, `integration_events`, `integration_webhooks`, `integration_sync_runs`, `integration_errors` | ~215   | 🟡    |
+| 05  | `20260902000005_05_providers.sql`             | `providers`, `provider_configs` (catálogo)                                                                                                        | ~90    | 🟢    |
+| 06  | `20260902000006_06_rls_security.sql`          | RLS policies em `tenants`/`company_relationship_types` + `search_path` em 9 funções                                                               | ~155   | 🟡    |
+| 07  | `20260902000007_07_events_outbox.sql`         | `emit_domain_event` + índice em `event_outbox`                                                                                                    | ~85    | 🟢    |
+| 08  | `20260902000008_08_forms.sql`                 | `normalize_cnpj/cpf`, `is_valid_cnpj/cpf`                                                                                                         | ~150   | 🟢    |
 
-## Regra de aprovação
-
-Antes de aplicar no banco:
-
-1. Este SPEC é aprovado pelo usuário com "OK, pode fazer".
-2. O SQL completo é gerado em arquivo único.
-3. Há um teste de DRY-RUN (cada `ALTER`/`CREATE` envolvido em `EXISTS` check).
-4. Há `BEGIN … COMMIT` único (transação atômica).
-5. Há `ROLLBACK PLAN` por seção, documentado no próprio arquivo.
-
----
-
-## Seções
-
-### §01 — Identity/RBAC (reparar cadeia quebrada)
-
-**Problema:** 6 `people` sem membership ativo, 9 sem role assignment,
-3 `candidates` sem membership, 4 `candidates` sem role `candidate`.
-
-**Ações:**
-
-- Diagnóstico: query que lista exatamente os IDs quebrados (somente leitura, em comentário).
-- **NÃO** criar memberships fantasmas. Apenas gerar **relatório** + **fornecer
-  função utilitária** `repair_candidate_chain(person_id uuid)` que:
-  - Localiza `person`, `tenant_membership`, `role_assignment`, `candidate` em sequência.
-  - Cria o que falta respeitando unicidades.
-  - Retorna `TABLE(person_id, tenant_membership_id, role_assignment_id, candidate_id, created boolean)`.
-  - É `SECURITY DEFINER` com `search_path = public` e `REVOKE EXECUTE FROM PUBLIC`.
-- **Decisão explícita:** repairs **manuais** via SQL Editor. Nada automático.
-
-**Critério de pronto:** função criada, idempotente, testada em 1 registro dummy.
-
-**Rollback:** `DROP FUNCTION IF EXISTS public.repair_candidate_chain(uuid);`
+**Total:** 8 migrations, todas com BEGIN/COMMIT, todas idempotentes, todas reversíveis individualmente.
 
 ---
 
-### §02 — CMS (fechar publicação/SEO/ordenação)
+## Decisões arquiteturais congeladas
 
-**Ações por tabela (somente onde faltar):**
-
-| Tabela         | Adicionar (se faltar)                                                                        |
-| -------------- | -------------------------------------------------------------------------------------------- |
-| `services`     | nada (já completo após `20260902000001`)                                                     |
-| `jobs`         | índice em `(status, published_at desc) WHERE status='published'`                             |
-| `companies`    | nada (CNPJ + dados OK)                                                                       |
-| `blog_posts`   | `seo_title varchar(70)`, `seo_description varchar(160)`, `cover_media_id uuid` (FK opcional) |
-| `media_assets` | nada (já completo)                                                                           |
-
-**Critério de pronto:** `pg_indexes WHERE tablename IN (...)` mostra todos os esperados.
-
-**Rollback:** `DROP INDEX IF EXISTS …;` por linha.
+1. **Role `candidato`:** usar `candidate` (já existe no catálogo). Frontend detecta via `roleNames.some(n => n.includes('candidato'))` em `BoasVindas.tsx`.
+2. **Integrações:** banco registra `integration_connections` + `integration_events` + `integration_webhooks`. Segredos **fora do banco** (Vault / Edge Functions env). n8n/Edge Functions fazem a chamada HTTP.
+3. **Providers:** catálogo `providers` + config por tenant em `provider_configs`. Seed vazio — populado por migration dedicada quando o cliente habilitar.
+4. **Eventos:** `domain_events` é canônico, `emit_domain_event` é a única função de escrita. `event_outbox` tem índice parcial para o consumer.
+5. **Sem `services-images`:** bucket legado marcado deprecated via `COMMENT`. Novas features usam `public-media`.
+6. **Repair de candidato:** função utilitária, manual, chamada 1 a 1 pelo service_role.
 
 ---
 
-### §03 — Media (padronização de contrato)
+## Arquitetura final (32 domínios)
 
-**Ações:**
+Veja [`GAP-MATRIX.md`](./GAP-MATRIX.md) para o status completo de cada domínio.
 
-- Criar **domínio controlado** de `entity_type` (CHECK constraint se ainda não houver):
-  `service`, `company`, `job`, `blog_post`, `page`, `avatar`, `document`,
-  `candidate_document`, `employee_document`.
-- Garantir índice único em `(bucket_id, storage_path)` se ainda não houver.
-- Padronizar `public-media` (10 MB, image/*) como destino de imagens públicas.
-- `services-images` (legado) marcado como **deprecated** via `COMMENT`.
+### Cobertura por migration
 
-**Critério de pronto:** constraint criada, índices OK, comentário em `services-images`.
+| Migration | Domínios cobertos                          |
+| --------- | ------------------------------------------ |
+| 01        | 12 (Media), 13 (Blog), 11 (Serviços)       |
+| 02        | 01 (Identity), 04 (Candidatos)             |
+| 03        | 12 (Media)                                 |
+| 04        | 29 (Integrações) — **CRIA infraestrutura** |
+| 05        | 30 (Providers) — **CRIA catálogo**         |
+| 06        | 02 (Tenancy), 03 (RBAC)                    |
+| 07        | 28 (Domain Events)                         |
+| 08        | 04, 05, 06 (formulários)                   |
 
-**Rollback:** `ALTER TABLE … DROP CONSTRAINT IF EXISTS …; DROP INDEX IF EXISTS …;`
+### Domínios ainda sem cobertura específica de migration
 
----
-
-### §04 — Forms (contratos canônicos de domínio)
-
-**Não cria tabelas.** Cria:
-
-- Domínio `phone_br` (regex `^\+?55?\s?\(?\d{2}\)?\s?9?\d{4}-?\d{4}$`) via `DOMAIN` ou CHECKs reusáveis.
-- Domínio `cnpj` (regex `^\d{14}$` ou formatado `^\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}$`).
-- Domínio `cpf` (regex `^\d{11}$` ou formatado).
-- Função `is_valid_cnpj(text) → boolean` (algoritmo completo dos DV).
-- Função `is_valid_cpf(text) → boolean`.
-- Função `normalize_cnpj(text) → text` (só dígitos).
-- Função `normalize_cpf(text) → text`.
-
-**Não aplica retroativamente em colunas existentes** (não é intrusivo).
-
-**Critério de pronto:** funções existentes, testadas com 3 casos cada (válido, inválido, vazio).
-
-**Rollback:** `DROP FUNCTION IF EXISTS …;`
+15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 31, 32 (Estoque, Almoxarifado, OS, Financeiro, Fiscal, PDV, CRM, Chat, Chatbot, Suporte, Notificações, E-mail, Automação, Auditoria, LGPD) — **todos têm estrutura base** e serão endereçados em sprints futuros conforme a matriz GAP.
 
 ---
 
-### §05 — FKs (revisão por domínio)
+## Procedimento de aplicação
 
-**Não cria FKs novas** (a GATE mostrou que as essenciais já estão).
+```bash
+# 1. Backup/snapshot do Supabase (obrigatório)
+# 2. Validar pré-condições:
+psql "$SUPABASE_DB_URL" -c "SELECT version FROM supabase_migrations.schema_migrations ORDER BY version DESC LIMIT 5;"
 
-**Ações:**
+# 3. Aplicar UMA por vez, validando entre cada:
+psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20260902000001_01_schema_reconciliation.sql
+psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20260902000002_02_identity_rbac.sql
+psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20260902000003_03_cms_media.sql
+psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20260902000004_04_integration_contracts.sql
+psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20260902000005_05_providers.sql
+psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20260902000006_06_rls_security.sql
+psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20260902000007_07_events_outbox.sql
+psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20260902000008_08_forms.sql
+```
 
-- **Listar** (em comentário) todas as FKs existentes que apontam para:
-  `tenants`, `companies`, `people`, `candidates`, `jobs`, `services`,
-  `company_relationships`.
-- **Identificar** (em comentário) FKs opcionais que talvez devessem ser obrigatórias
-  (`NOT NULL` + `ON DELETE RESTRICT` em casos selecionados) — **mas NÃO aplicar** sem
-  aprovação.
-- Gerar relatório SQL (em comentário) que o usuário pode rodar separadamente para
-  listar órfãos por tabela.
-
-**Critério de pronto:** relatório documentado, sem alterações de schema.
-
-**Rollback:** N/A (somente documentação).
-
----
-
-### §06 — RLS (isolamento por tenant)
-
-**Ações (somente onde faltar):**
-
-- Adicionar policies **faltantes** em `tenants` e `company_relationship_types`
-  (Advisor: RLS on, sem policy).
-- Auditar `storage.objects` por bucket — confirmar 4 policies por bucket
-  (`public_read` para `public-media`/`avatars`, `authenticated_read/write/update/delete`
-  para `private-documents`).
-- **Não tocar** policies existentes (sem `DROP POLICY` global).
-
-**Critério de pronto:** Advisor limpo em `tenants` e `company_relationship_types`.
-
-**Rollback:** `DROP POLICY IF EXISTS …;`
+Cada migration tem `BEGIN`/`COMMIT` próprio, então se uma falhar, **as anteriores já aplicadas continuam firmes**.
 
 ---
 
-### §07 — Security (Advisor cleanup)
+## Rollback
 
-**Ações (cirúrgicas, com EXECUTE explícito):**
-
-| Função                         | Ação                                                                                               |
-| ------------------------------ | -------------------------------------------------------------------------------------------------- |
-| `handle_auth_user_deleted`     | `SET search_path = public, pg_temp`; `REVOKE EXECUTE FROM PUBLIC`; `GRANT EXECUTE TO service_role` |
-| `handle_auth_user_updated`     | idem                                                                                               |
-| `handle_new_auth_user`         | idem                                                                                               |
-| `is_tenant_member`             | idem                                                                                               |
-| `is_admin_master`              | idem                                                                                               |
-| `user_has_permission`          | idem                                                                                               |
-| `user_permissions`             | idem                                                                                               |
-| `user_tenant_ids`              | idem                                                                                               |
-| `bootstrap_candidate_identity` | idem                                                                                               |
-
-Todas as alterações usam `CREATE OR REPLACE` mantendo a assinatura original.
-
-**Critério de pronto:** `SELECT proname, prosecdef, proconfig FROM pg_proc WHERE proname IN (...)` mostra `search_path` fixo em todas.
-
-**Rollback:** restaurar assinaturas anteriores é impossível sem backup. Por isso **revisão dupla antes de aplicar**.
-
----
-
-### §08 — Integration (contrato de eventos)
-
-**Ações:**
-
-- Confirmar que `domain_events`, `event_outbox`, `event_deliveries` existem.
-- Adicionar (se faltar) índice em `event_outbox(processed_at, created_at)` para o consumer.
-- Função `emit_domain_event(event_type text, payload jsonb, tenant_id uuid)` que insere
-  em `domain_events` e `event_outbox` em uma transação.
-- **NÃO** colocar URLs de webhook, tokens de n8n ou chaves de WhatsApp dentro do banco.
-  Esses segredos vivem em `vault` ou em env do consumidor.
-
-**Critério de pronto:** função `emit_domain_event` criada e testada com 1 INSERT dummy.
-
-**Rollback:** `DROP FUNCTION IF EXISTS …;`
-
----
-
-## Arquivo final (template)
+Cada migration tem bloco de ROLLBACK PLAN em comentário no topo do arquivo. Em ordem inversa:
 
 ```sql
--- =============================================================================
--- PLATFORM HARDENING + CMS + MEDIA + IDENTITY v1
--- =============================================================================
--- Data: 2026-09-02
--- Status: SPEC APROVADO
--- Transaction: BEGIN … COMMIT (atômico)
--- Idempotente: tudo dentro de EXISTS / IF NOT EXISTS / OR REPLACE
--- =============================================================================
+-- 08
+DROP FUNCTION IF EXISTS public.is_valid_cpf(text);
+DROP FUNCTION IF EXISTS public.is_valid_cnpj(text);
+DROP FUNCTION IF EXISTS public.normalize_cpf(text);
+DROP FUNCTION IF EXISTS public.normalize_cnpj(text);
 
-BEGIN;
+-- 07
+DROP FUNCTION IF EXISTS public.emit_domain_event(text, text, uuid, uuid, jsonb, text);
+DROP INDEX  IF EXISTS public.idx_event_outbox_processed_created;
 
--- §01 Identity/RBAC
--- ...
+-- 06
+DROP POLICY IF EXISTS tenants_member_read ON public.tenants;
+DROP POLICY IF EXISTS company_relationship_types_authenticated_read ON public.company_relationship_types;
+-- search_path: ALTER FUNCTION … RESET search_path em cada função
 
--- §02 CMS
--- ...
+-- 05
+DROP TABLE IF EXISTS public.provider_configs CASCADE;
+DROP TABLE IF EXISTS public.providers        CASCADE;
 
--- §03 Media
--- ...
+-- 04
+DROP TABLE IF EXISTS public.integration_errors      CASCADE;
+DROP TABLE IF EXISTS public.integration_sync_runs   CASCADE;
+DROP TABLE IF EXISTS public.integration_webhooks    CASCADE;
+DROP TABLE IF EXISTS public.integration_events      CASCADE;
+DROP TABLE IF EXISTS public.integration_credentials CASCADE;
+DROP TABLE IF EXISTS public.integration_connections CASCADE;
 
--- §04 Forms
--- ...
+-- 03
+DROP FUNCTION IF EXISTS public.set_primary_media(text, uuid, uuid);
+DROP FUNCTION IF EXISTS public.media_for_entity(text, uuid);
 
--- §05 FKs (relatório, sem alterações)
--- ...
+-- 02
+DROP FUNCTION IF EXISTS public.repair_candidate_chain(uuid, uuid, text);
 
--- §06 RLS
--- ...
-
--- §07 Security
--- ...
-
--- §08 Integration
--- ...
-
-COMMIT;
+-- 01
+DROP INDEX  IF EXISTS public.idx_jobs_tenant_status_published;
+ALTER TABLE public.blog_posts DROP COLUMN IF EXISTS seo_title;
+ALTER TABLE public.blog_posts DROP COLUMN IF EXISTS seo_description;
+ALTER TABLE public.media_assets DROP CONSTRAINT IF EXISTS media_assets_entity_type_check;
 ```
 
 ---
 
-## Decisões já tomadas
+## Estado atual
 
-1. **Role `candidato` não será criado.** Usar `candidate` (já existe).
-2. **`n8n` fora do banco.** Eventos saem via `domain_events`/`event_outbox`.
-3. **`media_assets` é o catálogo único** de mídia. Não criar `job_images`, `service_images`, etc.
-4. **`services-images` é legado.** Não usar para novas features.
-5. **Repair de cadeia de candidato** é função utilitária, não automático.
-6. **Migration única e transacional.** Se alguma seção falhar, nada é aplicado.
-
----
-
-## Próximo passo
-
-**Aguardando "OK, pode fazer"** do usuário.
-
-Após o OK, gero o SQL completo (com placeholders `…` substituídos) em
-`supabase/migrations/20260902xxxxxx_platform_hardening_v1.sql`, commito na
-`main` (sem push) e aguardo nova aprovação antes do `psql -f`.
+- ✅ `d9f9764` (platform_hardening_v1 monolítico) foi **revertido** com `git reset --soft HEAD~1` antes do push
+- ✅ Arquivo movido para `supabase/migrations/_superseded/`
+- ✅ 8 migrations novas geradas e validadas
+- ✅ `GAP-MATRIX.md` criado
+- ⏳ Aguardando seu **OK explícito** para `git push origin main`
+- ⏳ Depois do push, você aplica no Supabase com `psql -f` uma por uma
