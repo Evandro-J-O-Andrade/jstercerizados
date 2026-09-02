@@ -16,6 +16,7 @@ import { ChatWidget } from '@/components/ui/ChatWidget';
 import { HumanChatWidget } from '@/components/ui/HumanChatWidget';
 import NotFound from '@/pages/NotFound';
 import DashboardHome from '@/pages/dashboard/DashboardHome';
+import DashboardCandidato from '@/pages/dashboard/DashboardCandidato';
 import TenantsPage from '@/pages/dashboard/TenantsPage';
 import ClientesPage from '@/pages/dashboard/ClientesPage';
 import OnboardingPage from '@/pages/dashboard/OnboardingPage';
@@ -75,6 +76,7 @@ const CadastroCandidato = lazy(() => import('@/pages/CadastroCandidato'));
 const CadastroEmpresa = lazy(() => import('@/pages/CadastroEmpresa'));
 const RecuperarSenha = lazy(() => import('@/pages/RecuperarSenha'));
 const RedefinirSenha = lazy(() => import('@/pages/RedefinirSenha'));
+const AlterarSenha = lazy(() => import('@/pages/AlterarSenha'));
 const Onboarding = lazy(() => import('@/pages/Onboarding'));
 const PrimeiroAcessoTermos = lazy(
   () => import('@/pages/primeiro-acesso/Termos'),
@@ -139,6 +141,7 @@ import RelatorioSuportePage from '@/pages/dashboard/relatorios/RelatorioSuporteP
 
 const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   DashboardHome,
+  DashboardCandidato,
   TenantsPage,
   ClientesPage,
   OnboardingPage,
@@ -309,6 +312,7 @@ function App() {
                     'finance_manager',
                     'recruiter',
                     'rh_manager',
+                    'candidato',
                     'stock_manager',
                     'security_manager',
                     'facilities_manager',
@@ -335,6 +339,14 @@ function App() {
               element={
                 <PermissionGuard permission="domain_events.read">
                   <GlobalDashboardPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="candidato"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <DashboardCandidato />
                 </PermissionGuard>
               }
             />
@@ -768,6 +780,14 @@ function App() {
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/auth/terms" element={<AuthTerms />} />
           <Route path="/auth/welcome" element={<AuthWelcome />} />
+          <Route
+            path="/alterar-senha"
+            element={
+              <ProtectedRoute>
+                <AlterarSenha />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/primeiro-acesso/termos"
             element={

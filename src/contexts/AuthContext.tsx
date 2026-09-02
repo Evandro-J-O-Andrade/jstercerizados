@@ -892,8 +892,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (recoveryMode) {
-      console.log('[AUTH:FLOW] redirect → /primeiro-acesso/senha (recovery)');
-      return '/primeiro-acesso/senha';
+      console.log('[AUTH:FLOW] redirect → /redefinir-senha (recovery)');
+      return '/redefinir-senha';
     }
 
     if (tenantMemberships.length === 0) {
@@ -1024,10 +1024,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log('[AUTH:RESET] resetPasswordForEmail start', {
         email,
-        redirectTo: `${window.location.origin}/redefinir-senha`,
+        redirectTo: `${import.meta.env?.VITE_SITE_URL || window.location.origin}/redefinir-senha`,
       });
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/redefinir-senha`,
+        redirectTo: `${import.meta.env?.VITE_SITE_URL || window.location.origin}/redefinir-senha`,
       });
 
       console.log('[AUTH:RESET] resetPasswordForEmail result', {

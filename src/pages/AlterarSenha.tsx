@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { KeyRound, Eye, EyeOff, CheckCircle2, XCircle } from 'lucide-react';
@@ -16,24 +16,37 @@ const PASSWORD_REQUIREMENTS = [
   { label: 'Caractere especial', test: (p: string) => /[^A-Za-z0-9]/.test(p) },
 ];
 
-export default function RedefinirSenha() {
+export default function AlterarSenha() {
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswords, setShowPasswords] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const { changePassword, logout } = useAuth();
+  const { changePassword, isAuthenticated, person } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated || !person) {
+      navigate('/login', { replace: true });
+    }
+  }, [isAuthenticated, person, navigate]);
 
   const passwordsMatch = newPassword === confirmPassword;
   const meetsRequirements = PASSWORD_REQUIREMENTS.every((req) =>
     req.test(newPassword),
   );
-  const isValid = meetsRequirements && passwordsMatch;
+  const isValid =
+    meetsRequirements && passwordsMatch && currentPassword.trim().length > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!currentPassword.trim()) {
+      setError('Informe sua senha atual.');
+      return;
+    }
 
     if (!passwordsMatch) {
       setError('As senhas não coincidem.');
@@ -48,55 +61,69 @@ export default function RedefinirSenha() {
     setIsSubmitting(true);
 
     try {
-      const result = await changePassword('', newPassword);
+      const result = await changePassword(currentPassword, newPassword);
       if (result.error) {
         setError(result.error);
       } else {
-        await logout();
         navigate('/login', { replace: true });
       }
     } catch {
-      setError('Erro ao redefinir senha. Tente novamente.');
+      setError('Erro ao alterar senha. Tente novamente.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (!isAuthenticated || !person) {
+    return null;
+  }
+
+  const firstName = person.full_name?.split(' ')[0] || 'colaborador';
+
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <div className="flex min-h-[80dvh] items-center justify-center px-4 py-12">
       <SEO
-        title={`Redefinir senha — ${COMPANY.name}`}
-        description="Defina uma nova senha para sua conta."
+        title={`Alterar senha — ${COMPANY.name}`}
+        description="Altere sua senha de acesso ao sistema."
         noindex
       />
-      <div className="bg-background/85 absolute inset-0 backdrop-blur-sm" />
-
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative z-10 w-full max-w-md"
+        className="w-full max-w-md"
       >
-        <div className="border-border/40 bg-card shadow-glass rounded-3xl border p-8">
-          <div className="mb-8 text-center">
-            <div className="bg-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-              <KeyRound className="h-8 w-8" />
-            </div>
-            <h1 className="text-foreground text-3xl font-bold">
-              Redefinir senha
-            </h1>
-            <p className="text-muted-foreground mt-2 text-sm">
-              Digite sua nova senha abaixo. Você será desconectado(a) após a
-              redefinição.
-            </p>
+        <div className="mb-8 text-center">
+          <div className="bg-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+            <KeyRound className="text-primary h-8 w-8" />
           </div>
+          <h1 className="text-foreground text-3xl font-bold">Alterar senha</h1>
+          <p className="text-muted-foreground mt-2 text-sm">
+            Olá, {firstName}. Digite sua senha atual e a nova senha.
+          </p>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
-              <div className="bg-destructive/10 text-destructive rounded-xl p-4 text-sm">
-                {error}
-              </div>
-            )}
+        <form
+          onSubmit={handleSubmit}
+          className="border-border/40 bg-card shadow-glass rounded-3xl border p-8"
+        >
+          {error && (
+            <div className="bg-destructive/10 text-destructive mb-6 rounded-xl p-4 text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-5">
+            <div className="relative">
+              <Input
+                label="Senha atual"
+                type={showPasswords ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
 
             <div className="relative">
               <Input
@@ -172,31 +199,31 @@ export default function RedefinirSenha() {
                 })}
               </ul>
             </div>
+          </div>
 
-            <div className="mt-8">
-              <Button
-                type="submit"
-                variant="primary"
-                size="xl"
-                className="w-full"
-                disabled={!isValid || isSubmitting}
-                loading={isSubmitting}
-                leftIcon={<KeyRound className="h-5 w-5" />}
-              >
-                {isSubmitting ? 'Salvando...' : 'Redefinir senha'}
-              </Button>
-            </div>
-          </form>
+          <div className="mt-8">
+            <Button
+              type="submit"
+              variant="primary"
+              size="xl"
+              className="w-full"
+              disabled={!isValid || isSubmitting}
+              loading={isSubmitting}
+              leftIcon={<KeyRound className="h-5 w-5" />}
+            >
+              {isSubmitting ? 'Salvando...' : 'Alterar senha'}
+            </Button>
+          </div>
 
           <div className="mt-6 text-center">
             <Link
-              to="/login"
+              to="/dashboard/configuracoes/seguranca"
               className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm font-medium transition-colors"
             >
-              Voltar para o login
+              Voltar para as configurações
             </Link>
           </div>
-        </div>
+        </form>
       </motion.div>
     </div>
   );

@@ -43,6 +43,7 @@ export type RoleName =
   | 'finance'
   | 'support'
   | 'commercial'
+  | 'candidato'
   | 'stock_manager'
   | 'security_manager'
   | 'facilities_manager'
