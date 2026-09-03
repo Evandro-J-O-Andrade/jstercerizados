@@ -9,7 +9,6 @@ import { SEO } from '@/components/ui/SEO';
 import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config/images';
-import { normalizeError } from '@/lib/error-normalizer';
 
 export default function RecuperarSenha() {
   const [email, setEmail] = useState('');
@@ -25,20 +24,22 @@ export default function RecuperarSenha() {
     setIsSubmitting(true);
 
     try {
-      console.log('[RECUPERAR] submit start', { email });
       const result = await resetPassword(email);
-      console.log('[RECUPERAR] submit result', result);
       if (result.error) {
-        setError(normalizeError(result.error).userMessage);
+        if (import.meta.env.DEV) {
+          console.warn('[RECUPERAR] submit returned error', result.error);
+        }
+        setError(
+          'Não foi possível enviar o link. Tente novamente em instantes.',
+        );
       } else {
         setSuccess(true);
       }
     } catch (err) {
-      console.error('[RECUPERAR] submit exception', err);
-      setError(
-        normalizeError(new Error('Erro ao enviar e-mail de recuperação.'))
-          .userMessage,
-      );
+      if (import.meta.env.DEV) {
+        console.error('[RECUPERAR] submit exception', err);
+      }
+      setError('Não foi possível enviar o link. Tente novamente em instantes.');
     } finally {
       setIsSubmitting(false);
     }
