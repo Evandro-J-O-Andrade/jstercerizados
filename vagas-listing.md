@@ -1,0 +1,505 @@
+- main [ref=f3e14]:
+  - generic [ref=f3e17]:
+    - generic [ref=f3e18]:
+      - heading "Vagas Disponíveis" [level=1] [ref=f3e19]
+      - paragraph [ref=f3e20]: Encontre a oportunidade ideal para o seu perfil profissional.
+    - generic [ref=f3e21]:
+      - textbox "Busque por cargo, empresa..." [ref=f3e26]
+      - textbox "Cidade" [ref=f3e31]
+      - combobox [ref=f3e32] [cursor=pointer]:
+        - option "Todos os contratos" [selected]
+        - option "CLT"
+        - option "Estágio"
+        - option "Temporário"
+        - option "Terceirizado"
+      - combobox [ref=f3e33] [cursor=pointer]:
+        - option "Todas as modalidades" [selected]
+        - option "Presencial"
+        - option "Híbrido"
+        - option "Trabalho de Casa"
+      - button "Mais filtros" [ref=f3e34]
+    - generic [ref=f3e37]:
+      - paragraph [ref=f3e38]: 19 vagas encontradas
+      - generic [ref=f3e39]:
+        - link "Cadastrar Currículo" [ref=f3e40] [cursor=pointer]:
+          - /url: /trabalhe-conosco
+          - button "Cadastrar Currículo" [ref=f3e41]
+        - button "Limpar filtros" [disabled]
+    - generic [ref=f3e42]:
+      - generic [ref=f3e43]:
+        - generic [ref=f3e44]:
+          - generic [ref=f3e45]:
+            - heading "Analista de RH" [level=3] [ref=f3e46]
+            - paragraph [ref=f3e47]: Teste
+          - generic [ref=f3e48]: CLT
+        - generic [ref=f3e49]:
+          - generic [ref=f3e50]: São Paulo, SP
+          - generic [ref=f3e55]:
+            - generic [ref=f3e56]: R$
+            - generic [ref=f3e57]: 5.000 – a combinar
+          - generic [ref=f3e58]: Presencial
+          - generic [ref=f3e59]: Recursos Humanos
+        - generic [ref=f3e60]:
+          - paragraph [ref=f3e61]: Benefícios
+          - generic [ref=f3e62]:
+            - generic [ref=f3e63]: Vale refeição
+            - generic [ref=f3e64]: Vale transporte
+        - generic [ref=f3e65]:
+          - link "Ver vaga" [ref=f3e66] [cursor=pointer]:
+            - /url: /vagas/analista-de-rh-d60b982f
+            - button "Ver vaga" [ref=f3e67]
+          - link "Candidatar-se" [ref=f3e68] [cursor=pointer]:
+            - /url: /vagas/analista-de-rh-d60b982f
+            - button "Candidatar-se" [ref=f3e69]
+      - generic [ref=f3e70]:
+        - generic [ref=f3e71]:
+          - generic [ref=f3e72]:
+            - heading "Desenvolvedor React" [level=3] [ref=f3e73]
+            - paragraph [ref=f3e74]: Vectro Engenharia
+          - generic [ref=f3e75]: CLT
+        - generic [ref=f3e76]:
+          - generic [ref=f3e77]: São Paulo, SP
+          - generic [ref=f3e82]:
+            - generic [ref=f3e83]: R$
+            - generic [ref=f3e84]: 5.000 – a combinar
+          - generic [ref=f3e85]: Presencial
+          - generic [ref=f3e86]: Tecnologia da Informação
+        - generic [ref=f3e87]:
+          - paragraph [ref=f3e88]: Benefícios
+          - generic [ref=f3e89]:
+            - generic [ref=f3e90]: Vale refeição
+            - generic [ref=f3e91]: Vale transporte
+        - generic [ref=f3e92]:
+          - link "Ver vaga" [ref=f3e93] [cursor=pointer]:
+            - /url: /vagas/desenvolvedor-react-09603ac9
+            - button "Ver vaga" [ref=f3e94]
+          - link "Candidatar-se" [ref=f3e95] [cursor=pointer]:
+            - /url: /vagas/desenvolvedor-react-09603ac9
+            - button "Candidatar-se" [ref=f3e96]
+      - generic [ref=f3e97]:
+        - generic [ref=f3e98]:
+          - generic [ref=f3e99]:
+            - heading "Auxiliar de Produção" [level=3] [ref=f3e100]
+            - paragraph [ref=f3e101]: Fornecedor Tech
+          - generic [ref=f3e102]: CLT
+        - generic [ref=f3e103]:
+          - generic [ref=f3e104]: Arujá, SP
+          - generic [ref=f3e109]:
+            - generic [ref=f3e110]: R$
+            - generic [ref=f3e111]: 1.950 – a combinar
+          - generic [ref=f3e112]: Presencial
+          - generic [ref=f3e113]: Produção/Fabricação
+        - generic [ref=f3e114]:
+          - paragraph [ref=f3e115]: Benefícios
+          - generic [ref=f3e116]:
+            - generic [ref=f3e117]: Vale Transporte
+            - generic [ref=f3e118]: Alimentação no local
+        - generic [ref=f3e119]:
+          - link "Ver vaga" [ref=f3e120] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-produ-ao-4300092f
+            - button "Ver vaga" [ref=f3e121]
+          - link "Candidatar-se" [ref=f3e122] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-produ-ao-4300092f
+            - button "Candidatar-se" [ref=f3e123]
+      - generic [ref=f3e124]:
+        - generic [ref=f3e125]:
+          - generic [ref=f3e126]:
+            - heading "Consultor de Vendas" [level=3] [ref=f3e127]
+            - paragraph [ref=f3e128]: Abarca Móveis
+          - generic [ref=f3e129]: CLT
+        - generic [ref=f3e130]:
+          - generic [ref=f3e131]: São Paulo, SP
+          - generic [ref=f3e136]:
+            - generic [ref=f3e137]: R$
+            - generic [ref=f3e138]: 4.000 – 7.000
+          - generic [ref=f3e139]: Híbrido
+          - generic [ref=f3e140]: Vendas
+        - generic [ref=f3e141]:
+          - paragraph [ref=f3e142]: Benefícios
+          - generic [ref=f3e143]:
+            - generic [ref=f3e144]: Vale refeição
+            - generic [ref=f3e145]: Vale transporte
+            - generic [ref=f3e146]: Convênio Médico
+        - generic [ref=f3e147]:
+          - link "Ver vaga" [ref=f3e148] [cursor=pointer]:
+            - /url: /vagas/consultor-de-vendas-7dc46711
+            - button "Ver vaga" [ref=f3e149]
+          - link "Candidatar-se" [ref=f3e150] [cursor=pointer]:
+            - /url: /vagas/consultor-de-vendas-7dc46711
+            - button "Candidatar-se" [ref=f3e151]
+      - generic [ref=f3e152]:
+        - generic [ref=f3e153]:
+          - generic [ref=f3e154]:
+            - heading "Assistente Administrativo" [level=3] [ref=f3e155]
+            - paragraph [ref=f3e156]: VECTOR
+          - generic [ref=f3e157]: CLT
+        - generic [ref=f3e158]:
+          - generic [ref=f3e159]: São Paulo, SP
+          - generic [ref=f3e164]:
+            - generic [ref=f3e165]: R$
+            - generic [ref=f3e166]: 3.500 – 4.500
+          - generic [ref=f3e167]: Remoto
+          - generic [ref=f3e168]: Administração
+        - generic [ref=f3e169]:
+          - paragraph [ref=f3e170]: Benefícios
+          - generic [ref=f3e171]:
+            - generic [ref=f3e172]: Vale refeição
+            - generic [ref=f3e173]: Vale transporte
+            - generic [ref=f3e174]: Convênio Médico
+        - generic [ref=f3e175]:
+          - link "Ver vaga" [ref=f3e176] [cursor=pointer]:
+            - /url: /vagas/assistente-administrativo-a753e404
+            - button "Ver vaga" [ref=f3e177]
+          - link "Candidatar-se" [ref=f3e178] [cursor=pointer]:
+            - /url: /vagas/assistente-administrativo-a753e404
+            - button "Candidatar-se" [ref=f3e179]
+      - generic [ref=f3e180]:
+        - generic [ref=f3e181]:
+          - generic [ref=f3e182]:
+            - heading "Auxiliar de Produção" [level=3] [ref=f3e183]
+            - paragraph [ref=f3e184]: Parceiro Consultoria
+          - generic [ref=f3e185]: Temporário
+        - generic [ref=f3e186]:
+          - generic [ref=f3e187]: Arujá, SP
+          - generic [ref=f3e192]:
+            - generic [ref=f3e193]: R$
+            - generic [ref=f3e194]: 1.800 – a combinar
+          - generic [ref=f3e195]: Presencial
+          - generic [ref=f3e196]: Produção/Fabricação
+        - generic [ref=f3e197]:
+          - paragraph [ref=f3e198]: Benefícios
+          - generic [ref=f3e199]:
+            - generic [ref=f3e200]: Vale Transporte
+            - generic [ref=f3e201]: Refeição no local
+        - generic [ref=f3e202]:
+          - link "Ver vaga" [ref=f3e203] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-produ-ao-a5acf4bd
+            - button "Ver vaga" [ref=f3e204]
+          - link "Candidatar-se" [ref=f3e205] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-produ-ao-a5acf4bd
+            - button "Candidatar-se" [ref=f3e206]
+      - generic [ref=f3e207]:
+        - generic [ref=f3e208]:
+          - generic [ref=f3e209]:
+            - heading "Analista de Sistemas Sênior" [level=3] [ref=f3e210]
+            - paragraph [ref=f3e211]: Mistral Vidros
+          - generic [ref=f3e212]: CLT
+        - generic [ref=f3e213]:
+          - generic [ref=f3e214]: São Paulo, SP
+          - generic [ref=f3e219]:
+            - generic [ref=f3e220]: R$
+            - generic [ref=f3e221]: 8.000 – 12.000
+          - generic [ref=f3e222]: Remoto
+          - generic [ref=f3e223]: Tecnologia da Informação
+        - generic [ref=f3e224]:
+          - paragraph [ref=f3e225]: Benefícios
+          - generic [ref=f3e226]:
+            - generic [ref=f3e227]: Vale refeição
+            - generic [ref=f3e228]: Vale transporte
+            - generic [ref=f3e229]: Convênio Médico
+        - generic [ref=f3e230]:
+          - link "Ver vaga" [ref=f3e231] [cursor=pointer]:
+            - /url: /vagas/analista-de-sistemas-senior-b3d503c8
+            - button "Ver vaga" [ref=f3e232]
+          - link "Candidatar-se" [ref=f3e233] [cursor=pointer]:
+            - /url: /vagas/analista-de-sistemas-senior-b3d503c8
+            - button "Candidatar-se" [ref=f3e234]
+      - generic [ref=f3e235]:
+        - generic [ref=f3e236]:
+          - generic [ref=f3e237]:
+            - heading "Auxiliar de Produção" [level=3] [ref=f3e238]
+            - paragraph [ref=f3e239]: Global Services S.A.
+          - generic [ref=f3e240]: CLT
+        - generic [ref=f3e241]:
+          - generic [ref=f3e242]: Arujá, SP
+          - generic [ref=f3e247]:
+            - generic [ref=f3e248]: R$
+            - generic [ref=f3e249]: 2.112,28 – a combinar
+          - generic [ref=f3e250]: Presencial
+          - generic [ref=f3e251]: Produção/Fabricação
+        - generic [ref=f3e252]:
+          - paragraph [ref=f3e253]: Benefícios
+          - generic [ref=f3e254]:
+            - generic [ref=f3e255]: Vale Transporte
+            - generic [ref=f3e256]: Refeição no local
+        - generic [ref=f3e257]:
+          - link "Ver vaga" [ref=f3e258] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-produ-ao-320bdd94
+            - button "Ver vaga" [ref=f3e259]
+          - link "Candidatar-se" [ref=f3e260] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-produ-ao-320bdd94
+            - button "Candidatar-se" [ref=f3e261]
+      - generic [ref=f3e262]:
+        - generic [ref=f3e263]:
+          - generic [ref=f3e264]:
+            - heading "Auxiliar de expedição" [level=3] [ref=f3e265]
+            - paragraph [ref=f3e266]: TechSolutions Ltda
+          - generic [ref=f3e267]: CLT
+        - generic [ref=f3e268]:
+          - generic [ref=f3e269]: Arujá, SP
+          - generic [ref=f3e274]:
+            - generic [ref=f3e275]: R$
+            - generic [ref=f3e276]: 1.777,62 – a combinar
+          - generic [ref=f3e277]: Presencial
+          - generic [ref=f3e278]: Logística
+        - generic [ref=f3e279]:
+          - paragraph [ref=f3e280]: Benefícios
+          - generic [ref=f3e281]:
+            - generic [ref=f3e282]: Vale Transporte
+            - generic [ref=f3e283]: Refeição no local
+            - generic [ref=f3e284]: bônus de até R$ 500 por meta
+        - generic [ref=f3e285]:
+          - link "Ver vaga" [ref=f3e286] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-expedi-ao-c0685720
+            - button "Ver vaga" [ref=f3e287]
+          - link "Candidatar-se" [ref=f3e288] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-expedi-ao-c0685720
+            - button "Candidatar-se" [ref=f3e289]
+      - generic [ref=f3e290]:
+        - generic [ref=f3e291]:
+          - generic [ref=f3e292]:
+            - heading "Auxiliar administrativo" [level=3] [ref=f3e293]
+            - paragraph [ref=f3e294]: Teste
+          - generic [ref=f3e295]: CLT
+        - generic [ref=f3e296]:
+          - generic [ref=f3e297]: Arujá, SP
+          - generic [ref=f3e302]:
+            - generic [ref=f3e303]: R$
+            - generic [ref=f3e304]: 2.500 – a combinar
+          - generic [ref=f3e305]: Presencial
+          - generic [ref=f3e306]: Administração de Empresas / Patrimônio - Gestão
+        - generic [ref=f3e307]:
+          - paragraph [ref=f3e308]: Benefícios
+          - generic [ref=f3e309]: Vale-Transporte
+        - generic [ref=f3e311]:
+          - link "Ver vaga" [ref=f3e312] [cursor=pointer]:
+            - /url: /vagas/auxiliar-administrativo-90267b5d
+            - button "Ver vaga" [ref=f3e313]
+          - link "Candidatar-se" [ref=f3e314] [cursor=pointer]:
+            - /url: /vagas/auxiliar-administrativo-90267b5d
+            - button "Candidatar-se" [ref=f3e315]
+      - generic [ref=f3e316]:
+        - generic [ref=f3e317]:
+          - generic [ref=f3e318]:
+            - heading "Líder de produção" [level=3] [ref=f3e319]
+            - paragraph [ref=f3e320]: Vectro Engenharia
+          - generic [ref=f3e321]: Temporário
+        - generic [ref=f3e322]:
+          - generic [ref=f3e323]: Arujá, SP
+          - generic [ref=f3e328]:
+            - generic [ref=f3e329]: R$
+            - generic [ref=f3e330]: 3.000 – a combinar
+          - generic [ref=f3e331]: Presencial
+          - generic [ref=f3e332]: Industrial
+        - generic [ref=f3e333]:
+          - paragraph [ref=f3e334]: Benefícios
+          - generic [ref=f3e335]:
+            - generic [ref=f3e336]: Refeição no local
+            - generic [ref=f3e337]: Vale Alimentação
+            - generic [ref=f3e338]: Vale Transporte
+        - generic [ref=f3e339]:
+          - link "Ver vaga" [ref=f3e340] [cursor=pointer]:
+            - /url: /vagas/l-der-de-produ-ao-74a55950
+            - button "Ver vaga" [ref=f3e341]
+          - link "Candidatar-se" [ref=f3e342] [cursor=pointer]:
+            - /url: /vagas/l-der-de-produ-ao-74a55950
+            - button "Candidatar-se" [ref=f3e343]
+      - generic [ref=f3e344]:
+        - generic [ref=f3e345]:
+          - generic [ref=f3e346]:
+            - heading "Assistente de compras" [level=3] [ref=f3e347]
+            - paragraph [ref=f3e348]: Abarca Móveis
+          - generic [ref=f3e349]: Temporário
+        - generic [ref=f3e350]:
+          - generic [ref=f3e351]: Arujá, SP
+          - generic [ref=f3e356]: Presencial
+          - generic [ref=f3e357]: Administração Comercial/Vendas
+        - generic [ref=f3e358]:
+          - paragraph [ref=f3e359]: Benefícios
+          - generic [ref=f3e360]:
+            - generic [ref=f3e361]: VT
+            - generic [ref=f3e362]: Café na empresa
+            - generic [ref=f3e363]: VR R$ 380
+        - generic [ref=f3e364]:
+          - link "Ver vaga" [ref=f3e365] [cursor=pointer]:
+            - /url: /vagas/assistente-de-compras-20fb7eec
+            - button "Ver vaga" [ref=f3e366]
+          - link "Candidatar-se" [ref=f3e367] [cursor=pointer]:
+            - /url: /vagas/assistente-de-compras-20fb7eec
+            - button "Candidatar-se" [ref=f3e368]
+      - generic [ref=f3e369]:
+        - generic [ref=f3e370]:
+          - generic [ref=f3e371]:
+            - heading "Mecânico industrial" [level=3] [ref=f3e372]
+            - paragraph [ref=f3e373]: VECTOR
+          - generic [ref=f3e374]: CLT
+        - generic [ref=f3e375]:
+          - generic [ref=f3e376]: Arujá, SP
+          - generic [ref=f3e381]:
+            - generic [ref=f3e382]: R$
+            - generic [ref=f3e383]: 3.600 – a combinar
+          - generic [ref=f3e384]: Presencial
+          - generic [ref=f3e385]: Produção/Fabricação
+        - generic [ref=f3e386]:
+          - paragraph [ref=f3e387]: Benefícios
+          - generic [ref=f3e388]:
+            - generic [ref=f3e389]: Vale Transporte
+            - generic [ref=f3e390]: Participação de lucros
+        - generic [ref=f3e391]:
+          - link "Ver vaga" [ref=f3e392] [cursor=pointer]:
+            - /url: /vagas/mecanico-industrial-0e274c83
+            - button "Ver vaga" [ref=f3e393]
+          - link "Candidatar-se" [ref=f3e394] [cursor=pointer]:
+            - /url: /vagas/mecanico-industrial-0e274c83
+            - button "Candidatar-se" [ref=f3e395]
+      - generic [ref=f3e396]:
+        - generic [ref=f3e397]:
+          - generic [ref=f3e398]:
+            - heading "Eletricista de instalação" [level=3] [ref=f3e399]
+            - paragraph [ref=f3e400]: Mistral Vidros
+          - generic [ref=f3e401]: CLT
+        - generic [ref=f3e402]:
+          - generic [ref=f3e403]: Arujá, SP
+          - generic [ref=f3e408]:
+            - generic [ref=f3e409]: R$
+            - generic [ref=f3e410]: 3.500 – a combinar
+          - generic [ref=f3e411]: Presencial
+          - generic [ref=f3e412]: Industrial
+        - generic [ref=f3e413]:
+          - paragraph [ref=f3e414]: Benefícios
+          - generic [ref=f3e415]:
+            - generic [ref=f3e416]: Alimentação
+            - generic [ref=f3e417]: Vale Transporte
+            - generic [ref=f3e418]: Pagamento de Horas Extras
+        - generic [ref=f3e419]:
+          - link "Ver vaga" [ref=f3e420] [cursor=pointer]:
+            - /url: /vagas/eletricista-de-instala-ao-08404295
+            - button "Ver vaga" [ref=f3e421]
+          - link "Candidatar-se" [ref=f3e422] [cursor=pointer]:
+            - /url: /vagas/eletricista-de-instala-ao-08404295
+            - button "Candidatar-se" [ref=f3e423]
+      - generic [ref=f3e424]:
+        - generic [ref=f3e425]:
+          - generic [ref=f3e426]:
+            - heading "Auxiliar de marcenaria" [level=3] [ref=f3e427]
+            - paragraph [ref=f3e428]: Fornecedor Tech
+          - generic [ref=f3e429]: Temporário
+        - generic [ref=f3e430]:
+          - generic [ref=f3e431]: Arujá, SP
+          - generic [ref=f3e436]:
+            - generic [ref=f3e437]: R$
+            - generic [ref=f3e438]: 3.000 – a combinar
+          - generic [ref=f3e439]: Presencial
+          - generic [ref=f3e440]: Industrial
+        - generic [ref=f3e441]:
+          - paragraph [ref=f3e442]: Benefícios
+          - generic [ref=f3e443]:
+            - generic [ref=f3e444]: Alimentação
+            - generic [ref=f3e445]: Vale Transporte
+            - generic [ref=f3e446]: Pagamento de Horas Extras
+        - generic [ref=f3e447]:
+          - link "Ver vaga" [ref=f3e448] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-marcenaria-b1bf44c5
+            - button "Ver vaga" [ref=f3e449]
+          - link "Candidatar-se" [ref=f3e450] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-marcenaria-b1bf44c5
+            - button "Candidatar-se" [ref=f3e451]
+      - generic [ref=f3e452]:
+        - generic [ref=f3e453]:
+          - generic [ref=f3e454]:
+            - heading "Auxiliar de Limpeza" [level=3] [ref=f3e455]
+            - paragraph [ref=f3e456]: Parceiro Consultoria
+          - generic [ref=f3e457]: Temporário
+        - generic [ref=f3e458]:
+          - generic [ref=f3e459]: Arujá, SP
+          - generic [ref=f3e464]: Presencial
+          - generic [ref=f3e465]: Industrial
+        - generic [ref=f3e466]:
+          - paragraph [ref=f3e467]: Benefícios
+          - generic [ref=f3e468]:
+            - generic [ref=f3e469]: Vale Transporte
+            - generic [ref=f3e470]: Restaurante na empresa
+            - generic [ref=f3e471]: Assistência Médica após efetivação (Intermédica)
+        - generic [ref=f3e472]:
+          - link "Ver vaga" [ref=f3e473] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-limpeza-744840af
+            - button "Ver vaga" [ref=f3e474]
+          - link "Candidatar-se" [ref=f3e475] [cursor=pointer]:
+            - /url: /vagas/auxiliar-de-limpeza-744840af
+            - button "Candidatar-se" [ref=f3e476]
+      - generic [ref=f3e477]:
+        - generic [ref=f3e478]:
+          - generic [ref=f3e479]:
+            - heading "Pintor I" [level=3] [ref=f3e480]
+            - paragraph [ref=f3e481]: Global Services S.A.
+          - generic [ref=f3e482]: Temporário
+        - generic [ref=f3e483]:
+          - generic [ref=f3e484]: Arujá, SP
+          - generic [ref=f3e489]:
+            - generic [ref=f3e490]: R$
+            - generic [ref=f3e491]: 15,56 – a combinar
+          - generic [ref=f3e492]: Presencial
+          - generic [ref=f3e493]: Produção/Fabricação
+        - generic [ref=f3e494]:
+          - paragraph [ref=f3e495]: Benefícios
+          - generic [ref=f3e496]:
+            - generic [ref=f3e497]: Almoço no local
+            - generic [ref=f3e498]: Vale transporte
+            - generic [ref=f3e499]: Fretado
+        - generic [ref=f3e500]:
+          - link "Ver vaga" [ref=f3e501] [cursor=pointer]:
+            - /url: /vagas/pintor-i-db9f9e1d
+            - button "Ver vaga" [ref=f3e502]
+          - link "Candidatar-se" [ref=f3e503] [cursor=pointer]:
+            - /url: /vagas/pintor-i-db9f9e1d
+            - button "Candidatar-se" [ref=f3e504]
+      - generic [ref=f3e505]:
+        - generic [ref=f3e506]:
+          - generic [ref=f3e507]:
+            - heading "Ajudante geral" [level=3] [ref=f3e508]
+            - paragraph [ref=f3e509]: TechSolutions Ltda
+          - generic [ref=f3e510]: CLT
+        - generic [ref=f3e511]:
+          - generic [ref=f3e512]: Arujá, SP
+          - generic [ref=f3e517]:
+            - generic [ref=f3e518]: R$
+            - generic [ref=f3e519]: 2.112,28 – a combinar
+          - generic [ref=f3e520]: Presencial
+          - generic [ref=f3e521]: Administração de Empresas
+        - generic [ref=f3e522]:
+          - paragraph [ref=f3e523]: Benefícios
+          - generic [ref=f3e524]: Vale Transporte
+        - generic [ref=f3e526]:
+          - link "Ver vaga" [ref=f3e527] [cursor=pointer]:
+            - /url: /vagas/ajudante-geral-7e299dec
+            - button "Ver vaga" [ref=f3e528]
+          - link "Candidatar-se" [ref=f3e529] [cursor=pointer]:
+            - /url: /vagas/ajudante-geral-7e299dec
+            - button "Candidatar-se" [ref=f3e530]
+      - generic [ref=f3e531]:
+        - generic [ref=f3e532]:
+          - generic [ref=f3e533]:
+            - heading "Analista de RH Folha de pagamento" [level=3] [ref=f3e534]
+            - paragraph [ref=f3e535]: Teste
+          - generic [ref=f3e536]: CLT
+        - generic [ref=f3e537]:
+          - generic [ref=f3e538]: Arujá, SP
+          - generic [ref=f3e543]:
+            - generic [ref=f3e544]: R$
+            - generic [ref=f3e545]: 5.000 – a combinar
+          - generic [ref=f3e546]: Presencial
+          - generic [ref=f3e547]: Recursos Humanos
+        - generic [ref=f3e548]:
+          - paragraph [ref=f3e549]: Benefícios
+          - generic [ref=f3e550]:
+            - generic [ref=f3e551]: Vale refeição
+            - generic [ref=f3e552]: Vale transporte
+            - generic [ref=f3e553]: Convênio Médico
+        - generic [ref=f3e554]:
+          - link "Ver vaga" [ref=f3e555] [cursor=pointer]:
+            - /url: /vagas/analista-de-rh-folha-de-pagamento-030dab74
+            - button "Ver vaga" [ref=f3e556]
+          - link "Candidatar-se" [ref=f3e557] [cursor=pointer]:
+            - /url: /vagas/analista-de-rh-folha-de-pagamento-030dab74
+            - button "Candidatar-se" [ref=f3e558]
+    - paragraph [ref=f3e560]: Mostrando 19 vagas de 19 disponívels
