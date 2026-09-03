@@ -1,11 +1,14 @@
 'use client';
-import { RefreshCw, Server } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Server } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 interface ErrorStateProps {
   title?: string;
   message?: string;
   onRetry?: () => void;
+  onBack?: () => void;
+  backLabel?: string;
+  retryLabel?: string;
   supportText?: string;
 }
 
@@ -13,10 +16,17 @@ export function ErrorState({
   title = 'Não foi possível carregar os dados',
   message = 'Ocorreu um problema ao consultar as informações. Tente novamente em alguns instantes.',
   onRetry,
+  onBack,
+  backLabel = 'Voltar',
+  retryLabel = 'Tentar novamente',
   supportText = 'Se o problema persistir, entre em contato com o suporte.',
 }: ErrorStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center">
+    <div
+      role="alert"
+      data-testid="error-state"
+      className="flex flex-col items-center justify-center p-8 text-center"
+    >
       <Server className="text-muted-foreground mb-4 h-12 w-12" />
       <p className="text-foreground mb-2 font-medium">{title}</p>
       <p className="text-muted-foreground mb-2 max-w-md text-sm">{message}</p>
@@ -25,12 +35,20 @@ export function ErrorState({
           {supportText}
         </p>
       )}
-      {onRetry && (
-        <Button onClick={onRetry} variant="outline" size="sm">
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Tentar novamente
-        </Button>
-      )}
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        {onBack && (
+          <Button onClick={onBack} variant="ghost" size="sm">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {backLabel}
+          </Button>
+        )}
+        {onRetry && (
+          <Button onClick={onRetry} variant="outline" size="sm">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            {retryLabel}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

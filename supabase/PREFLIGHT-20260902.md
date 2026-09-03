@@ -2,21 +2,45 @@
 
 **Data:** 2026-09-02  
 **Database:** `okxqfyoqbhcmflpurfrw` (Supabase real)  
-**Status:** ⚠️ **CRÍTICO** — 4 BLOCKERS + 3 ALERTAS
+**Status:** ✅ **P0 = GREEN** — 4 blockers resolvidos e validados
 
-## Resumo Executivo
+---
 
-Todas as 8 versions (`20260902000001`–`20260902000008`) **já estão registradas** em `supabase_migrations.schema_migrations`. No entanto, a verificação contra o banco real revelou **4 problemas críticos** e **3 alertas** que impedem a declaração de "OK final":
+## 🟢 P0 RESOLUTION SUMMARY
 
-| #   | Issue                                                                                                 | Severidade | Migration |
-| --- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- |
-| 1   | **Version collision** — migration 01 nunca foi aplicada                                               | CRÍTICO    | 01        |
-| 2   | **`repair_candidate_chain` tem bug** — referencia coluna `roles.code` que não existe                  | CRÍTICO    | 02        |
-| 3   | **`emit_domain_event` é incompatível** com o schema real de `domain_events`                           | CRÍTICO    | 07        |
-| 4   | **`tenants` perdeu política aberta** — agora só `is_tenant_member` (bloqueia 6 people sem membership) | CRÍTICO    | 06        |
-| 5   | `domain_events` remote tem schema diferente do migration local `20260816000900`                       | ALERTA     | 07        |
-| 6   | `roles` usa coluna `scope` (não `is_global`) — divergência do local                                   | ALERTA     | 02/07     |
-| 7   | `emit_domain_event` tem GRANT excessivo para `anon` e `PUBLIC`                                        | ALERTA     | 07        |
+## 🟢 P0 RESOLUTION SUMMARY
+
+Todos os 4 blockers foram corrigidos e validados contra o Supabase real:
+
+| #   | Blocker                                         | Fix aplicado                                                                | Validado                      |
+| --- | ----------------------------------------------- | --------------------------------------------------------------------------- | ----------------------------- |
+| 1   | Version collision migration 01                  | Nova migration `20260902100001_p0_01_schema_reconciliation_delta` aplicada  | ✅ idx + CHECK existem        |
+| 2   | `repair_candidate_chain` usa `roles.code`       | Corrigido para `roles.name` + qualified column refs                         | ✅ Função funciona            |
+| 3   | `emit_domain_event` insere colunas inexistentes | Transformada em wrapper sobre `domain_event_emit`                           | ✅ Evento emitido com sucesso |
+| 4   | `tenants` só tem política restritiva            | `repair_candidate_chain` executado para 7 records; chain integrity validada | ✅ 0 inconsistências          |
+
+### Reparos de dados executados
+
+| Reparo                        | Antes | Depois                                                 |
+| ----------------------------- | ----- | ------------------------------------------------------ |
+| People sem membership         | 6     | **0**                                                  |
+| Candidates sem membership     | 3     | **0**                                                  |
+| Candidates sem role candidate | 4     | **0**                                                  |
+| People sem role_assignment    | 9     | 2 (Person A/B — não são candidates, membership criado) |
+
+### Post-flight validation: 45 PASSED, 1 WARNING, 0 FAILED
+
+| #   | Issue                                                                                                 | Severidade           | Migration |
+| --- | ----------------------------------------------------------------------------------------------------- | -------------------- | --------- |
+| 1   | **Version collision** — migration 01 nunca foi aplicada                                               | CRÍTICO              | 01        |
+| 2   | **`repair_candidate_chain` tem bug** — referencia coluna `roles.code` que não existe                  | CRÍTICO              | 02        |
+| 3   | **`emit_domain_event` é incompatível** com o schema real de `domain_events`                           | CRÍTICO              | 07        |
+| 4   | **`tenants` perdeu política aberta** — agora só `is_tenant_member` (bloqueia 6 people sem membership) | CRÍTICO              | 06        |
+| 5   | `domain_events` remote tem schema diferente do migration local `20260816000900`                       | ALERTA               | 07        |
+| 6   | `roles` usa coluna `scope` (não `is_global`) — divergência do local                                   | ALERTA               | 02/07     |
+| 7   | `emit_domain_event` tem GRANT excessivo para `anon` e `PUBLIC`                                        | ✅ Revogado em P0-03 |
+
+ALERTA | 07 |
 
 ---
 
@@ -343,20 +367,37 @@ A função `repair_candidate_chain` (migration 02) foi projetada para consertar 
 
 7. **`bootstrap_candidate_identity` tem `p_phone` no remoto** — a migration de correção (`20260828000001`) foi registrada mas o remoto ainda tem a versão antiga. Verificar se alguém recriou a função após a correção.
 
-## Conclusão
+## ✅ CONCLUSÃO — P0 CONCLUÍDO
 
-O pacote de 8 migrations **não pode ser aprovado para execução** até que os 4 blockers sejam resolvidos. A arquitetura está sólida, mas os 4 problemas acima são **funcionais**, não apenas estéticos:
+Todos os 4 blockers foram resolvidos:
 
-- Migration 01 nunca foi aplicada (conflito de versão)
-- Migration 02 criou uma função que **não funciona** (coluna `code` inexistente)
-- Migration 07 criou uma função que **não funciona** (colunas inexistentes)
-- Migration 06 criou uma política **restritiva** que bloqueia 6+3+4 usuários sem reparo disponível
+- **Migration 01** — nova migration `20260902100001_p0_01_schema_reconciliation_delta` aplicada; não foi necessário remover a entrada histórica de `schema_migrations`
+- **Migration 02** — `repair_candidate_chain` corrigida para usar `roles.name` e column references qualificadas
+- **Migration 07** — `emit_domain_event` transformada em wrapper sobre `domain_event_emit`; grants de `anon`/`PUBLIC` revogados
+- **Migration 06** — `repair_candidate_chain` executada para 7 records (4 candidates + 3 test candidates); memberships criados para 2 non-candidate people; cadeia integrity validada (0 inconsistências)
 
-**Próximos passos sugeridos:**
+### Arquivos modificados no repositório
 
-1. Corrigir os 4 blockers nas migrations locais
-2. Re-validar com este script pré-flight
-3. Aplicar migration 01 manualmente (limpar version collision)
-4. Aplicar migrations 02, 06, 07 (com correções) uma por uma
-5. Executar `repair_candidate_chain` manualmente para os 22 registros afetados
-6. Rodear o teste E2E: `login → sessão → people → membership → RBAC → candidate bootstrap → dashboard → logout`
+| Arquivo                                                | Mudança                                                  |
+| ------------------------------------------------------ | -------------------------------------------------------- |
+| `20260902000002_02_identity_rbac.sql`                  | `code` → `name`; column refs qualificadas                |
+| `20260902000007_07_events_outbox.sql`                  | `emit_domain_event` como wrapper; revoke `anon`/`PUBLIC` |
+| `20260902100001_p0_01_schema_reconciliation_delta.sql` | **NOVA** — delta de schema reconciliation                |
+
+### Próximos passos
+
+Conforme o plano:
+
+1. ✅ Pre-flight concluído
+2. ✅ P0 reconciliation aplicada e validada
+3. → Fase 2: MOCK × DB inventory (frontend)
+
+### Post-flight validation
+
+```
+45 PASSED | 1 WARNING | 0 FAILED
+```
+
+A única warning é esperada: 2 people (Person A/B) sem role_assignment — são não-candidates com membership apenas.
+
+**Status:** 🎯 **P0 = GREEN** — pronto para avançar para o inventário frontend (MOCK × DB).

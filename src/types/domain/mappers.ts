@@ -2,6 +2,7 @@
 import type {
   Tenant,
   Company,
+  CompanySocials,
   Candidate,
   Job,
   JobRow,
@@ -30,16 +31,12 @@ export function mapTenant(
 
 export function mapCompany(
   row: Database['public']['Tables']['companies']['Row'],
+  socials?: CompanySocials | null,
 ): Company {
   return {
-    id: row.id,
-    name: row.name,
-    trading_name: row.trading_name,
-    cnpj: row.cnpj,
-    status: row.status,
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-  };
+    ...row,
+    socials: socials ?? null,
+  } as unknown as Company;
 }
 
 export function mapCandidate(

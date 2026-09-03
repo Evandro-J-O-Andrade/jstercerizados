@@ -9,7 +9,9 @@ import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { mockGetVagas } from '@/services/mock/vagas';
+import { usePublicJobsAsVagas } from '@/hooks/useJobs';
 import { COMPANY } from '@/config';
+import type { Vaga } from '@/types/common';
 
 const CONTRATO_LABELS: Record<string, string> = {
   CLT: 'CLT',
@@ -19,6 +21,71 @@ const CONTRATO_LABELS: Record<string, string> = {
   TERCEIRIZADO: 'Terceirizado',
   CD: 'C/D',
 };
+
+interface VagasFilters {
+  searchTerm: string;
+  cidade: string;
+  estado: string;
+  area: string;
+  tipoContrato: string;
+  modalidade: string;
+  salarioMin: string;
+  dataDias: string;
+}
+
+function filterVagas(list: Vaga[], filters: VagasFilters): Vaga[] {
+  let result = list;
+  const search = filters.searchTerm.trim().toLowerCase();
+  if (search) {
+    result = result.filter(
+      (v) =>
+        v.titulo?.toLowerCase().includes(search) ||
+        v.empresa?.toLowerCase().includes(search) ||
+        v.descricao?.toLowerCase().includes(search) ||
+        v.area?.toLowerCase().includes(search),
+    );
+  }
+  if (filters.cidade) {
+    result = result.filter((v) =>
+      v.cidade?.toLowerCase().includes(filters.cidade.toLowerCase()),
+    );
+  }
+  if (filters.estado) {
+    result = result.filter((v) => v.estado === filters.estado);
+  }
+  if (filters.area) {
+    result = result.filter((v) =>
+      v.area?.toLowerCase().includes(filters.area.toLowerCase()),
+    );
+  }
+  if (filters.tipoContrato) {
+    result = result.filter((v) => v.tipoContrato === filters.tipoContrato);
+  }
+  if (filters.modalidade) {
+    result = result.filter((v) => v.modalidade === filters.modalidade);
+  }
+  if (filters.salarioMin) {
+    const min = Number(filters.salarioMin);
+    if (!Number.isNaN(min)) {
+      result = result.filter(
+        (v) => typeof v.salarioMin === 'number' && v.salarioMin >= min,
+      );
+    }
+  }
+  if (filters.dataDias) {
+    const days = Number(filters.dataDias);
+    if (!Number.isNaN(days)) {
+      const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+      result = result.filter((v) => {
+        const ref = v.dataPublicacao ?? v.data_publicacao;
+        if (!ref) return false;
+        const t = new Date(ref).getTime();
+        return !Number.isNaN(t) && t >= cutoff;
+      });
+    }
+  }
+  return result;
+}
 
 export default function Vagas() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,20 +98,50 @@ export default function Vagas() {
   const [dataDias, setDataDias] = useState('');
   const [showMoreFilters, setShowMoreFilters] = useState(false);
 
+  const { jobs: dbJobs } = usePublicJobsAsVagas();
+
+  const hasAnyFilter = useMemo(
+    () =>
+      Boolean(
+        searchTerm ||
+        cidadeFilter ||
+        estadoFilter ||
+        areaFilter ||
+        tipoFilter ||
+        modalidadeFilter ||
+        salarioMin ||
+        dataDias,
+      ),
+    [
+      searchTerm,
+      cidadeFilter,
+      estadoFilter,
+      areaFilter,
+      tipoFilter,
+      modalidadeFilter,
+      salarioMin,
+      dataDias,
+    ],
+  );
+
   const vagas = useMemo(() => {
-    return mockGetVagas({
-      search: searchTerm || undefined,
-      cidade: cidadeFilter || undefined,
-      estado: estadoFilter || undefined,
-      tipoContrato: tipoFilter || undefined,
-      modalidade: modalidadeFilter || undefined,
-      salarioMin: salarioMin ? Number(salarioMin) : undefined,
-      dataDias: dataDias ? Number(dataDias) : undefined,
+    const source = dbJobs.length > 0 ? dbJobs : mockGetVagas();
+    return filterVagas(source, {
+      searchTerm,
+      cidade: cidadeFilter,
+      estado: estadoFilter,
+      area: areaFilter,
+      tipoContrato: tipoFilter,
+      modalidade: modalidadeFilter,
+      salarioMin,
+      dataDias,
     });
   }, [
+    dbJobs,
     searchTerm,
     cidadeFilter,
     estadoFilter,
+    areaFilter,
     tipoFilter,
     modalidadeFilter,
     salarioMin,
@@ -244,16 +341,7 @@ export default function Vagas() {
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                disabled={
-                  !searchTerm &&
-                  !cidadeFilter &&
-                  !estadoFilter &&
-                  !areaFilter &&
-                  !tipoFilter &&
-                  !modalidadeFilter &&
-                  !salarioMin &&
-                  !dataDias
-                }
+                disabled={!hasAnyFilter}
               >
                 Limpar filtros
               </Button>

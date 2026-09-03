@@ -2,6 +2,40 @@
 import type { Job, JobRow } from '@/types/domain/job';
 import { mapJob } from '@/types/domain/mappers';
 
+export interface PublicJobV1 {
+  job_id: string;
+  title: string;
+  slug: string;
+  status: string;
+  description: string | null;
+  responsibilities: string | null;
+  requirements: string | null;
+  benefits: string | null;
+  contract_type: string | null;
+  work_mode: string | null;
+  location: string | null;
+  location_raw: string | null;
+  city: string | null;
+  state: string | null;
+  salary_text: string | null;
+  salary_min: number | null;
+  salary_max: number | null;
+  salary_type: string | null;
+  seniority: string | null;
+  work_hours: string | null;
+  area: string | null;
+  work_schedule: string | null;
+  company_id: string | null;
+  company_name: string | null;
+  company_logo_url: string | null;
+  published_at: string | null;
+  expires_at: string | null;
+  metadata: Record<string, unknown>;
+  views_count: number;
+  applications_count: number;
+  tenant_id: string;
+}
+
 export class JobsRepository extends SupabaseRepository {
   async findAll(
     tenantId: string,
@@ -272,9 +306,46 @@ export class JobsRepository extends SupabaseRepository {
       .eq('slug', slug)
       .eq('status', 'published')
       .maybeSingle();
-
     if (error) throw error;
     return data ? mapJob(data as JobRow) : null;
+  }
+
+  /**
+   * Public list of published jobs via the read-only view `public_jobs_v1`.
+   * Includes legacy fallback for employment_type, location, salary.
+   */
+  async findPublicJobs(opts?: {
+    search?: string;
+    limit?: number;
+  }): Promise<PublicJobV1[]> {
+    if (!this.supabase) return [];
+
+    let query = this.supabase
+      .from('public_jobs_v1')
+      .select('*')
+      .order('published_at', { ascending: false });
+
+    if (opts?.search && opts.search.trim().length > 0) {
+      query = query.ilike('title', `%${opts.search.trim()}%`);
+    }
+    if (typeof opts?.limit === 'number') {
+      query = query.limit(opts.limit);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []) as PublicJobV1[];
+  }
+
+  async findPublicJobBySlug(slug: string): Promise<PublicJobV1 | null> {
+    if (!this.supabase) return null;
+    const { data, error } = await this.supabase
+      .from('public_jobs_v1')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle();
+    if (error) throw error;
+    return (data as PublicJobV1 | null) ?? null;
   }
 }
 

@@ -27,6 +27,16 @@ function createQueryBuilder(returnValue: { data: any; error: any }) {
   return builder;
 }
 
+function createPublicViewBuilder(returnValue: { data: any; error: any }) {
+  const builder: Record<string, any> = () => builder;
+  builder.select = () => builder;
+  builder.eq = () => builder;
+  builder.order = () => builder;
+  builder.then = (resolve: (value: { data: any; error: any }) => void) =>
+    resolve(returnValue);
+  return builder;
+}
+
 const defaultCompanyBuilder = createQueryBuilder({
   data: [],
   error: null,
@@ -35,11 +45,18 @@ const defaultRelationshipBuilder = createQueryBuilder({
   data: null,
   error: null,
 });
+const defaultPublicViewBuilder = createPublicViewBuilder({
+  data: [],
+  error: null,
+});
 
 const mockSupabase = {
   from: vi.fn((table: string) => {
     if (table === 'company_relationships') {
       return defaultRelationshipBuilder;
+    }
+    if (table === 'public_companies_by_type') {
+      return defaultPublicViewBuilder;
     }
     return defaultCompanyBuilder;
   }),
@@ -67,6 +84,95 @@ describe('CompaniesRepository', () => {
       resolve({ data: null, error: null });
 
     repository = new CompaniesRepository(mockSupabase as any);
+  });
+
+  describe('findPublicByRelationshipType', () => {
+    it('queries the public_companies_by_type view and filters by relationship_type', async () => {
+      const viewBuilder = createPublicViewBuilder({ data: [], error: null });
+      const eqSpy = vi.fn(() => viewBuilder);
+      const orderSpy = vi.fn(() => viewBuilder);
+      viewBuilder.eq = eqSpy;
+      viewBuilder.order = orderSpy;
+      viewBuilder.select = () => viewBuilder;
+      viewBuilder.then = (resolve: any) => resolve({ data: [], error: null });
+
+      mockSupabase.from = vi.fn((table: string) => {
+        if (table === 'public_companies_by_type') return viewBuilder;
+        return defaultCompanyBuilder;
+      });
+
+      const result = await repository.findPublicByRelationshipType('client');
+
+      expect(result).toEqual([]);
+      expect(mockSupabase.from).toHaveBeenCalledWith(
+        'public_companies_by_type',
+      );
+      expect(eqSpy).toHaveBeenCalledWith('relationship_type', 'client');
+      expect(orderSpy).toHaveBeenCalledWith('company_name', {
+        ascending: true,
+      });
+    });
+
+    it('returns mapped rows when view returns data', async () => {
+      const mockRows = [
+        {
+          company_id: 'comp-1',
+          company_name: 'Abarca Móveis',
+          legal_name: 'ABARCA MOVEIS LTDA',
+          trading_name: 'Abarca Móveis',
+          logo_url: null,
+          description: null,
+          website: 'https://www.abarcamoveis.com.br/',
+          industry: 'Móveis',
+          company_size: null,
+          company_status: 'active',
+          relationship_id: 'rel-1',
+          relationship_status: 'active',
+          relationship_type: 'client',
+          relationship_type_name: 'Cliente',
+          relationship_metadata: {
+            website: 'https://www.abarcamoveis.com.br/',
+          },
+          relationship_started_at: null,
+        },
+      ];
+
+      const viewBuilder = createPublicViewBuilder({
+        data: mockRows,
+        error: null,
+      });
+      mockSupabase.from = vi.fn((table: string) => {
+        if (table === 'public_companies_by_type') return viewBuilder;
+        return defaultCompanyBuilder;
+      });
+
+      const result = await repository.findPublicByRelationshipType('client');
+      expect(result).toHaveLength(1);
+      expect(result[0].company_name).toBe('Abarca Móveis');
+      expect(result[0].relationship_type).toBe('client');
+    });
+
+    it('throws when view returns an error', async () => {
+      const viewBuilder = createPublicViewBuilder({
+        data: null,
+        error: { message: 'view permission denied' },
+      });
+      mockSupabase.from = vi.fn((table: string) => {
+        if (table === 'public_companies_by_type') return viewBuilder;
+        return defaultCompanyBuilder;
+      });
+
+      await expect(
+        repository.findPublicByRelationshipType('client'),
+      ).rejects.toThrow('view permission denied');
+    });
+
+    it('returns empty array when supabase client is unavailable', async () => {
+      const repoNoSupabase = new CompaniesRepository(null as any);
+      const result =
+        await repoNoSupabase.findPublicByRelationshipType('client');
+      expect(result).toEqual([]);
+    });
   });
 
   describe('findAll', () => {

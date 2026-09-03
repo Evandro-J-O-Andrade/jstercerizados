@@ -16,6 +16,7 @@ export type {
 
 export type {
   Company,
+  CompanySocials,
   CompanyCreateInput,
   CompanyUpdateInput,
 } from './company';

@@ -60,8 +60,8 @@ BEGIN
 
   SELECT id INTO v_tenant_membership_id
   FROM public.tenant_memberships
-  WHERE person_id = p_person_id
-    AND tenant_id = v_resolved_tenant_id;
+  WHERE public.tenant_memberships.person_id = p_person_id
+    AND public.tenant_memberships.tenant_id = v_resolved_tenant_id;
 
   IF v_tenant_membership_id IS NULL THEN
     INSERT INTO public.tenant_memberships (person_id, tenant_id, status, joined_at)
@@ -72,15 +72,16 @@ BEGIN
 
   SELECT id INTO v_role_id
   FROM public.roles
-  WHERE code = p_role_code
+  WHERE name = p_role_code
   LIMIT 1;
 
   IF v_role_id IS NOT NULL THEN
     SELECT id INTO v_role_assignment_id
     FROM public.role_assignments
-    WHERE person_id = p_person_id
-      AND role_id = v_role_id
-      AND (tenant_id = v_resolved_tenant_id OR tenant_id IS NULL);
+    WHERE public.role_assignments.person_id = p_person_id
+      AND public.role_assignments.role_id = v_role_id
+      AND (public.role_assignments.tenant_id = v_resolved_tenant_id
+           OR public.role_assignments.tenant_id IS NULL);
 
     IF v_role_assignment_id IS NULL THEN
       INSERT INTO public.role_assignments (person_id, role_id, tenant_id, assigned_at)
@@ -92,8 +93,8 @@ BEGIN
 
   SELECT id INTO v_candidate_id
   FROM public.candidates
-  WHERE person_id = p_person_id
-    AND tenant_id = v_resolved_tenant_id;
+  WHERE public.candidates.person_id = p_person_id
+    AND public.candidates.tenant_id = v_resolved_tenant_id;
 
   IF v_candidate_id IS NULL THEN
     INSERT INTO public.candidates (person_id, tenant_id, status)

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -19,7 +19,8 @@ import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { ServiceRequestForm } from '@/components/forms/ServiceRequestForm';
-import { mockGetServiceBySlug } from '@/services/mock/services';
+import { NotFoundState } from '@/components/fallback/NotFoundState';
+import { usePublicServiceBySlug } from '@/hooks/useServices';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { SERVICE_IMAGES } from '@/content/assets';
 import { staggerReveal, revealUp } from '@/animations/scroll';
@@ -53,22 +54,55 @@ const faqData = [
   },
 ];
 
+const DEFAULT_PROCESS_STEPS = [
+  {
+    step: '01',
+    title: 'Solicitação',
+    description:
+      'Entre em contato pelo site ou WhatsApp com suas necessidades.',
+  },
+  {
+    step: '02',
+    title: 'Análise',
+    description:
+      'Nossa equipe avalia o perfil e prepara uma proposta personalizada.',
+  },
+  {
+    step: '03',
+    title: 'Proposta',
+    description: 'Apresentamos a solução ideal com custos e prazos detalhados.',
+  },
+  {
+    step: '04',
+    title: 'Execução',
+    description:
+      'Iniciamos a operação com profissionais treinados e equipados.',
+  },
+];
+
 export default function ServicoDetalhe() {
   const { slug } = useParams<{ slug: string }>();
-  const service = mockGetServiceBySlug(slug ?? '');
+  const navigate = useNavigate();
+  const { service, isNotFound } = usePublicServiceBySlug(slug);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  if (isNotFound) {
+    return (
+      <div className="flex min-h-[60dvh] items-center justify-center">
+        <NotFoundState
+          title="Serviço não encontrado"
+          message="O serviço que você está procurando não está disponível."
+          backLabel="Voltar aos Serviços"
+          onBack={() => navigate('/servicos')}
+        />
+      </div>
+    );
+  }
 
   if (!service) {
     return (
       <div className="flex min-h-[60dvh] items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-foreground mb-4 text-2xl font-bold">
-            Serviço não encontrado
-          </h2>
-          <Link to="/servicos">
-            <Button variant="primary">Voltar aos Serviços</Button>
-          </Link>
-        </div>
+        <div className="border-muted-foreground/30 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
       </div>
     );
   }
@@ -78,6 +112,17 @@ export default function ServicoDetalhe() {
       ? service.image
       : (SERVICE_IMAGES[service.slug as keyof typeof SERVICE_IMAGES] ??
         SERVICE_IMAGES.facilitiesFallback);
+
+  const processSteps =
+    service.processSteps && service.processSteps.length > 0
+      ? service.processSteps
+      : DEFAULT_PROCESS_STEPS;
+
+  const ctaTitle =
+    service.cta?.title ?? `Pronto para contratar ${service.title}?`;
+  const ctaDescription =
+    service.cta?.description ??
+    'Solicite uma proposta gratuita e descubra como podemos elevar o padrão dos seus serviços.';
 
   return (
     <div>
@@ -468,33 +513,8 @@ export default function ServicoDetalhe() {
             </motion.p>
           </motion.div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-            {[
-              {
-                step: '01',
-                title: 'Solicitação',
-                description:
-                  'Entre em contato pelo site ou WhatsApp com suas necessidades.',
-              },
-              {
-                step: '02',
-                title: 'Análise',
-                description:
-                  'Nossa equipe avalia o perfil e prepara uma proposta personalizada.',
-              },
-              {
-                step: '03',
-                title: 'Proposta',
-                description:
-                  'Apresentamos a solução ideal com custos e prazos detalhados.',
-              },
-              {
-                step: '04',
-                title: 'Execução',
-                description:
-                  'Iniciamos a operação com profissionais treinados e equipados.',
-              },
-            ].map((step, index) => (
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {processSteps.map((step, index) => (
               <motion.div
                 key={step.step}
                 initial={{ opacity: 0, y: 30 }}
@@ -503,7 +523,7 @@ export default function ServicoDetalhe() {
                 transition={{ delay: index * 0.15, duration: 0.6 }}
                 className="relative text-center"
               >
-                {index < 3 && (
+                {index < processSteps.length - 1 && (
                   <div className="bg-border absolute top-8 right-[-2rem] left-[calc(50%+2rem)] hidden h-0.5 md:block" />
                 )}
                 <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold">
@@ -768,11 +788,10 @@ export default function ServicoDetalhe() {
               className="relative"
             >
               <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
-                Pronto para contratar {service.title}?
+                {ctaTitle}
               </h2>
               <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
-                Solicite uma proposta gratuita e descubra como podemos elevar o
-                padrão dos seus serviços.
+                {ctaDescription}
               </p>
 
               <div className="mt-8">

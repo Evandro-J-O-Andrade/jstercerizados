@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Send, Phone, Shield } from 'lucide-react';
+import { CheckCircle2, Send, Phone, Shield, Handshake } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,7 +11,10 @@ import { Select } from '@/components/ui/Select';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
+import { PartnerSupplierCard } from '@/components/sections/PartnerSupplierCard';
+import { ErrorState } from '@/components/fallback/ErrorState';
 import { mockSubmitPartner } from '@/services/mock/parceiros';
+import { usePublicPartnersAsPartnerVisuals } from '@/hooks/usePublicPartners';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import {
   sanitizeText,
@@ -36,6 +39,8 @@ type PartnerFormData = z.infer<typeof partnerSchema>;
 
 export default function Parceiros() {
   const [submitted, setSubmitted] = useState(false);
+  const { partners, isLoading, error, source, refetch } =
+    usePublicPartnersAsPartnerVisuals();
 
   const {
     register,
@@ -111,7 +116,7 @@ export default function Parceiros() {
     <div>
       <SEO
         title={`Parceiros — ${COMPANY.name}`}
-        description={`Seja um parceiro estratégico da ${COMPANY.name}. Amplie sua rede de negócios e cresça junto conosco.`}
+        description={`Veja as empresas parceiras da ${COMPANY.name} e cadastre-se para fazer parte da nossa rede de alianças estratégicas.`}
         keywords={[
           'parceiros',
           COMPANY.name,
@@ -123,6 +128,78 @@ export default function Parceiros() {
         ]}
         type="Organization"
       />
+      {/* Vitrine de parceiros (DB-first + MOCK fallback) */}
+      <Section className="pt-20 md:pt-28">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-primary/10 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
+            >
+              <Handshake className="h-4 w-4" />
+              <span>Parceiros</span>
+            </motion.div>
+            <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
+              Empresas que caminham com a gente
+            </h1>
+            <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
+              Conheça as empresas que mantêm relacionamento de parceria com a
+              J&S Empregos e fazem parte da nossa rede estratégica.
+            </p>
+          </motion.div>
+
+          {error && !isLoading ? (
+            <div className="mt-10">
+              <ErrorState onRetry={refetch} />
+            </div>
+          ) : (
+            <>
+              {isLoading && partners.length === 0 ? (
+                <div className="text-muted-foreground mt-10 text-center text-sm">
+                  Carregando parceiros...
+                </div>
+              ) : partners.length === 0 ? (
+                <div className="text-muted-foreground mt-10 text-center text-sm">
+                  Nenhum parceiro público disponível no momento.
+                </div>
+              ) : (
+                <>
+                  <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {partners.map((partner, index) => (
+                      <PartnerSupplierCard
+                        key={partner.id}
+                        id={partner.id}
+                        name={partner.name}
+                        logo={partner.logo}
+                        image={partner.image}
+                        website={partner.website}
+                        description={partner.description}
+                        industry={partner.industry}
+                        socials={partner.socials}
+                        index={index}
+                      />
+                    ))}
+                  </div>
+                  {source === 'mock' && (
+                    <p className="text-muted-foreground mt-6 text-center text-xs">
+                      Exibindo catálogo de demonstração. Os dados reais
+                      aparecerão automaticamente quando forem publicados.
+                    </p>
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </Container>
+      </Section>
+
       <Section>
         <Container>
           <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-5">
@@ -136,9 +213,9 @@ export default function Parceiros() {
                   <Shield className="h-4 w-4" />
                   Ser Parceiro
                 </div>
-                <h1 className="text-foreground text-3xl font-bold sm:text-4xl">
+                <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
                   Cadastro de Parceiros
-                </h1>
+                </h2>
                 <p className="text-muted-foreground mt-4">
                   Empresas interessadas em recrutamento, seleção e alianças
                   comerciais podem se cadastrar para avaliar oportunidades de

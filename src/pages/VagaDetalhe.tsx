@@ -1,13 +1,22 @@
 import { motion } from 'framer-motion';
-import { Link, useParams } from 'react-router-dom';
-import { Button } from '@/components/ui/Button';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { JobApplicationForm } from '@/components/forms/JobApplicationForm';
-import { mockGetVagaBySlug } from '@/services/mock/vagas';
+import { NotFoundState } from '@/components/fallback/NotFoundState';
+import { usePublicJobBySlugAsVaga } from '@/hooks/useJobs';
 import { COMPANY } from '@/config';
-import { ArrowLeft, MapPin, Clock, DollarSign, Briefcase } from 'lucide-react';
+import { SafeImage } from '@/components/ui/SafeImage';
+import {
+  ArrowLeft,
+  MapPin,
+  Clock,
+  DollarSign,
+  Briefcase,
+  CalendarDays,
+  Hourglass,
+} from 'lucide-react';
 
 const CONTRATO_LABELS: Record<string, string> = {
   CLT: 'CLT',
@@ -24,33 +33,54 @@ const MODALIDADE_LABELS: Record<string, string> = {
   REMOTO: 'Remoto',
 };
 
+const NIVEL_LABELS: Record<string, string> = {
+  ESTAGIO: 'Estágio',
+  JUNIOR: 'Júnior',
+  PLENO: 'Pleno',
+  SENIOR: 'Sênior',
+  MASTER: 'Master',
+  LIDERANCA: 'Liderança',
+};
+
+function formatDate(iso: string | undefined): string | null {
+  if (!iso) return null;
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  } catch {
+    return null;
+  }
+}
+
 export default function VagaDetalhe() {
   const { slug } = useParams<{ slug: string }>();
-  const vaga = slug ? mockGetVagaBySlug(slug) : undefined;
+  const navigate = useNavigate();
+  const { job: vaga, isLoading, isNotFound } = usePublicJobBySlugAsVaga(slug);
 
-  if (!vaga) {
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[70dvh] items-center justify-center">
+        <p className="text-muted-foreground">Carregando vaga...</p>
+      </div>
+    );
+  }
+
+  if (!vaga || isNotFound) {
     return (
       <div className="min-h-screen">
         <Section className="pt-20 md:pt-28">
           <Container>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center"
-            >
-              <h1 className="text-foreground text-4xl font-bold sm:text-5xl">
-                Vaga não encontrada
-              </h1>
-              <p className="text-muted-foreground mx-auto mt-4 max-w-md text-lg">
-                A vaga que você está procurando não existe ou foi preenchida.
-              </p>
-              <Link to="/vagas">
-                <Button variant="secondary" size="lg" className="mt-8">
-                  Ver todas as vagas
-                </Button>
-              </Link>
-            </motion.div>
+            <NotFoundState
+              title="Vaga não encontrada"
+              message="A vaga que você está procurando não existe ou foi preenchida."
+              backLabel="Ver todas as vagas"
+              onBack={() => navigate('/vagas')}
+            />
           </Container>
         </Section>
       </div>
@@ -62,6 +92,24 @@ export default function VagaDetalhe() {
       style: 'currency',
       currency: 'BRL',
     });
+
+  const publishedAtLabel = formatDate(vaga.dataPublicacao);
+  const expiresAtLabel = formatDate(vaga.expiresAt);
+  const qtyVagas =
+    typeof vaga.vagas === 'number' && vaga.vagas > 1
+      ? `${vaga.vagas} vagas`
+      : null;
+  const nivelLabel = vaga.nivel ? NIVEL_LABELS[vaga.nivel] : null;
+  const salaryDisplay =
+    vaga.salarioMin != null
+      ? `${formatCurrency(vaga.salarioMin)}${
+          vaga.salarioTipo === 'hora' ? ' / hora' : ''
+        }${
+          vaga.salarioTipo !== 'hora' && vaga.salarioMax
+            ? ' – ' + formatCurrency(vaga.salarioMax)
+            : ''
+        }`
+      : (vaga.salarioTexto ?? null);
 
   return (
     <div className="min-h-screen">
@@ -104,15 +152,42 @@ export default function VagaDetalhe() {
               transition={{ delay: 0.1, duration: 0.6 }}
               className="mb-8 flex items-start justify-between gap-4"
             >
-              <div>
-                <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
-                  {vaga.titulo}
-                </h1>
-                {vaga.empresa && (
-                  <p className="text-muted-foreground mt-2 text-lg">
-                    {vaga.empresa}
-                  </p>
+              <div className="flex items-start gap-4">
+                {vaga.empresaLogo && (
+                  <div className="bg-card border-border flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border">
+                    <SafeImage
+                      src={vaga.empresaLogo}
+                      alt={vaga.empresa ?? 'Logo da empresa'}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
                 )}
+                <div>
+                  <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
+                    {vaga.titulo}
+                  </h1>
+                  {vaga.empresa && (
+                    <p className="text-muted-foreground mt-2 text-lg">
+                      {vaga.empresa}
+                    </p>
+                  )}
+                  <div className="text-muted-foreground mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                    {nivelLabel && <span>• {nivelLabel}</span>}
+                    {qtyVagas && <span>• {qtyVagas}</span>}
+                    {publishedAtLabel && (
+                      <span className="inline-flex items-center gap-1">
+                        • <CalendarDays className="h-3 w-3" /> Publicada em{' '}
+                        {publishedAtLabel}
+                      </span>
+                    )}
+                    {expiresAtLabel && (
+                      <span className="inline-flex items-center gap-1">
+                        • <Hourglass className="h-3 w-3" /> Expira em{' '}
+                        {expiresAtLabel}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
               {vaga.tipoContrato && (
                 <span
@@ -161,16 +236,10 @@ export default function VagaDetalhe() {
                   </span>
                 </div>
               )}
-              {vaga.salarioMin && (
+              {salaryDisplay && (
                 <div className="flex items-center gap-3">
                   <DollarSign className="text-primary h-5 w-5" />
-                  <span className="text-sm">
-                    {formatCurrency(vaga.salarioMin)}
-                    {vaga.salarioTipo === 'hora' && ' / hora'}
-                    {vaga.salarioTipo !== 'hora' && vaga.salarioMax
-                      ? ' – ' + formatCurrency(vaga.salarioMax)
-                      : ''}
-                  </span>
+                  <span className="text-sm">{salaryDisplay}</span>
                 </div>
               )}
               {vaga.workload && (

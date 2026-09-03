@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Send, Phone, Shield } from 'lucide-react';
+import { CheckCircle2, Send, Phone, Shield, Truck } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,7 +10,10 @@ import { Input } from '@/components/ui/Input';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
+import { PartnerSupplierCard } from '@/components/sections/PartnerSupplierCard';
+import { ErrorState } from '@/components/fallback/ErrorState';
 import { mockSubmitSupplier } from '@/services/mock/fornecedores';
+import { usePublicSuppliersAsSupplierVisuals } from '@/hooks/usePublicSuppliers';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import {
   sanitizeText,
@@ -32,6 +35,8 @@ type SupplierFormData = z.infer<typeof supplierSchema>;
 
 export default function Fornecedores() {
   const [submitted, setSubmitted] = useState(false);
+  const { suppliers, isLoading, error, source, refetch } =
+    usePublicSuppliersAsSupplierVisuals();
 
   const {
     register,
@@ -106,7 +111,7 @@ export default function Fornecedores() {
     <div>
       <SEO
         title={`Fornecedores — ${COMPANY.name}`}
-        description={`Cadastro de fornecedores da ${COMPANY.name}. Torne-se um parceiro fornecedor de serviços de RH, facilities e terceirização.`}
+        description={`Conheça os fornecedores da ${COMPANY.name} e cadastre sua empresa para participar do nosso processo de seleção.`}
         keywords={[
           'fornecedores',
           COMPANY.name,
@@ -119,6 +124,78 @@ export default function Fornecedores() {
         ]}
         type="Organization"
       />
+      {/* Vitrine de fornecedores (DB-first + MOCK fallback) */}
+      <Section className="pt-20 md:pt-28">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-primary/10 text-primary mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium"
+            >
+              <Truck className="h-4 w-4" />
+              <span>Fornecedores</span>
+            </motion.div>
+            <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
+              Fornecedores que sustentam nossa operação
+            </h1>
+            <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
+              Conheça as empresas que mantêm relacionamento de fornecimento com
+              a J&S Empregos e contribuem para a qualidade dos nossos serviços.
+            </p>
+          </motion.div>
+
+          {error && !isLoading ? (
+            <div className="mt-10">
+              <ErrorState onRetry={refetch} />
+            </div>
+          ) : (
+            <>
+              {isLoading && suppliers.length === 0 ? (
+                <div className="text-muted-foreground mt-10 text-center text-sm">
+                  Carregando fornecedores...
+                </div>
+              ) : suppliers.length === 0 ? (
+                <div className="text-muted-foreground mt-10 text-center text-sm">
+                  Nenhum fornecedor público disponível no momento.
+                </div>
+              ) : (
+                <>
+                  <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {suppliers.map((supplier, index) => (
+                      <PartnerSupplierCard
+                        key={supplier.id}
+                        id={supplier.id}
+                        name={supplier.name}
+                        logo={supplier.logo}
+                        image={supplier.image}
+                        website={supplier.website}
+                        description={supplier.description}
+                        industry={supplier.industry}
+                        socials={supplier.socials}
+                        index={index}
+                      />
+                    ))}
+                  </div>
+                  {source === 'mock' && (
+                    <p className="text-muted-foreground mt-6 text-center text-xs">
+                      Exibindo catálogo de demonstração. Os dados reais
+                      aparecerão automaticamente quando forem publicados.
+                    </p>
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </Container>
+      </Section>
+
       <Section>
         <Container>
           <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-5">
@@ -132,9 +209,9 @@ export default function Fornecedores() {
                   <Shield className="h-4 w-4" />
                   Cadastro de Fornecedores
                 </div>
-                <h1 className="text-foreground text-3xl font-bold sm:text-4xl">
+                <h2 className="text-foreground text-3xl font-bold sm:text-4xl">
                   Seja um Fornecedor
-                </h1>
+                </h2>
                 <p className="text-muted-foreground mt-4">
                   Cadastre sua empresa para participar do nosso processo de
                   seleção de fornecedores.

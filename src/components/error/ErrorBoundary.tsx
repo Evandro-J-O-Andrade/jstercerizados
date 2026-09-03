@@ -1,14 +1,59 @@
 import { Component, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { normalizeError } from '@/lib/error-normalizer';
+import { ErrorState } from '@/components/fallback/ErrorState';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
+  onBack?: () => void;
 }
 
 interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
+}
+
+interface ErrorBoundaryContentProps {
+  error: Error | null;
+  onRetry: () => void;
+  onBack?: () => void;
+}
+
+function ErrorBoundaryContent({
+  error,
+  onRetry,
+  onBack,
+}: ErrorBoundaryContentProps) {
+  const navigate = useNavigate();
+  const normalized = error ? normalizeError(error) : null;
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
+
+  return (
+    <div className="bg-background flex min-h-[60dvh] items-center justify-center p-4">
+      <ErrorState
+        title="Algo deu errado"
+        message={
+          normalized?.userMessage ??
+          'Não foi possível renderizar esta área da aplicação.'
+        }
+        onRetry={onRetry}
+        onBack={handleBack}
+        supportText="Se o problema persistir, entre em contato com o suporte."
+      />
+    </div>
+  );
 }
 
 export class ErrorBoundary extends Component<
@@ -33,30 +78,21 @@ export class ErrorBoundary extends Component<
     );
   }
 
+  private handleReset = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
       }
-
       return (
-        <div className="bg-background flex min-h-screen items-center justify-center p-4">
-          <div className="max-w-md text-center">
-            <h1 className="text-foreground text-4xl font-bold">
-              Algo deu errado
-            </h1>
-            <p className="text-muted-foreground mt-4">
-              Não foi possível carregar esta página. Tente recarregar.
-            </p>
-            <button
-              type="button"
-              onClick={() => this.setState({ hasError: false, error: null })}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 rounded-full px-6 py-3 font-medium transition-colors"
-            >
-              Tentar novamente
-            </button>
-          </div>
-        </div>
+        <ErrorBoundaryContent
+          error={this.state.error}
+          onRetry={this.handleReset}
+          onBack={this.props.onBack}
+        />
       );
     }
 

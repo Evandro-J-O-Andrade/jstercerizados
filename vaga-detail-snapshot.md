@@ -1,0 +1,74 @@
+- main [ref=f4e14]:
+  - generic [ref=f4e18]:
+    - link "Voltar para vagas" [ref=f4e19] [cursor=pointer]:
+      - /url: /vagas
+    - generic [ref=f4e22]:
+      - generic [ref=f4e24]:
+        - heading "Analista de RH" [level=1] [ref=f4e25]
+        - paragraph [ref=f4e26]: Teste
+        - generic [ref=f4e27]:
+          - generic [ref=f4e28]: • Pleno
+          - generic [ref=f4e29]: • Publicada em 09/03/2026
+      - generic [ref=f4e32]: CLT
+    - generic [ref=f4e33]:
+      - generic [ref=f4e34]: Recursos Humanos
+      - generic [ref=f4e39]: São Paulo, SP
+      - generic [ref=f4e44]: Presencial
+      - generic [ref=f4e49]: R$ 5.000,00
+      - generic [ref=f4e53]: 44h
+    - generic [ref=f4e58]:
+      - generic [ref=f4e59]:
+        - heading "Responsabilidades e atribuições" [level=2] [ref=f4e60]
+        - paragraph [ref=f4e61]: "Atuar nos subsistemas de RH: recrutamento e seleção, admissão, folha, benefícios, treinamento e desenvolvimento, gestão de desempenho e clima. Apoiar gestores e colaboradores em rotinas trabalhistas, atendimento e indicadores da área."
+      - generic [ref=f4e62]:
+        - heading "Requisitos e qualificações" [level=2] [ref=f4e63]
+        - paragraph [ref=f4e64]: Experiência comprovada
+      - generic [ref=f4e65]:
+        - heading "Benefícios" [level=2] [ref=f4e66]
+        - generic [ref=f4e67]:
+          - generic [ref=f4e68]: Vale refeição
+          - generic [ref=f4e69]: Vale transporte
+    - generic [ref=f4e71]:
+      - generic [ref=f4e72]:
+        - heading "Candidatar-se à vaga" [level=3] [ref=f4e73]
+        - paragraph [ref=f4e74]: Preencha o formulário e nossa equipe entrará em contato.
+      - generic [ref=f4e75]:
+        - generic [ref=f4e76]:
+          - generic [ref=f4e77]: Nome completo
+          - textbox "Nome completo" [ref=f4e78]
+        - generic [ref=f4e79]:
+          - generic [ref=f4e80]: E-mail
+          - textbox "E-mail" [ref=f4e81]
+        - generic [ref=f4e82]:
+          - generic [ref=f4e83]: Telefone/WhatsApp
+          - textbox "Telefone/WhatsApp" [ref=f4e84]
+        - generic [ref=f4e85]:
+          - generic [ref=f4e86]: Cidade
+          - textbox "Cidade" [ref=f4e87]
+        - generic [ref=f4e88]:
+          - generic [ref=f4e89]: Tipo de contrato desejado
+          - combobox "Tipo de contrato desejado" [ref=f4e90]:
+            - option "Selecione" [selected]
+            - option "CLT"
+            - option "Estágio"
+            - option "Temporário"
+            - option "Freelance"
+            - option "Terceirizado"
+            - option "C/D"
+        - generic [ref=f4e91]:
+          - generic [ref=f4e92]: Experiência profissional
+          - textbox "Experiência profissional" [ref=f4e93]:
+            - /placeholder: "Ex.: 2 anos em atendimento"
+      - generic [ref=f4e95]:
+        - generic [ref=f4e96]: Mensagem
+        - textbox "Mensagem" [ref=f4e97]:
+          - /placeholder: Conte um pouco sobre você...
+      - generic [ref=f4e99]:
+        - checkbox "Autorizo o tratamento dos meus dados pessoais para esta candidatura." [ref=f4e100]
+        - text: Autorizo o tratamento dos meus dados pessoais para esta candidatura.
+      - generic [ref=f4e101]:
+        - button "Enviar candidatura" [ref=f4e102]
+        - generic [ref=f4e106]:
+          - generic [ref=f4e107]: comercial@jsterceirizados.com.br
+          - generic [ref=f4e111]: Seg a Sex, 08h às 18h
+          - generic [ref=f4e115]: Poá - SP

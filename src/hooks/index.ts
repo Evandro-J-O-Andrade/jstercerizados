@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 
+export {
+  useAsync,
+  type UseAsyncOptions,
+  type UseAsyncResult,
+  type AsyncStatus,
+} from './useAsync';
+
 export function useLocalStorage<T>(
   key: string,
   initialValue: T,

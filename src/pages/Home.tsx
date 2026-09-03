@@ -1,4 +1,5 @@
 ﻿import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Shield,
@@ -24,6 +25,7 @@ import { Container } from '@/components/common/Container';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { mockGetVagas } from '@/services/mock/vagas';
+import { usePublicJobsAsVagas } from '@/hooks/useJobs';
 import { COMPANY } from '@/config';
 import { HERO_SLIDES } from '@/content/homeHero';
 import { CLIENTS_LIST } from '@/mock/clients';
@@ -196,7 +198,12 @@ const facilitiesSolutions = [
 ];
 
 export default function Home() {
-  const destaques = mockGetVagas().slice(0, 4);
+  const { jobs: dbJobs } = usePublicJobsAsVagas({ limit: 4 });
+
+  const destaques = useMemo(
+    () => (dbJobs.length > 0 ? dbJobs.slice(0, 4) : mockGetVagas().slice(0, 4)),
+    [dbJobs],
+  );
 
   return (
     <div>

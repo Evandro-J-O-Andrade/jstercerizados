@@ -97,6 +97,21 @@ export interface Service {
   gallery?: string[];
   icon: string;
   category: 'rh' | 'facilities' | 'terceirizacao' | 'candidato';
+  processSteps?: ProcessStep[];
+  cta?: ServiceCta;
+}
+
+export interface ProcessStep {
+  step: string;
+  title: string;
+  description: string;
+}
+
+export interface ServiceCta {
+  title: string;
+  description?: string;
+  buttonText?: string;
+  buttonUrl?: string;
 }
 
 /** @deprecated Use Job from src/types/domain instead. */
@@ -105,6 +120,7 @@ export interface Vaga {
   slug: string;
   titulo: string;
   empresa?: string;
+  empresaLogo?: string;
   cidade?: string;
   estado?: string;
   tipo_contrato?:
@@ -118,6 +134,7 @@ export interface Vaga {
   salarioMax?: number;
   salario_tipo?: 'mensal' | 'hora';
   salarioTipo?: 'mensal' | 'hora';
+  salarioTexto?: string;
   modalidade?: 'PRESENCIAL' | 'HIBRIDO' | 'REMOTO';
   beneficios?: string[];
   requisitos?: string;
@@ -131,6 +148,8 @@ export interface Vaga {
   status: 'BORRAR' | 'ATIVA' | 'ARQUIVADA' | 'CONTRATADA';
   data_publicacao: string;
   dataPublicacao?: string;
+  expiresAt?: string;
+  viewsCount?: number;
   created_at?: string;
   updated_at?: string;
 }

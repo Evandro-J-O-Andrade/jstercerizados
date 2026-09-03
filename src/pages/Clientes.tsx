@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
-import { CLIENTS_LIST } from '@/mock/clients';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import {
@@ -15,7 +14,11 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo, type RefObject } from 'react';
+import { useCompaniesByType } from '@/hooks/useCompanies';
+import { CLIENTS_LIST } from '@/mock/clients';
+import { mapPublicCompanyByTypeToClientVisual } from '@/types/domain/client-visual';
+import type { ClientVisual } from '@/types/domain/client-visual';
 
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -32,20 +35,106 @@ function useReducedMotion() {
   return prefersReducedMotion;
 }
 
+interface ClientCaseFallbackProps {
+  client: ClientVisual;
+  index: number;
+  total: number;
+  isInViewRef: RefObject<HTMLDivElement | null>;
+  isInView: boolean;
+  isEven: boolean;
+}
+
+function ClientCaseFallback({
+  client,
+  index,
+  total,
+  isInViewRef,
+  isInView,
+  isEven,
+}: ClientCaseFallbackProps) {
+  const prefersReducedMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      ref={isInViewRef}
+      initial={{ opacity: 0, x: isEven ? -80 : 80 }}
+      animate={isInView ? { opacity: 1, x: 0 } : {}}
+      transition={{
+        duration: prefersReducedMotion ? 0.3 : 0.9,
+        ease: [0.25, 0.4, 0.25, 1],
+      }}
+      className={`grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16`}
+      style={{ direction: 'ltr' }}
+    >
+      <div
+        className={`bg-card shadow-premium border-border relative flex aspect-[16/10] items-center justify-center overflow-hidden rounded-3xl border ${index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}
+      >
+        <Building2 className="text-primary/30 h-20 w-20" />
+        <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
+        <div className="absolute right-0 bottom-0 left-0 p-6 sm:p-8">
+          <h3 className="text-foreground text-2xl font-bold drop-shadow-md sm:text-3xl">
+            {client.name}
+          </h3>
+        </div>
+        {index > 0 && (
+          <div className="text-muted-foreground absolute top-4 left-4 text-xs">
+            {index + 1} / {total}
+          </div>
+        )}
+      </div>
+
+      <div className={`${index % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
+        <div className="max-w-xl">
+          {client.description && (
+            <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
+              {client.description}
+            </p>
+          )}
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            {client.website && (
+              <a
+                href={client.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm font-semibold transition-colors"
+              >
+                Conhecer empresa
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            )}
+            {client.socials?.linkedin && (
+              <a
+                href={client.socials.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                LinkedIn
+              </a>
+            )}
+            {client.socials?.instagram && (
+              <a
+                href={client.socials.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Instagram
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function ClientCase({
   client,
   index,
   total,
 }: {
-  client: {
-    id: string;
-    name: string;
-    logo: string | null;
-    image?: string | null;
-    website?: string | null;
-    description?: string | null;
-    socials?: { linkedin?: string; instagram?: string } | null;
-  };
+  client: ClientVisual;
   index: number;
   total: number;
 }) {
@@ -57,7 +146,20 @@ function ClientCase({
   const [showIndicators, setShowIndicators] = useState(false);
 
   const showImage = client.image && imageLoaded;
-  const primaryMedia = showImage ? client.image! : client.logo!;
+  const primaryMedia = showImage ? client.image : client.logo;
+
+  if (!primaryMedia) {
+    return (
+      <ClientCaseFallback
+        client={client}
+        index={index}
+        total={total}
+        isInViewRef={ref}
+        isInView={isInView}
+        isEven={isEven}
+      />
+    );
+  }
 
   return (
     <motion.div
@@ -181,9 +283,33 @@ function ClientCase({
 }
 
 export default function Clientes() {
-  const confirmedClients = CLIENTS_LIST.filter(
-    (client) => client.name && client.logo,
-  );
+  const { companies, isLoading } = useCompaniesByType('client');
+
+  const confirmedClients: ClientVisual[] = useMemo(() => {
+    if (companies.length > 0) {
+      return companies
+        .filter((row) => row.company_name)
+        .map(mapPublicCompanyByTypeToClientVisual)
+        .filter((client) => client.name);
+    }
+    return CLIENTS_LIST.filter((client) => client.name).map((client) => ({
+      id: client.id,
+      name: client.name,
+      logo: client.logo,
+      image: client.image ?? null,
+      website: client.website ?? null,
+      description: client.description ?? null,
+      socials: null,
+    }));
+  }, [companies]);
+
+  if (isLoading && confirmedClients.length === 0) {
+    return (
+      <div className="flex min-h-[70dvh] items-center justify-center">
+        <p className="text-muted-foreground">Carregando clientes...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
