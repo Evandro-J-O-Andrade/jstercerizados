@@ -215,7 +215,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const allNormalized = normalizePermissions(allPerms || []);
         const merged = new Map<string, Permission>();
         for (const perm of [...permissionsData, ...allNormalized]) {
-          const key = `${perm.resource}:${perm.action}`;
+          const key = `${perm.resource}.${perm.action}`;
           if (!merged.has(key)) {
             merged.set(key, perm);
           }
@@ -881,6 +881,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const resolvePostLoginDestination = useCallback((): string => {
+    const hasCandidateRole = (roleAssignments || []).some((ra) => {
+      const role = (roles || []).find((r) => r.id === ra.role_id);
+      return role?.name === 'candidate';
+    });
+
     console.log('[AUTH:FLOW] resolvePostLoginDestination', {
       isAdminMaster,
       membershipCount: tenantMemberships.length,
@@ -888,6 +893,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       firstLoginCompleted: firstLoginState?.first_login_completed ?? null,
       termsVersion: firstLoginState?.terms_version ?? null,
       permissionCount: permissions.length,
+      hasCandidateRole,
       recoveryMode,
     });
 
@@ -917,6 +923,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return '/auth/terms';
     }
 
+    if (hasCandidateRole) {
+      console.log(
+        '[AUTH:FLOW] redirect → /dashboard/candidato (candidato autenticado)',
+      );
+      return '/dashboard/candidato';
+    }
+
     console.log(
       '[AUTH:FLOW] redirect → /auth/welcome (etapa obrigatória pós-login)',
     );
@@ -929,6 +942,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     hasAnyPermission,
     permissions,
     recoveryMode,
+    roleAssignments,
+    roles,
   ]);
 
   const register = async (

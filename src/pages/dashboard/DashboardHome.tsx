@@ -16,7 +16,7 @@ import {
   Users,
   Wrench,
 } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
@@ -67,12 +67,21 @@ function permissionGranted(
   permission: string,
 ) {
   if (!permission) return true;
-  return permissions.some((item) => `${item.resource}.${item.action}` === permission);
+  return permissions.some(
+    (item) => `${item.resource}.${item.action}` === permission,
+  );
 }
 
 export default function DashboardHome() {
-  const { currentTenantId, tenantMemberships, isAdminMaster } = useAuth();
+  const {
+    currentTenantId,
+    tenantMemberships,
+    isAdminMaster,
+    roles,
+    roleAssignments,
+  } = useAuth();
   const { availableModules, activePermissions, identity } = useAccount();
+
   const [stats, setStats] = useState<DashboardStats>({
     tenants: 0,
     companies: 0,
@@ -103,12 +112,16 @@ export default function DashboardHome() {
       }
 
       try {
-        const activeTenantId = currentTenantId || tenantMemberships[0]?.tenant_id;
+        const activeTenantId =
+          currentTenantId || tenantMemberships[0]?.tenant_id;
         const globalScope = isAdminMaster;
 
         const countTable = async (table: string) => {
-          let query = supabase.from(table).select('*', { count: 'exact', head: true });
-          if (!globalScope && activeTenantId) query = query.eq('tenant_id', activeTenantId);
+          let query = supabase
+            .from(table)
+            .select('*', { count: 'exact', head: true });
+          if (!globalScope && activeTenantId)
+            query = query.eq('tenant_id', activeTenantId);
           const { count, error } = await query;
           if (error) throw error;
           return count ?? 0;
@@ -162,7 +175,10 @@ export default function DashboardHome() {
         });
       } catch (error) {
         if (cancelled) return;
-        const message = error instanceof Error ? error.message : 'Não foi possível carregar os indicadores.';
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'Não foi possível carregar os indicadores.';
         console.error('[DASHBOARD:GLOBAL] Failed to load stats:', error);
         setStats((prev) => ({ ...prev, loading: false, error: message }));
       }
@@ -176,31 +192,47 @@ export default function DashboardHome() {
 
   const kpis = useMemo(() => buildGlobalDashboardKpis(stats), [stats]);
   const visibleKpis = useMemo(
-    () => kpis.filter((kpi) => {
-      const permissionById: Record<string, string> = {
-        tenants: 'tenants.read',
-        companies: 'companies.read',
-        people: 'people.read',
-        candidates: 'candidates.read',
-        jobs: 'jobs.read',
-        applications: 'applications.read',
-        'service-orders': 'service_orders.read',
-        'support-tickets': 'support.read',
-      };
-      return isAdminMaster || permissionGranted(activePermissions, permissionById[kpi.id]);
-    }),
+    () =>
+      kpis.filter((kpi) => {
+        const permissionById: Record<string, string> = {
+          tenants: 'tenants.read',
+          companies: 'companies.read',
+          people: 'people.read',
+          candidates: 'candidates.read',
+          jobs: 'jobs.read',
+          applications: 'applications.read',
+          'service-orders': 'service_orders.read',
+          'support-tickets': 'support.read',
+        };
+        return (
+          isAdminMaster ||
+          permissionGranted(activePermissions, permissionById[kpi.id])
+        );
+      }),
     [activePermissions, isAdminMaster, kpis],
   );
 
   const moduleGroups = useMemo(
-    () => MODULE_GROUPS.map((group) => ({
-      ...group,
-      modules: availableModules.filter((module) => module.category === group.category),
-    })).filter((group) => group.modules.length > 0),
+    () =>
+      MODULE_GROUPS.map((group) => ({
+        ...group,
+        modules: availableModules.filter(
+          (module) => module.category === group.category,
+        ),
+      })).filter((group) => group.modules.length > 0),
     [availableModules],
   );
 
   const operationalVolume = stats.serviceOrders + stats.supportTickets;
+
+  const isCandidate = (roleAssignments || []).some((ra) => {
+    const role = (roles || []).find((r) => r.id === ra.role_id);
+    return role?.name === 'candidate';
+  });
+
+  if (isCandidate && !isAdminMaster) {
+    return <Navigate to="/dashboard/candidato" replace />;
+  }
 
   return (
     <ModuleWorkspace
@@ -221,19 +253,25 @@ export default function DashboardHome() {
                 {identity.greeting}, {identity.firstName}.
               </h2>
               <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
-                Controle central da plataforma: tenants, empresas, pessoas, RH, operação, suporte e demais domínios disponíveis para sua conta.
+                Controle central da plataforma: tenants, empresas, pessoas, RH,
+                operação, suporte e demais domínios disponíveis para sua conta.
               </p>
             </div>
             <div className="text-muted-foreground text-sm lg:text-right">
-              <p className="text-foreground font-medium">{identity.contextLabel}</p>
-              <p>{new Date().toLocaleDateString('pt-BR', { dateStyle: 'long' })}</p>
+              <p className="text-foreground font-medium">
+                {identity.contextLabel}
+              </p>
+              <p>
+                {new Date().toLocaleDateString('pt-BR', { dateStyle: 'long' })}
+              </p>
             </div>
           </div>
         </section>
 
         {stats.error && (
           <section className="border-warning/30 bg-warning/10 text-warning rounded-xl border p-4 text-sm">
-            Não foi possível carregar todos os indicadores. O painel continua exibindo os dados disponíveis.
+            Não foi possível carregar todos os indicadores. O painel continua
+            exibindo os dados disponíveis.
             <span className="sr-only"> {stats.error}</span>
           </section>
         )}
@@ -241,8 +279,12 @@ export default function DashboardHome() {
         <section>
           <div className="mb-4 flex items-end justify-between gap-4">
             <div>
-              <h3 className="text-foreground text-lg font-semibold">Visão executiva</h3>
-              <p className="text-muted-foreground text-sm">Indicadores agregados em tempo real a partir do banco.</p>
+              <h3 className="text-foreground text-lg font-semibold">
+                Visão executiva
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Indicadores agregados em tempo real a partir do banco.
+              </p>
             </div>
             <div className="text-muted-foreground hidden items-center gap-1.5 text-xs sm:flex">
               <span className="bg-success h-2 w-2 rounded-full" />
@@ -253,7 +295,10 @@ export default function DashboardHome() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {stats.loading
               ? Array.from({ length: 8 }).map((_, index) => (
-                  <div key={index} className="bg-card border-border animate-pulse rounded-xl border p-5">
+                  <div
+                    key={index}
+                    className="bg-card border-border animate-pulse rounded-xl border p-5"
+                  >
                     <div className="bg-muted h-4 w-28 rounded" />
                     <div className="bg-muted mt-4 h-8 w-20 rounded" />
                     <div className="bg-muted mt-3 h-3 w-36 rounded" />
@@ -275,9 +320,15 @@ export default function DashboardHome() {
                         </div>
                         <ArrowUpRight className="text-muted-foreground h-4 w-4 opacity-50 transition-opacity group-hover:opacity-100" />
                       </div>
-                      <p className="text-foreground mt-5 text-2xl font-bold">{formatNumber(kpi.value)}</p>
-                      <p className="text-foreground mt-1 text-sm font-medium">{kpi.label}</p>
-                      <p className="text-muted-foreground mt-1 text-xs">{kpi.description}</p>
+                      <p className="text-foreground mt-5 text-2xl font-bold">
+                        {formatNumber(kpi.value)}
+                      </p>
+                      <p className="text-foreground mt-1 text-sm font-medium">
+                        {kpi.label}
+                      </p>
+                      <p className="text-muted-foreground mt-1 text-xs">
+                        {kpi.description}
+                      </p>
                     </motion.div>
                   );
                 })}
@@ -288,8 +339,12 @@ export default function DashboardHome() {
           <div className="bg-card border-border rounded-xl border p-5 shadow-sm">
             <div className="mb-5 flex items-center justify-between">
               <div>
-                <h3 className="text-foreground font-semibold">Todos os domínios</h3>
-                <p className="text-muted-foreground text-sm">Acesso rápido aos módulos autorizados.</p>
+                <h3 className="text-foreground font-semibold">
+                  Todos os domínios
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  Acesso rápido aos módulos autorizados.
+                </p>
               </div>
               <BarChart3 className="text-muted-foreground h-5 w-5" />
             </div>
@@ -297,7 +352,9 @@ export default function DashboardHome() {
             <div className="space-y-6">
               {moduleGroups.map((group) => (
                 <div key={group.category}>
-                  <p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">{group.label}</p>
+                  <p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                    {group.label}
+                  </p>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     {group.modules.map((module) => (
                       <NavLink
@@ -309,8 +366,12 @@ export default function DashboardHome() {
                           <ModuleIcon name={module.icon} className="h-4 w-4" />
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="text-foreground block truncate text-sm font-medium">{module.title}</span>
-                          <span className="text-muted-foreground block truncate text-xs">{module.description}</span>
+                          <span className="text-foreground block truncate text-sm font-medium">
+                            {module.title}
+                          </span>
+                          <span className="text-muted-foreground block truncate text-xs">
+                            {module.description}
+                          </span>
                         </span>
                         <ArrowUpRight className="text-muted-foreground h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
                       </NavLink>
@@ -325,19 +386,31 @@ export default function DashboardHome() {
             <div className="bg-card border-border rounded-xl border p-5 shadow-sm">
               <div className="mb-5 flex items-center justify-between">
                 <div>
-                  <h3 className="text-foreground font-semibold">Volume operacional</h3>
-                  <p className="text-muted-foreground text-sm">Ordens e chamados registrados.</p>
+                  <h3 className="text-foreground font-semibold">
+                    Volume operacional
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Ordens e chamados registrados.
+                  </p>
                 </div>
                 <Activity className="text-primary h-5 w-5" />
               </div>
               <div className="flex items-end justify-between gap-4">
                 <div>
-                  <p className="text-foreground text-3xl font-bold">{formatNumber(operationalVolume)}</p>
-                  <p className="text-muted-foreground text-xs">registros operacionais</p>
+                  <p className="text-foreground text-3xl font-bold">
+                    {formatNumber(operationalVolume)}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    registros operacionais
+                  </p>
                 </div>
                 <div className="text-right text-xs">
-                  <p className="text-foreground">{formatNumber(stats.serviceOrders)} ordens</p>
-                  <p className="text-muted-foreground">{formatNumber(stats.supportTickets)} chamados</p>
+                  <p className="text-foreground">
+                    {formatNumber(stats.serviceOrders)} ordens
+                  </p>
+                  <p className="text-muted-foreground">
+                    {formatNumber(stats.supportTickets)} chamados
+                  </p>
                 </div>
               </div>
             </div>
@@ -345,29 +418,45 @@ export default function DashboardHome() {
             <div className="bg-card border-border rounded-xl border p-5 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-foreground font-semibold">Atividade recente</h3>
-                  <p className="text-muted-foreground text-sm">Últimos eventos registrados.</p>
+                  <h3 className="text-foreground font-semibold">
+                    Atividade recente
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Últimos eventos registrados.
+                  </p>
                 </div>
                 <Activity className="text-muted-foreground h-5 w-5" />
               </div>
               {stats.recentEvents.length === 0 ? (
                 <div className="border-border flex items-center gap-3 rounded-lg border border-dashed p-4">
                   <CheckCircle2 className="text-success h-5 w-5 shrink-0" />
-                  <p className="text-muted-foreground text-sm">Nenhum evento recente encontrado.</p>
+                  <p className="text-muted-foreground text-sm">
+                    Nenhum evento recente encontrado.
+                  </p>
                 </div>
               ) : (
                 <div className="divide-border divide-y">
                   {stats.recentEvents.map((event) => (
-                    <div key={event.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                    <div
+                      key={event.id}
+                      className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
+                    >
                       <span className="bg-primary/10 text-primary rounded-full p-1.5">
                         <Activity className="h-3.5 w-3.5" />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="text-foreground truncate text-sm font-medium">{event.event_name}</p>
-                        <p className="text-muted-foreground truncate text-xs">{event.aggregate_type || 'Evento de domínio'}</p>
+                        <p className="text-foreground truncate text-sm font-medium">
+                          {event.event_name}
+                        </p>
+                        <p className="text-muted-foreground truncate text-xs">
+                          {event.aggregate_type || 'Evento de domínio'}
+                        </p>
                       </div>
                       <time className="text-muted-foreground shrink-0 text-[11px]">
-                        {new Date(event.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                        {new Date(event.created_at).toLocaleDateString(
+                          'pt-BR',
+                          { day: '2-digit', month: '2-digit' },
+                        )}
                       </time>
                     </div>
                   ))}
@@ -378,25 +467,40 @@ export default function DashboardHome() {
         </section>
 
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <NavLink to="/dashboard/financeiro" className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors">
+          <NavLink
+            to="/dashboard/financeiro"
+            className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors"
+          >
             <CircleDollarSign className="text-success h-6 w-6" />
             <div>
               <p className="text-foreground text-sm font-medium">Financeiro</p>
-              <p className="text-muted-foreground text-xs">Contas, faturamento e fluxo financeiro.</p>
+              <p className="text-muted-foreground text-xs">
+                Contas, faturamento e fluxo financeiro.
+              </p>
             </div>
           </NavLink>
-          <NavLink to="/dashboard/estoque" className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors">
+          <NavLink
+            to="/dashboard/estoque"
+            className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors"
+          >
             <Package className="text-primary h-6 w-6" />
             <div>
               <p className="text-foreground text-sm font-medium">Estoque</p>
-              <p className="text-muted-foreground text-xs">Produtos e movimentações.</p>
+              <p className="text-muted-foreground text-xs">
+                Produtos e movimentações.
+              </p>
             </div>
           </NavLink>
-          <NavLink to="/dashboard/relatorios" className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors">
+          <NavLink
+            to="/dashboard/relatorios"
+            className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors"
+          >
             <FileText className="text-accent h-6 w-6" />
             <div>
               <p className="text-foreground text-sm font-medium">Relatórios</p>
-              <p className="text-muted-foreground text-xs">Indicadores consolidados por domínio.</p>
+              <p className="text-muted-foreground text-xs">
+                Indicadores consolidados por domínio.
+              </p>
             </div>
           </NavLink>
         </section>
