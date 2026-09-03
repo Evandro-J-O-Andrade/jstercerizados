@@ -39,7 +39,8 @@ export const COMPANY = {
 } as const;
 
 export const SOCIAL_LINKS = {
-  instagram: 'https://instagram.com/jsterceirizados',
+  instagram:
+    'https://www.instagram.com/jstercerizados?igsh=MWpsMmxzN2t5aGl5MA%3D%3D',
   facebook: 'https://facebook.com/jsterceirizados',
   tiktok: 'https://tiktok.com/@jsterceirizados',
   linkedin: 'https://linkedin.com/company/jsterceirizados',
