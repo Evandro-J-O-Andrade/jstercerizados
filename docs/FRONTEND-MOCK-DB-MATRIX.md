@@ -151,7 +151,7 @@ Todas as 60+ repositories em `src/repositories/*.repository.ts` usam `SupabaseRe
 | G8  | `service_inquiries` (form de "Contratar Serviço")                | `ServiceRequestForm` (estado React)                                                                 | `service_inquiries` table                                                                                            | ⏸ pendente                                                                                                                                                              |
 | G9  | `divulgar_vaga_submissions`                                      | `DivulgarVagaForm`                                                                                  | `job_posting_requests` table                                                                                         | ⏸ pendente                                                                                                                                                              |
 | G10 | `trabalhe_conosco_submissions`                                   | `TrabalheConosco` form                                                                              | `talent_pool` ou `candidates`                                                                                        | ⏸ pendente                                                                                                                                                              |
-| G11 | `images.*` (mapa de URLs hardcoded)                              | `config/images.ts`                                                                                  | `media_assets` (entity_type='home_hero'/'service'/'company' etc.)                                                    | ⏸ pendente                                                                                                                                                              |
+| G11 | `images.*` (mapa de URLs hardcoded)                              | `config/images.ts`                                                                                  | `media_assets` (entity_type='home_hero'/'service'/'company' etc.)                                                    | ⏸ pendente (Bloco Media/Storage futuro — ver Seção 10.1)                                                                                                                |
 | G12 | `site_settings` (nome, CNPJ, endereço, redes sociais, telefone)  | `config/company.ts`                                                                                 | `companies` (registro J&S) + `company_social_links`                                                                  | ⏸ pendente (já existe migration `company_social_links`)                                                                                                                 |
 | G13 | `socials` em cards de `Clientes` e `Empresas`                    | `CLIENTS_LIST` (sem `socials`), `mapPublicCompanyByTypeToClientVisual` (`socials: null` hardcoding) | `company_social_links` (existe) + `loadSocials` (só usado em `findAllPublic`, não em `findPublicByRelationshipType`) | N/A no baseline — nenhum card mostra ícones sociais. Se adicionar, `loadSocials` precisa ser chamado no hook `useCompaniesByType` ou na view `public_companies_by_type` |
 | G14 | `image` (hero image) em cards de `Clientes`                      | `CLIENTS_LIST.image`, `relationship_metadata.hero_image_url`                                        | `relationship_metadata.hero_image_url` (mapeia `ClientVisual.image`)                                                 | ✅ Resolvido — `buildClientFallback` e `mapPublicCompanyByTypeToClientVisual` ambos mapeiam `hero_image_url`                                                            |
@@ -211,6 +211,76 @@ Por domínio (prioridade):
 6. **G5 metrics** — `COMPANY.clientsServed` etc → `site_settings` (key/value)
 7. **G7/G8/G9/G10 forms** — forms locais → tabelas `*_submissions`
 8. **G6 seo_pages** — `config/seoPages.ts` → `pages.seo_*`
+
+---
+
+## 10.1 Regra arquitetural de mídias (consolidada 2026-09-03, Bloco 11)
+
+> **Assets estáticos aprovados pertencem ao frontend/deploy. Uploads administráveis pertencem ao Supabase Storage. O banco guarda os metadados/referências. Arquivos privados são organizados logicamente por `tenant_id` + entidade + finalidade.**
+
+### Três categorias de mídia
+
+| Categoria                      | Onde mora                                                                       | Quem decide                           | Exemplos                                                                                                               |
+| ------------------------------ | ------------------------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Assets estáticos aprovados** | `/public/images/*` servido pelo deploy                                          | Equipe de produto (curadoria)         | Logo institucional, fotos dos serviços, imagens dos parceiros, fotos dos clientes já aprovados, banners institucionais |
+| **Conteúdo administrável**     | Supabase Storage (`public-assets` ou `tenant-files`)                            | Admin / RH / candidatos via dashboard | Logo novo de cliente, foto de vaga, currículo de candidato, certificado, documentação de fornecedor, contrato PDF      |
+| **Metadados/referências**      | PostgreSQL (`media_assets`, `company_social_links`, `candidate_documents`, etc) | Schema canônico                       | `storage_path`, `mime_type`, `size_bytes`, `entity_id`, `entity_type`                                                  |
+
+### Storage layout (multi-tenant)
+
+```
+Supabase Storage
+├── public-assets            ← assets públicos do produto (futuro)
+└── tenant-files             ← arquivos privados, isolados por tenant
+      ├── tenant-{tenant_id}/
+      │     ├── branding/
+      │     ├── clientes/
+      │     ├── servicos/
+      │     ├── parceiros/
+      │     ├── fornecedores/
+      │     ├── vagas/
+      │     ├── candidatos/
+      │     │     ├── documents/
+      │     │     └── certificates/
+      │     ├── documentos/
+      │     └── ...
+      └── tenant-{outro}/
+```
+
+### Decisões arquiteturais (Bloco 11)
+
+1. **NÃO criar um bucket por tenant** — escala mal operacionalmente. Usar `tenant-files` com `tenant_id` como prefixo de path.
+2. **NÃO usar `bytea` no PostgreSQL** para arquivos normais — storage binário é responsabilidade do Storage.
+3. **NÃO misturar `/public/images`** com arquivos privados de candidatos/documentos.
+4. **NÃO migrar imagens existentes sem necessidade** — assets estáticos continuam em `/public`. A migração para `media_assets`/Storage é feita quando houver administração dinâmica real.
+5. **RLS do Storage** garante que `Tenant A` não acessa arquivo privado de `Tenant B` (path-prefixed policy).
+6. **View pública** `public_companies_by_type` (Bloco 8) já tem `COALESCE(media_assets.file_url, companies.logo_url)` — funciona em ambos os cenários sem migração de dados.
+
+### Bloco 11 — gaps reportados e status
+
+| Gap                                               | Status real                                                                                                                                                                                                                           | Origem provável                                                                           |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `GET /rest/v1/services?status=eq.published` → 401 | **Não reproduz** no código atual. Único consumidor de `services` raw é o dashboard autenticado (`findServices`, `createService`, etc). Frontend público usa `public_services_v1` (validado: 200 em `/servicos/recrutamento-selecao`). | Cache do navegador, requisição manual no DevTools, ou logs de sessão anterior.            |
+| `/images/global/fallbacks/default.svg` 404        | **Arquivo existe** em `public/images/global/fallbacks/default.svg` (SVG válido, 6 linhas). `SafeImage.tsx` + `imageFallbacks.ts` configuram o caminho corretamente.                                                                   | Build/deploy antigo, cache do navegador, ou `vite preview` reiniciando no momento do log. |
+| `VagaFull` inexistente                            | **Não existe** no repositório. Único arquivo é `src/pages/VagaDetalhe.tsx`.                                                                                                                                                           | Nomenclatura antiga ou componente planejado nunca implementado.                           |
+| Auth/login                                        | ✅ funcional. Sequência `start → people loaded → signIn success → identity loaded → redirect` completa.                                                                                                                               | —                                                                                         |
+
+**Validação runtime (2026-09-03, Playwright + `pnpm preview`):**
+
+| Página                                      | Endpoint Supabase                                                        | Status | Console errors |
+| ------------------------------------------- | ------------------------------------------------------------------------ | ------ | -------------- |
+| `/servicos/recrutamento-selecao`            | `GET /rest/v1/public_services_v1?slug=eq.recrutamento-selecao`           | 200    | 0              |
+| `/vagas/eletricista-de-instala-ao-08404295` | `GET /rest/v1/public_jobs_v1?slug=eq.eletricista-de-instala-ao-08404295` | 200    | 0              |
+
+Nenhuma requisição a `services?` ou `global/fallbacks/` foi disparada nessas navegações. Os 3 gaps reportados **não reproduzem** no estado atual do código.
+
+### Próximos passos (Bloco 11.1+, sem implementar ainda)
+
+1. Auditar Supabase Logs (PostgREST) para confirmar origem do 401 em `services` (se ainda recorrente).
+2. Adicionar comentário em `services.repository.ts:48` impedindo regressão pública (rotular `findServices` como **admin only**).
+3. Estender `assets-integrity.test.ts` para cobrir todos os caminhos em `IMAGE_FALLBACKS` e `IMAGES`.
+4. Quando chegar o Bloco Media/Storage (G11), fazer auditoria específica do que já existe em `/public` e migrar somente o que fizer sentido.
+5. Confirmar origem do nome `VagaFull` (issue/doc/código antigo) antes de qualquer ação.
 
 ---
 
