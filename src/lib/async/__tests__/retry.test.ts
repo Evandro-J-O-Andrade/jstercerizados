@@ -59,10 +59,11 @@ describe('retry', () => {
     };
 
     const result = retry(fn, { retries: 2, delay: 100, factor: 1 });
+    const rejection = expect(result).rejects.toThrow('always fail');
 
     await vi.advanceTimersByTimeAsync(200);
 
-    await expect(result).rejects.toThrow('always fail');
+    await rejection;
     expect(callCount).toBe(3);
   });
 
@@ -133,10 +134,11 @@ describe('withRetry', () => {
     const wrapped = withRetry(original, { retries: 1, delay: 50, factor: 1 });
 
     const result = wrapped();
+    const rejection = expect(result).rejects.toThrow('boom');
 
     await vi.advanceTimersByTimeAsync(50);
 
-    await expect(result).rejects.toThrow('boom');
+    await rejection;
     expect(callCount).toBe(2);
   });
 });
