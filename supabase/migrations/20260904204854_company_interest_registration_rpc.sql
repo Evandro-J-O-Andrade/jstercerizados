@@ -86,22 +86,8 @@ begin
     tenant_id, name, cnpj, status, created_by, created_at, updated_at, email, phone, metadata
   )
   values (
-    v_tenant_id,
-    v_name,
-    v_cnpj,
-    'pending',
-    null,
-    now(),
-    now(),
-    v_email,
-    v_phone,
-    jsonb_build_object(
-      'source', 'public_company_interest',
-      'contact_name', v_contact_name,
-      'contact_phone', v_contact_phone,
-      'contact_email', v_contact_email,
-      'interest_message', v_message
-    )
+    v_tenant_id, v_name, v_cnpj, 'pending', null, now(), now(), v_email, v_phone,
+    jsonb_build_object('source', 'public_company_interest', 'contact_name', v_contact_name, 'contact_phone', v_contact_phone, 'contact_email', v_contact_email, 'interest_message', v_message)
   )
   returning id into v_company_id;
 
@@ -109,23 +95,13 @@ begin
     tenant_id, user_id, action, entity_type, entity_id, changes, metadata, ip_address, user_agent, created_at
   )
   values (
-    v_tenant_id,
-    null,
-    'company_interest_registered',
-    'company',
-    v_company_id,
+    v_tenant_id, null, 'company_interest_registered', 'company', v_company_id,
     jsonb_build_object('status', 'pending', 'source', 'public_company_interest'),
-    jsonb_build_object('source', 'public_company_interest'),
-    v_ip,
-    v_user_agent,
-    now()
+    jsonb_build_object('source', 'public_company_interest'), v_ip, v_user_agent, now()
   );
 
   perform public.domain_event_emit(
-    v_tenant_id,
-    'company.interest_registered',
-    'company',
-    v_company_id,
+    v_tenant_id, 'company.interest_registered', 'company', v_company_id,
     jsonb_build_object('source', 'public_company_interest'),
     'company-interest:' || v_company_id::text
   );
