@@ -26,6 +26,12 @@ vi.mock('@/repositories/applications.repository', () => ({
   },
 }));
 
+vi.mock('@/repositories/candidate-preferences.repository', () => ({
+  candidatePreferencesRepository: {
+    findByCandidate: vi.fn(),
+  },
+}));
+
 vi.mock('@/repositories/candidate-portal', () => ({
   favoriteJobsRepository: {
     listForCurrentPerson: vi.fn(),
@@ -34,6 +40,7 @@ vi.mock('@/repositories/candidate-portal', () => ({
   },
   publicJobsRepository: {
     findPublished: vi.fn(),
+    findPublishedWithSkills: vi.fn(),
   },
 }));
 
@@ -41,7 +48,7 @@ const mockUseAuth = vi.mocked(useAuth);
 const mockFindByPersonId = vi.mocked(candidatesRepository.findByPersonId);
 const mockFindAllApps = vi.mocked(applicationsRepository.findAll);
 const mockListFav = vi.mocked(favoriteJobsRepository.listForCurrentPerson);
-const mockFindPublished = vi.mocked(publicJobsRepository.findPublished);
+const mockFindPublishedWithSkills = vi.mocked(publicJobsRepository.findPublishedWithSkills);
 const mockAddFav = vi.mocked(favoriteJobsRepository.add);
 const mockRemoveFav = vi.mocked(favoriteJobsRepository.remove);
 
@@ -55,7 +62,7 @@ describe('CandidateContext', () => {
     mockFindByPersonId.mockResolvedValue(null);
     mockFindAllApps.mockResolvedValue([]);
     mockListFav.mockResolvedValue([]);
-    mockFindPublished.mockResolvedValue([]);
+    mockFindPublishedWithSkills.mockResolvedValue([]);
   });
 
   it('does not fetch when user is not a candidate', async () => {
@@ -96,10 +103,8 @@ describe('CandidateContext', () => {
         current_stage: 'submitted',
       },
     ] as never);
-    mockListFav.mockResolvedValue([
-      { id: 'f1', job_id: 'j1' } as never,
-    ]);
-    mockFindPublished.mockResolvedValue([
+    mockListFav.mockResolvedValue([{ id: 'f1', job_id: 'j1' } as never]);
+    mockFindPublishedWithSkills.mockResolvedValue([
       { id: 'j1', title: 'Dev' } as never,
     ]);
 
@@ -107,6 +112,7 @@ describe('CandidateContext', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
+    expect(mockFindByPersonId).toHaveBeenCalled();
     expect(result.current.candidate?.id).toBe('c1');
     expect(result.current.applications).toHaveLength(1);
     expect(result.current.applications[0]?.id).toBe('a1');
