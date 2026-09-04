@@ -14,8 +14,11 @@ import { candidatePreferencesRepository } from '@/repositories/candidate-prefere
 import {
   favoriteJobsRepository,
   publicJobsRepository,
+  candidateJobAlertsRepository,
   type FavoriteJobWithJob,
   type PublishedJobWithSkills,
+  type CandidateJobAlertRow,
+  type CandidateJobAlertInput,
 } from '@/repositories/candidate-portal';
 import type { Candidate } from '@/types/domain/candidate';
 import type { CandidatePreference } from '@/types/domain/candidate';
@@ -37,6 +40,7 @@ interface CandidateContextValue {
   favorites: FavoriteJobWithJob[];
   favoriteIds: Set<string>;
   preferences: CandidatePreference | null;
+  jobAlerts: CandidateJobAlertRow[];
   candidateContext: ReturnType<typeof calculateCandidateContext> | null;
   matchResults: Array<{ job: PublishedJobWithSkills; match: MatchResult }>;
   isLoading: boolean;
@@ -44,6 +48,10 @@ interface CandidateContextValue {
   refetch: () => Promise<void>;
   toggleFavorite: (jobId: string) => Promise<{ error?: string }>;
   refetchFavorites: () => Promise<void>;
+  refetchAlerts: () => Promise<void>;
+  createAlert: (input: Omit<CandidateJobAlertInput, 'tenant_id' | 'person_id'>) => Promise<{ error?: string }>;
+  updateAlert: (id: string, input: Partial<CandidateJobAlertInput>) => Promise<{ error?: string }>;
+  deleteAlert: (id: string) => Promise<{ error?: string }>;
 }
 
 const CandidateContext = createContext<CandidateContextValue | null>(null);
@@ -69,6 +77,7 @@ export function CandidateProvider({ children }: { children: ReactNode }) {
     [],
   );
   const [favorites, setFavorites] = useState<FavoriteJobWithJob[]>([]);
+  const [jobAlerts, setJobAlerts] = useState<CandidateJobAlertRow[]>([]);
   const [preferences, setPreferences] = useState<CandidatePreference | null>(
     null,
   );
@@ -149,17 +158,19 @@ export function CandidateProvider({ children }: { children: ReactNode }) {
       setApplications([]);
       setPublishedJobs([]);
       setFavorites([]);
+      setJobAlerts([]);
       setPreferences(null);
       return;
     }
     setIsLoading(true);
     setError(null);
     try {
-      const [selfCandidate, allApps, jobs, favs] = await Promise.all([
+      const [selfCandidate, allApps, jobs, favs, alerts] = await Promise.all([
         candidatesRepository.findByPersonId(tenantId, personId),
         applicationsRepository.findAll(tenantId, {}),
         publicJobsRepository.findPublishedWithSkills(tenantId),
         favoriteJobsRepository.listForCurrentPerson(tenantId),
+        candidateJobAlertsRepository.listForCurrentPerson(tenantId),
       ]);
 
       setCandidate(selfCandidate);
@@ -168,6 +179,7 @@ export function CandidateProvider({ children }: { children: ReactNode }) {
       );
       setPublishedJobs(jobs || []);
       setFavorites(favs || []);
+      setJobAlerts(alerts || []);
 
       if (selfCandidate) {
         try {
@@ -208,6 +220,20 @@ export function CandidateProvider({ children }: { children: ReactNode }) {
     }
   }, [tenantId]);
 
+  const refetchAlerts = useCallback(async () => {
+    if (!tenantId) return;
+    try {
+      const alerts = await candidateJobAlertsRepository.listForCurrentPerson(
+        tenantId,
+      );
+      setJobAlerts(alerts || []);
+    } catch (e) {
+      if (!isLegacyTableError(e)) {
+        setError(normalizeError(e).userMessage);
+      }
+    }
+  }, [tenantId]);
+
   const toggleFavorite = async (jobId: string) => {
     if (!tenantId || !personId) {
       return { error: 'Sessão inválida. Faça login novamente.' };
@@ -226,12 +252,55 @@ export function CandidateProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const createAlert = async (
+    input: Omit<CandidateJobAlertInput, 'tenant_id' | 'person_id'>,
+  ) => {
+    if (!tenantId || !personId) {
+      return { error: 'Sessão inválida. Faça login novamente.' };
+    }
+    try {
+      await candidateJobAlertsRepository.create({
+        ...input,
+        tenant_id: tenantId,
+        person_id: personId,
+      });
+      await refetchAlerts();
+      return {};
+    } catch (e) {
+      return { error: normalizeError(e).userMessage };
+    }
+  };
+
+  const updateAlert = async (
+    id: string,
+    input: Partial<CandidateJobAlertInput>,
+  ) => {
+    try {
+      await candidateJobAlertsRepository.update(id, input);
+      await refetchAlerts();
+      return {};
+    } catch (e) {
+      return { error: normalizeError(e).userMessage };
+    }
+  };
+
+  const deleteAlert = async (id: string) => {
+    try {
+      await candidateJobAlertsRepository.remove(id);
+      await refetchAlerts();
+      return {};
+    } catch (e) {
+      return { error: normalizeError(e).userMessage };
+    }
+  };
+
   useEffect(() => {
     if (!isCandidate) {
       setCandidate(null);
       setApplications([]);
       setPublishedJobs([]);
       setFavorites([]);
+      setJobAlerts([]);
       setPreferences(null);
       return;
     }
@@ -250,6 +319,7 @@ export function CandidateProvider({ children }: { children: ReactNode }) {
     favorites,
     favoriteIds,
     preferences,
+    jobAlerts,
     candidateContext,
     matchResults,
     isLoading,
@@ -257,6 +327,10 @@ export function CandidateProvider({ children }: { children: ReactNode }) {
     refetch,
     toggleFavorite,
     refetchFavorites,
+    refetchAlerts,
+    createAlert,
+    updateAlert,
+    deleteAlert,
   };
 
   return (

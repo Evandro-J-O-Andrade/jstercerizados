@@ -215,7 +215,9 @@ describe('CandidateShell com navegação dinâmica', () => {
     expect(screen.getByText('Meu perfil')).toBeInTheDocument();
     expect(screen.getByText('Configurações')).toBeInTheDocument();
     expect(screen.getAllByText('Suporte').length).toBeGreaterThan(0);
-    expect(screen.getByText('Site público')).toBeInTheDocument();
+    expect(
+      screen.getAllByText('Voltar para o site').length,
+    ).toBeGreaterThan(0);
   });
 
   it('omite itens cuja permission_key não está nas permissões do usuário', async () => {
@@ -253,7 +255,9 @@ describe('CandidateShell com navegação dinâmica', () => {
     await waitFor(() => {
       expect(screen.getAllByText('Suporte').length).toBeGreaterThan(0);
     });
-    expect(screen.getByText('Site público')).toBeInTheDocument();
+    expect(
+      screen.getAllByText('Voltar para o site').length,
+    ).toBeGreaterThan(0);
     expect(screen.getByText('Acessibilidade')).toBeInTheDocument();
   });
 
@@ -273,5 +277,56 @@ describe('CandidateShell com navegação dinâmica', () => {
     });
     expect(screen.getByText('Meu perfil')).toBeInTheDocument();
     expect(screen.getByText('Configurações')).toBeInTheDocument();
+  });
+
+  it('sobrescreve a label do item site_home para "Voltar para o site" na sidebar (override client-side)', async () => {
+    mockUseAuth.mockReturnValue({
+      person: { id: 'p1', full_name: 'Carla', email: 'c@x.com' } as never,
+      permissions: [
+        { resource: 'jobs', action: 'read' } as Permission,
+        { resource: 'notifications', action: 'read' } as Permission,
+      ],
+      roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as never],
+      isAdminMaster: false,
+      isCandidate: true,
+      logout: vi.fn(),
+    } as never);
+
+    withRouter('/candidato');
+    await waitFor(() => {
+      expect(screen.getAllByText('Suporte').length).toBeGreaterThan(0);
+    });
+    expect(
+      screen.getAllByText('Voltar para o site').length,
+    ).toBeGreaterThan(0);
+    expect(screen.queryByText('Site público')).not.toBeInTheDocument();
+  });
+
+  it('renderiza link "Voltar para o site" no header mobile (fora da sidebar)', async () => {
+    mockUseAuth.mockReturnValue({
+      person: { id: 'p1', full_name: 'Pedro', email: 'p@x.com' } as never,
+      permissions: [
+        { resource: 'jobs', action: 'read' } as Permission,
+        { resource: 'notifications', action: 'read' } as Permission,
+      ],
+      roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as never],
+      isAdminMaster: false,
+      isCandidate: true,
+      logout: vi.fn(),
+    } as never);
+
+    withRouter('/candidato');
+    await waitFor(() => {
+      expect(screen.getAllByText('Suporte').length).toBeGreaterThan(0);
+    });
+    const links = screen.getAllByRole('link', {
+      name: /Voltar para o site/i,
+    });
+    expect(links.length).toBeGreaterThanOrEqual(1);
+    const headerLink = links.find(
+      (b) => b.getAttribute('data-source') === 'mobile-header',
+    );
+    expect(headerLink).toBeDefined();
+    expect(headerLink).toHaveAttribute('href', '/');
   });
 });

@@ -77,9 +77,8 @@ export default function DashboardHome() {
     currentTenantId,
     tenantMemberships,
     isAdminMaster,
-    roles,
-    roleAssignments,
-  } = useAuth();
+    isCandidate,
+   } = useAuth();
   const { availableModules, activePermissions, identity } = useAccount();
 
   const [stats, setStats] = useState<DashboardStats>({
@@ -225,13 +224,9 @@ export default function DashboardHome() {
 
   const operationalVolume = stats.serviceOrders + stats.supportTickets;
 
-  const isCandidate = (roleAssignments || []).some((ra) => {
-    const role = (roles || []).find((r) => r.id === ra.role_id);
-    return role?.name === 'candidate';
-  });
-
-  if (isCandidate && !isAdminMaster) {
-    return <Navigate to="/dashboard/candidato" replace />;
+  // Defesa em profundidade: candidato puro nunca deve renderizar o Dashboard Global/Admin
+  if (!isAdminMaster && isCandidate) {
+    return <Navigate to="/candidato" replace />;
   }
 
   return (

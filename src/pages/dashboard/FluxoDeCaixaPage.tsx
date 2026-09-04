@@ -12,12 +12,14 @@ import {
 import { Button } from '@/components/ui/Button';
 import { EmptyState, ErrorState } from '@/components/fallback';
 import { ConfirmDialog } from '@/components/feedback';
+import { useToast } from '@/components/feedback/ToastContext';
 import { cashFlowRepository } from '@/repositories/cash-flow.repository';
 import type { CashFlow } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function FluxoDeCaixaPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [items, setItems] = useState<CashFlow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -122,7 +124,7 @@ export default function FluxoDeCaixaPage() {
             Entradas, saídas e transferências.
           </p>
         </div>
-        <Button onClick={() => alert('Abrir formulário de lançamento')}>
+        <Button onClick={() => addToast({ type: 'info', message: 'Abrir formulário de lançamento' })}>
           <Plus className="mr-2 h-4 w-4" />
           Novo lançamento
         </Button>
@@ -182,7 +184,7 @@ export default function FluxoDeCaixaPage() {
           title="Nenhum lançamento cadastrado"
           description="Ainda não há lançamentos de fluxo de caixa registrados."
           actionLabel="Novo lançamento"
-          onAction={() => alert('Abrir formulário de lançamento')}
+          onAction={() => addToast({ type: 'info', message: 'Abrir formulário de lançamento' })}
         />
       ) : (
         <div className="space-y-3">

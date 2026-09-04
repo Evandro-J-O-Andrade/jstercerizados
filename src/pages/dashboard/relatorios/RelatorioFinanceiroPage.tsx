@@ -12,10 +12,12 @@ import { accountsReceivableRepository } from '@/repositories/accounts-receivable
 import { cashFlowRepository } from '@/repositories/cash-flow.repository';
 import type { AccountPayable, AccountReceivable, CashFlow } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 type ReportTab = 'contas-pagar' | 'contas-receber' | 'fluxo-caixa' | 'resumo';
 
 export default function RelatorioFinanceiroPage() {
+  const { addToast } = useToast();
   const { currentTenantId } = useAuth();
   const [activeTab, setActiveTab] = useState<ReportTab>('resumo');
   const [payables, setPayables] = useState<AccountPayable[]>([]);
@@ -136,7 +138,10 @@ export default function RelatorioFinanceiroPage() {
   }, [cashFlows, search, typeFilter]);
 
   const handleExport = (type: string) => {
-    alert(`Exportando relatório de ${type}...`);
+    addToast({
+      type: 'info',
+      message: `Exportando relatório de ${type}...`,
+    });
   };
 
   if (loading) {

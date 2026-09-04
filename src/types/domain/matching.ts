@@ -67,8 +67,8 @@ export interface MatchingCandidate {
 }
 
 export interface MatchingSkill {
-  skill_id: string;
-  name?: string;
+  skill_id: string | null;
+  name: string;
   level: string | null;
   years_used: number | null;
 }
@@ -92,8 +92,9 @@ export function toMatchingCandidate(candidate: Candidate): MatchingCandidate {
     salary_expectation_min: candidate.salary_expectation_min ?? null,
     salary_expectation_max: candidate.salary_expectation_max ?? null,
     skills: (candidate.skills || []).map((s) => ({
-      skill_id: s.skill_id ?? '',
-      level: (s as Record<string, unknown>).level as string | null,
+      skill_id: s.skill_id ?? null,
+      name: s.name ?? '',
+      level: s.level ?? null,
       years_used: (s as Record<string, unknown>).years_used as number | null,
     })),
     experiences: (candidate.experiences || []).map((e) => ({

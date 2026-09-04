@@ -1,63 +1,102 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import {
-  User,
-  Briefcase,
-  FileText,
-  FileUp,
-  Calendar,
-  Clock,
   AlertCircle,
-  Heart,
+  ArrowRight,
+  Bell,
+  Briefcase,
+  Building2,
   CheckCircle2,
   Circle,
-  ArrowRight,
+  FileText,
+  Heart,
+  MapPin,
+  Sparkles,
+  TrendingUp,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { useCandidate } from '@/contexts/CandidateContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { getProfileStateInfo } from '@/services/candidate-context';
 import { SEO } from '@/components/ui/SEO';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { MatchScoreBadge } from '@/components/candidate/MatchScoreBadge';
 import { COMPANY } from '@/config';
 
-const STATUS_LABELS: Record<string, string> = {
-  submitted: 'Enviada',
-  screening: 'Triagem',
-  interview: 'Entrevista',
-  technical_interview: 'Técnica',
-  presentation: 'Apresentação',
-  reference_check: 'Referência',
-  offer: 'Proposta',
-  hired: 'Contratada',
-  rejected: 'Rejeitada',
-  withdrawn: 'Desistiu',
-  on_hold: 'Em espera',
+const CONTRACT_LABELS: Record<string, string> = {
+  clt: 'CLT',
+  internship: 'Estágio',
+  temporary: 'Temporário',
+  freelance: 'Freelance',
+  contracted: 'Contratado',
+  cd: 'CD',
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  hired: 'bg-success/10 text-success',
-  rejected: 'bg-destructive/10 text-destructive',
-  withdrawn: 'bg-muted-foreground/10 text-muted-foreground',
-  on_hold: 'bg-muted-foreground/10 text-muted-foreground',
-  offer: 'bg-warning/10 text-warning',
+const WORK_MODE_LABELS: Record<string, string> = {
+  onsite: 'Presencial',
+  hybrid: 'Híbrido',
+  remote: 'Remoto',
 };
 
-function getStatusBadge(currentStage: string) {
-  const label = STATUS_LABELS[currentStage] ?? currentStage;
-  const colorClass =
-    STATUS_COLORS[currentStage] ?? 'bg-muted/10 text-muted-foreground';
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colorClass}`}
-    >
-      {label}
-    </span>
-  );
+function formatSalaryRange(
+  min: number | null,
+  max: number | null,
+): string | null {
+  if (!min && !max) return null;
+  const fmt = (v: number) =>
+    v.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+  if (min && max) return `R$ ${fmt(min)} – R$ ${fmt(max)}`;
+  if (min) return `R$ ${fmt(min)}+`;
+  return `R$ ${fmt(max as number)}`;
+}
+
+interface ProfileStep {
+  key: string;
+  label: string;
+  done: boolean;
+  href: string;
+}
+
+function getProfileMessage(
+  completion: number,
+): { tone: 'danger' | 'warning' | 'success'; text: string } {
+  if (completion >= 100) {
+    return {
+      tone: 'success',
+      text: 'Perfil completo! Agora você está pronto para se candidatar às oportunidades da J&S.',
+    };
+  }
+  if (completion >= 75) {
+    return {
+      tone: 'success',
+      text: 'Seu perfil está quase completo! Adicione seu currículo em PDF para deixá-lo ainda mais competitivo.',
+    };
+  }
+  if (completion >= 40) {
+    return {
+      tone: 'warning',
+      text: 'Seu perfil ainda está incompleto. Adicione sua experiência profissional para aumentar suas chances de aparecer em processos seletivos.',
+    };
+  }
+  return {
+    tone: 'danger',
+    text: 'Complete seu perfil para receber vagas recomendadas e aumentar suas chances de ser encontrado por recrutadores.',
+  };
 }
 
 export default function CandidateDashboard() {
   const { person } = useAuth();
-  const { candidate, applications, isLoading, error, candidateContext } =
-    useCandidate();
+  const {
+    candidate,
+    applications,
+    matchResults,
+    favorites,
+    jobAlerts,
+    isLoading,
+    error,
+    candidateContext,
+  } = useCandidate();
 
   const firstName = person?.full_name?.split(' ')[0] || 'Candidato';
   const completion = candidateContext?.completionPercentage ?? 0;
@@ -66,36 +105,86 @@ export default function CandidateDashboard() {
 
   const recentApps = applications.slice(0, 5);
 
-  const hasResumeDoc = (candidate?.documents?.length ?? 0) > 0;
-  const hasSkills = (candidate?.skills?.length ?? 0) > 0;
-  const hasExperiences = (candidate?.experiences?.length ?? 0) > 0;
-  const hasEducation = (candidate?.education?.length ?? 0) > 0;
+  const profileSteps: ProfileStep[] = useMemo(() => {
+    const hasResumeDoc = (candidate?.documents?.length ?? 0) > 0;
+    const hasSkills = (candidate?.skills?.length ?? 0) > 0;
+    const hasExperiences = (candidate?.experiences?.length ?? 0) > 0;
+    const hasEducation = (candidate?.education?.length ?? 0) > 0;
+    const hasLanguages = (candidate?.languages?.length ?? 0) > 0;
+    const hasPreferences = Boolean(candidateContext?.hasPreferences);
 
-  const profileSteps = [
-    {
-      label: 'Dados pessoais',
-      done: Boolean(person?.full_name && person?.email),
-      href: '/candidato/perfil',
-    },
-    {
-      label: 'Contato',
-      done: Boolean(person?.phone),
-      href: '/candidato/perfil',
-    },
-    {
-      label: 'Headline profissional',
-      done: Boolean(candidate?.headline),
-      href: '/candidato/perfil',
-    },
-    {
-      label: 'Experiências',
-      done: hasExperiences,
-      href: '/candidato/curriculo',
-    },
-    { label: 'Formação', done: hasEducation, href: '/candidato/curriculo' },
-    { label: 'Habilidades', done: hasSkills, href: '/candidato/curriculo' },
-    { label: 'Documentos', done: hasResumeDoc, href: '/candidato/curriculo' },
-  ];
+    return [
+      {
+        key: 'personal',
+        label: 'Dados pessoais',
+        done: Boolean(person?.full_name && person?.email),
+        href: '/candidato/perfil',
+      },
+      {
+        key: 'contact',
+        label: 'Informações de contato',
+        done: Boolean(person?.phone),
+        href: '/candidato/perfil',
+      },
+      {
+        key: 'summary',
+        label: 'Resumo profissional',
+        done: Boolean(candidate?.headline?.trim()),
+        href: '/candidato/perfil',
+      },
+      {
+        key: 'experience',
+        label: 'Experiência profissional',
+        done: hasExperiences,
+        href: '/candidato/curriculo',
+      },
+      {
+        key: 'education',
+        label: 'Formação',
+        done: hasEducation,
+        href: '/candidato/curriculo',
+      },
+      {
+        key: 'courses',
+        label: 'Cursos e qualificações',
+        done: hasLanguages || hasSkills,
+        href: '/candidato/curriculo',
+      },
+      {
+        key: 'resume',
+        label: 'Currículo em PDF',
+        done: hasResumeDoc,
+        href: '/candidato/curriculo',
+      },
+      {
+        key: 'preferences',
+        label: 'Preferências profissionais',
+        done: hasPreferences,
+        href: '/candidato/perfil',
+      },
+    ];
+  }, [candidate, person, candidateContext]);
+
+  const completedCount = profileSteps.filter((s) => s.done).length;
+  const nextStep = profileSteps.find((s) => !s.done);
+
+  const compatibility = useMemo(() => {
+    const top5 = matchResults.slice(0, 5);
+    if (top5.length === 0) {
+      return { average: 0, compatibleCount: 0 };
+    }
+    const average = Math.round(
+      top5.reduce((sum, m) => sum + m.match.score, 0) / top5.length,
+    );
+    const compatibleCount = matchResults.filter(
+      (m) => m.match.score >= 60,
+    ).length;
+    return { average, compatibleCount };
+  }, [matchResults]);
+
+  const recommendedJobs = matchResults.slice(0, 3);
+
+  const profileMessage = getProfileMessage(completion);
 
   if (isLoading) {
     return (
@@ -145,18 +234,18 @@ export default function CandidateDashboard() {
             Olá, {firstName} 👋
           </h1>
           <p className="text-muted-foreground mt-1">
-            Acompanhe suas candidaturas, favorite vagas e gerencie seu
-            currículo.
+            Encontre novas oportunidades e mantenha seu perfil atualizado para
+            aumentar suas chances.
           </p>
         </header>
 
         {!candidate && (
-          <div className="border-border/40 bg-card shadow-glass mb-6 rounded-3xl border p-8">
+          <Card className="border-border/40 bg-card shadow-glass p-6">
             <div className="flex items-center gap-4">
               <div className="bg-warning/10 flex h-12 w-12 items-center justify-center rounded-xl">
                 <AlertCircle className="text-warning h-6 w-6" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h2 className="text-foreground font-semibold">
                   Perfil não encontrado
                 </h2>
@@ -164,200 +253,66 @@ export default function CandidateDashboard() {
                   Seu cadastro de candidato ainda não foi criado.
                 </p>
               </div>
-            </div>
-            <div className="mt-4">
-              <Link
-                to="/candidato/perfil"
-                className="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm font-medium"
-              >
-                Completar cadastro de candidato
+              <Link to="/candidato/perfil">
+                <Button variant="primary" size="sm">
+                  Completar cadastro
+                </Button>
               </Link>
             </div>
-          </div>
+          </Card>
         )}
 
         {candidate && (
           <>
-            <div className="border-border/40 bg-card shadow-glass mb-6 rounded-3xl border p-6">
-              <div className="flex items-start gap-4">
-                <div className="bg-primary/10 text-primary flex h-16 w-16 shrink-0 items-center justify-center rounded-full">
-                  <User className="h-8 w-8" />
+            <Card className="border-border/40 bg-card shadow-glass p-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <div className="text-primary inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
+                    <Sparkles className="h-4 w-4" />
+                    Aumente suas chances de conseguir uma vaga
+                  </div>
+                  <h2 className="text-foreground mt-2 text-lg font-semibold">
+                    Seu perfil está {completion}% completo
+                  </h2>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    Complete suas informações para que possamos encontrar
+                    oportunidades mais compatíveis com seu perfil.
+                  </p>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-foreground text-xl font-bold">
-                        {person?.full_name || candidate.person?.full_name}
-                      </h2>
-                      {candidate.headline && (
-                        <p className="text-muted-foreground mt-1 text-sm">
-                          {candidate.headline}
-                        </p>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          candidate.status === 'active'
-                            ? 'bg-success/10 text-success'
-                            : candidate.status === 'inactive'
-                              ? 'bg-muted/10 text-muted-foreground'
-                              : candidate.status === 'archived'
-                                ? 'bg-muted-foreground/10 text-muted-foreground'
-                                : 'bg-destructive/10 text-destructive'
-                        }`}
-                      >
-                        {candidate.status === 'active'
-                          ? 'Ativo'
-                          : candidate.status === 'inactive'
-                            ? 'Inativo'
-                            : candidate.status === 'archived'
-                              ? 'Arquivado'
-                              : candidate.status}
-                      </span>
-                    </div>
-                  </div>
-
-                  {person?.email && (
-                    <p className="text-muted-foreground mt-2 text-sm">
-                      {person.email}
-                    </p>
-                  )}
-
-                  {candidate.experiences &&
-                    candidate.experiences.length > 0 && (
-                      <div className="mt-3 space-y-1">
-                        {candidate.experiences.slice(0, 2).map((exp) => (
-                          <div
-                            key={exp.id}
-                            className="text-muted-foreground text-sm"
-                          >
-                            <span className="font-medium">{exp.position}</span>{' '}
-                            · {exp.company}
-                            {exp.start_date && (
-                              <span className="text-xs">
-                                {' '}
-                                ·{' '}
-                                {new Date(exp.start_date).toLocaleDateString(
-                                  'pt-BR',
-                                  {
-                                    year: 'numeric',
-                                    month: 'short',
-                                  },
-                                )}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                        {candidate.experiences.length > 2 && (
-                          <p className="text-muted-foreground text-xs">
-                            +{candidate.experiences.length - 2} experiências
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                  <div className="text-muted-foreground mt-4 flex flex-wrap gap-4 text-sm">
-                    {candidate.skills && candidate.skills.length > 0 && (
-                      <span className="flex items-center gap-1">
-                        <FileText className="h-4 w-4" />
-                        {candidate.skills.length} habilidades
-                      </span>
-                    )}
-                    {candidate.education && candidate.education.length > 0 && (
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {candidate.education.length} formações
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      Cadastrado em{' '}
-                      {new Date(candidate.created_at).toLocaleDateString(
-                        'pt-BR',
-                      )}
-                    </span>
-                  </div>
-
-                  <div className="mt-4 flex gap-3">
-                    <Link
-                      to="/candidato/curriculo"
-                      className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm font-medium"
-                    >
-                      <FileUp className="h-4 w-4" />
-                      Atualizar currículo
-                    </Link>
-                    <Link
-                      to="/candidato/perfil"
-                      className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm font-medium"
-                    >
-                      Minhas experiências
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-border/40 bg-card shadow-glass mb-6 rounded-3xl border p-6">
-              <div className="mb-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-foreground text-lg font-semibold">
-                      Complete seu perfil
-                    </h2>
-                    <p className="text-muted-foreground text-xs">
-                      {profileStateInfo?.label ?? 'Novo'} —{' '}
-                      {profileStateInfo?.description ?? ''}
-                    </p>
-                  </div>
-                  <span className="text-foreground text-sm font-medium">
+                <div className="text-left sm:text-right">
+                  <div className="text-foreground text-2xl font-bold">
                     {completion}%
-                  </span>
-                </div>
-                <div className="bg-muted mt-2 h-2 w-full rounded-full">
-                  <div
-                    className="bg-primary h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${completion}%` }}
-                  />
+                  </div>
+                  <div className="text-muted-foreground text-xs">
+                    {completedCount} de {profileSteps.length} etapas
+                  </div>
                 </div>
               </div>
 
-              <div className="text-muted-foreground mt-3 text-sm">
-                {completion >= 90 && (
-                  <p>
-                    🎉 Seu perfil está quase completo! Envie seu currículo para
-                    aumentar suas chances ainda mais.
-                  </p>
-                )}
-                {completion >= 50 && completion < 90 && (
-                  <p>
-                    🚀 Seu perfil está em progresso. Adicione mais informações
-                    para receber recomendações personalizadas de vagas.
-                  </p>
-                )}
-                {completion < 50 && (
-                  <p>
-                    ⚠️ Complete seu perfil para receber vagas recomendadas e
-                    aumentar suas chances de ser encontrado por recrutadores.
-                  </p>
-                )}
+              <div className="bg-muted mt-4 h-2.5 w-full overflow-hidden rounded-full">
+                <div
+                  className="bg-primary h-2.5 rounded-full transition-all duration-500"
+                  style={{ width: `${completion}%` }}
+                />
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+              <div className="bg-muted-foreground/10 mt-4 grid grid-cols-2 gap-x-4 gap-y-2 rounded-xl p-4 text-sm sm:grid-cols-4">
                 {profileSteps.map((step) => (
                   <Link
-                    key={step.label}
+                    key={step.key}
                     to={step.href}
-                    className="flex items-center gap-1.5"
+                    className="flex items-center gap-2"
                   >
                     {step.done ? (
-                      <CheckCircle2 className="text-success h-3 w-3" />
+                      <CheckCircle2 className="text-success h-4 w-4 shrink-0" />
                     ) : (
-                      <Circle className="text-muted-foreground h-3 w-3" />
+                      <Circle className="text-muted-foreground h-4 w-4 shrink-0" />
                     )}
                     <span
                       className={
-                        step.done ? 'text-foreground' : 'text-muted-foreground'
+                        step.done
+                          ? 'text-foreground'
+                          : 'text-muted-foreground'
                       }
                     >
                       {step.label}
@@ -366,24 +321,179 @@ export default function CandidateDashboard() {
                 ))}
               </div>
 
-              {completion < 100 && (
-                <Link
-                  to={
-                    profileSteps.find((s) => !s.done)?.href ??
-                    '/candidato/perfil'
-                  }
-                  className="text-primary mt-4 inline-flex items-center gap-1 text-sm font-medium"
-                >
-                  Completar perfil
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              )}
-            </div>
+              <div
+                className={`mt-4 rounded-xl border p-4 text-sm ${
+                  profileMessage.tone === 'success'
+                    ? 'border-success/30 bg-success/5 text-success'
+                    : profileMessage.tone === 'warning'
+                      ? 'border-warning/30 bg-warning/5 text-warning'
+                      : 'border-destructive/30 bg-destructive/5 text-destructive'
+                }`}
+              >
+                {profileMessage.text}
+              </div>
 
-            <div className="border-border/40 bg-card shadow-glass mb-6 rounded-3xl border p-6">
+              <div className="text-muted-foreground text-xs">
+                Estado atual: {profileStateInfo?.label} —{' '}
+                {profileStateInfo?.description}
+              </div>
+
+              {completion < 100 && nextStep && (
+                <div className="mt-4">
+                  <Link to={nextStep.href}>
+                    <Button variant="primary" size="md">
+                      Completar meu perfil
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </Card>
+
+            <Card className="border-border/40 bg-card shadow-glass p-6">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="text-primary inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
+                    <TrendingUp className="h-4 w-4" />
+                    Compatibilidade com vagas
+                  </div>
+                  <h2 className="text-foreground mt-2 text-lg font-semibold">
+                    {compatibility.compatibleCount > 0
+                      ? `${compatibility.compatibleCount} vaga${
+                          compatibility.compatibleCount > 1 ? 's' : ''
+                        } compatível${compatibility.compatibleCount > 1 ? 'is' : ''} encontrada${
+                          compatibility.compatibleCount > 1 ? 's' : ''
+                        }`
+                      : 'Estamos buscando vagas compatíveis para você'}
+                  </h2>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    {compatibility.average > 0
+                      ? 'Quanto mais informações você compartilhar, mais preciso fica o match.'
+                      : 'Complete seu perfil para que a J&S encontre vagas para você.'}
+                  </p>
+                </div>
+                <div className="text-left sm:text-right">
+                  <div className="text-foreground text-2xl font-bold">
+                    {compatibility.average}%
+                  </div>
+                  <div className="text-muted-foreground text-xs">
+                    compatibilidade média
+                  </div>
+                </div>
+              </div>
+              <div className="bg-muted mt-4 h-2.5 w-full overflow-hidden rounded-full">
+                <div
+                  className="bg-success h-2.5 rounded-full transition-all duration-500"
+                  style={{ width: `${compatibility.average}%` }}
+                />
+              </div>
+            </Card>
+
+            <Card className="border-border/40 bg-card shadow-glass p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-foreground text-lg font-semibold">
+                    Vagas recomendadas para você
+                  </h2>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    Encontramos oportunidades que podem combinar com seu
+                    perfil.
+                  </p>
+                </div>
+                <Link
+                  to="/candidato/vagas"
+                  className="text-primary hover:text-primary/80 text-sm font-medium"
+                >
+                  Ver todas
+                </Link>
+              </div>
+
+              {recommendedJobs.length === 0 ? (
+                <div className="py-8 text-center">
+                  <Briefcase className="text-muted-foreground/30 mx-auto mb-3 h-10 w-10" />
+                  <p className="text-foreground font-medium">
+                    Nenhuma vaga recomendada no momento
+                  </p>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    Atualize suas preferências para receber recomendações mais
+                    precisas.
+                  </p>
+                </div>
+              ) : (
+                <ul className="space-y-3">
+                  {recommendedJobs.map(({ job: j, match }) => {
+                    const salary = formatSalaryRange(
+                      j.salary_min,
+                      j.salary_max,
+                    );
+                    return (
+                      <li key={j.id}>
+                        <Link
+                          to={`/vagas/${j.slug}`}
+                          className="border-border/40 hover:bg-muted/5 flex items-start gap-4 rounded-xl border p-4 transition-colors"
+                        >
+                          <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+                            <Building2 className="h-5 w-5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-2">
+                              <h3 className="text-foreground truncate text-base font-semibold">
+                                {j.title}
+                              </h3>
+                              <MatchScoreBadge
+                                score={match.score}
+                                compact
+                              />
+                            </div>
+                            <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                              {j.city && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="h-3 w-3" />
+                                  {j.city}
+                                  {j.state ? `/${j.state}` : ''}
+                                </span>
+                              )}
+                              {j.contract_type && (
+                                <span>
+                                  {CONTRACT_LABELS[j.contract_type] ??
+                                    j.contract_type}
+                                </span>
+                              )}
+                              {j.work_mode && (
+                                <span>
+                                  {WORK_MODE_LABELS[j.work_mode] ??
+                                    j.work_mode}
+                                </span>
+                              )}
+                              {salary && (
+                                <span className="text-foreground font-medium">
+                                  {salary}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <ArrowRight className="text-muted-foreground mt-3 hidden h-4 w-4 shrink-0 sm:block" />
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
+              <div className="mt-4">
+                <Link to="/candidato/vagas">
+                  <Button variant="outline" size="md" className="w-full">
+                    Ver todas as vagas
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
+            <Card className="border-border/40 bg-card shadow-glass p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-foreground text-lg font-semibold">
-                  Suas candidaturas
+                  Minhas candidaturas
                 </h2>
                 <Link
                   to="/candidato/candidaturas"
@@ -425,7 +535,6 @@ export default function CandidateDashboard() {
                             </p>
                           )}
                         </div>
-                        <div>{getStatusBadge(app.current_stage)}</div>
                       </div>
                       <div className="text-muted-foreground mt-2 text-xs">
                         Candidatou-se em{' '}
@@ -435,10 +544,131 @@ export default function CandidateDashboard() {
                   ))}
                 </div>
               )}
-            </div>
+            </Card>
 
-            <div className="border-border/40 bg-card shadow-glass rounded-3xl border p-6">
-              <h2 className="text-foreground mb-4 text-lg font-semibold">
+            <Card className="border-border/40 bg-card shadow-glass p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-foreground text-lg font-semibold">
+                  Vagas favoritas
+                </h2>
+                <Link
+                  to="/candidato/favoritas"
+                  className="text-primary hover:text-primary/80 text-sm font-medium"
+                >
+                  Ver todas
+                </Link>
+              </div>
+
+              {favorites.length === 0 ? (
+                <div className="py-8 text-center">
+                  <Heart className="text-muted-foreground/30 mx-auto mb-3 h-10 w-10" />
+                  <p className="text-foreground font-medium">
+                    Você ainda não favoritou nenhuma vaga
+                  </p>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    Favorite vagas para acessá-las rapidamente depois.
+                  </p>
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {favorites.slice(0, 3).map((fav) => (
+                    <li key={fav.id}>
+                      <Link
+                        to={`/vagas/${fav.job?.slug ?? ''}`}
+                        className="border-border/40 hover:bg-muted/5 flex items-center gap-3 rounded-xl border p-3 transition-colors"
+                      >
+                        <Heart className="fill-destructive text-destructive h-4 w-4 shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-foreground truncate font-medium">
+                            {fav.job?.title ?? 'Vaga'}
+                          </div>
+                          {fav.job?.city && (
+                            <div className="text-muted-foreground text-xs">
+                              {fav.job.city}
+                              {fav.job.state ? `/${fav.job.state}` : ''}
+                            </div>
+                          )}
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+
+            <Card className="border-border/40 bg-card shadow-glass p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-foreground text-lg font-semibold">
+                    Alertas de vagas
+                  </h2>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    Receba notificações de oportunidades compatíveis com seus
+                    critérios.
+                  </p>
+                </div>
+                <Link
+                  to="/candidato/alertas"
+                  className="text-primary hover:text-primary/80 text-sm font-medium"
+                >
+                  Gerenciar
+                </Link>
+              </div>
+
+              {jobAlerts.length === 0 ? (
+                <div className="py-6 text-center">
+                  <Bell className="text-muted-foreground/30 mx-auto mb-3 h-10 w-10" />
+                  <p className="text-foreground font-medium">
+                    Você ainda não tem alertas
+                  </p>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    Crie alertas para ser notificado quando novas vagas
+                    compatíveis forem publicadas.
+                  </p>
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {jobAlerts.slice(0, 3).map((alert) => (
+                    <li
+                      key={alert.id}
+                      className="border-border/40 flex items-center gap-3 rounded-xl border p-3"
+                    >
+                      <Bell
+                        className={
+                          alert.is_active
+                            ? 'text-primary h-4 w-4 shrink-0'
+                            : 'text-muted-foreground h-4 w-4 shrink-0'
+                        }
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-foreground truncate font-medium">
+                          {alert.name}
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          {alert.is_active ? 'Ativo' : 'Pausado'} ·{' '}
+                          {alert.frequency === 'instant'
+                            ? 'Imediato'
+                            : alert.frequency === 'daily'
+                              ? 'Diário'
+                              : 'Semanal'}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                  {jobAlerts.length > 3 && (
+                    <Link
+                      to="/candidato/alertas"
+                      className="text-primary hover:text-primary/80 block pt-1 text-center text-sm font-medium"
+                    >
+                      Ver todos ({jobAlerts.length})
+                    </Link>
+                  )}
+                </ul>
+              )}
+            </Card>
+
+            <div>
+              <h2 className="text-foreground mb-3 text-lg font-semibold">
                 Ações rápidas
               </h2>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -460,7 +690,7 @@ export default function CandidateDashboard() {
                   to="/candidato/candidaturas"
                   className="border-border/40 hover:bg-muted/5 rounded-xl border p-4 text-center transition-colors"
                 >
-                  <FileUp className="text-primary mx-auto mb-1 h-5 w-5" />
+                  <Briefcase className="text-primary mx-auto mb-1 h-5 w-5" />
                   <span className="block text-sm font-medium">
                     Candidaturas
                   </span>

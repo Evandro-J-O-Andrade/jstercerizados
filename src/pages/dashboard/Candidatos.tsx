@@ -4,6 +4,8 @@ import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Users, Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
+import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { candidatesRepository } from '@/repositories/candidates.repository';
 import { cn } from '@/utils';
 import type {
@@ -27,12 +29,14 @@ const SALARY_TYPE_OPTIONS = [
 
 export default function Candidatos() {
   const { currentTenantId, isAdminMaster } = useAuth();
+  const { addToast } = useToast();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selected, setSelected] = useState<Candidate | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [form, setForm] = useState({
     person_id: '',
     headline: '',
@@ -163,14 +167,24 @@ export default function Candidatos() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
+    if (!deleteConfirm || !currentTenantId) return;
     try {
-      await candidatesRepository.delete(id, currentTenantId || '');
-      setCandidates((prev) => prev.filter((c) => c.id !== id));
+      await candidatesRepository.delete(deleteConfirm, currentTenantId);
+      setCandidates((prev) => prev.filter((c) => c.id !== deleteConfirm));
+      addToast({ type: 'success', message: 'Candidato removido com sucesso.' });
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Erro ao remover candidato',
       );
+      addToast({
+        type: 'error',
+        message: err instanceof Error
+          ? err.message
+          : 'Erro ao remover candidato',
+      });
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
@@ -335,7 +349,7 @@ export default function Candidatos() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleDelete(candidate.id)}
+                          onClick={() => setDeleteConfirm(candidate.id)}
                           className="text-destructive hover:text-destructive/80"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -501,6 +515,16 @@ export default function Candidatos() {
           </Card>
         )}
       </div>
+
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        title="Remover candidato?"
+        message="Tem certeza que deseja remover este candidato? Essa ação não pode ser desfeita."
+        confirmLabel="Remover"
+        variant="danger"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </ModuleWorkspace>
   );
 }

@@ -3,6 +3,8 @@ import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
 import { Monitor, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
+import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { getSupabaseClient } from '@/lib/supabase';
 
 interface Session {
@@ -16,8 +18,10 @@ interface Session {
 
 export default function SessoesPage() {
   const { currentTenantId, isAdminMaster } = useAuth();
+  const { addToast } = useToast();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = getSupabaseClient();
@@ -49,7 +53,8 @@ export default function SessoesPage() {
     fetchSessions();
   }, [currentTenantId, isAdminMaster]);
 
-  const handleRevoke = async (sessionId: string) => {
+  const handleRevoke = async () => {
+    if (!deleteConfirm) return;
     const supabase = getSupabaseClient();
     if (!supabase) return;
 
@@ -57,12 +62,19 @@ export default function SessoesPage() {
       const { error } = await supabase
         .from('sessions')
         .delete()
-        .eq('id', sessionId);
+        .eq('id', deleteConfirm);
 
       if (error) throw error;
-      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+      setSessions((prev) => prev.filter((s) => s.id !== deleteConfirm));
+      addToast({ type: 'success', message: 'Sessão encerrada com sucesso.' });
     } catch (error) {
       console.error('[SESSOES] Failed to revoke session:', error);
+      addToast({
+        type: 'error',
+        message: 'Erro ao encerrar sessão. Tente novamente.',
+      });
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
@@ -129,7 +141,7 @@ export default function SessoesPage() {
                     <td className="px-4 py-3 text-right">
                       <button
                         type="button"
-                        onClick={() => handleRevoke(session.id)}
+                        onClick={() => setDeleteConfirm(session.id)}
                         className="text-destructive hover:text-destructive/80 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium transition-colors"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -143,6 +155,16 @@ export default function SessoesPage() {
           </table>
         </Card>
       )}
+
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        title="Encerrar sessão?"
+        message="Tem certeza que deseja encerrar esta sessão? O usuário precisará fazer login novamente."
+        confirmLabel="Encerrar"
+        variant="danger"
+        onConfirm={handleRevoke}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </ModuleWorkspace>
   );
 }

@@ -843,7 +843,7 @@ export interface Database {
           match_score: number | null;
           match_details: Record<string, unknown> | null;
           source: string | null;
-          current_stage:
+          current_status:
             | 'submitted'
             | 'screening'
             | 'interview'

@@ -7,9 +7,11 @@ import { EmptyState, ErrorState } from '@/components/fallback';
 import { costCenterRepository } from '@/repositories/cost-center.repository';
 import type { CostCenter } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 export default function CentroCustosPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [centers, setCenters] = useState<CostCenter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export default function CentroCustosPage() {
             className="w-full bg-transparent text-sm outline-none"
           />
         </div>
-        <Button onClick={() => alert('Formulário de novo centro de custo')}>
+        <Button onClick={() => addToast({ type: 'info', message: 'Formulário de novo centro de custo' })}>
           <Plus className="mr-2 h-4 w-4" />
           Novo centro
         </Button>
@@ -63,7 +65,7 @@ export default function CentroCustosPage() {
           title="Nenhum centro de custo cadastrado"
           description="Quando houver centros cadastrados, eles aparecerão aqui."
           actionLabel="Novo centro"
-          onAction={() => alert('Formulário de novo centro de custo')}
+          onAction={() => addToast({ type: 'info', message: 'Formulário de novo centro de custo' })}
         />
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">

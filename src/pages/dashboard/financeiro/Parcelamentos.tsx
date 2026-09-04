@@ -13,9 +13,11 @@ import type {
   FinancialInstallmentCreateInput,
 } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 export default function FinanceiroParcelamentosPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [items, setItems] = useState<FinancialInstallment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,8 +72,12 @@ export default function FinanceiroParcelamentosPage() {
         status: 'open',
       });
       await load();
+      addToast({ type: 'success', message: 'Parcelamento criado com sucesso!' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao salvar');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao salvar',
+      });
     }
   };
 
@@ -81,8 +87,12 @@ export default function FinanceiroParcelamentosPage() {
       await financialInstallmentRepository.remove(deleteId, currentTenantId);
       setDeleteId(null);
       await load();
+      addToast({ type: 'success', message: 'Parcelamento excluído com sucesso.' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao excluir');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao excluir',
+      });
     }
   };
 

@@ -80,6 +80,22 @@ export type CandidateEducation =
   Database['public']['Tables']['candidate_education']['Row'];
 export type CandidateCourse =
   Database['public']['Tables']['candidate_courses']['Row'];
+
+export interface CandidateCourseCreateInput {
+  candidate_id: string;
+  name: string;
+  institution?: string | null;
+  hours?: number | null;
+  completed_at?: string | null;
+}
+
+export interface CandidateCourseUpdateInput {
+  name?: string;
+  institution?: string | null;
+  hours?: number | null;
+  completed_at?: string | null;
+}
+
 export type CandidateLanguage =
   Database['public']['Tables']['candidate_languages']['Row'];
 
@@ -115,17 +131,13 @@ export type CandidateSkill =
 
 export interface CandidateSkillCreateInput {
   candidate_id: string;
-  skill_id: string;
-  proficiency?: string | null;
-  years_experience?: number | null;
-  last_used_at?: string | null;
+  name: string;
+  level?: string | null;
 }
 
 export interface CandidateSkillUpdateInput {
-  skill_id?: string;
-  proficiency?: string | null;
-  years_experience?: number | null;
-  last_used_at?: string | null;
+  name?: string;
+  level?: string | null;
 }
 
 export interface CandidateEducationCreateInput {

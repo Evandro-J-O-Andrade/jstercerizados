@@ -170,10 +170,10 @@ export function matchJobToCandidate(
     let detail = '';
 
     if (jobSkills.length > 0 && candidate.skills.length > 0) {
-      const candidateSkillIds = new Set(
-        candidate.skills.map((s) => s.skill_id),
+      const candidateSkillNames = new Set(
+        candidate.skills.map((s) => (s.name || '').toLowerCase()),
       );
-      const candidateSkillNames = candidate.skills
+      const candidateSkillLevels = candidate.skills
         .filter((s) => s.level)
         .map((s) => ({
           level: s.level ?? '',
@@ -188,16 +188,16 @@ export function matchJobToCandidate(
       const matchedSkills: string[] = [];
 
       for (const js of requiredSkills) {
-        if (candidateSkillIds.has(js.skill_id) || (js.skill_name && candidateSkillIds.has(js.skill_name.toLowerCase()))) {
+        if (js.skill_name && candidateSkillNames.has(js.skill_name.toLowerCase())) {
           requiredHits++;
-          matchedSkills.push(js.skill_name || js.skill_id);
+          matchedSkills.push(js.skill_name);
         }
       }
 
       for (const js of optionalSkills) {
-        if (candidateSkillIds.has(js.skill_id) || (js.skill_name && candidateSkillIds.has(js.skill_name.toLowerCase()))) {
+        if (js.skill_name && candidateSkillNames.has(js.skill_name.toLowerCase())) {
           optionalHits++;
-          matchedSkills.push(js.skill_name || js.skill_id);
+          matchedSkills.push(js.skill_name);
         }
       }
 
@@ -212,7 +212,7 @@ export function matchJobToCandidate(
 
       // Proficiency bonus: if candidate's level >= required level
       const profBonus = Math.min(
-        candidateSkillNames.filter((s) => rankLevel(s.level) >= 2).length /
+        candidateSkillLevels.filter((s) => rankLevel(s.level) >= 2).length /
           Math.max(jobSkills.length, 1),
         0.2,
       );

@@ -3,18 +3,22 @@ import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Shield, Plus, Pencil, Trash2 } from 'lucide-react';
+import { useToast } from '@/components/feedback/ToastContext';
+import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { roleRepository } from '@/repositories/role.repository';
 import { permissionRepository } from '@/repositories/permission.repository';
 import type { Role } from '@/types/domain/role';
 import type { Permission } from '@/types/domain/permission';
 
 export default function RolesPermissoesPage() {
+  const { addToast } = useToast();
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [roleForm, setRoleForm] = useState({
     name: '',
     description: '',
@@ -126,12 +130,20 @@ export default function RolesPermissoesPage() {
     }
   };
 
-  const handleRoleDelete = async (id: string) => {
+  const handleRoleDelete = async () => {
+    if (!deleteConfirm) return;
     try {
-      await roleRepository.delete(id, '');
-      setRoles((prev) => prev.filter((r) => r.id !== id));
+      await roleRepository.delete(deleteConfirm, '');
+      setRoles((prev) => prev.filter((r) => r.id !== deleteConfirm));
+      addToast({ type: 'success', message: 'Role removida com sucesso.' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao remover role');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao remover role',
+      });
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
@@ -222,13 +234,13 @@ export default function RolesPermissoesPage() {
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => handleRoleDelete(role.id)}
-                      className="text-destructive hover:text-destructive/80"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                     <button
+                       type="button"
+                       onClick={() => setDeleteConfirm(role.id)}
+                       className="text-destructive hover:text-destructive/80"
+                     >
+                       <Trash2 className="h-4 w-4" />
+                     </button>
                   </div>
                 </div>
               ))}
@@ -417,6 +429,16 @@ export default function RolesPermissoesPage() {
           </form>
         </Card>
       </div>
+
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        title="Remover role?"
+        message="Tem certeza que deseja remover esta role? Essa ação não pode ser desfeita."
+        confirmLabel="Remover"
+        variant="danger"
+        onConfirm={handleRoleDelete}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </ModuleWorkspace>
   );
 }

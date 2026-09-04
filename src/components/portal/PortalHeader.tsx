@@ -18,7 +18,6 @@ import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
 import { useTheme } from '@/hooks/useTheme';
-import { GlobalNavActions } from '@/components/layout/GlobalNavActions';
 import { COMPANY } from '@/config';
 import { cn } from '@/utils';
 import { normalizeRoleScope } from '@/utils/rbac-normalize';
@@ -123,10 +122,8 @@ export function PortalHeader({
           className="hidden items-center gap-2 md:flex"
         >
           <Globe className="h-4 w-4" />
-          <span className="text-sm">Site público</span>
+          <span className="text-sm">Voltar para o site</span>
         </Button>
-
-        <GlobalNavActions variant="inline" className="hidden md:flex" />
 
         <div
           className={cn(

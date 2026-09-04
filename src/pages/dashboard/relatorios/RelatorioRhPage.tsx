@@ -9,8 +9,10 @@ import { EmptyState } from '@/components/fallback';
 import { employeesRepository } from '@/repositories/employees.repository';
 import type { Employee } from '@/types/domain/employee';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 export default function RelatorioRhPage() {
+  const { addToast } = useToast();
   const { currentTenantId } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +65,15 @@ export default function RelatorioRhPage() {
           <h1 className="text-xl font-semibold text-foreground">Relatórios RH</h1>
           <p className="text-sm text-muted-foreground">Demonstrativos e análises do módulo de RH.</p>
         </div>
-        <Button variant="secondary" onClick={() => alert('Exportando relatório RH...')}>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            addToast({
+              type: 'info',
+              message: 'Exportando relatório RH...',
+            })
+          }
+        >
           <Download className="mr-2 h-4 w-4" />
           Exportar
         </Button>

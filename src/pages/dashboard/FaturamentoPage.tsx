@@ -12,11 +12,13 @@ import { invoiceRepository } from '@/repositories/invoice.repository';
 import type { Invoice, Sale, Quote } from '@/types/domain/billing';
 import type { Invoice as DomainInvoice } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 type Tab = 'invoices' | 'sales' | 'quotes';
 
 export default function FaturamentoPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('invoices');
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
@@ -120,7 +122,12 @@ export default function FaturamentoPage() {
         </div>
         <Button
           variant="secondary"
-          onClick={() => alert('Exportar relatório de faturamento...')}
+          onClick={() =>
+            addToast({
+              type: 'info',
+              message: 'Exportar relatório de faturamento...',
+            })
+          }
         >
           <Download className="mr-2 h-4 w-4" />
           Exportar
@@ -194,7 +201,7 @@ export default function FaturamentoPage() {
                 className="w-full bg-transparent text-sm outline-none"
               />
             </div>
-            <Button onClick={() => alert('Formulário de nova fatura')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova fatura' })}>
               <Plus className="mr-2 h-4 w-4" />
               Nova fatura
             </Button>
@@ -205,7 +212,7 @@ export default function FaturamentoPage() {
               title="Nenhuma fatura cadastrada"
               description="Quando houver faturas registradas, elas aparecerão aqui."
               actionLabel="Nova fatura"
-              onAction={() => alert('Formulário de nova fatura')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de nova fatura' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -299,7 +306,7 @@ export default function FaturamentoPage() {
                 className="w-full bg-transparent text-sm outline-none"
               />
             </div>
-            <Button onClick={() => alert('Formulário de nova venda')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova venda' })}>
               <Plus className="mr-2 h-4 w-4" />
               Nova venda
             </Button>
@@ -310,7 +317,7 @@ export default function FaturamentoPage() {
               title="Nenhuma venda cadastrada"
               description="Quando houver vendas registradas, elas aparecerão aqui."
               actionLabel="Nova venda"
-              onAction={() => alert('Formulário de nova venda')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de nova venda' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -363,7 +370,7 @@ export default function FaturamentoPage() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => alert('Formulário de novo orçamento')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de novo orçamento' })}>
               <Plus className="mr-2 h-4 w-4" />
               Novo orçamento
             </Button>
@@ -374,7 +381,7 @@ export default function FaturamentoPage() {
               title="Nenhum orçamento cadastrado"
               description="Quando houver orçamentos registrados, eles aparecerão aqui."
               actionLabel="Novo orçamento"
-              onAction={() => alert('Formulário de novo orçamento')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de novo orçamento' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -454,7 +461,7 @@ export default function FaturamentoPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => alert('Abrir gestão de notas fiscais')}
+              onClick={() => addToast({ type: 'info', message: 'Abrir gestão de notas fiscais' })}
             >
               Gerenciar
             </Button>

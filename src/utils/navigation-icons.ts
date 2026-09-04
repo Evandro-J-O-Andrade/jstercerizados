@@ -11,6 +11,7 @@ import {
   MessageCircle,
   Accessibility,
   LifeBuoy,
+  ArrowLeft,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -27,6 +28,7 @@ const MAP: Record<string, LucideIcon> = {
   MessageCircle,
   Accessibility,
   LifeBuoy,
+  ArrowLeft,
 };
 
 export function resolveIcon(name: string): LucideIcon {

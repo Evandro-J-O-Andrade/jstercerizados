@@ -9,8 +9,10 @@ import { EmptyState } from '@/components/fallback';
 import { companiesRepository } from '@/repositories/companies.repository';
 import type { Company } from '@/types/domain/company';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 export default function RelatorioCrmPage() {
+  const { addToast } = useToast();
   const { currentTenantId } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,7 +77,12 @@ export default function RelatorioCrmPage() {
         </div>
         <Button
           variant="secondary"
-          onClick={() => alert('Exportando relatório CRM...')}
+          onClick={() =>
+            addToast({
+              type: 'info',
+              message: 'Exportando relatório CRM...',
+            })
+          }
         >
           <Download className="mr-2 h-4 w-4" />
           Exportar

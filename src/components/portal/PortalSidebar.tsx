@@ -26,7 +26,6 @@ import { cn } from '@/utils';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
-import { GlobalNavActions } from '@/components/layout/GlobalNavActions';
 import {
   type ModuleCategory,
   type ModuleDefinition,
@@ -570,9 +569,8 @@ export function PortalSidebar({
                 )}
               >
                 <Globe className="h-4 w-4" />
-                {!collapsed && <span>Site público</span>}
+                {!collapsed && <span>Voltar para o site</span>}
               </Button>
-              <GlobalNavActions />
             </div>
           </div>
         </div>

@@ -42,7 +42,6 @@ export default function CandidatoDetalhe() {
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabValue>('overview');
-  const [skillNames, setSkillNames] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!id || !currentTenantId) return;
@@ -51,37 +50,6 @@ export default function CandidatoDetalhe() {
       try {
         const data = await candidatesRepository.findById(id, currentTenantId);
         setCandidate(data);
-
-        if (data?.skills?.length) {
-          const uniqueSkillIds = Array.from(
-            new Set(
-              data.skills
-                .map((s) => s.skill_id)
-                .filter((sid): sid is string => Boolean(sid)),
-            ),
-          );
-
-          if (uniqueSkillIds.length) {
-            const { createClient } = await import('@supabase/supabase-js');
-            const supabase = createClient(
-              process.env.VITE_SUPABASE_URL || '',
-              process.env.VITE_SUPABASE_ANON_KEY || '',
-            );
-
-            const { data: skillsData } = await supabase
-              .from('skills')
-              .select('id, name')
-              .in('id', uniqueSkillIds);
-
-            if (skillsData) {
-              const map: Record<string, string> = {};
-              skillsData.forEach((s) => {
-                map[s.id] = s.name;
-              });
-              setSkillNames(map);
-            }
-          }
-        }
       } catch (error) {
         console.error('[CandidatoDetalhe] Falha ao carregar candidato', error);
       } finally {
@@ -267,15 +235,14 @@ export default function CandidatoDetalhe() {
               Nenhuma habilidade registrada.
             </p>
           ) : (
-            <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2">
               {candidate.skills?.map((skill) => (
                 <span
                   key={skill.id}
                   className="rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700"
                 >
-                  {skill.skill_id
-                    ? skillNames[skill.skill_id] || skill.skill_id
-                    : '—'}
+                  {skill.name || '—'}
+                  {skill.level ? ` (${skill.level})` : ''}
                 </span>
               ))}
             </div>

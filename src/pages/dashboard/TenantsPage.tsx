@@ -4,16 +4,20 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Building2, Plus, Pencil, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
+import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { tenantRepository } from '@/repositories/tenant.repository';
 import type { Tenant } from '@/types/domain/tenant';
 
 export default function TenantsPage() {
   const { isAdminMaster, tenantMemberships } = useAuth();
+  const { addToast } = useToast();
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Tenant | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: '',
     slug: '',
@@ -126,12 +130,20 @@ export default function TenantsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
+    if (!deleteConfirm) return;
     try {
-      await tenantRepository.delete(id, '');
-      setTenants((prev) => prev.filter((t) => t.id !== id));
+      await tenantRepository.delete(deleteConfirm, '');
+      setTenants((prev) => prev.filter((t) => t.id !== deleteConfirm));
+      addToast({ type: 'success', message: 'Tenant removido com sucesso.' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao remover tenant');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao remover tenant',
+      });
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
@@ -229,7 +241,7 @@ export default function TenantsPage() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleDelete(tenant.id)}
+                          onClick={() => setDeleteConfirm(tenant.id)}
                           className="text-destructive hover:text-destructive/80"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -330,6 +342,16 @@ export default function TenantsPage() {
           </Card>
         )}
       </div>
+
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        title="Remover tenant?"
+        message="Tem certeza que deseja remover este tenant? Essa ação não pode ser desfeita."
+        confirmLabel="Remover"
+        variant="danger"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </ModuleWorkspace>
   );
 }

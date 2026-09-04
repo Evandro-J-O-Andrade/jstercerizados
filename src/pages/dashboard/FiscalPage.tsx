@@ -13,11 +13,13 @@ import type {
   FiscalConfiguration,
 } from '@/types/domain/fiscal';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 type Tab = 'documents' | 'configuration';
 
 export default function FiscalPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('documents');
   const [documents, setDocuments] = useState<FiscalDocument[]>([]);
   const [configs, setConfigs] = useState<FiscalConfiguration[]>([]);
@@ -102,7 +104,12 @@ export default function FiscalPage() {
         </div>
         <Button
           variant="secondary"
-          onClick={() => alert('Exportar relatório fiscal...')}
+          onClick={() =>
+            addToast({
+              type: 'info',
+              message: 'Exportar relatório fiscal...',
+            })
+          }
         >
           <Download className="mr-2 h-4 w-4" />
           Exportar
@@ -177,7 +184,7 @@ export default function FiscalPage() {
               <option value="cancelled">Cancelada</option>
               <option value="voided">Inutilizada</option>
             </select>
-            <Button onClick={() => alert('Formulário de nova nota fiscal')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova nota fiscal' })}>
               <Plus className="mr-2 h-4 w-4" />
               Nova nota
             </Button>
@@ -188,7 +195,7 @@ export default function FiscalPage() {
               title="Nenhuma nota fiscal cadastrada"
               description="Quando houver notas fiscais registradas, elas aparecerão aqui."
               actionLabel="Nova nota"
-              onAction={() => alert('Formulário de nova nota fiscal')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de nova nota fiscal' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -282,7 +289,7 @@ export default function FiscalPage() {
                 </p>
               </div>
               <Button
-                onClick={() => alert('Formulário de configuração fiscal')}
+                onClick={() => addToast({ type: 'info', message: 'Formulário de configuração fiscal' })}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Editar configuração

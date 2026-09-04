@@ -9,8 +9,10 @@ import { EmptyState } from '@/components/fallback';
 import { jobsRepository } from '@/repositories/jobs.repository';
 import type { Job } from '@/types/domain/job';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 export default function RelatorioRecrutamentoPage() {
+  const { addToast } = useToast();
   const { currentTenantId } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +65,15 @@ export default function RelatorioRecrutamentoPage() {
           <h1 className="text-xl font-semibold text-foreground">Relatórios de Recrutamento</h1>
           <p className="text-sm text-muted-foreground">Demonstrativos e análises do módulo de recrutamento.</p>
         </div>
-        <Button variant="secondary" onClick={() => alert('Exportando relatório de recrutamento...')}>
+        <Button
+          variant="secondary"
+          onClick={() =>
+            addToast({
+              type: 'info',
+              message: 'Exportando relatório de recrutamento...',
+            })
+          }
+        >
           <Download className="mr-2 h-4 w-4" />
           Exportar
         </Button>

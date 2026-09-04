@@ -12,7 +12,7 @@ import type {
   CandidateSkillUpdateInput,
 } from '@/types/domain/candidate';
 
-const PROFICIENCY_OPTIONS = [
+const LEVEL_OPTIONS = [
   { value: 'basic', label: 'Básico' },
   { value: 'intermediate', label: 'Intermediário' },
   { value: 'advanced', label: 'Avançado' },
@@ -22,10 +22,8 @@ const PROFICIENCY_OPTIONS = [
 type CandidateSkillReal = {
   id: string;
   candidate_id: string;
-  skill_id: string;
-  proficiency: string | null;
-  years_experience: number | null;
-  last_used_at: string | null;
+  name: string;
+  level: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -39,9 +37,6 @@ export default function CandidatoHabilidades() {
   const [candidates, setCandidates] = useState<
     Array<{ id: string; person?: { full_name?: string } | null }>
   >([]);
-  const [globalSkills, setGlobalSkills] = useState<
-    Array<{ id: string; name: string; category?: string | null }>
-  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -49,10 +44,8 @@ export default function CandidatoHabilidades() {
   const [selected, setSelected] = useState<CandidateSkillReal | null>(null);
   const [form, setForm] = useState({
     candidate_id: '',
-    skill_id: '',
-    proficiency: 'intermediate',
-    years_experience: '',
-    last_used_at: '',
+    name: '',
+    level: 'intermediate',
   });
 
   useEffect(() => {
@@ -65,10 +58,7 @@ export default function CandidatoHabilidades() {
       setError(null);
 
       try {
-        const [candidatesData, globalSkillsData] = await Promise.all([
-          candidatesRepository.findAll(currentTenantId),
-          fetchGlobalSkills(),
-        ]);
+        const candidatesData = await candidatesRepository.findAll(currentTenantId);
 
         if (!cancelled) {
           setCandidates(
@@ -82,8 +72,6 @@ export default function CandidatoHabilidades() {
             (c.skills || []).map(toRealSkill),
           );
           setSkills(allSkills);
-
-          setGlobalSkills(globalSkillsData);
         }
       } catch (err) {
         if (!cancelled) {
@@ -105,31 +93,12 @@ export default function CandidatoHabilidades() {
     };
   }, [currentTenantId]);
 
-  const fetchGlobalSkills = async () => {
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(
-      process.env.VITE_SUPABASE_URL || '',
-      process.env.VITE_SUPABASE_ANON_KEY || '',
-    );
-
-    const { data, error } = await supabase
-      .from('skills')
-      .select('id, name, category')
-      .eq('is_active', true)
-      .order('name', { ascending: true });
-
-    if (error) throw error;
-    return data || [];
-  };
-
   const openCreate = () => {
     setSelected(null);
     setForm({
       candidate_id: '',
-      skill_id: '',
-      proficiency: 'intermediate',
-      years_experience: '',
-      last_used_at: '',
+      name: '',
+      level: 'intermediate',
     });
   };
 
@@ -137,10 +106,8 @@ export default function CandidatoHabilidades() {
     setSelected(skill);
     setForm({
       candidate_id: skill.candidate_id,
-      skill_id: skill.skill_id,
-      proficiency: skill.proficiency || 'intermediate',
-      years_experience: skill.years_experience?.toString() || '',
-      last_used_at: skill.last_used_at ? skill.last_used_at.slice(0, 10) : '',
+      name: skill.name ?? '',
+      level: skill.level || 'intermediate',
     });
   };
 
@@ -151,12 +118,8 @@ export default function CandidatoHabilidades() {
     try {
       const payload: CandidateSkillCreateInput | CandidateSkillUpdateInput = {
         candidate_id: form.candidate_id,
-        skill_id: form.skill_id,
-        proficiency: form.proficiency,
-        years_experience: form.years_experience
-          ? Number(form.years_experience)
-          : null,
-        last_used_at: form.last_used_at || null,
+        name: form.name,
+        level: form.level,
       };
 
       if (selected) {
@@ -185,10 +148,8 @@ export default function CandidatoHabilidades() {
       setSelected(null);
       setForm({
         candidate_id: '',
-        skill_id: '',
-        proficiency: 'intermediate',
-        years_experience: '',
-        last_used_at: '',
+        name: '',
+        level: 'intermediate',
       });
     } catch (err) {
       setError(
@@ -214,7 +175,8 @@ export default function CandidatoHabilidades() {
   };
 
   const filtered = skills.filter((skill) => {
-    const matchesSearch = !search;
+    const matchesSearch =
+      !search || skill.name.toLowerCase().includes(search.toLowerCase());
     const matchesCandidate =
       candidateFilter === 'all' || skill.candidate_id === candidateFilter;
     return matchesSearch && matchesCandidate;
@@ -225,9 +187,9 @@ export default function CandidatoHabilidades() {
     return c?.person?.full_name || '—';
   };
 
-  const skillLabel = (skillId: string) => {
-    const g = globalSkills.find((item) => item.id === skillId);
-    return g?.name || skillId;
+  const levelLabel = (level: string | null) => {
+    const opt = LEVEL_OPTIONS.find((o) => o.value === level);
+    return opt ? opt.label : '—';
   };
 
   return (
@@ -299,10 +261,7 @@ export default function CandidatoHabilidades() {
                     Habilidade
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Proficiência
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Experiência
+                    Nível
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-semibold tracking-wider uppercase">
                     Ações
@@ -319,15 +278,10 @@ export default function CandidatoHabilidades() {
                       {candidateLabel(skill.candidate_id)}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {skillLabel(skill.skill_id)}
+                      {skill.name}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {skill.proficiency || '—'}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {skill.years_experience
-                        ? `${skill.years_experience} anos`
-                        : '—'}
+                      {levelLabel(skill.level)}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -385,66 +339,33 @@ export default function CandidatoHabilidades() {
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
                     Habilidade
                   </label>
-                  <select
+                  <input
                     required
                     className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.skill_id}
+                    value={form.name}
                     onChange={(e) =>
-                      setForm({ ...form, skill_id: e.target.value })
+                      setForm({ ...form, name: e.target.value })
                     }
-                  >
-                    <option value="">Selecione uma habilidade</option>
-                    {globalSkills.map((skill) => (
-                      <option key={skill.id} value={skill.id}>
-                        {skill.name}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="Digite o nome da habilidade"
+                  />
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Proficiência
+                    Nível
                   </label>
                   <select
                     className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.proficiency}
+                    value={form.level}
                     onChange={(e) =>
-                      setForm({ ...form, proficiency: e.target.value })
+                      setForm({ ...form, level: e.target.value })
                     }
                   >
-                    {PROFICIENCY_OPTIONS.map((opt) => (
+                    {LEVEL_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>
                     ))}
                   </select>
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Anos de experiência
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.years_experience}
-                    onChange={(e) =>
-                      setForm({ ...form, years_experience: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Último uso
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.last_used_at}
-                    onChange={(e) =>
-                      setForm({ ...form, last_used_at: e.target.value })
-                    }
-                  />
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -460,10 +381,8 @@ export default function CandidatoHabilidades() {
                       setSelected(null);
                       setForm({
                         candidate_id: '',
-                        skill_id: '',
-                        proficiency: 'intermediate',
-                        years_experience: '',
-                        last_used_at: '',
+                        name: '',
+                        level: 'intermediate',
                       });
                     }}
                   >

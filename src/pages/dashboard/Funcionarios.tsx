@@ -4,6 +4,8 @@ import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Users, Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
+import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { employeesRepository } from '@/repositories/employees.repository';
 import { cn } from '@/utils';
 import type {
@@ -37,6 +39,7 @@ const WORK_MODE_OPTIONS = [
 
 export default function Funcionarios() {
   const { currentTenantId, isAdminMaster } = useAuth();
+  const { addToast } = useToast();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +47,7 @@ export default function Funcionarios() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [selected, setSelected] = useState<Employee | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [form, setForm] = useState({
     person_id: '',
     company_id: '',
@@ -219,17 +223,32 @@ export default function Funcionarios() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
+    if (!deleteConfirm || !currentTenantId) return;
     try {
-      await employeesRepository.remove(id, currentTenantId || '');
-      setEmployees((prev) => prev.filter((emp) => emp.id !== id));
-      if (selected?.id === id) {
+      await employeesRepository.remove(deleteConfirm, currentTenantId);
+      setEmployees((prev) => prev.filter((emp) => emp.id !== deleteConfirm));
+      if (selected?.id === deleteConfirm) {
         setSelected(null);
       }
+      addToast({
+        type: 'success',
+        message: 'Funcionário removido com sucesso.',
+      });
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Erro ao remover funcionário',
+        err instanceof Error
+          ? err.message
+          : 'Erro ao remover funcionário',
       );
+      addToast({
+        type: 'error',
+        message: err instanceof Error
+          ? err.message
+          : 'Erro ao remover funcionário',
+      });
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
@@ -400,7 +419,7 @@ export default function Funcionarios() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleDelete(employee.id)}
+                          onClick={() => setDeleteConfirm(employee.id)}
                           className="text-destructive hover:text-destructive/80"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -628,6 +647,16 @@ export default function Funcionarios() {
           </Card>
         )}
       </div>
+
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        title="Remover funcionário?"
+        message="Tem certeza que deseja remover este funcionário? Essa ação não pode ser desfeita."
+        confirmLabel="Remover"
+        variant="danger"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </ModuleWorkspace>
   );
 }

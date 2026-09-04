@@ -8,10 +8,8 @@ import type {
 export interface CandidateSkillRow {
   id: string;
   candidate_id: string;
-  skill_id: string;
-  proficiency: string | null;
-  years_experience: number | null;
-  last_used_at: string | null;
+  name: string;
+  level: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -52,14 +50,9 @@ export class CandidateSkillsRepository extends SupabaseRepository {
 
     const payload: Record<string, unknown> = {
       candidate_id: input.candidate_id,
-      skill_id: input.skill_id,
-      proficiency: input.proficiency,
+      name: input.name,
+      level: input.level ?? null,
     };
-
-    if (input.years_experience !== undefined)
-      payload.years_experience = input.years_experience;
-    if (input.last_used_at !== undefined)
-      payload.last_used_at = input.last_used_at;
 
     const { data, error } = await this.supabase
       .from('candidate_skills')
@@ -80,13 +73,8 @@ export class CandidateSkillsRepository extends SupabaseRepository {
 
     const payload: Record<string, unknown> = {};
 
-    if (input.skill_id !== undefined) payload.skill_id = input.skill_id;
-    if (input.proficiency !== undefined)
-      payload.proficiency = input.proficiency;
-    if (input.years_experience !== undefined)
-      payload.years_experience = input.years_experience;
-    if (input.last_used_at !== undefined)
-      payload.last_used_at = input.last_used_at;
+    if (input.name !== undefined) payload.name = input.name;
+    if (input.level !== undefined) payload.level = input.level;
 
     const { data, error } = await this.supabase
       .from('candidate_skills')

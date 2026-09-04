@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState, ErrorState } from '@/components/fallback';
+import { useToast } from '@/components/feedback/ToastContext';
 import { warehouseRepository } from '@/repositories/warehouse.repository';
 import type {
   Warehouse,
@@ -23,6 +24,7 @@ type Tab =
 
 export default function Almoxarifado() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('warehouses');
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [entries, setEntries] = useState<WarehouseEntry[]>([]);
@@ -125,7 +127,12 @@ export default function Almoxarifado() {
         </div>
         <Button
           variant="secondary"
-          onClick={() => alert('Exportar relatório de almoxarifado...')}
+          onClick={() =>
+            addToast({
+              type: 'info',
+              message: 'Exportar relatório de almoxarifado...',
+            })
+          }
         >
           <Download className="mr-2 h-4 w-4" />
           Exportar
@@ -217,7 +224,7 @@ export default function Almoxarifado() {
                 className="w-full bg-transparent text-sm outline-none"
               />
             </div>
-            <Button onClick={() => alert('Formulário de novo almoxarifado')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de novo almoxarifado' })}>
               <Plus className="mr-2 h-4 w-4" />
               Novo almoxarifado
             </Button>
@@ -228,7 +235,7 @@ export default function Almoxarifado() {
               title="Nenhum almoxarifado cadastrado"
               description="Quando houver almoxarifados registrados, eles aparecerão aqui."
               actionLabel="Novo almoxarifado"
-              onAction={() => alert('Formulário de novo almoxarifado')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de novo almoxarifado' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -289,7 +296,7 @@ export default function Almoxarifado() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => alert('Formulário de nova entrada')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova entrada' })}>
               <Plus className="mr-2 h-4 w-4" />
               Nova entrada
             </Button>
@@ -300,7 +307,7 @@ export default function Almoxarifado() {
               title="Nenhuma entrada registrada"
               description="Quando houver entradas, elas aparecerão aqui."
               actionLabel="Nova entrada"
-              onAction={() => alert('Formulário de nova entrada')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de nova entrada' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -355,7 +362,7 @@ export default function Almoxarifado() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => alert('Formulário de nova saída')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova saída' })}>
               <Plus className="mr-2 h-4 w-4" />
               Nova saída
             </Button>
@@ -366,7 +373,7 @@ export default function Almoxarifado() {
               title="Nenhuma saída registrada"
               description="Quando houver saídas, elas aparecerão aqui."
               actionLabel="Nova saída"
-              onAction={() => alert('Formulário de nova saída')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de nova saída' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -425,7 +432,7 @@ export default function Almoxarifado() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => alert('Formulário de nova devolução')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova devolução' })}>
               <Plus className="mr-2 h-4 w-4" />
               Nova devolução
             </Button>
@@ -436,7 +443,7 @@ export default function Almoxarifado() {
               title="Nenhuma devolução registrada"
               description="Quando houver devoluções, elas aparecerão aqui."
               actionLabel="Nova devolução"
-              onAction={() => alert('Formulário de nova devolução')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de nova devolução' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -489,7 +496,7 @@ export default function Almoxarifado() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => alert('Formulário de nova custódia')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova custódia' })}>
               <Plus className="mr-2 h-4 w-4" />
               Nova custódia
             </Button>
@@ -500,7 +507,7 @@ export default function Almoxarifado() {
               title="Nenhuma custódia registrada"
               description="Quando houver custódias, elas aparecerão aqui."
               actionLabel="Nova custódia"
-              onAction={() => alert('Formulário de nova custódia')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de nova custódia' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -559,7 +566,7 @@ export default function Almoxarifado() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => alert('Formulário de novo EPI')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de novo EPI' })}>
               <Plus className="mr-2 h-4 w-4" />
               Novo EPI
             </Button>
@@ -570,7 +577,7 @@ export default function Almoxarifado() {
               title="Nenhum EPI registrado"
               description="Quando houver EPIs, eles aparecerão aqui."
               actionLabel="Novo EPI"
-              onAction={() => alert('Formulário de novo EPI')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de novo EPI' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">

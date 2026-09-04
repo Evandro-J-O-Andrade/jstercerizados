@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Heart,
@@ -9,6 +10,8 @@ import {
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useCandidate } from '@/contexts/CandidateContext';
+import { useToast } from '@/components/feedback/ToastContext';
+import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { SEO } from '@/components/ui/SEO';
 import { COMPANY } from '@/config';
 
@@ -29,6 +32,8 @@ const WORK_MODE_LABELS: Record<string, string> = {
 
 export default function CandidateFavoritas() {
   const { favorites, isLoading, error, toggleFavorite } = useCandidate();
+  const { addToast } = useToast();
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   return (
     <>
@@ -113,7 +118,7 @@ export default function CandidateFavoritas() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => void toggleFavorite(job.id)}
+                          onClick={() => setDeleteConfirm(job.id)}
                           aria-label="Remover dos favoritos"
                         >
                           <Heart className="fill-destructive text-destructive h-5 w-5" />
@@ -145,6 +150,21 @@ export default function CandidateFavoritas() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        title="Remover dos favoritos?"
+        message="Tem certeza que deseja remover esta vaga dos seus favoritos?"
+        confirmLabel="Remover"
+        variant="danger"
+        onConfirm={async () => {
+          if (!deleteConfirm) return;
+          await toggleFavorite(deleteConfirm);
+          addToast({ type: 'success', message: 'Vaga removida dos favoritos.' });
+          setDeleteConfirm(null);
+        }}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </>
   );
 }

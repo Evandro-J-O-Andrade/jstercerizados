@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useCandidate } from '@/contexts/CandidateContext';
@@ -6,7 +6,6 @@ import { useToast } from '@/components/feedback/ToastContext';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { SEO } from '@/components/ui/SEO';
 import { COMPANY } from '@/config';
-import { getSupabaseClient } from '@/lib/supabase';
 import {
   Briefcase,
   GraduationCap,
@@ -25,6 +24,7 @@ import { candidateSkillsRepository } from '@/repositories/candidate-skills.repos
 import { candidateLanguagesRepository } from '@/repositories/candidate-languages.repository';
 import { candidateDocumentsRepository } from '@/repositories/candidate-documents.repository';
 import { candidateCoursesRepository } from '@/repositories/candidate-courses.repository';
+import { candidatePreferencesRepository } from '@/repositories/candidate-preferences.repository';
 import type {
   CandidateEducation,
   CandidateExperience,
@@ -38,9 +38,10 @@ import { CourseDialog } from '@/components/candidate/CourseDialog';
 import { LanguageDialog } from '@/components/candidate/LanguageDialog';
 import { SkillDialog } from '@/components/candidate/SkillDialog';
 import { DocumentDialog } from '@/components/candidate/DocumentDialog';
+import { PreferencesDialog } from '@/components/candidate/PreferencesDialog';
 
 export default function CandidateCurriculo() {
-  const { candidate, isLoading, error, refetch } = useCandidate();
+  const { candidate, preferences, isLoading, error, refetch } = useCandidate();
   const { addToast } = useToast();
 
   const [experienceDialogOpen, setExperienceDialogOpen] = useState(false);
@@ -49,6 +50,7 @@ export default function CandidateCurriculo() {
   const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
   const [skillDialogOpen, setSkillDialogOpen] = useState(false);
   const [documentDialogOpen, setDocumentDialogOpen] = useState(false);
+  const [preferencesDialogOpen, setPreferencesDialogOpen] = useState(false);
 
   const [editingExperience, setEditingExperience] =
     useState<CandidateExperience | null>(null);
@@ -60,10 +62,6 @@ export default function CandidateCurriculo() {
   const [editingLanguage, setEditingLanguage] =
     useState<CandidateLanguage | null>(null);
   const [editingSkill, setEditingSkill] = useState<CandidateSkill | null>(null);
-
-  const [globalSkills, setGlobalSkills] = useState<
-    Array<{ id: string; name: string }>
-  >([]);
 
   const [deleteConfirm, setDeleteConfirm] = useState<{
     type: string;
@@ -328,11 +326,11 @@ export default function CandidateCurriculo() {
                         variant="ghost"
                         size="sm"
                         onClick={() =>
-                          setDeleteConfirm({
-                            type: 'education',
-                            id: c.id,
-                            candidateId: c.candidate_id,
-                          })
+                        setDeleteConfirm({
+                          type: 'course',
+                          id: c.id,
+                          candidateId: c.candidate_id,
+                        })
                         }
                       >
                         <Trash2 className="text-destructive h-4 w-4" />
@@ -447,6 +445,68 @@ export default function CandidateCurriculo() {
                   </li>
                 ))}
               </ul>
+            </CurriculumSection>
+
+            <CurriculumSection
+              title="Preferências"
+              icon={FileText}
+              emptyText="Nenhuma preferência cadastrada"
+              onAdd={() => {
+                setPreferencesDialogOpen(true);
+              }}
+            >
+              {preferences ? (
+                <div className="space-y-2 text-sm">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {preferences.desired_roles && preferences.desired_roles.length > 0 && (
+                      <div>
+                        <span className="text-muted-foreground text-xs">Cargos desejados:</span>
+                        <p className="text-foreground">{preferences.desired_roles.join(', ')}</p>
+                      </div>
+                    )}
+                    {preferences.desired_locations && preferences.desired_locations.length > 0 && (
+                      <div>
+                        <span className="text-muted-foreground text-xs">Localizações:</span>
+                        <p className="text-foreground">{preferences.desired_locations.join(', ')}</p>
+                      </div>
+                    )}
+                    {(preferences.salary_min || preferences.salary_max) && (
+                      <div>
+                        <span className="text-muted-foreground text-xs">Faixa salarial:</span>
+                        <p className="text-foreground">
+                          {preferences.salary_min?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || '—'}
+                          {' - '}
+                          {preferences.salary_max?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || '—'}
+                        </p>
+                      </div>
+                    )}
+                    {preferences.contract_types && preferences.contract_types.length > 0 && (
+                      <div>
+                        <span className="text-muted-foreground text-xs">Tipos de contrato:</span>
+                        <p className="text-foreground">{preferences.contract_types.join(', ')}</p>
+                      </div>
+                    )}
+                    {preferences.work_modes && preferences.work_modes.length > 0 && (
+                      <div>
+                        <span className="text-muted-foreground text-xs">Modalidades:</span>
+                        <p className="text-foreground">{preferences.work_modes.join(', ')}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4 text-xs">
+                    {preferences.matching_enabled && (
+                      <span className="text-primary">Matching ativado</span>
+                    )}
+                    {preferences.receive_match_alerts && (
+                      <span className="text-muted-foreground">Alertas ativados</span>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  Clique em + para adicionar suas preferências de matching.
+                </p>
+              )}
             </CurriculumSection>
 
             <CurriculumSection
@@ -632,7 +692,7 @@ export default function CandidateCurriculo() {
       <DocumentDialog
         open={documentDialogOpen}
         onOpenChange={setDocumentDialogOpen}
-        onConfirm={async (file) => {
+        onConfirm={async ({ url, name }) => {
           if (!candidate) return;
           const existing = candidate.documents?.[0];
           if (existing) {
@@ -640,16 +700,16 @@ export default function CandidateCurriculo() {
               existing.id,
               candidate.id,
               {
-                url: URL.createObjectURL(file),
-                name: file.name,
+                url,
+                name,
                 type: 'resume',
               },
             );
           } else {
             await candidateDocumentsRepository.create({
               candidate_id: candidate.id,
-              url: URL.createObjectURL(file),
-              name: file.name,
+              url,
+              name,
               type: 'resume',
             });
           }
@@ -677,6 +737,27 @@ export default function CandidateCurriculo() {
         }
         onSuccess={() => {
           setDocumentDialogOpen(false);
+        }}
+      />
+
+      <PreferencesDialog
+        open={preferencesDialogOpen}
+        onOpenChange={setPreferencesDialogOpen}
+        onConfirm={async (data) => {
+          if (!candidate) return;
+          if (preferences) {
+            await candidatePreferencesRepository.update(preferences.id, data);
+          } else {
+            await candidatePreferencesRepository.create({
+              candidate_id: candidate.id,
+              ...data,
+            });
+          }
+          await refetch();
+        }}
+        initialData={preferences ?? undefined}
+        onSuccess={() => {
+          setPreferencesDialogOpen(false);
         }}
       />
 

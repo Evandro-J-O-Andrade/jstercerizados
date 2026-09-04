@@ -6,3 +6,12 @@ export type {
   PublishedJobWithSkills,
   JobSkillItem,
 } from './publicJobs.repository';
+export {
+  candidateJobAlertsRepository,
+  CandidateJobAlertsRepository,
+} from './jobAlerts.repository';
+export type {
+  CandidateJobAlertRow,
+  CandidateJobAlertInput,
+  JobAlertFrequency,
+} from './jobAlerts.repository';

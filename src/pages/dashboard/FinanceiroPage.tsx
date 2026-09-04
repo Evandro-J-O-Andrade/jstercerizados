@@ -48,6 +48,7 @@ import type {
   FinancialAccount,
 } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 type TabValue =
   | 'dashboard'
@@ -65,6 +66,7 @@ type TabValue =
 
 export default function FinanceiroPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<TabValue>('dashboard');
 
   const [payables, setPayables] = useState<AccountPayable[]>([]);
@@ -320,7 +322,7 @@ export default function FinanceiroPage() {
     try {
       const amount = parseFloat(formData.amount);
       if (isNaN(amount) || amount <= 0) {
-        alert('Informe um valor válido');
+        addToast({ type: 'error', message: 'Informe um valor válido.' });
         return;
       }
 
@@ -357,8 +359,12 @@ export default function FinanceiroPage() {
 
       handleCloseForm();
       await loadData();
+      addToast({ type: 'success', message: 'Lançamento criado com sucesso!' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao salvar');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao salvar',
+      });
     }
   };
 
@@ -375,8 +381,12 @@ export default function FinanceiroPage() {
       await loadData();
       setDeleteId(null);
       setDeleteType(null);
+      addToast({ type: 'success', message: 'Registro excluído com sucesso.' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao excluir');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao excluir',
+      });
     }
   };
 
@@ -1065,14 +1075,14 @@ export default function FinanceiroPage() {
               <div className="flex gap-2">
                 <Button
                   variant="secondary"
-                  onClick={() => alert('Observações salvas localmente')}
+                  onClick={() => addToast({ type: 'info', message: 'Em breve' })}
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Salvar anotação
                 </Button>
                 <Button
                   variant="ghost"
-                  onClick={() => alert('Cálculo exportado')}
+                  onClick={() => addToast({ type: 'info', message: 'Em breve' })}
                 >
                   <FileText className="mr-2 h-4 w-4" />
                   Exportar cálculo
@@ -1089,13 +1099,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Categorias
             </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => alert('Abrir gestão de categorias')}
-            >
-              Gerenciar
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+              >
+                Gerenciar
+              </Button>
           </div>
           {categories.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1134,13 +1144,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Centros de custo
             </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => alert('Abrir gestão de centros de custo')}
-            >
-              Gerenciar
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+              >
+                Gerenciar
+              </Button>
           </div>
           {costCenters.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1175,13 +1185,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Notas fiscais
             </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => alert('Abrir gestão de notas fiscais')}
-            >
-              Gerenciar
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+              >
+                Gerenciar
+              </Button>
           </div>
           {invoices.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1216,13 +1226,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Transações financeiras
             </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => alert('Abrir gestão de transações')}
-            >
-              Gerenciar
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+              >
+                Gerenciar
+              </Button>
           </div>
           {transactions.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1262,13 +1272,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Conciliação bancária
             </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => alert('Abrir gestão de conciliação')}
-            >
-              Gerenciar
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+              >
+                Gerenciar
+              </Button>
           </div>
           {reconciliations.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1308,13 +1318,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Parcelamentos
             </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => alert('Abrir gestão de parcelamentos')}
-            >
-              Gerenciar
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+              >
+                Gerenciar
+              </Button>
           </div>
           {installments.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1351,13 +1361,13 @@ export default function FinanceiroPage() {
           <h3 className="text-foreground text-sm font-semibold">
             Contas financeiras
           </h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => alert('Abrir gestão de contas financeiras')}
-          >
-            Gerenciar
-          </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+              >
+                Gerenciar
+              </Button>
         </div>
         {financialAccounts.length === 0 ? (
           <p className="text-muted-foreground text-xs">

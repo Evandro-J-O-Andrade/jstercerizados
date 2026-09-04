@@ -1,10 +1,9 @@
 import { type ReactNode, useState, useCallback } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/hooks/useNavigation';
 import { resolveIcon } from '@/utils/navigation-icons';
 import { CandidateBottomNavigation } from '@/components/layout/CandidateBottomNavigation';
-import { RoleBasedFooter } from '@/components/layout/RoleBasedFooter';
 import { Button } from '@/components/ui/Button';
 import { COMPANY } from '@/config';
 import type { GlobalNavAction, NavigationItem } from '@/types/navigation';
@@ -89,6 +88,8 @@ function GlobalNavButton({
   idx: number;
 }) {
   const Icon = resolveIcon(item.icon);
+  const label =
+    item.action === 'site_home' ? 'Voltar para o site' : item.label;
   return (
     <button
       type="button"
@@ -99,7 +100,7 @@ function GlobalNavButton({
       className="text-muted-foreground hover:bg-muted hover:text-foreground flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
     >
       <Icon className="h-5 w-5 shrink-0" />
-      <span className="flex-1 text-left">{item.label}</span>
+      <span className="flex-1 text-left">{label}</span>
     </button>
   );
 }
@@ -246,7 +247,18 @@ export function CandidateShell({ children }: CandidateShellProps) {
           >
             ☰
           </Button>
-          <span className="text-sm font-medium">Área do Candidato</span>
+          <Link
+            to="/"
+            data-source="mobile-header"
+            onClick={closeSidebar}
+            className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm font-medium transition-colors"
+          >
+            {(() => {
+              const Icon = resolveIcon('ArrowLeft');
+              return <Icon className="h-4 w-4" />;
+            })()}
+            <span>Voltar para o site</span>
+          </Link>
           <div className="w-8" />
         </header>
 
@@ -254,7 +266,6 @@ export function CandidateShell({ children }: CandidateShellProps) {
           <div className="mx-auto h-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
             {children ?? <Outlet />}
           </div>
-          <RoleBasedFooter />
         </main>
       </div>
 

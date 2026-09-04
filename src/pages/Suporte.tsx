@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useToast } from '@/components/feedback/ToastContext';
 import {
   Phone,
   Clock,
@@ -139,6 +140,7 @@ const STEPS = [
 ];
 
 export default function Suporte() {
+  const { addToast } = useToast();
   const [formData, setFormData] = useState({
     nome: '',
     empresa: '',
@@ -629,7 +631,11 @@ export default function Suporte() {
                   <button
                     type="button"
                     onClick={() =>
-                      alert('Em breve: Assistente J&S disponível aqui.')
+                      addToast({
+                        type: 'info',
+                        message:
+                          'Em breve: Assistente J&S disponível aqui.',
+                      })
                     }
                     className="bg-primary/10 text-primary hover:bg-primary/20 flex items-center gap-3 rounded-xl p-4 transition-colors"
                   >

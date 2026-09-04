@@ -4,6 +4,7 @@ import { Plus, Search, Edit, Trash2, Filter, Download } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { EmptyState, ErrorState } from '@/components/fallback';
 import { ConfirmDialog } from '@/components/feedback';
+import { useToast } from '@/components/feedback/ToastContext';
 import { accountsReceivableRepository } from '@/repositories/accounts-receivable.repository';
 import { useAuth } from '@/contexts/AuthContext';
 import type { AccountReceivable } from '@/types/domain/finance';
@@ -18,6 +19,7 @@ const statusLabels: Record<string, string> = {
 
 export default function ContasReceberPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [items, setItems] = useState<AccountReceivable[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,7 +121,7 @@ export default function ContasReceberPage() {
             Gerencie recebimentos, vencimentos e status.
           </p>
         </div>
-        <Button onClick={() => alert('Abrir formulário de conta a receber')}>
+        <Button onClick={() => addToast({ type: 'info', message: 'Abrir formulário de conta a receber' })}>
           <Plus className="mr-2 h-4 w-4" />
           Nova conta
         </Button>
@@ -178,7 +180,7 @@ export default function ContasReceberPage() {
         </Button>
         <Button
           variant="ghost"
-          onClick={() => alert('Exportar contas a receber')}
+          onClick={() => addToast({ type: 'info', message: 'Exportar contas a receber' })}
         >
           <Download className="mr-2 h-4 w-4" />
           Exportar
@@ -190,7 +192,7 @@ export default function ContasReceberPage() {
           title="Nenhuma conta a receber cadastrada"
           description="Ainda não há contas a receber registradas para este ambiente."
           actionLabel="Nova conta"
-          onAction={() => alert('Abrir formulário de conta a receber')}
+          onAction={() => addToast({ type: 'info', message: 'Abrir formulário de conta a receber' })}
         />
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border">
