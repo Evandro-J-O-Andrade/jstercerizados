@@ -3,6 +3,7 @@ import { Shield, Award, Users, Target } from 'lucide-react';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
+import { PageTemplateBanner } from '@/components/common/PageTemplateBanner';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY_TIMELINE } from '@/mock/company';
 import { COMPANY } from '@/config';
@@ -308,6 +309,12 @@ export default function Sobre() {
               terceirização e facilities que transforma talentos em
               oportunidades.
             </motion.p>
+            <div className="mx-auto mt-6 max-w-3xl">
+              <PageTemplateBanner
+                templateKey="sobre_greeting"
+                fallback="Bem-vindo a J&S Empregos LTDA."
+              />
+            </div>
           </motion.div>
 
           <motion.div
