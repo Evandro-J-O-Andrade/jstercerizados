@@ -69,6 +69,7 @@ const Contato = lazy(() => import('@/pages/Contato'));
 const Privacidade = lazy(() => import('@/pages/Privacidade'));
 const Termos = lazy(() => import('@/pages/Termos'));
 const Cadastro = lazy(() => import('@/pages/Cadastro'));
+const Login = lazy(() => import('@/pages/Login'));
 const EntrarHub = lazy(() => import('@/pages/auth/Entrar'));
 const EntrarAdmin = lazy(() =>
   import('@/pages/auth/EntrarContexto').then((m) => ({
@@ -882,7 +883,7 @@ function App() {
                     <Route path="/contato" element={<Contato />} />
                     <Route path="/privacidade" element={<Privacidade />} />
                     <Route path="/termos" element={<Termos />} />
-                    <Route path="/login" element={<EntrarHub />} />
+                    <Route path="/login" element={<Login />} />
                     <Route path="/entrar" element={<EntrarHub />} />
                     <Route path="/entrar/admin" element={<EntrarAdmin />} />
                     <Route
