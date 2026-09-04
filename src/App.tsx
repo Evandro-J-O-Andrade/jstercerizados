@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useCallback, useState } from 'react';
+import React, { Suspense, lazy, useCallback } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useIntro } from '@/contexts/IntroContext';
@@ -11,12 +11,10 @@ import { ToastProvider } from '@/components/feedback';
 import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 import { PublicLayout } from '@/components/layout/PublicLayout';
 import { AppShell } from '@/components/layout/AppShell';
-import { AccessibilityWidget } from '@/components/ui/AccessibilityWidget';
-import { ChatWidget } from '@/components/ui/ChatWidget';
-import { HumanChatWidget } from '@/components/ui/HumanChatWidget';
+import { FloatingHelpWidgets } from '@/components/layout/FloatingHelpWidgets';
 import NotFound from '@/pages/NotFound';
 import DashboardHome from '@/pages/dashboard/DashboardHome';
-import DashboardCandidato from '@/pages/dashboard/DashboardCandidato';
+
 import TenantsPage from '@/pages/dashboard/TenantsPage';
 import ClientesPage from '@/pages/dashboard/ClientesPage';
 import OnboardingPage from '@/pages/dashboard/OnboardingPage';
@@ -84,12 +82,19 @@ const PrimeiroAcessoTermos = lazy(
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
 const CandidateDashboard = lazy(() => import('@/pages/candidato/Dashboard'));
 const CandidateVagas = lazy(() => import('@/pages/candidato/Vagas'));
-const CandidateCandidaturas = lazy(() => import('@/pages/candidato/Candidaturas'));
+const CandidateCandidaturas = lazy(
+  () => import('@/pages/candidato/Candidaturas'),
+);
 const CandidateFavoritas = lazy(() => import('@/pages/candidato/Favoritas'));
 const CandidateCurriculo = lazy(() => import('@/pages/candidato/Curriculo'));
 const CandidatePerfil = lazy(() => import('@/pages/candidato/Perfil'));
-const CandidateNotificacoes = lazy(() => import('@/pages/candidato/Notificacoes'));
-const CandidateConfiguracoes = lazy(() => import('@/pages/candidato/Configuracoes'));
+const CandidateNotificacoes = lazy(
+  () => import('@/pages/candidato/Notificacoes'),
+);
+const CandidateConfiguracoes = lazy(
+  () => import('@/pages/candidato/Configuracoes'),
+);
+const CandidateAlertas = lazy(() => import('@/pages/candidato/Alertas'));
 import { CandidateShell } from '@/components/portal/CandidateShell';
 import { CandidateProvider } from '@/contexts/CandidateContext';
 import { CandidateRoute } from '@/components/auth/CandidateRoute';
@@ -152,7 +157,6 @@ import RelatorioSuportePage from '@/pages/dashboard/relatorios/RelatorioSuporteP
 
 const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   DashboardHome,
-  DashboardCandidato,
   TenantsPage,
   ClientesPage,
   OnboardingPage,
@@ -233,9 +237,6 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
 
 function App() {
   const { introComplete, setIntroComplete } = useIntro();
-  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
-  const [isHumanChatOpen, setIsHumanChatOpen] = useState(false);
-  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
 
   const handleIntroFinish = useCallback(() => {
     setIntroComplete(true);
@@ -353,14 +354,7 @@ function App() {
                 </PermissionGuard>
               }
             />
-            <Route
-              path="candidato"
-              element={
-                <PermissionGuard permission="candidates.read">
-                  <DashboardCandidato />
-                </PermissionGuard>
-              }
-            />
+
             <Route
               path="rbac-auditoria"
               element={
@@ -829,6 +823,7 @@ function App() {
             <Route path="vagas" element={<CandidateVagas />} />
             <Route path="candidaturas" element={<CandidateCandidaturas />} />
             <Route path="favoritas" element={<CandidateFavoritas />} />
+            <Route path="alertas" element={<CandidateAlertas />} />
             <Route path="curriculo" element={<CandidateCurriculo />} />
             <Route path="perfil" element={<CandidatePerfil />} />
             <Route path="notificacoes" element={<CandidateNotificacoes />} />
@@ -898,26 +893,7 @@ function App() {
             }
           />
         </Routes>
-        <AccessibilityWidget
-          open={isAccessibilityOpen}
-          onOpenChange={setIsAccessibilityOpen}
-          onOpenChat={() => {
-            setIsAccessibilityOpen(false);
-            setIsAiChatOpen(true);
-          }}
-        />
-        <ChatWidget
-          isOpen={isAiChatOpen}
-          onOpenChange={setIsAiChatOpen}
-          onRequestHuman={() => {
-            setIsAccessibilityOpen(false);
-            setIsHumanChatOpen(true);
-          }}
-        />
-        <HumanChatWidget
-          isOpen={isHumanChatOpen}
-          onOpenChange={setIsHumanChatOpen}
-        />
+        <FloatingHelpWidgets />
       </ToastProvider>
     </ErrorBoundary>
   );
