@@ -339,7 +339,6 @@ function App() {
                     'finance_manager',
                     'recruiter',
                     'rh_manager',
-                    'candidato',
                     'stock_manager',
                     'security_manager',
                     'facilities_manager',
