@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/hooks/useNavigation';
 import { resolveIcon } from '@/utils/navigation-icons';
 import { CandidateBottomNavigation } from '@/components/layout/CandidateBottomNavigation';
+import { RoleBasedFooter } from '@/components/layout/RoleBasedFooter';
 import { Button } from '@/components/ui/Button';
 import { COMPANY } from '@/config';
 import type { GlobalNavAction, NavigationItem } from '@/types/navigation';
@@ -253,6 +254,7 @@ export function CandidateShell({ children }: CandidateShellProps) {
           <div className="mx-auto h-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
             {children ?? <Outlet />}
           </div>
+          <RoleBasedFooter />
         </main>
       </div>
 

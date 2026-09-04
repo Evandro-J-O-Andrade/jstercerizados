@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { PortalSidebar } from '@/components/portal/PortalSidebar';
 import { PortalHeader } from '@/components/portal/PortalHeader';
 import { PortalBottomNavigation } from '@/components/layout/PortalBottomNavigation';
+import { RoleBasedFooter } from '@/components/layout/RoleBasedFooter';
 import { AccountProvider } from '@/contexts/AccountContext';
 import { applyTheme, getStoredTheme } from '@/hooks/useTheme';
 
@@ -22,24 +23,27 @@ function PortalShellInner({ moduleTitle, children }: PortalShellProps) {
   const content = children ?? <Outlet />;
 
   return (
-    <div className="bg-muted/30 flex h-screen w-full overflow-hidden">
-      <PortalSidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        onNavigate={() => setSidebarOpen(false)}
-      />
-
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <PortalHeader
-          onMenuClick={() => setSidebarOpen(true)}
-          moduleTitle={currentModuleTitle}
+    <div className="bg-muted/30 flex h-screen w-full flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <PortalSidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          onNavigate={() => setSidebarOpen(false)}
         />
 
-        <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto h-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            {content}
-          </div>
-        </main>
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <PortalHeader
+            onMenuClick={() => setSidebarOpen(true)}
+            moduleTitle={currentModuleTitle}
+          />
+
+          <main className="flex-1 overflow-y-auto">
+            <div className="mx-auto h-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+              {content}
+            </div>
+            <RoleBasedFooter />
+          </main>
+        </div>
       </div>
 
       <PortalBottomNavigation />
