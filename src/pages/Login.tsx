@@ -1,7 +1,15 @@
-﻿import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, LogIn, Eye, EyeOff, Briefcase, Building2 } from 'lucide-react';
+import {
+  Shield,
+  LogIn,
+  Eye,
+  EyeOff,
+  Briefcase,
+  Building2,
+  UserPlus,
+} from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,6 +22,7 @@ import { COMPANY } from '@/config';
 import { IMAGES } from '@/config/images';
 import { cn } from '@/utils';
 import { normalizeError } from '@/lib/error-normalizer';
+import { Turnstile } from '@/components/auth/Turnstile';
 
 const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -22,23 +31,37 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-type AccessFlow = 'admin' | 'candidato' | 'empresa';
+const signupSchema = z
+  .object({
+    full_name: z.string().min(3, 'Informe seu nome completo'),
+    email: z.string().email('E-mail inválido'),
+    password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
+    confirmPassword: z.string().min(6, 'Confirme sua senha'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'As senhas não coincidem',
+  });
 
-type LoginStatus =
-  'idle' | 'authenticating' | 'loading-profile' | 'success' | 'error';
+type SignupFormData = z.infer<typeof signupSchema>;
+
+type AccessFlow = 'admin' | 'candidato' | 'empresa';
+type AuthMode = 'signin' | 'signup';
 
 interface FlowConfig {
   title: string;
   subtitle: string;
   icon: React.ReactNode;
   placeholderEmail: string;
-  showRegister: boolean;
-  registerLabel: string;
-  registerTo: string;
+  allowSignup: boolean;
+  allowOAuth: boolean;
   emailLabel: string;
   passwordLabel: string;
-  submitLabel: string;
-  loadingLabel: string;
+  signinLabel: string;
+  signingupLabel: string;
+  signinLoading: string;
+  signupLabel: string;
+  signupLoading: string;
   footer: string;
 }
 
@@ -46,11 +69,17 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [accessFlow, setAccessFlow] = useState<AccessFlow>('admin');
+  const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loginStatus, setLoginStatus] = useState<LoginStatus>('idle');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  // Token retornado pelo Turnstile (ou null se dev/disabled). Por enquanto
+  // exibimos o estado no botao; o backend (Edge Function) fara a
+  // verificacao real antes de chamar signInWithPassword/signUp.
   const submittedRef = useRef(false);
   const {
     login,
+    loginWithProvider,
+    register,
     isAuthenticated,
     authError,
     person,
@@ -59,11 +88,21 @@ export default function Login() {
   const navigate = useNavigate();
 
   const {
-    register,
+    register: rhfRegister,
     handleSubmit,
     formState: { errors },
+    reset: resetForm,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+  });
+
+  const {
+    register: rhfRegisterSignup,
+    handleSubmit: handleSubmitSignup,
+    formState: { errors: signupErrors },
+    reset: resetSignup,
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
   });
 
   useEffect(() => {
@@ -71,122 +110,90 @@ export default function Login() {
       const target = resolvePostLoginDestination();
       navigate(target, { replace: true });
     }
-  }, [
-    isAuthenticated,
-    person,
-    navigate,
-    resolvePostLoginDestination,
-    loginStatus,
-  ]);
+  }, [isAuthenticated, person, navigate, resolvePostLoginDestination]);
+
+  useEffect(() => {
+    setError('');
+    submittedRef.current = false;
+    if (authMode === 'signin') resetSignup();
+    else resetForm();
+  }, [authMode, resetForm, resetSignup]);
 
   const onInvalid = (formErrors: unknown) => {
     console.error('[AUTH:FORM_INVALID]', formErrors);
   };
 
-  const onSubmit = async (data: LoginFormData): Promise<void> => {
-    console.log('[AUTH:SUBMIT] FORM VALID', {
-      email: data.email,
-      passwordLength: data.password.length,
-    });
-
+  const onSignIn = async (data: LoginFormData): Promise<void> => {
     setError('');
     setIsSubmitting(true);
-    setLoginStatus('authenticating');
     submittedRef.current = false;
 
     try {
-      console.log('[AUTH:SUBMIT] CALLING LOGIN');
-
-      const result = await login(data.email, data.password);
-
-      console.log('[AUTH:SUBMIT] LOGIN RESULT', result);
-
+      const result = await login(data.email, data.password, {
+        turnstileToken: turnstileToken ?? undefined,
+      });
       if (result.error) {
         submittedRef.current = true;
         setError(normalizeError(result.error).userMessage);
-        setLoginStatus('error');
-      } else {
-        setLoginStatus('loading-profile');
       }
-    } catch (error) {
-      console.error('[AUTH:SUBMIT] UNEXPECTED ERROR', error);
+    } catch (err) {
       submittedRef.current = true;
-      setError(normalizeError(error).userMessage);
-      setLoginStatus('error');
+      setError(normalizeError(err).userMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const onSignUp = async (data: SignupFormData): Promise<void> => {
+    setError('');
+    setIsSubmitting(true);
+    submittedRef.current = false;
+
+    try {
+      const result = await register(data.email, data.password, {
+        full_name: data.full_name,
+        email: data.email,
+        turnstileToken: turnstileToken ?? undefined,
+      });
+      if (result.error) {
+        submittedRef.current = true;
+        setError(normalizeError(result.error).userMessage);
+      } else {
+        setError(
+          'Cadastro realizado. Verifique seu e-mail para confirmar a conta antes de entrar.',
+        );
+      }
+    } catch (err) {
+      submittedRef.current = true;
+      setError(normalizeError(err).userMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleOAuth = useCallback(
+    async (provider: 'google' | 'azure') => {
+      setError('');
+      setIsSubmitting(true);
+      try {
+        const result = await loginWithProvider(provider);
+        if (result.error) {
+          setError(normalizeError(result.error).userMessage);
+        }
+      } catch (err) {
+        setError(normalizeError(err).userMessage);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [loginWithProvider],
+  );
+
   useEffect(() => {
-    if (
-      authError &&
-      loginStatus !== 'loading-profile' &&
-      !error &&
-      !submittedRef.current
-    ) {
+    if (authError && !error && !submittedRef.current) {
       setError(normalizeError(authError).userMessage);
-      setLoginStatus('error');
     }
-  }, [authError, loginStatus, error]);
-
-  if (loginStatus === 'success' && isAuthenticated) {
-    if (!person) {
-      return (
-        <div className="flex min-h-[70dvh] items-center justify-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-md text-center"
-          >
-            <div className="bg-warning/10 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
-              <Shield className="text-warning h-10 w-10" />
-            </div>
-            <h2 className="text-foreground mb-4 text-2xl font-bold">
-              Acesso não concluído
-            </h2>
-            <p className="text-muted-foreground mb-8">
-              Sua identidade não foi encontrada. Verifique se seu cadastro está
-              completo ou solicite acesso ao administrador.
-            </p>
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => window.location.reload()}
-            >
-              Tentar novamente
-            </Button>
-          </motion.div>
-        </div>
-      );
-    }
-
-    const firstName = person?.full_name?.split(' ')[0] || 'colaborador';
-
-    return (
-      <div className="flex min-h-[70dvh] items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-md text-center"
-        >
-          <div className="bg-success/10 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
-            <Shield className="text-success h-10 w-10" />
-          </div>
-          <h2 className="text-foreground mb-4 text-2xl font-bold">
-            Bem-vindo de volta, {firstName}!
-          </h2>
-          <p className="text-muted-foreground mb-8">
-            Seu acesso foi realizado com sucesso. Estamos preparando seu
-            painel...
-          </p>
-          <div className="text-muted-foreground text-sm">Carregando...</div>
-        </motion.div>
-      </div>
-    );
-  }
+  }, [authError, error]);
 
   const flowConfig: Record<AccessFlow, FlowConfig> = {
     admin: {
@@ -194,13 +201,15 @@ export default function Login() {
       subtitle: 'Acesse sua conta para gerenciar operações, RH e relatórios.',
       icon: <Shield className="h-8 w-8" />,
       placeholderEmail: 'admin@jstercerizados.com.br',
-      showRegister: false,
-      registerLabel: '',
-      registerTo: '/cadastro/candidato',
+      allowSignup: false,
+      allowOAuth: false,
       emailLabel: 'E-mail administrativo',
       passwordLabel: 'Senha',
-      submitLabel: 'Entrar no painel',
-      loadingLabel: 'Preparando painel...',
+      signinLabel: 'Entrar no painel',
+      signingupLabel: '',
+      signinLoading: 'Preparando painel...',
+      signupLabel: '',
+      signupLoading: '',
       footer: 'Área restrita — Acesso autorizado apenas.',
     },
     candidato: {
@@ -208,30 +217,37 @@ export default function Login() {
       subtitle: 'Acesse seu perfil para acompanhar candidaturas e currículo.',
       icon: <Briefcase className="h-8 w-8" />,
       placeholderEmail: 'candidato@exemplo.com',
-      showRegister: true,
-      registerLabel: 'Ainda não tem conta? Cadastre seu currículo',
-      registerTo: '/cadastro/candidato',
+      allowSignup: true,
+      allowOAuth: true,
       emailLabel: 'E-mail',
       passwordLabel: 'Senha',
-      submitLabel: 'Entrar',
-      loadingLabel: 'Preparando seu painel...',
+      signinLabel: 'Entrar',
+      signingupLabel: 'Já tem conta? Entrar',
+      signinLoading: 'Preparando seu painel...',
+      signupLabel: 'Criar conta de candidato',
+      signupLoading: 'Criando sua conta...',
       footer: 'Acesso exclusivo para candidatos.',
     },
     empresa: {
       title: 'Área da Empresa',
-      subtitle: 'Acesse sua conta para publicar vagas e gerenciar recrutamento.',
+      subtitle:
+        'Acesse sua conta para publicar vagas e gerenciar recrutamento.',
       icon: <Building2 className="h-8 w-8" />,
       placeholderEmail: 'empresa@exemplo.com',
-      showRegister: true,
-      registerLabel: 'Ainda não tem conta? Publique sua primeira vaga',
-      registerTo: '/cadastro/empresa',
+      allowSignup: true,
+      allowOAuth: true,
       emailLabel: 'E-mail corporativo',
       passwordLabel: 'Senha',
-      submitLabel: 'Entrar',
-      loadingLabel: 'Preparando seu painel...',
+      signinLabel: 'Entrar',
+      signingupLabel: 'Já tem conta? Entrar',
+      signinLoading: 'Preparando seu painel...',
+      signupLabel: 'Criar conta de empresa',
+      signupLoading: 'Criando sua conta...',
       footer: 'Acesso exclusivo para empresas parceiras.',
     },
   };
+
+  const config = flowConfig[accessFlow];
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
@@ -300,27 +316,28 @@ export default function Login() {
       >
         <div
           className={cn(
-            'border shadow-glass rounded-3xl p-8',
+            'shadow-glass rounded-3xl border p-8',
             accessFlow === 'admin'
               ? 'border-border/40 bg-card'
               : 'border-primary/20 bg-card/95',
           )}
         >
-          {/* Access flow selector */}
           <div className="mb-6 flex justify-center gap-2">
             {(['admin', 'candidato', 'empresa'] as const).map((flow) => (
               <button
                 key={flow}
                 type="button"
-                onClick={() => setAccessFlow(flow)}
+                onClick={() => {
+                  setAccessFlow(flow);
+                  setAuthMode('signin');
+                }}
                 className={cn(
                   'flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200',
                   accessFlow === flow
-                    ? flow === 'admin'
-                      ? 'bg-primary text-primary-foreground shadow-md'
-                      : 'bg-primary text-primary-foreground shadow-md'
+                    ? 'bg-primary text-primary-foreground shadow-md'
                     : 'text-muted-foreground hover:bg-muted',
                 )}
+                data-flow={flow}
               >
                 {flowConfig[flow].icon}
                 {flow === 'admin'
@@ -334,7 +351,7 @@ export default function Login() {
 
           <AnimatePresence mode="wait">
             <motion.div
-              key={accessFlow}
+              key={`${accessFlow}-${authMode}`}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
@@ -349,114 +366,263 @@ export default function Login() {
                       : 'bg-primary/10 text-primary',
                   )}
                 >
-                  {flowConfig[accessFlow].icon}
+                  {config.icon}
                 </div>
                 <h1 className="text-foreground text-3xl font-bold">
-                  {flowConfig[accessFlow].title}
+                  {config.title}
                 </h1>
                 <p className="text-muted-foreground mt-2 text-sm">
-                  {flowConfig[accessFlow].subtitle}
+                  {config.subtitle}
                 </p>
               </div>
 
-              <form
-                onSubmit={handleSubmit(onSubmit, onInvalid)}
-                className="space-y-5"
-              >
-                {error && (
-                  <div className="bg-destructive/10 text-destructive rounded-xl p-4 text-sm">
-                    {error}
+              {config.allowOAuth && authMode === 'signin' && (
+                <div className="mb-5 space-y-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="lg"
+                    className="w-full"
+                    onClick={() => handleOAuth('google')}
+                    loading={isSubmitting}
+                    data-provider="google"
+                  >
+                    <GoogleIcon />
+                    Continuar com Google
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="lg"
+                    className="w-full"
+                    onClick={() => handleOAuth('azure')}
+                    loading={isSubmitting}
+                    data-provider="azure"
+                  >
+                    <MicrosoftIcon />
+                    Continuar com Microsoft
+                  </Button>
+                  <div className="text-muted-foreground flex items-center gap-3 text-xs uppercase">
+                    <span className="bg-border h-px flex-1" />
+                    <span>ou</span>
+                    <span className="bg-border h-px flex-1" />
                   </div>
-                )}
+                </div>
+              )}
 
-                <Input
-                  label={flowConfig[accessFlow].emailLabel}
-                  type="email"
-                  autoComplete="email"
-                  placeholder={flowConfig[accessFlow].placeholderEmail}
-                  error={errors.email?.message}
-                  {...register('email')}
-                />
+              {error && (
+                <div
+                  role="alert"
+                  className="bg-destructive/10 text-destructive mb-4 rounded-xl p-4 text-sm"
+                >
+                  {error}
+                </div>
+              )}
 
-                <div className="relative">
+              {authMode === 'signin' ? (
+                <form
+                  onSubmit={handleSubmit(onSignIn, onInvalid)}
+                  className="space-y-5"
+                  data-mode="signin"
+                >
                   <Input
-                    label={flowConfig[accessFlow].passwordLabel}
+                    label={config.emailLabel}
+                    type="email"
+                    autoComplete="email"
+                    placeholder={config.placeholderEmail}
+                    error={errors.email?.message}
+                    {...rhfRegister('email')}
+                  />
+
+                  <div className="relative">
+                    <Input
+                      label={config.passwordLabel}
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      error={errors.password?.message}
+                      autoComplete="current-password"
+                      {...rhfRegister('password')}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-muted-foreground hover:text-foreground absolute top-9 right-3"
+                      aria-label={
+                        showPassword ? 'Ocultar senha' : 'Mostrar senha'
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        className="border-input text-primary focus:ring-primary h-4 w-4 rounded"
+                      />
+                      <span className="text-muted-foreground text-sm">
+                        Lembrar de mim
+                      </span>
+                    </label>
+                    <Link
+                      to="/recuperar-senha"
+                      className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+                    >
+                      Esqueceu a senha?
+                    </Link>
+                  </div>
+
+                  <Turnstile onTokenChange={setTurnstileToken} />
+
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="xl"
+                    className="w-full"
+                    loading={isSubmitting}
+                    leftIcon={<LogIn className="h-5 w-5" />}
+                  >
+                    {config.signinLabel}
+                  </Button>
+                </form>
+              ) : (
+                <form
+                  onSubmit={handleSubmitSignup(onSignUp, onInvalid)}
+                  className="space-y-5"
+                  data-mode="signup"
+                >
+                  <Input
+                    label="Nome completo"
+                    type="text"
+                    autoComplete="name"
+                    placeholder="Seu nome"
+                    error={signupErrors.full_name?.message}
+                    {...rhfRegisterSignup('full_name')}
+                  />
+                  <Input
+                    label={config.emailLabel}
+                    type="email"
+                    autoComplete="email"
+                    placeholder={config.placeholderEmail}
+                    error={signupErrors.email?.message}
+                    {...rhfRegisterSignup('email')}
+                  />
+                  <div className="relative">
+                    <Input
+                      label={config.passwordLabel}
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      error={signupErrors.password?.message}
+                      autoComplete="new-password"
+                      {...rhfRegisterSignup('password')}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-muted-foreground hover:text-foreground absolute top-9 right-3"
+                      aria-label={
+                        showPassword ? 'Ocultar senha' : 'Mostrar senha'
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  <Input
+                    label="Confirmar senha"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
-                    error={errors.password?.message}
-                    autoComplete="current-password"
-                    {...register('password')}
+                    error={signupErrors.confirmPassword?.message}
+                    autoComplete="new-password"
+                    {...rhfRegisterSignup('confirmPassword')}
                   />
+
+                  <Turnstile onTokenChange={setTurnstileToken} />
+
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="xl"
+                    className="w-full"
+                    loading={isSubmitting}
+                    leftIcon={<UserPlus className="h-5 w-5" />}
+                  >
+                    {config.signupLabel}
+                  </Button>
+                </form>
+              )}
+
+              {config.allowSignup && authMode === 'signin' && (
+                <div className="mt-4 text-center">
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-muted-foreground hover:text-foreground absolute top-9 right-3"
-                    aria-label={
-                      showPassword ? 'Ocultar senha' : 'Mostrar senha'
-                    }
+                    onClick={() => setAuthMode('signup')}
+                    className="text-muted-foreground hover:text-primary text-sm transition-colors"
+                    data-testid="toggle-signup"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )}
+                    Ainda não tem conta? Cadastre-se
                   </button>
                 </div>
+              )}
 
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="border-input text-primary focus:ring-primary h-4 w-4 rounded"
-                    />
-                    <span className="text-muted-foreground text-sm">
-                      Lembrar de mim
-                    </span>
-                  </label>
-                  <Link
-                    to="/recuperar-senha"
-                    className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
-                  >
-                    Esqueceu a senha?
-                  </Link>
-                </div>
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="xl"
-                  className="w-full"
-                  loading={isSubmitting || loginStatus === 'loading-profile'}
-                  leftIcon={<LogIn className="h-5 w-5" />}
-                >
-                  {loginStatus === 'loading-profile'
-                    ? flowConfig[accessFlow].loadingLabel
-                    : loginStatus === 'authenticating'
-                      ? 'Autenticando...'
-                      : flowConfig[accessFlow].submitLabel}
-                </Button>
-              </form>
-
-              {flowConfig[accessFlow].showRegister && (
+              {config.allowSignup && authMode === 'signup' && (
                 <div className="mt-4 text-center">
-                  <Link
-                    to={flowConfig[accessFlow].registerTo}
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode('signin')}
                     className="text-muted-foreground hover:text-primary text-sm transition-colors"
+                    data-testid="toggle-signin"
                   >
-                    {flowConfig[accessFlow].registerLabel}
-                  </Link>
+                    {config.signingupLabel}
+                  </button>
+                </div>
+              )}
+
+              {!config.allowSignup && (
+                <div className="mt-4 text-center">
+                  <p className="text-muted-foreground text-xs">
+                    Cadastro restrito a convite administrativo.
+                  </p>
                 </div>
               )}
             </motion.div>
           </AnimatePresence>
 
           <div className="mt-6 text-center">
-            <p className="text-muted-foreground/80 text-xs">
-              {flowConfig[accessFlow].footer}
-            </p>
+            <p className="text-muted-foreground/80 text-xs">{config.footer}</p>
           </div>
         </div>
       </motion.div>
     </div>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="#EA4335"
+        d="M12 10.2v3.84h5.52c-.24 1.44-1.74 4.2-5.52 4.2-3.3 0-6-2.76-6-6.18s2.7-6.18 6-6.18c1.92 0 3.18.81 3.9 1.5l2.64-2.55C16.98 3.06 14.7 2 12 2 6.96 2 2.88 6.06 2.88 11.1S6.96 20.2 12 20.2c6.84 0 9.12-4.8 9.12-9.24 0-.6-.06-1.08-.12-1.56H12z"
+      />
+    </svg>
+  );
+}
+
+function MicrosoftIcon() {
+  return (
+    <svg className="mr-2 h-5 w-5" viewBox="0 0 23 23" aria-hidden="true">
+      <path fill="#f25022" d="M1 1h10v10H1z" />
+      <path fill="#00a4ef" d="M12 1h10v10H12z" />
+      <path fill="#7fba00" d="M1 12h10v10H1z" />
+      <path fill="#ffb900" d="M12 12h10v10H12z" />
+    </svg>
   );
 }

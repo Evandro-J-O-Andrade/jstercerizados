@@ -37,7 +37,14 @@ interface AuthContextType {
   isCandidate: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{ error?: string }>;
+  login: (
+    email: string,
+    password: string,
+    options?: { turnstileToken?: string },
+  ) => Promise<{ error?: string }>;
+  loginWithProvider: (
+    provider: 'google' | 'azure',
+  ) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
   register: (
     email: string,
@@ -48,6 +55,7 @@ interface AuthContextType {
       phone?: string;
       tenantId?: string;
       roleId?: string;
+      turnstileToken?: string;
     },
   ) => Promise<{ error?: string; status?: 'success' | 'email_pending' }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
@@ -161,10 +169,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         tenantsData = (tenantsResult || []) as { id: string; name: string }[];
       }
 
-      const { data: roleAssignmentData, error: roleAssignmentError } = await supabase
-        .from('role_assignments')
-        .select('*')
-        .eq('person_id', personData.id);
+      const { data: roleAssignmentData, error: roleAssignmentError } =
+        await supabase
+          .from('role_assignments')
+          .select('*')
+          .eq('person_id', personData.id);
 
       if (roleAssignmentError) {
         console.error(
@@ -482,6 +491,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (
     email: string,
     password: string,
+    options: { turnstileToken?: string } = {},
   ): Promise<{ error?: string }> => {
     setAuthError(null);
     setIsLoading(true);
@@ -512,6 +522,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: {
+          captchaToken: options.turnstileToken,
+        },
       });
 
       console.log('[AUTH:LOGIN] signIn result', {
@@ -579,6 +592,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loginWithProvider = async (
+    provider: 'google' | 'azure',
+  ): Promise<{ error?: string }> => {
+    setAuthError(null);
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return {
+        error: normalizeError(
+          new Error(
+            'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+          ),
+        ).userMessage,
+      };
+    }
+
+    try {
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo },
+      });
+      if (error) {
+        return { error: normalizeError(error).userMessage };
+      }
+      return {};
+    } catch (error) {
+      return {
+        error: normalizeError(error).userMessage,
+      };
     }
   };
 
@@ -922,13 +967,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const resolvePostLoginDestination = useCallback((): string => {
-    const hasCandidateRole =
-      isCandidate ||
-      (roleAssignments || []).some((ra) => {
-        const role = (roles || []).find((r) => r.id === ra.role_id);
-        return role?.name === 'candidato';
-      });
-
     console.log('[AUTH:FLOW] resolvePostLoginDestination', {
       isAdminMaster,
       membershipCount: tenantMemberships.length,
@@ -936,7 +974,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       firstLoginCompleted: firstLoginState?.first_login_completed ?? null,
       termsVersion: firstLoginState?.terms_version ?? null,
       permissionCount: permissions.length,
-      hasCandidateRole,
       recoveryMode,
     });
 
@@ -966,13 +1003,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return '/auth/terms';
     }
 
-    if (hasCandidateRole) {
-      console.log(
-        '[AUTH:FLOW] redirect → /candidato (candidato autenticado)',
-      );
-      return '/candidato';
-    }
-
     console.log(
       '[AUTH:FLOW] redirect → /auth/welcome (etapa obrigatória pós-login)',
     );
@@ -999,6 +1029,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       phone?: string;
       tenantId?: string;
       roleId?: string;
+      turnstileToken?: string;
     },
   ): Promise<{ error?: string; status?: 'success' | 'email_pending' }> => {
     setAuthError(null);
@@ -1023,6 +1054,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             full_name: profileData.full_name,
             phone: profileData.phone ?? '',
           },
+          captchaToken: profileData.turnstileToken,
         },
       });
 
@@ -1176,6 +1208,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user && !!session,
         isLoading,
         login,
+        loginWithProvider,
         logout,
         register,
         resetPassword,
