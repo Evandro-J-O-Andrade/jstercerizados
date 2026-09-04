@@ -23,8 +23,7 @@ export class CandidatesRepository extends SupabaseRepository {
         education:candidate_education(*),
         courses:candidate_courses(*),
         languages:candidate_languages(*),
-        documents:candidate_documents(*),
-        profileViews:candidate_profile_views(*)
+        documents:candidate_documents(*)
       `,
       )
       .eq('tenant_id', tenantId)
@@ -58,8 +57,7 @@ export class CandidatesRepository extends SupabaseRepository {
         education:candidate_education(*),
         courses:candidate_courses(*),
         languages:candidate_languages(*),
-        documents:candidate_documents(*),
-        profileViews:candidate_profile_views(*)
+        documents:candidate_documents(*)
       `,
       )
       .eq('id', id)
@@ -68,6 +66,34 @@ export class CandidatesRepository extends SupabaseRepository {
 
     if (error) throw error;
     return data as Candidate | null;
+  }
+
+  async findByPersonId(
+    tenantId: string,
+    personId: string,
+  ): Promise<Candidate | null> {
+    if (!this.supabase) return null;
+
+    const { data, error } = await this.supabase
+      .from('candidates')
+      .select(
+        `
+        *,
+        person:people(*),
+        skills:candidate_skills(*),
+        experiences:candidate_experiences(*),
+        education:candidate_education(*),
+        courses:candidate_courses(*),
+        languages:candidate_languages(*),
+        documents:candidate_documents(*)
+      `,
+      )
+      .eq('tenant_id', tenantId)
+      .eq('person_id', personId)
+      .maybeSingle();
+
+    if (error) throw error;
+    return (data as Candidate | null) ?? null;
   }
 
   async create(input: CandidateCreateInput): Promise<Candidate> {
@@ -104,8 +130,7 @@ export class CandidatesRepository extends SupabaseRepository {
         education:candidate_education(*),
         courses:candidate_courses(*),
         languages:candidate_languages(*),
-        documents:candidate_documents(*),
-        profileViews:candidate_profile_views(*)
+        documents:candidate_documents(*)
       `,
       )
       .single();
@@ -153,8 +178,7 @@ export class CandidatesRepository extends SupabaseRepository {
         education:candidate_education(*),
         courses:candidate_courses(*),
         languages:candidate_languages(*),
-        documents:candidate_documents(*),
-        profileViews:candidate_profile_views(*)
+        documents:candidate_documents(*)
       `,
       )
       .single();

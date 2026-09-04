@@ -82,6 +82,17 @@ const PrimeiroAcessoTermos = lazy(
   () => import('@/pages/primeiro-acesso/Termos'),
 );
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
+const CandidateDashboard = lazy(() => import('@/pages/candidato/Dashboard'));
+const CandidateVagas = lazy(() => import('@/pages/candidato/Vagas'));
+const CandidateCandidaturas = lazy(() => import('@/pages/candidato/Candidaturas'));
+const CandidateFavoritas = lazy(() => import('@/pages/candidato/Favoritas'));
+const CandidateCurriculo = lazy(() => import('@/pages/candidato/Curriculo'));
+const CandidatePerfil = lazy(() => import('@/pages/candidato/Perfil'));
+const CandidateNotificacoes = lazy(() => import('@/pages/candidato/Notificacoes'));
+const CandidateConfiguracoes = lazy(() => import('@/pages/candidato/Configuracoes'));
+import { CandidateShell } from '@/components/portal/CandidateShell';
+import { CandidateProvider } from '@/contexts/CandidateContext';
+import { CandidateRoute } from '@/components/auth/CandidateRoute';
 import ComingSoonPage from '@/pages/dashboard/ComingSoonPage';
 import VisaoGeralPage from '@/pages/dashboard/VisaoGeral';
 import VagasPage from '@/pages/dashboard/Vagas';
@@ -804,6 +815,25 @@ function App() {
               </FirstAccessRoute>
             }
           />
+          <Route
+            path="/candidato/*"
+            element={
+              <CandidateRoute>
+                <CandidateProvider>
+                  <CandidateShell />
+                </CandidateProvider>
+              </CandidateRoute>
+            }
+          >
+            <Route index element={<CandidateDashboard />} />
+            <Route path="vagas" element={<CandidateVagas />} />
+            <Route path="candidaturas" element={<CandidateCandidaturas />} />
+            <Route path="favoritas" element={<CandidateFavoritas />} />
+            <Route path="curriculo" element={<CandidateCurriculo />} />
+            <Route path="perfil" element={<CandidatePerfil />} />
+            <Route path="notificacoes" element={<CandidateNotificacoes />} />
+            <Route path="configuracoes" element={<CandidateConfiguracoes />} />
+          </Route>
           <Route
             path="*"
             element={

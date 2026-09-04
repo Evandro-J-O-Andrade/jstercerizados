@@ -27,6 +27,21 @@ type AccessFlow = 'admin' | 'candidato' | 'empresa';
 type LoginStatus =
   'idle' | 'authenticating' | 'loading-profile' | 'success' | 'error';
 
+interface FlowConfig {
+  title: string;
+  subtitle: string;
+  icon: React.ReactNode;
+  placeholderEmail: string;
+  showRegister: boolean;
+  registerLabel: string;
+  registerTo: string;
+  emailLabel: string;
+  passwordLabel: string;
+  submitLabel: string;
+  loadingLabel: string;
+  footer: string;
+}
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -173,24 +188,48 @@ export default function Login() {
     );
   }
 
-  const flowConfig = {
+  const flowConfig: Record<AccessFlow, FlowConfig> = {
     admin: {
       title: 'Painel Administrativo',
-      subtitle: 'Acesse sua conta para gerenciar cadastros e relatórios.',
+      subtitle: 'Acesse sua conta para gerenciar operações, RH e relatórios.',
       icon: <Shield className="h-8 w-8" />,
       placeholderEmail: 'admin@jstercerizados.com.br',
+      showRegister: false,
+      registerLabel: '',
+      registerTo: '/cadastro/candidato',
+      emailLabel: 'E-mail administrativo',
+      passwordLabel: 'Senha',
+      submitLabel: 'Entrar no painel',
+      loadingLabel: 'Preparando painel...',
+      footer: 'Área restrita — Acesso autorizado apenas.',
     },
     candidato: {
       title: 'Área do Candidato',
-      subtitle: 'Acesse seu perfil para gerenciar candidaturas e currículos.',
+      subtitle: 'Acesse seu perfil para acompanhar candidaturas e currículo.',
       icon: <Briefcase className="h-8 w-8" />,
       placeholderEmail: 'candidato@exemplo.com',
+      showRegister: true,
+      registerLabel: 'Ainda não tem conta? Cadastre seu currículo',
+      registerTo: '/cadastro/candidato',
+      emailLabel: 'E-mail',
+      passwordLabel: 'Senha',
+      submitLabel: 'Entrar',
+      loadingLabel: 'Preparando seu painel...',
+      footer: 'Acesso exclusivo para candidatos.',
     },
     empresa: {
       title: 'Área da Empresa',
-      subtitle: 'Publique vagas e acesse sua área de recrutamento.',
+      subtitle: 'Acesse sua conta para publicar vagas e gerenciar recrutamento.',
       icon: <Building2 className="h-8 w-8" />,
       placeholderEmail: 'empresa@exemplo.com',
+      showRegister: true,
+      registerLabel: 'Ainda não tem conta? Publique sua primeira vaga',
+      registerTo: '/cadastro/empresa',
+      emailLabel: 'E-mail corporativo',
+      passwordLabel: 'Senha',
+      submitLabel: 'Entrar',
+      loadingLabel: 'Preparando seu painel...',
+      footer: 'Acesso exclusivo para empresas parceiras.',
     },
   };
 
@@ -257,9 +296,16 @@ export default function Login() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
-        className="relative z-10 w-full max-w-md"
+        className="relative z-10 w-full max-w-md px-4"
       >
-        <div className="border-border/40 bg-card shadow-glass rounded-3xl border p-8">
+        <div
+          className={cn(
+            'border shadow-glass rounded-3xl p-8',
+            accessFlow === 'admin'
+              ? 'border-border/40 bg-card'
+              : 'border-primary/20 bg-card/95',
+          )}
+        >
           {/* Access flow selector */}
           <div className="mb-6 flex justify-center gap-2">
             {(['admin', 'candidato', 'empresa'] as const).map((flow) => (
@@ -270,7 +316,9 @@ export default function Login() {
                 className={cn(
                   'flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200',
                   accessFlow === flow
-                    ? 'bg-primary text-primary-foreground shadow-md'
+                    ? flow === 'admin'
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'bg-primary text-primary-foreground shadow-md'
                     : 'text-muted-foreground hover:bg-muted',
                 )}
               >
@@ -293,16 +341,15 @@ export default function Login() {
               transition={{ duration: 0.3 }}
             >
               <div className="mb-8 text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl backdrop-blur-sm">
-                  {accessFlow !== 'admin' ? (
-                    <div className="text-primary">
-                      {flowConfig[accessFlow].icon}
-                    </div>
-                  ) : (
-                    <div className="bg-primary/20 text-primary">
-                      {flowConfig[accessFlow].icon}
-                    </div>
+                <div
+                  className={cn(
+                    'mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl backdrop-blur-sm',
+                    accessFlow === 'admin'
+                      ? 'bg-primary/20 text-primary'
+                      : 'bg-primary/10 text-primary',
                   )}
+                >
+                  {flowConfig[accessFlow].icon}
                 </div>
                 <h1 className="text-foreground text-3xl font-bold">
                   {flowConfig[accessFlow].title}
@@ -323,7 +370,7 @@ export default function Login() {
                 )}
 
                 <Input
-                  label="E-mail"
+                  label={flowConfig[accessFlow].emailLabel}
                   type="email"
                   autoComplete="email"
                   placeholder={flowConfig[accessFlow].placeholderEmail}
@@ -333,7 +380,7 @@ export default function Login() {
 
                 <div className="relative">
                   <Input
-                    label="Senha"
+                    label={flowConfig[accessFlow].passwordLabel}
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     error={errors.password?.message}
@@ -383,30 +430,20 @@ export default function Login() {
                   leftIcon={<LogIn className="h-5 w-5" />}
                 >
                   {loginStatus === 'loading-profile'
-                    ? 'Preparando seu painel...'
+                    ? flowConfig[accessFlow].loadingLabel
                     : loginStatus === 'authenticating'
                       ? 'Autenticando...'
-                      : 'Entrar'}
+                      : flowConfig[accessFlow].submitLabel}
                 </Button>
               </form>
 
-              {accessFlow === 'candidato' && (
+              {flowConfig[accessFlow].showRegister && (
                 <div className="mt-4 text-center">
                   <Link
-                    to="/cadastro/candidato"
+                    to={flowConfig[accessFlow].registerTo}
                     className="text-muted-foreground hover:text-primary text-sm transition-colors"
                   >
-                    Ainda não tem conta? Cadastre seu currículo
-                  </Link>
-                </div>
-              )}
-              {accessFlow === 'empresa' && (
-                <div className="mt-4 text-center">
-                  <Link
-                    to="/cadastro/empresa"
-                    className="text-muted-foreground hover:text-primary text-sm transition-colors"
-                  >
-                    Ainda não tem conta? Publique sua primeira vaga
+                    {flowConfig[accessFlow].registerLabel}
                   </Link>
                 </div>
               )}
@@ -415,7 +452,7 @@ export default function Login() {
 
           <div className="mt-6 text-center">
             <p className="text-muted-foreground/80 text-xs">
-              Área restrita — Acesso autorizado apenas.
+              {flowConfig[accessFlow].footer}
             </p>
           </div>
         </div>

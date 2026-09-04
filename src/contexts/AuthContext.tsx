@@ -34,6 +34,7 @@ interface AuthContextType {
   firstLoginState: FirstLoginState | null;
   legalAcceptances: LegalAcceptance[];
   isAdminMaster: boolean;
+  isCandidate: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
@@ -70,6 +71,7 @@ interface AuthContextType {
   switchTenant: (tenantId: string | null) => Promise<void>;
   resolvePostLoginDestination: () => string;
   authError: string | null;
+  recoveryMode: boolean;
 }
 
 const SESSION_PERSIST_KEY = 'jst_session_persist';
@@ -101,6 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
   const [isAdminMaster, setIsAdminMaster] = useState(false);
+  const [isCandidate, setIsCandidate] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -158,10 +161,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         tenantsData = (tenantsResult || []) as { id: string; name: string }[];
       }
 
-      const { data: roleAssignmentData } = await supabase
+      const { data: roleAssignmentData, error: roleAssignmentError } = await supabase
         .from('role_assignments')
         .select('*')
         .eq('person_id', personData.id);
+
+      if (roleAssignmentError) {
+        console.error(
+          '[AUTH:IDENTITY] role_assignments query failed',
+          roleAssignmentError,
+        );
+      }
 
       const roleIds = Array.from(
         new Set(
@@ -179,6 +189,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const adminMaster = (rolesData || []).some(
         (r: Role) => r.scope === 'global' && r.name === 'admin_master',
       );
+
+      let isCandidate = (rolesData || []).some(
+        (r: Role) => r.name === 'candidato',
+      );
+
+      // Fallback: if role_assignments query failed (e.g., due to is_admin_master()
+      // function crash on schema drift), check candidates table directly
+      if (roleAssignmentError && !isCandidate) {
+        console.log(
+          '[AUTH:IDENTITY] role_assignments query failed, using fallback for candidate detection',
+        );
+        try {
+          const { data: candidateProfile } = await supabase
+            .from('candidates')
+            .select('id, tenant_id, status')
+            .eq('person_id', personData.id)
+            .maybeSingle();
+
+          if (candidateProfile) {
+            isCandidate = true;
+          }
+        } catch (fallbackErr) {
+          console.error(
+            '[AUTH:IDENTITY] candidato fallback query also failed',
+            fallbackErr,
+          );
+        }
+      }
 
       let permissionsData: Permission[] = [];
       if (roleIds.length > 0) {
@@ -246,6 +284,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setFirstLoginState((firstLoginData as FirstLoginState) || null);
         setLegalAcceptances((legalAcceptancesData || []) as LegalAcceptance[]);
         setIsAdminMaster(adminMaster);
+        setIsCandidate(isCandidate);
       }
     } catch (error) {
       console.error('[AUTH:IDENTITY] loadAuthData failed', error);
@@ -259,6 +298,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setFirstLoginState(null);
         setLegalAcceptances([]);
         setIsAdminMaster(false);
+        setIsCandidate(false);
       }
       throw error;
     }
@@ -357,6 +397,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               setFirstLoginState(null);
               setLegalAcceptances([]);
               setIsAdminMaster(false);
+              setIsCandidate(false);
               setSession(null);
               setUser(null);
               setRecoveryMode(false);
@@ -881,10 +922,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const resolvePostLoginDestination = useCallback((): string => {
-    const hasCandidateRole = (roleAssignments || []).some((ra) => {
-      const role = (roles || []).find((r) => r.id === ra.role_id);
-      return role?.name === 'candidate';
-    });
+    const hasCandidateRole =
+      isCandidate ||
+      (roleAssignments || []).some((ra) => {
+        const role = (roles || []).find((r) => r.id === ra.role_id);
+        return role?.name === 'candidato';
+      });
 
     console.log('[AUTH:FLOW] resolvePostLoginDestination', {
       isAdminMaster,
@@ -925,9 +968,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (hasCandidateRole) {
       console.log(
-        '[AUTH:FLOW] redirect → /dashboard/candidato (candidato autenticado)',
+        '[AUTH:FLOW] redirect → /candidato (candidato autenticado)',
       );
-      return '/dashboard/candidato';
+      return '/candidato';
     }
 
     console.log(
@@ -936,6 +979,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return '/auth/welcome';
   }, [
     isAdminMaster,
+    isCandidate,
     tenantMemberships,
     firstLoginState,
     legalAcceptances,
@@ -1128,6 +1172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         firstLoginState,
         legalAcceptances,
         isAdminMaster,
+        isCandidate,
         isAuthenticated: !!user && !!session,
         isLoading,
         login,
@@ -1144,6 +1189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         switchTenant,
         resolvePostLoginDestination,
         authError,
+        recoveryMode,
       }}
     >
       {children}
