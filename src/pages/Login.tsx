@@ -45,8 +45,12 @@ const signupSchema = z
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
-type AccessFlow = 'admin' | 'candidato' | 'empresa';
+export type AccessFlow = 'admin' | 'candidato' | 'empresa';
 type AuthMode = 'signin' | 'signup';
+
+interface LoginProps {
+  requestedContext?: AccessFlow | null;
+}
 
 interface FlowConfig {
   title: string;
@@ -65,10 +69,12 @@ interface FlowConfig {
   footer: string;
 }
 
-export default function Login() {
+export default function Login({ requestedContext = null }: LoginProps = {}) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [accessFlow, setAccessFlow] = useState<AccessFlow>('admin');
+  const [accessFlow, setAccessFlow] = useState<AccessFlow>(
+    requestedContext ?? 'admin',
+  );
   const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -322,32 +328,34 @@ export default function Login() {
               : 'border-primary/20 bg-card/95',
           )}
         >
-          <div className="mb-6 flex justify-center gap-2">
-            {(['admin', 'candidato', 'empresa'] as const).map((flow) => (
-              <button
-                key={flow}
-                type="button"
-                onClick={() => {
-                  setAccessFlow(flow);
-                  setAuthMode('signin');
-                }}
-                className={cn(
-                  'flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200',
-                  accessFlow === flow
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'text-muted-foreground hover:bg-muted',
-                )}
-                data-flow={flow}
-              >
-                {flowConfig[flow].icon}
-                {flow === 'admin'
-                  ? 'Admin'
-                  : flow === 'candidato'
-                    ? 'Candidato'
-                    : 'Empresa'}
-              </button>
-            ))}
-          </div>
+          {requestedContext == null && (
+            <div className="mb-6 flex justify-center gap-2">
+              {(['admin', 'candidato', 'empresa'] as const).map((flow) => (
+                <button
+                  key={flow}
+                  type="button"
+                  onClick={() => {
+                    setAccessFlow(flow);
+                    setAuthMode('signin');
+                  }}
+                  className={cn(
+                    'flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200',
+                    accessFlow === flow
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'text-muted-foreground hover:bg-muted',
+                  )}
+                  data-flow={flow}
+                >
+                  {flowConfig[flow].icon}
+                  {flow === 'admin'
+                    ? 'Admin'
+                    : flow === 'candidato'
+                      ? 'Candidato'
+                      : 'Empresa'}
+                </button>
+              ))}
+            </div>
+          )}
 
           <AnimatePresence mode="wait">
             <motion.div

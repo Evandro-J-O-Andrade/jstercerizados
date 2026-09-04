@@ -69,7 +69,22 @@ const Contato = lazy(() => import('@/pages/Contato'));
 const Privacidade = lazy(() => import('@/pages/Privacidade'));
 const Termos = lazy(() => import('@/pages/Termos'));
 const Cadastro = lazy(() => import('@/pages/Cadastro'));
-const Login = lazy(() => import('@/pages/Login'));
+const EntrarHub = lazy(() => import('@/pages/auth/Entrar'));
+const EntrarAdmin = lazy(() =>
+  import('@/pages/auth/EntrarContexto').then((m) => ({
+    default: m.EntrarAdmin,
+  })),
+);
+const EntrarCandidato = lazy(() =>
+  import('@/pages/auth/EntrarContexto').then((m) => ({
+    default: m.EntrarCandidato,
+  })),
+);
+const EntrarEmpresa = lazy(() =>
+  import('@/pages/auth/EntrarContexto').then((m) => ({
+    default: m.EntrarEmpresa,
+  })),
+);
 const CadastroCandidato = lazy(() => import('@/pages/CadastroCandidato'));
 const CadastroEmpresa = lazy(() => import('@/pages/CadastroEmpresa'));
 const RecuperarSenha = lazy(() => import('@/pages/RecuperarSenha'));
@@ -868,7 +883,14 @@ function App() {
                     <Route path="/contato" element={<Contato />} />
                     <Route path="/privacidade" element={<Privacidade />} />
                     <Route path="/termos" element={<Termos />} />
-                    <Route path="/login" element={<Login />} />
+                    <Route path="/login" element={<EntrarHub />} />
+                    <Route path="/entrar" element={<EntrarHub />} />
+                    <Route path="/entrar/admin" element={<EntrarAdmin />} />
+                    <Route
+                      path="/entrar/candidato"
+                      element={<EntrarCandidato />}
+                    />
+                    <Route path="/entrar/empresa" element={<EntrarEmpresa />} />
                     <Route path="/cadastro" element={<Cadastro />} />
                     <Route
                       path="/recuperar-senha"
