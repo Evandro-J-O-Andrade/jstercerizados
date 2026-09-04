@@ -37,7 +37,7 @@ begin
     raise exception using errcode = 'P0001', message = 'CNPJ inválido.';
   end if;
 
-  if v_email is null or length(v_email) > 320 or v_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then
+  if v_email is null or length(v_email) > 320 or v_email !~ '^[^[:space:]@]+@[^[:space:]@]+\\.[^[:space:]@]+$' then
     raise exception using errcode = 'P0001', message = 'E-mail inválido.';
   end if;
 
@@ -53,7 +53,7 @@ begin
     raise exception using errcode = 'P0001', message = 'Telefone do contato inválido.';
   end if;
 
-  if v_contact_email is null or length(v_contact_email) > 320 or v_contact_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then
+  if v_contact_email is null or length(v_contact_email) > 320 or v_contact_email !~ '^[^[:space:]@]+@[^[:space:]@]+\\.[^[:space:]@]+$' then
     raise exception using errcode = 'P0001', message = 'E-mail do contato inválido.';
   end if;
 
