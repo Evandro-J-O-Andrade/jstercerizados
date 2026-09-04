@@ -1,61 +1,157 @@
-import { type ReactNode, useState } from 'react';
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import {
-  Home,
-  Briefcase,
-  FileText,
-  User,
-  Heart,
-  Bell,
-  Settings,
-  LogOut,
-  Mail,
-} from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { type ReactNode, useState, useCallback } from 'react';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigation } from '@/hooks/useNavigation';
+import { resolveIcon } from '@/utils/navigation-icons';
+import { CandidateBottomNavigation } from '@/components/layout/CandidateBottomNavigation';
+import { Button } from '@/components/ui/Button';
 import { COMPANY } from '@/config';
+import type { GlobalNavAction, NavigationItem } from '@/types/navigation';
 
 interface CandidateShellProps {
   children?: ReactNode;
 }
 
-const NAV_ITEMS = [
-  { to: '/candidato', label: 'Início', icon: Home, end: true },
-  { to: '/candidato/vagas', label: 'Vagas', icon: Briefcase },
-  {
-    to: '/candidato/candidaturas',
-    label: 'Minhas candidaturas',
-    icon: FileText,
-  },
-  { to: '/candidato/favoritas', label: 'Vagas favoritas', icon: Heart },
-  { to: '/candidato/curriculo', label: 'Meu currículo', icon: Mail },
-  { to: '/candidato/perfil', label: 'Meu perfil', icon: User },
-  { to: '/candidato/notificacoes', label: 'Notificações', icon: Bell },
-  { to: '/candidato/configuracoes', label: 'Configurações', icon: Settings },
-];
+function isExternal(href: string): boolean {
+  return href.startsWith('#') || href.startsWith('http');
+}
+
+function handleAction(
+  action: GlobalNavAction | undefined,
+  href: string,
+  navigate: ReturnType<typeof useNavigate>,
+  onAccessibility: () => void,
+  onHelp: () => void,
+  logout: () => Promise<void>,
+  onSiteHome: () => void,
+): void {
+  switch (action) {
+    case 'logout':
+      void logout();
+      return;
+    case 'accessibility':
+      onAccessibility();
+      return;
+    case 'chat':
+      onHelp();
+      return;
+    case 'site_home':
+      onSiteHome();
+      return;
+    default:
+      if (isExternal(href)) {
+        window.location.href = href;
+      } else {
+        navigate(href);
+      }
+  }
+}
+
+function ModuleNavLink({
+  item,
+  isHome,
+  onClick,
+}: {
+  item: NavigationItem;
+  isHome: boolean;
+  onClick?: () => void;
+}) {
+  const Icon = resolveIcon(item.icon);
+  return (
+    <NavLink
+      to={item.href}
+      end={isHome}
+      onClick={onClick}
+      data-key={item.key}
+      className={({ isActive }) =>
+        [
+          'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+          isActive
+            ? 'bg-primary/10 text-primary'
+            : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+        ].join(' ')
+      }
+    >
+      <Icon className="h-5 w-5 shrink-0" />
+      <span className="flex-1">{item.label}</span>
+    </NavLink>
+  );
+}
+
+function GlobalNavButton({
+  item,
+  onClick,
+  idx,
+}: {
+  item: NavigationItem;
+  onClick: () => void;
+  idx: number;
+}) {
+  const Icon = resolveIcon(item.icon);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-key={item.key}
+      data-action={item.action ?? 'link'}
+      data-idx={idx}
+      className="text-muted-foreground hover:bg-muted hover:text-foreground flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+    >
+      <Icon className="h-5 w-5 shrink-0" />
+      <span className="flex-1 text-left">{item.label}</span>
+    </button>
+  );
+}
 
 export function CandidateShell({ children }: CandidateShellProps) {
-  const location = useLocation();
+  const navigate = useNavigate();
   const { person, logout } = useAuth();
+  const { sidebarItems, bottomNavItems, loading } = useNavigation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const displayName = person?.full_name?.split(' ')[0] || 'Candidato';
 
-  const handleLogout = async () => {
-    await logout();
-  };
+  const onAccessibility = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('app:open-accessibility'));
+    setSidebarOpen(false);
+  }, []);
+
+  const onHelp = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('app:open-chat'));
+    setSidebarOpen(false);
+  }, []);
+
+  const onSiteHome = useCallback(() => {
+    navigate('/');
+    setSidebarOpen(false);
+  }, [navigate]);
+
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+
+  const runItem = useCallback(
+    (item: NavigationItem) => {
+      handleAction(
+        item.action,
+        item.href,
+        navigate,
+        onAccessibility,
+        onHelp,
+        logout,
+        onSiteHome,
+      );
+    },
+    [navigate, onAccessibility, onHelp, logout, onSiteHome],
+  );
 
   return (
     <div className="bg-muted/30 flex h-screen w-full overflow-hidden">
-      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="bg-background/60 fixed inset-0 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
+          onClick={closeSidebar}
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={[
           'bg-card border-border fixed top-0 left-0 z-50 h-full transform border-r transition-all duration-200 lg:static lg:z-0 lg:translate-x-0',
@@ -67,7 +163,10 @@ export function CandidateShell({ children }: CandidateShellProps) {
           <div className="flex items-center justify-between border-b p-4">
             <div className="flex items-center gap-2">
               <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
-                <Briefcase className="h-5 w-5" />
+                {(() => {
+                  const Icon = resolveIcon('Briefcase');
+                  return <Icon className="h-5 w-5" />;
+                })()}
               </div>
               <div className="min-w-0">
                 <p className="text-foreground truncate text-sm font-semibold">
@@ -81,7 +180,7 @@ export function CandidateShell({ children }: CandidateShellProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setSidebarOpen(false)}
+              onClick={closeSidebar}
               aria-label="Fechar menu"
               className="lg:hidden"
             >
@@ -93,31 +192,29 @@ export function CandidateShell({ children }: CandidateShellProps) {
             className="flex-1 space-y-1 overflow-y-auto p-2"
             aria-label="Portal do Candidato"
           >
-            {NAV_ITEMS.map((item) => {
-              const Icon = item.icon;
-              const isActive = item.end
-                ? location.pathname === item.to
-                : location.pathname === item.to ||
-                  location.pathname.startsWith(`${item.to}/`);
-
-              return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.end}
-                  onClick={() => setSidebarOpen(false)}
-                  className={[
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                    isActive
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                  ].join(' ')}
-                >
-                  <Icon className="h-5 w-5 shrink-0" />
-                  <span className="flex-1">{item.label}</span>
-                </NavLink>
-              );
-            })}
+            {loading ? (
+              <p className="text-muted-foreground px-3 py-2 text-xs">
+                Carregando menu…
+              </p>
+            ) : (
+              sidebarItems.map((item, idx) =>
+                item.source === 'module' ? (
+                  <ModuleNavLink
+                    key={item.key}
+                    item={item}
+                    isHome={item.key === 'home'}
+                    onClick={closeSidebar}
+                  />
+                ) : (
+                  <GlobalNavButton
+                    key={item.key}
+                    item={item}
+                    onClick={() => runItem(item)}
+                    idx={idx}
+                  />
+                ),
+              )
+            )}
           </nav>
 
           <div className="border-border border-t p-2">
@@ -134,31 +231,10 @@ export function CandidateShell({ children }: CandidateShellProps) {
                 </p>
               </div>
             </div>
-            <div className="space-y-0.5">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSidebarOpen(false)}
-                className="text-muted-foreground hover:text-foreground flex w-full items-center justify-start gap-2"
-              >
-                <Home className="h-4 w-4" />
-                <span>Site público</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="text-muted-foreground hover:text-foreground flex w-full items-center justify-start gap-2"
-              >
-                <LogOut className="h-4 w-4" />
-                <span>Sair</span>
-              </Button>
-            </div>
           </div>
         </div>
       </aside>
 
-      {/* Main content */}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="bg-card border-border flex h-14 items-center justify-between border-b px-4 lg:hidden">
           <Button
@@ -179,6 +255,8 @@ export function CandidateShell({ children }: CandidateShellProps) {
           </div>
         </main>
       </div>
+
+      <CandidateBottomNavigation items={bottomNavItems} />
     </div>
   );
 }

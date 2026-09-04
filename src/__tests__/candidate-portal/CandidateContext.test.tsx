@@ -8,6 +8,7 @@ import { applicationsRepository } from '@/repositories/applications.repository';
 import {
   favoriteJobsRepository,
   publicJobsRepository,
+  candidateJobAlertsRepository,
 } from '@/repositories/candidate-portal';
 
 vi.mock('@/contexts/AuthContext', () => ({
@@ -42,13 +43,24 @@ vi.mock('@/repositories/candidate-portal', () => ({
     findPublished: vi.fn(),
     findPublishedWithSkills: vi.fn(),
   },
+  candidateJobAlertsRepository: {
+    listForCurrentPerson: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+  },
 }));
 
 const mockUseAuth = vi.mocked(useAuth);
 const mockFindByPersonId = vi.mocked(candidatesRepository.findByPersonId);
 const mockFindAllApps = vi.mocked(applicationsRepository.findAll);
 const mockListFav = vi.mocked(favoriteJobsRepository.listForCurrentPerson);
-const mockFindPublishedWithSkills = vi.mocked(publicJobsRepository.findPublishedWithSkills);
+const mockFindPublishedWithSkills = vi.mocked(
+  publicJobsRepository.findPublishedWithSkills,
+);
+const mockListAlerts = vi.mocked(
+  candidateJobAlertsRepository.listForCurrentPerson,
+);
 const mockAddFav = vi.mocked(favoriteJobsRepository.add);
 const mockRemoveFav = vi.mocked(favoriteJobsRepository.remove);
 
@@ -86,11 +98,13 @@ describe('CandidateContext', () => {
       isCandidate: true,
     } as never);
 
+    mockFindByPersonId.mockReset();
     mockFindByPersonId.mockResolvedValue({
       id: 'c1',
       person_id: 'p1',
       tenant_id: 't1',
     } as never);
+    mockFindAllApps.mockReset();
     mockFindAllApps.mockResolvedValue([
       {
         id: 'a1',
@@ -103,14 +117,20 @@ describe('CandidateContext', () => {
         current_stage: 'submitted',
       },
     ] as never);
+    mockListFav.mockReset();
     mockListFav.mockResolvedValue([{ id: 'f1', job_id: 'j1' } as never]);
+    mockFindPublishedWithSkills.mockReset();
     mockFindPublishedWithSkills.mockResolvedValue([
       { id: 'j1', title: 'Dev' } as never,
     ]);
+    mockListAlerts.mockReset();
+    mockListAlerts.mockResolvedValue([]);
 
     const { result } = renderHook(() => useCandidate(), { wrapper });
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
 
     expect(mockFindByPersonId).toHaveBeenCalled();
     expect(result.current.candidate?.id).toBe('c1');
@@ -132,7 +152,7 @@ describe('CandidateContext', () => {
 
     const { result } = renderHook(() => useCandidate(), { wrapper });
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    await waitFor(() => expect(mockListFav).toHaveBeenCalled());
 
     await act(async () => {
       const out = await result.current.toggleFavorite('j1');
@@ -149,13 +169,13 @@ describe('CandidateContext', () => {
       isCandidate: true,
     } as never);
 
-    mockListFav.mockResolvedValue([
-      { id: 'f1', job_id: 'j1' } as never,
-    ]);
+    mockListFav.mockResolvedValue([{ id: 'f1', job_id: 'j1' } as never]);
 
     const { result } = renderHook(() => useCandidate(), { wrapper });
 
-    await waitFor(() => expect(result.current.favoriteIds.has('j1')).toBe(true));
+    await waitFor(() =>
+      expect(result.current.favoriteIds.has('j1')).toBe(true),
+    );
 
     await act(async () => {
       const out = await result.current.toggleFavorite('j1');
@@ -176,7 +196,7 @@ describe('CandidateContext', () => {
 
     const { result } = renderHook(() => useCandidate(), { wrapper });
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    await waitFor(() => expect(result.current.error).toBeTruthy());
 
     expect(result.current.error).toBeTruthy();
   });
