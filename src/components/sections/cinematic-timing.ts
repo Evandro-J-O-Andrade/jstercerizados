@@ -1,0 +1,15 @@
+export const CINEMATIC_TIMING = {
+  ENTER_MS: 3500,
+  HOLD_MS: 5000,
+  EXIT_MS: 1400,
+} as const;
+
+export const CINEMATIC_EASING = [0.25, 0.4, 0.25, 1] as const;
+
+export const CINEMATIC_TEXT_TIMING = {
+  TITLE_DELAY_ENTER_S: 1.4,
+  SUBTITLE_DELAY_ENTER_S: 2.2,
+  TITLE_ENTER_DURATION_S: 0.8,
+  SUBTITLE_ENTER_DURATION_S: 0.8,
+  TEXT_EXIT_DURATION_S: 0.5,
+} as const;
