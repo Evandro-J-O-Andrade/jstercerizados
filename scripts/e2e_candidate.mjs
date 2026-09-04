@@ -16,8 +16,15 @@ const PASSWORD = process.env.CAND_PASSWORD || 'Auditoria@2026';
   });
   page.on('console', (msg) => {
     const t = msg.text();
-    if (t.includes('[AUTH') || t.includes('error') || t.includes('Error')) {
-      console.log('[CONSOLE]', msg.type(), t.slice(0, 200));
+    if (t.includes('[AUTH') || t.includes('error') || t.includes('Error') || t.includes('RLS') || t.includes('legal')) {
+      console.log('[CONSOLE]', msg.type(), t.slice(0, 250));
+    }
+  });
+  page.on('response', async (r) => {
+    const u = r.url();
+    if (r.status() >= 400 && (u.includes('supabase') || u.includes('/rest/') || u.includes('legal'))) {
+      console.log('[NET ERR]', r.status(), u);
+      try { console.log('[BODY]', (await r.text()).slice(0, 300)); } catch {}
     }
   });
   page.on('pageerror', (e) => console.log('[PAGE ERR]', e.message));
@@ -48,11 +55,33 @@ const PASSWORD = process.env.CAND_PASSWORD || 'Auditoria@2026';
       console.log('Has "Área do Candidato":', hasShell > 0);
     } else if (url.includes('/auth/terms')) {
       console.log('4b) on /auth/terms — accepting');
+      // Scroll the scrollable content to the bottom to satisfy scrolledToBottom gate
+      const scrolled = await page.evaluate(() => {
+        const candidates = document.querySelectorAll('div, main, article, section');
+        for (const el of candidates) {
+          if (el.scrollHeight > el.clientHeight + 4) {
+            el.scrollTop = el.scrollHeight;
+            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 4) return true;
+          }
+        }
+        window.scrollTo(0, document.body.scrollHeight);
+        return true;
+      });
+      console.log('scrolled:', scrolled);
+      await page.waitForTimeout(500);
+      // Check the terms checkbox
+      const cb = page.locator('input[type="checkbox"]').first();
+      if (await cb.count() > 0) {
+        await cb.check({ force: true }).catch(() => {});
+      }
+      await page.waitForTimeout(300);
       const acceptBtn = page.getByRole('button', { name: /Aceitar|Aceito|Concordo|Aceitar e continuar/i }).first();
       if (await acceptBtn.count() > 0) {
-        await acceptBtn.click();
-        await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
-        await page.waitForTimeout(3000);
+        await acceptBtn.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(300);
+        await acceptBtn.click({ force: true });
+        await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+        await page.waitForTimeout(6000);
         const url2 = page.url();
         console.log('5) after accept:', url2);
         const main = await page.locator('main').innerText().catch(() => '');
