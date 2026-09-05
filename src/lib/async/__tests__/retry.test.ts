@@ -59,14 +59,12 @@ describe('retry', () => {
     };
 
     const result = retry(fn, { retries: 2, delay: 100, factor: 1 });
-    // Attach a noop catch first to prevent UnhandledRejection during timer
-    // advance, then assert. The actual .rejects matcher replaces the catch.
-    result.catch(() => {});
+    const rejection = expect(result).rejects.toThrow('always fail');
 
     await vi.advanceTimersByTimeAsync(200);
     await vi.advanceTimersByTimeAsync(0);
 
-    await expect(result).rejects.toThrow('always fail');
+    await rejection;
     expect(callCount).toBe(3);
   });
 
@@ -137,12 +135,12 @@ describe('withRetry', () => {
     const wrapped = withRetry(original, { retries: 1, delay: 50, factor: 1 });
 
     const result = wrapped();
-    result.catch(() => {});
+    const rejection = expect(result).rejects.toThrow('boom');
 
     await vi.advanceTimersByTimeAsync(50);
     await vi.advanceTimersByTimeAsync(0);
 
-    await expect(result).rejects.toThrow('boom');
+    await rejection;
     expect(callCount).toBe(2);
   });
 });
