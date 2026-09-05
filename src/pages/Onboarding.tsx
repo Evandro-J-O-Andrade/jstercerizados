@@ -50,7 +50,7 @@ export default function Onboarding() {
           <p className="text-muted-foreground mb-6">
             Faça login para continuar.
           </p>
-          <Link to="/login">
+          <Link to="/entrar">
             <Button variant="primary" size="lg">
               Entrar
             </Button>

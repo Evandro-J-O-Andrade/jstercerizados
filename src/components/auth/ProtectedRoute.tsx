@@ -78,7 +78,7 @@ export function ProtectedRoute({
   }
 
   if (!isAuthenticated || !person) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/entrar" state={{ from: location }} replace />;
   }
 
   // RBAC hardlock: candidato puro nunca deve entrar em /dashboard/*

@@ -17,7 +17,7 @@ export default function PrimeiroAcessoTermos() {
 
   useEffect(() => {
     if (!isAuthenticated || !person) {
-      navigate('/login', { replace: true });
+      navigate('/entrar', { replace: true });
     }
   }, [isAuthenticated, person, navigate]);
 

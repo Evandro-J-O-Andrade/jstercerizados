@@ -170,7 +170,7 @@ export default function AuthWelcome() {
 
   useEffect(() => {
     if (!person) {
-      navigate('/login', { replace: true });
+      navigate('/entrar', { replace: true });
     }
   }, [person, navigate]);
 

@@ -69,7 +69,7 @@ export function PermissionGuard({
   }
 
   if (!isAuthenticated || !person) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/entrar" state={{ from: location }} replace />;
   }
 
   if (isAdminMaster) {

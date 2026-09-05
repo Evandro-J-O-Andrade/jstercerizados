@@ -425,7 +425,7 @@ export default function Home() {
                 vagas, acompanhe candidaturas e mantenha seu currículo sempre
                 atualizado.
               </p>
-              <Link to="/login">
+              <Link to="/entrar">
                 <Button variant="primary" size="lg" className="w-full">
                   Fazer login
                 </Button>

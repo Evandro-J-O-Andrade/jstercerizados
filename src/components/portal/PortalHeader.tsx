@@ -44,7 +44,7 @@ export function PortalHeader({
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate('/entrar');
   };
 
   const primaryRole = roles[0];
