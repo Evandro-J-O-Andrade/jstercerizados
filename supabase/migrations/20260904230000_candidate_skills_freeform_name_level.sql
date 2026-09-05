@@ -31,15 +31,25 @@ ALTER TABLE public.candidate_skills
 -- 2. Data migration: populate name + level from existing data
 -- -----------------------------------------------------------------------------
 
-UPDATE public.candidate_skills
-SET
-  name = COALESCE(
-    candidate_skills.name,
-    (SELECT s.name FROM public.skills s WHERE s.id = candidate_skills.skill_id)
-  ),
-  level = COALESCE(candidate_skills.level, candidate_skills.proficiency)
-WHERE candidate_skills.proficiency IS NOT NULL
-   OR candidate_skills.skill_id IS NOT NULL;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'candidate_skills'
+      AND column_name = 'proficiency'
+  ) THEN
+    UPDATE public.candidate_skills
+    SET
+      name = COALESCE(
+        candidate_skills.name,
+        (SELECT s.name FROM public.skills s WHERE s.id = candidate_skills.skill_id)
+      ),
+      level = COALESCE(candidate_skills.level::varchar, candidate_skills.proficiency)
+    WHERE candidate_skills.proficiency IS NOT NULL
+      OR candidate_skills.skill_id IS NOT NULL;
+  END IF;
+END $$;
 
 -- -----------------------------------------------------------------------------
 -- 3. Enforce name NOT NULL
@@ -52,6 +62,13 @@ WHERE name IS NULL;
 
 ALTER TABLE public.candidate_skills
   ALTER COLUMN name SET NOT NULL;
+
+-- Ensure CHECK constraint on level (ADD COLUMN IF NOT EXISTS skips constraint when column pre-exists)
+ALTER TABLE public.candidate_skills
+  DROP CONSTRAINT IF EXISTS candidate_skills_level_check;
+ALTER TABLE public.candidate_skills
+  ADD CONSTRAINT candidate_skills_level_check
+  CHECK (level IN ('basic', 'intermediate', 'advanced', 'expert'));
 
 -- -----------------------------------------------------------------------------
 -- 4. Make skill_id nullable (no longer required)
@@ -89,6 +106,8 @@ DROP INDEX IF EXISTS idx_candidate_skills_skill;
 -- -----------------------------------------------------------------------------
 -- 7. Add updated_at trigger
 -- -----------------------------------------------------------------------------
+
+DROP TRIGGER IF EXISTS update_candidate_skills_updated_at ON public.candidate_skills;
 
 CREATE TRIGGER update_candidate_skills_updated_at
   BEFORE UPDATE ON public.candidate_skills
