@@ -13,9 +13,11 @@ import type {
   FinancialCategoryCreateInput,
 } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 export default function FinanceiroCategoriasPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [items, setItems] = useState<FinancialCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,8 +67,12 @@ export default function FinanceiroCategoriasPage() {
         status: 'active',
       });
       await load();
+      addToast({ type: 'success', message: 'Categoria criada com sucesso!' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao salvar');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao salvar',
+      });
     }
   };
 
@@ -76,8 +82,12 @@ export default function FinanceiroCategoriasPage() {
       await financialCategoryRepository.remove(deleteId, currentTenantId);
       setDeleteId(null);
       await load();
+      addToast({ type: 'success', message: 'Categoria excluída com sucesso.' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao excluir');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao excluir',
+      });
     }
   };
 

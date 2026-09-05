@@ -28,6 +28,12 @@ public/images/favicons/favicon.ico
 public/images/favicons/apple-touch-icon.png
 .playwright-mcp/
 supabase/.temp/
+test-results/
+playwright-report/
+tmp_*.png
+tmp_*.txt
+supabase_dump_check.sql
+
 
 # Local-only environment credential files (NEVER commit)
 env_*.txt

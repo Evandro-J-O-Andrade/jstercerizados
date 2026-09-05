@@ -9,11 +9,11 @@ declare
 begin
  if v_name is null or length(v_name)<2 or length(v_name)>200 then raise exception using errcode='P0001',message='Dados da empresa inválidos.'; end if;
  if v_cnpj is null or length(v_cnpj)<>14 or not public.is_valid_cnpj(v_cnpj) then raise exception using errcode='P0001',message='CNPJ inválido.'; end if;
- if v_email is null or length(v_email)>320 or v_email !~ '^[^[:space:]@]+@[^[:space:]@]+\\.[^[:space:]@]+$' then raise exception using errcode='P0001',message='E-mail inválido.'; end if;
- if length(v_phone)<8 or length(v_phone)>15 then raise exception using errcode='P0001',message='Telefone inválido.'; end if;
- if v_contact_name is null or length(v_contact_name)<2 or length(v_contact_name)>200 then raise exception using errcode='P0001',message='Dados do contato inválidos.'; end if;
- if length(v_contact_phone)<8 or length(v_contact_phone)>15 then raise exception using errcode='P0001',message='Telefone do contato inválido.'; end if;
- if v_contact_email is null or length(v_contact_email)>320 or v_contact_email !~ '^[^[:space:]@]+@[^[:space:]@]+\\.[^[:space:]@]+$' then raise exception using errcode='P0001',message='E-mail do contato inválido.'; end if;
+if v_email is null or length(v_email)>320 or v_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then raise exception using errcode='P0001',message='E-mail inválido.'; end if;
+if length(v_phone)<8 or length(v_phone)>15 then raise exception using errcode='P0001',message='Telefone inválido.'; end if;
+if v_contact_name is null or length(v_contact_name)<2 or length(v_contact_name)>200 then raise exception using errcode='P0001',message='Dados do contato inválidos.'; end if;
+if length(v_contact_phone)<8 or length(v_contact_phone)>15 then raise exception using errcode='P0001',message='Telefone do contato inválido.'; end if;
+if v_contact_email is null or length(v_contact_email)>320 or v_contact_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then raise exception using errcode='P0001',message='E-mail do contato inválido.'; end if;
  if v_message is not null and length(v_message)>2000 then raise exception using errcode='P0001',message='Mensagem excede o limite permitido.'; end if;
  select t.id into v_tenant_id from public.tenants t where t.slug='js-empregos' and t.status='active' limit 1;
  if v_tenant_id is null then raise exception using errcode='P0001',message='Serviço temporariamente indisponível.'; end if;

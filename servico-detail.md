@@ -1,0 +1,181 @@
+- main [ref=f8e14]:
+  - generic [ref=f8e15]:
+    - generic [ref=f8e16]:
+      - img "Recrutamento e Seleção" [ref=f8e20]
+      - generic [ref=f8e29]:
+        - link "Todos os Serviços" [ref=f8e31] [cursor=pointer]:
+          - /url: /servicos
+        - generic [ref=f8e34]:
+          - generic [ref=f8e35]:
+            - generic [ref=f8e36]: Recrutamento e Seleção
+            - heading "Recrutamento e Seleção" [level=1] [ref=f8e40]
+            - paragraph [ref=f8e41]: Serviço completo de recrutamento e seleção de profissionais qualificados para sua empresa. Encontramos os melhores talentos para as posições estratégicas da sua organização.
+            - generic [ref=f8e42]:
+              - link [ref=f8e43] [cursor=pointer]:
+                - /url: https://wa.me/5511968380592?text=Ol%C3%A1!%20Visitei%20o%20site%20da%20J%26S%20Empregos%20LTDA%20e%20gostaria%20de%20conhecer%20melhor%20os%20servi%C3%A7os%20oferecidos.
+                - button "Solicitar Orçamento" [ref=f8e44]
+              - link [ref=f8e47] [cursor=pointer]:
+                - /url: /contato
+                - button "Fale Conosco" [ref=f8e48]
+          - generic [ref=f8e51]:
+            - img "Recrutamento e Seleção" [ref=f8e54]
+            - generic [ref=f8e61]:
+              - paragraph [ref=f8e62]: Excelência Operacional
+              - paragraph [ref=f8e63]: SLA + KPIs + Compliance
+      - generic [ref=f8e64]: Role para descer
+    - generic [ref=f8e71]:
+      - generic [ref=f8e72]:
+        - paragraph [ref=f8e76]: "500"
+        - paragraph [ref=f8e77]: Profissionais
+      - generic [ref=f8e78]:
+        - paragraph [ref=f8e83]: 15+
+        - paragraph [ref=f8e84]: Anos de Experiência
+      - generic [ref=f8e85]:
+        - paragraph [ref=f8e89]: "200"
+        - paragraph [ref=f8e90]: Clientes Atendidos
+      - generic [ref=f8e91]:
+        - paragraph [ref=f8e96]: "50"
+        - paragraph [ref=f8e97]: Cidades
+    - generic [ref=f8e100]:
+      - generic [ref=f8e101]:
+        - generic [ref=f8e102]: Sobre o Serviço
+        - heading "Recrutamento e Seleção com Excelência" [level=2] [ref=f8e105]
+        - paragraph [ref=f8e106]: Nossa equipe de profissionais são altamente treinada e certificada para entregar resultados excepcionais em recrutamento e seleção. Utilizamos tecnologia de ponta e processos rigorosos de gestão de qualidade para garantir a segurança e a satisfação dos nossos clientes.
+        - generic [ref=f8e107]:
+          - generic [ref=f8e108]: Acesso a currículos qualificados
+          - generic [ref=f8e113]: Triagem inicial qualificada
+          - generic [ref=f8e118]: Avaliação de competências técnicas
+          - generic [ref=f8e123]: Processo seletivo ágil
+          - generic [ref=f8e128]: Garantia de contratação
+          - generic [ref=f8e133]: Suporte até a contratação
+        - link [ref=f8e139] [cursor=pointer]:
+          - /url: https://wa.me/5511968380592?text=Ol%C3%A1!%20Visitei%20o%20site%20da%20J%26S%20Empregos%20LTDA%20e%20gostaria%20de%20conhecer%20melhor%20os%20servi%C3%A7os%20oferecidos.
+          - button "Solicitar Orçamento" [ref=f8e140]
+      - generic [ref=f8e143]:
+        - heading "Informações de Contato" [level=3] [ref=f8e144]
+        - generic [ref=f8e145]:
+          - generic [ref=f8e146]: (11) 96838-0592
+          - generic [ref=f8e150]: comercial@jsterceirizados.com.br
+          - generic [ref=f8e155]: Segunda a Sexta, 08h às 18h
+          - generic [ref=f8e160]: Poá, SP — Brasil
+    - generic [ref=f8e166]:
+      - generic [ref=f8e167]:
+        - heading "Como Trabalhamos" [level=2] [ref=f8e168]
+        - paragraph [ref=f8e169]: Um processo estruturado para garantir a qualidade e a agilidade na prestação do serviço.
+      - generic [ref=f8e170]:
+        - generic [ref=f8e171]:
+          - generic [ref=f8e173]: "01"
+          - heading "Solicitação" [level=3] [ref=f8e174]
+          - paragraph [ref=f8e175]: Entre em contato pelo site ou WhatsApp com suas necessidades.
+        - generic [ref=f8e176]:
+          - generic [ref=f8e178]: "02"
+          - heading "Análise" [level=3] [ref=f8e179]
+          - paragraph [ref=f8e180]: Nossa equipe avalia o perfil e prepara uma proposta personalizada.
+        - generic [ref=f8e181]:
+          - generic [ref=f8e183]: "03"
+          - heading "Proposta" [level=3] [ref=f8e184]
+          - paragraph [ref=f8e185]: Apresentamos a solução ideal com custos e prazos detalhados.
+        - generic [ref=f8e186]:
+          - generic [ref=f8e187]: "04"
+          - heading "Execução" [level=3] [ref=f8e188]
+          - paragraph [ref=f8e189]: Iniciamos a operação com profissionais treinados e equipados.
+    - generic [ref=f8e191]:
+      - generic [ref=f8e192]:
+        - heading "Por que escolher Recrutamento e Seleção?" [level=2] [ref=f8e193]
+        - paragraph [ref=f8e194]: Nossos diferenciais garantem a melhor experiência para o seu negócio.
+      - generic [ref=f8e195]:
+        - generic [ref=f8e200]:
+          - heading "Profissionais Certificados" [level=3] [ref=f8e201]
+          - paragraph [ref=f8e202]: Equipe selecionada, treinada e certificada para cada segmento.
+        - generic [ref=f8e207]:
+          - heading "Tecnologia Integrada" [level=3] [ref=f8e208]
+          - paragraph [ref=f8e209]: Monitoramento e gestão em tempo real para total controle.
+        - generic [ref=f8e215]:
+          - heading "Suporte 24/7" [level=3] [ref=f8e216]
+          - paragraph [ref=f8e217]: Atendimento contínuo para garantir a operação sem interrupções.
+    - generic [ref=f8e220]:
+      - heading "Galeria" [level=2] [ref=f8e221]
+      - paragraph [ref=f8e222]: Confira alguns momentos do nosso trabalho em recrutamento e seleção.
+    - generic [ref=f8e224]:
+      - generic [ref=f8e225]:
+        - heading "Perguntas Frequentes" [level=2] [ref=f8e226]
+        - paragraph [ref=f8e227]: Respostas para as dúvidas mais comuns sobre nossos serviços.
+      - generic [ref=f8e228]:
+        - generic [ref=f8e229]:
+          - button "Qual a cobertura de atendimento?" [ref=f8e230]
+          - paragraph [ref=f8e235]: Atendemos em mais de 50 cidades, com cobertura completa para garantir agilidade e presença onde você precisa.
+        - generic [ref=f8e236]:
+          - button "Como funciona o processo de contratação?" [ref=f8e237]
+          - paragraph [ref=f8e241]: Solicite um orçamento pelo site ou pelo WhatsApp. Nossa equipe analisa suas necessidades e elabora uma proposta personalizada.
+        - generic [ref=f8e242]:
+          - button "Qual o prazo para início do serviço?" [ref=f8e243]
+          - paragraph [ref=f8e247]: Após a aprovação da proposta, iniciamos a operação em até 7 dias úteis, com profissionais treinados e equipados.
+        - generic [ref=f8e248]:
+          - button "Os profissionais são treinados e certificados?" [ref=f8e249]
+          - paragraph [ref=f8e253]: Sim. Nossa equipe é selecionada, certificada e continuamente treinada para cada segmento de serviço.
+        - generic [ref=f8e254]:
+          - button "Vocês oferecem garantia de qualidade?" [ref=f8e255]
+          - paragraph [ref=f8e259]: Sim. Trabalhamos com SLA, KPIs e compliance total das normas do setor, com gestão de performance em tempo real.
+    - generic [ref=f8e266]:
+      - heading "Pronto para contratar Recrutamento e Seleção?" [level=2] [ref=f8e267]
+      - paragraph [ref=f8e268]: Solicite uma proposta gratuita e descubra como podemos elevar o padrão dos seus serviços.
+      - generic [ref=f8e270]:
+        - generic [ref=f8e271]:
+          - heading "Solicitar orçamento" [level=3] [ref=f8e272]
+          - paragraph [ref=f8e273]: Preencha o formulário e nossa equipe entrará em contato.
+        - generic [ref=f8e274]:
+          - generic [ref=f8e275]:
+            - generic [ref=f8e276]: Nome completo
+            - textbox "Nome completo" [ref=f8e277]
+          - generic [ref=f8e278]:
+            - generic [ref=f8e279]: Empresa
+            - textbox "Empresa" [ref=f8e280]
+          - generic [ref=f8e281]:
+            - generic [ref=f8e282]: E-mail
+            - textbox "E-mail" [ref=f8e283]
+          - generic [ref=f8e284]:
+            - generic [ref=f8e285]: Telefone/WhatsApp
+            - textbox "Telefone/WhatsApp" [ref=f8e286]
+          - generic [ref=f8e287]:
+            - generic [ref=f8e288]: Cidade
+            - textbox "Cidade" [ref=f8e289]
+          - generic [ref=f8e290]:
+            - generic [ref=f8e291]: Serviço
+            - combobox "Serviço" [ref=f8e292]:
+              - option "Selecione um serviço"
+              - option "Assessoria em RH"
+              - option "Recrutamento e Seleção" [selected]
+              - option "Mão de Obra Temporária"
+              - option "Mão de Obra Efetiva"
+              - option "Facilities"
+              - option "Limpeza de Fachada"
+              - option "Limpeza de Vidros"
+              - option "Limpeza Pré-Mudança"
+              - option "Limpeza Pós-Mudança"
+              - option "Limpeza Pós-Obra"
+              - option "Jardinagem"
+              - option "Terceirização"
+              - option "Outro"
+          - generic [ref=f8e293]:
+            - generic [ref=f8e294]: Tipo de ambiente
+            - combobox "Tipo de ambiente" [ref=f8e295]:
+              - option "Selecione o tipo de ambiente" [selected]
+              - option "Comercial"
+              - option "Industrial"
+              - option "Residencial"
+              - option "Condomínio"
+              - option "Outro"
+          - generic [ref=f8e296]:
+            - generic [ref=f8e297]: Melhor horário para contato
+            - textbox "Melhor horário para contato" [ref=f8e298]:
+              - /placeholder: "Ex.: 14h às 17h"
+        - generic [ref=f8e300]:
+          - generic [ref=f8e301]: Mensagem
+          - textbox "Mensagem" [ref=f8e302]:
+            - /placeholder: Descreva sua necessidade...
+        - generic [ref=f8e303]:
+          - button "Solicitar orçamento" [ref=f8e304]
+          - generic [ref=f8e307]:
+            - generic [ref=f8e308]: comercial@jsterceirizados.com.br
+            - generic [ref=f8e312]: Seg a Sex, 08h às 18h
+            - generic [ref=f8e316]: Poá - SP

@@ -7,9 +7,11 @@ import { EmptyState, ErrorState } from '@/components/fallback';
 import { bankAccountRepository } from '@/repositories/bank-account.repository';
 import type { BankAccount } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 export default function BancosPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +55,7 @@ export default function BancosPage() {
             className="w-full bg-transparent text-sm outline-none"
           />
         </div>
-        <Button onClick={() => alert('Formulário de nova conta bancária')}>
+        <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova conta bancária' })}>
           <Plus className="mr-2 h-4 w-4" />
           Nova conta
         </Button>
@@ -64,7 +66,7 @@ export default function BancosPage() {
           title="Nenhuma conta bancária cadastrada"
           description="Quando houver contas cadastradas, elas aparecerão aqui."
           actionLabel="Nova conta"
-          onAction={() => alert('Formulário de nova conta bancária')}
+          onAction={() => addToast({ type: 'info', message: 'Formulário de nova conta bancária' })}
         />
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">

@@ -13,11 +13,13 @@ import type {
   ChartOfAccount,
 } from '@/types/domain/accounting';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 type Tab = 'entries' | 'chart' | 'balance';
 
 export default function ContabilidadePage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('entries');
   const [entries, setEntries] = useState<AccountingEntry[]>([]);
   const [accounts, setAccounts] = useState<ChartOfAccount[]>([]);
@@ -103,7 +105,12 @@ export default function ContabilidadePage() {
         </div>
         <Button
           variant="secondary"
-          onClick={() => alert('Exportar relatório contábil...')}
+          onClick={() =>
+            addToast({
+              type: 'info',
+              message: 'Exportar relatório contábil...',
+            })
+          }
         >
           <Download className="mr-2 h-4 w-4" />
           Exportar
@@ -176,7 +183,7 @@ export default function ContabilidadePage() {
                 className="w-full bg-transparent text-sm outline-none"
               />
             </div>
-            <Button onClick={() => alert('Formulário de novo lançamento')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de novo lançamento' })}>
               <Plus className="mr-2 h-4 w-4" />
               Novo lançamento
             </Button>
@@ -187,7 +194,7 @@ export default function ContabilidadePage() {
               title="Nenhum lançamento cadastrado"
               description="Quando houver lançamentos registrados, eles aparecerão aqui."
               actionLabel="Novo lançamento"
-              onAction={() => alert('Formulário de novo lançamento')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de novo lançamento' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -246,7 +253,7 @@ export default function ContabilidadePage() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => alert('Formulário de nova conta')}>
+            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova conta' })}>
               <Plus className="mr-2 h-4 w-4" />
               Nova conta
             </Button>
@@ -257,7 +264,7 @@ export default function ContabilidadePage() {
               title="Nenhuma conta cadastrada"
               description="Quando houver contas registradas, elas aparecerão aqui."
               actionLabel="Nova conta"
-              onAction={() => alert('Formulário de nova conta')}
+              onAction={() => addToast({ type: 'info', message: 'Formulário de nova conta' })}
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">

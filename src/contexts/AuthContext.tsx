@@ -34,9 +34,17 @@ interface AuthContextType {
   firstLoginState: FirstLoginState | null;
   legalAcceptances: LegalAcceptance[];
   isAdminMaster: boolean;
+  isCandidate: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{ error?: string }>;
+  login: (
+    email: string,
+    password: string,
+    options?: { turnstileToken?: string },
+  ) => Promise<{ error?: string }>;
+  loginWithProvider: (
+    provider: 'google' | 'azure',
+  ) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
   register: (
     email: string,
@@ -47,6 +55,7 @@ interface AuthContextType {
       phone?: string;
       tenantId?: string;
       roleId?: string;
+      turnstileToken?: string;
     },
   ) => Promise<{ error?: string; status?: 'success' | 'email_pending' }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
@@ -70,6 +79,7 @@ interface AuthContextType {
   switchTenant: (tenantId: string | null) => Promise<void>;
   resolvePostLoginDestination: () => string;
   authError: string | null;
+  recoveryMode: boolean;
 }
 
 const SESSION_PERSIST_KEY = 'jst_session_persist';
@@ -101,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
   const [isAdminMaster, setIsAdminMaster] = useState(false);
+  const [isCandidate, setIsCandidate] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -158,10 +169,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         tenantsData = (tenantsResult || []) as { id: string; name: string }[];
       }
 
-      const { data: roleAssignmentData } = await supabase
-        .from('role_assignments')
-        .select('*')
-        .eq('person_id', personData.id);
+      const { data: roleAssignmentData, error: roleAssignmentError } =
+        await supabase
+          .from('role_assignments')
+          .select('*')
+          .eq('person_id', personData.id);
+
+      if (roleAssignmentError) {
+        console.error(
+          '[AUTH:IDENTITY] role_assignments query failed',
+          roleAssignmentError,
+        );
+      }
 
       const roleIds = Array.from(
         new Set(
@@ -179,6 +198,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const adminMaster = (rolesData || []).some(
         (r: Role) => r.scope === 'global' && r.name === 'admin_master',
       );
+
+      let isCandidate = (rolesData || []).some(
+        (r: Role) => r.name === 'candidato',
+      );
+
+      // Fallback: if role_assignments query failed (e.g., due to is_admin_master()
+      // function crash on schema drift), check candidates table directly
+      if (roleAssignmentError && !isCandidate) {
+        console.log(
+          '[AUTH:IDENTITY] role_assignments query failed, using fallback for candidate detection',
+        );
+        try {
+          const { data: candidateProfile } = await supabase
+            .from('candidates')
+            .select('id, tenant_id, status')
+            .eq('person_id', personData.id)
+            .maybeSingle();
+
+          if (candidateProfile) {
+            isCandidate = true;
+          }
+        } catch (fallbackErr) {
+          console.error(
+            '[AUTH:IDENTITY] candidato fallback query also failed',
+            fallbackErr,
+          );
+        }
+      }
 
       let permissionsData: Permission[] = [];
       if (roleIds.length > 0) {
@@ -215,7 +262,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const allNormalized = normalizePermissions(allPerms || []);
         const merged = new Map<string, Permission>();
         for (const perm of [...permissionsData, ...allNormalized]) {
-          const key = `${perm.resource}:${perm.action}`;
+          const key = `${perm.resource}.${perm.action}`;
           if (!merged.has(key)) {
             merged.set(key, perm);
           }
@@ -246,6 +293,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setFirstLoginState((firstLoginData as FirstLoginState) || null);
         setLegalAcceptances((legalAcceptancesData || []) as LegalAcceptance[]);
         setIsAdminMaster(adminMaster);
+        setIsCandidate(isCandidate);
       }
     } catch (error) {
       console.error('[AUTH:IDENTITY] loadAuthData failed', error);
@@ -259,6 +307,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setFirstLoginState(null);
         setLegalAcceptances([]);
         setIsAdminMaster(false);
+        setIsCandidate(false);
       }
       throw error;
     }
@@ -357,6 +406,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               setFirstLoginState(null);
               setLegalAcceptances([]);
               setIsAdminMaster(false);
+              setIsCandidate(false);
               setSession(null);
               setUser(null);
               setRecoveryMode(false);
@@ -441,6 +491,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (
     email: string,
     password: string,
+    options: { turnstileToken?: string } = {},
   ): Promise<{ error?: string }> => {
     setAuthError(null);
     setIsLoading(true);
@@ -471,6 +522,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: {
+          captchaToken: options.turnstileToken,
+        },
       });
 
       console.log('[AUTH:LOGIN] signIn result', {
@@ -538,6 +592,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loginWithProvider = async (
+    provider: 'google' | 'azure',
+  ): Promise<{ error?: string }> => {
+    setAuthError(null);
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return {
+        error: normalizeError(
+          new Error(
+            'Supabase não configurado. Contate o administrador ou verifique as variáveis de ambiente.',
+          ),
+        ).userMessage,
+      };
+    }
+
+    try {
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo },
+      });
+      if (error) {
+        return { error: normalizeError(error).userMessage };
+      }
+      return {};
+    } catch (error) {
+      return {
+        error: normalizeError(error).userMessage,
+      };
     }
   };
 
@@ -923,12 +1009,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return '/auth/welcome';
   }, [
     isAdminMaster,
+    isCandidate,
     tenantMemberships,
     firstLoginState,
     legalAcceptances,
     hasAnyPermission,
     permissions,
     recoveryMode,
+    roleAssignments,
+    roles,
   ]);
 
   const register = async (
@@ -940,6 +1029,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       phone?: string;
       tenantId?: string;
       roleId?: string;
+      turnstileToken?: string;
     },
   ): Promise<{ error?: string; status?: 'success' | 'email_pending' }> => {
     setAuthError(null);
@@ -964,6 +1054,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             full_name: profileData.full_name,
             phone: profileData.phone ?? '',
           },
+          captchaToken: profileData.turnstileToken,
         },
       });
 
@@ -1113,9 +1204,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         firstLoginState,
         legalAcceptances,
         isAdminMaster,
+        isCandidate,
         isAuthenticated: !!user && !!session,
         isLoading,
         login,
+        loginWithProvider,
         logout,
         register,
         resetPassword,
@@ -1129,6 +1222,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         switchTenant,
         resolvePostLoginDestination,
         authError,
+        recoveryMode,
       }}
     >
       {children}

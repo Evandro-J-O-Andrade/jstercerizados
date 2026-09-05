@@ -13,9 +13,11 @@ import type {
   BankReconciliationCreateInput,
 } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 export default function FinanceiroConciliacaoPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [items, setItems] = useState<BankReconciliation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -71,8 +73,12 @@ export default function FinanceiroConciliacaoPage() {
         status: 'pending',
       });
       await load();
+      addToast({ type: 'success', message: 'Conciliação criada com sucesso!' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao salvar');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao salvar',
+      });
     }
   };
 
@@ -82,8 +88,12 @@ export default function FinanceiroConciliacaoPage() {
       await bankReconciliationRepository.remove(deleteId, currentTenantId);
       setDeleteId(null);
       await load();
+      addToast({ type: 'success', message: 'Conciliação excluída com sucesso.' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao excluir');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao excluir',
+      });
     }
   };
 

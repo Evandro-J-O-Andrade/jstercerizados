@@ -32,8 +32,7 @@ export class ApplicationsRepository extends SupabaseRepository {
         `
         *,
         job:jobs(
-          *,
-          company_relationship:company_relationships(*)
+          *
         ),
         candidate:candidates(
           *,
@@ -80,8 +79,7 @@ export class ApplicationsRepository extends SupabaseRepository {
         `
         *,
         job:jobs(
-          *,
-          company_relationship:company_relationships(*)
+          *
         ),
         candidate:candidates(
           *,
@@ -143,8 +141,7 @@ export class ApplicationsRepository extends SupabaseRepository {
         `
         *,
         job:jobs(
-          *,
-          company_relationship:company_relationships(*)
+          *
         ),
         candidate:candidates(
           *,
@@ -190,8 +187,7 @@ export class ApplicationsRepository extends SupabaseRepository {
         `
         *,
         job:jobs(
-          *,
-          company_relationship:company_relationships(*)
+          *
         ),
         candidate:candidates(
           *,

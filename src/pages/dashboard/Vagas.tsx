@@ -4,6 +4,8 @@ import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Briefcase, Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
+import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
 import { jobRepository } from '@/repositories/job.repository';
 import { cn } from '@/utils';
 import type {
@@ -44,6 +46,7 @@ const SALARY_TYPE_OPTIONS = [
 
 export default function Vagas() {
   const { currentTenantId, isAdminMaster } = useAuth();
+  const { addToast } = useToast();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,6 +55,7 @@ export default function Vagas() {
   const [contractFilter, setContractFilter] = useState<string>('all');
   const [workModeFilter, setWorkModeFilter] = useState<string>('all');
   const [selected, setSelected] = useState<Job | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [form, setForm] = useState({
     company_relationship_id: '' as string | null,
     title: '',
@@ -244,12 +248,22 @@ export default function Vagas() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
+    if (!deleteConfirm || !currentTenantId) return;
     try {
-      await jobRepository.delete(id, currentTenantId || '');
-      setJobs((prev) => prev.filter((j) => j.id !== id));
+      await jobRepository.delete(deleteConfirm, currentTenantId);
+      setJobs((prev) => prev.filter((j) => j.id !== deleteConfirm));
+      addToast({ type: 'success', message: 'Vaga removida com sucesso.' });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao remover vaga');
+      setError(
+        err instanceof Error ? err.message : 'Erro ao remover vaga',
+      );
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao remover vaga',
+      });
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
@@ -416,7 +430,7 @@ export default function Vagas() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleDelete(job.id)}
+                          onClick={() => setDeleteConfirm(job.id)}
                           className="text-destructive hover:text-destructive/80"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -686,6 +700,16 @@ export default function Vagas() {
           </Card>
         )}
       </div>
+
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        title="Remover vaga?"
+        message="Tem certeza que deseja remover esta vaga? Essa ação não pode ser desfeita."
+        confirmLabel="Remover"
+        variant="danger"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </ModuleWorkspace>
   );
 }

@@ -11,9 +11,11 @@ import { ConfirmDialog } from '@/components/feedback';
 import { invoiceRepository } from '@/repositories/finance.repository';
 import type { Invoice, InvoiceCreateInput } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 export default function FinanceiroNotasFiscaisPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [items, setItems] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,8 +66,12 @@ export default function FinanceiroNotasFiscaisPage() {
         status: 'draft',
       });
       await load();
+      addToast({ type: 'success', message: 'Nota fiscal criada com sucesso!' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao salvar');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao salvar',
+      });
     }
   };
 
@@ -75,8 +81,12 @@ export default function FinanceiroNotasFiscaisPage() {
       await invoiceRepository.remove(deleteId, currentTenantId);
       setDeleteId(null);
       await load();
+      addToast({ type: 'success', message: 'Nota fiscal excluída com sucesso.' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao excluir');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao excluir',
+      });
     }
   };
 

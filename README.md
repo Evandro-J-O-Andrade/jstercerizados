@@ -178,7 +178,7 @@ CNPJ: 63.251.959/0001-10
 
 **Redes sociais:**
 
-- [Instagram](https://instagram.com/jsterceirizados)
+- [Instagram](https://www.instagram.com/jstercerizados?igsh=MWpsMmxzN2t5aGl5MA%3D%3D)
 - [Facebook](https://facebook.com/jsterceirizados)
 - [LinkedIn](https://linkedin.com/company/jsterceirizados)
 - [YouTube](https://youtube.com/@jsterceirizados)

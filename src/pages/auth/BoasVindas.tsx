@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -10,11 +10,13 @@ import {
   Headphones,
   ArrowRight,
   UserCheck,
+  Clock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { SEO } from '@/components/ui/SEO';
 import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
+import { normalizeRoleScope } from '@/utils/rbac-normalize';
 
 type AreaInfo = {
   title: string;
@@ -25,7 +27,7 @@ type AreaInfo = {
 };
 
 function getAreaInfo(
-  roles: { name: string }[],
+  roles: { name: string; scope: string }[],
   isAdminMaster: boolean,
 ): AreaInfo {
   if (isAdminMaster) {
@@ -145,10 +147,25 @@ function getAreaInfo(
   };
 }
 
+function formatRoleName(name: string): string {
+  return name
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
 export default function AuthWelcome() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const { person, roles, isAdminMaster, updateFirstLoginState } = useAuth();
+  const {
+    person,
+    roles,
+    isAdminMaster,
+    updateFirstLoginState,
+    firstLoginState,
+    currentTenantId,
+    tenants,
+  } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -156,6 +173,45 @@ export default function AuthWelcome() {
       navigate('/login', { replace: true });
     }
   }, [person, navigate]);
+
+  const isReturning = Boolean(firstLoginState?.welcome_completed_at);
+
+  const identity = useMemo(() => {
+    const fullName = person?.full_name?.trim() || 'Usuário';
+    const firstName = fullName.split(/\s+/)[0] || 'Usuário';
+    const email = person?.email || '';
+    const primaryRole = roles[0];
+    const roleName = primaryRole ? formatRoleName(primaryRole.name) : 'Usuário';
+    const roleScope = primaryRole?.scope
+      ? normalizeRoleScope(primaryRole.scope)
+      : 'tenant';
+
+    const activeTenant = tenants.find((t) => t.id === currentTenantId);
+    const tenantName =
+      activeTenant?.name || (currentTenantId ? 'Tenant' : 'Plataforma');
+    const contextLabel =
+      roleScope === 'platform' ? 'Gestão da Plataforma' : tenantName;
+
+    const now = new Date();
+    const dateTime = now.toLocaleString('pt-BR', {
+      dateStyle: 'long',
+      timeStyle: 'short',
+    });
+
+    return {
+      fullName,
+      firstName,
+      email,
+      roleName,
+      roleScope,
+      tenantName,
+      contextLabel,
+      dateTime,
+    };
+  }, [person, roles, currentTenantId, tenants]);
+
+  const area = getAreaInfo(roles, isAdminMaster);
+  const AreaIcon = area.icon;
 
   const handleContinue = async () => {
     if (isSubmitting || !person) {
@@ -175,7 +231,7 @@ export default function AuthWelcome() {
       const isCandidato = roleNames.some((n) => n.includes('candidato'));
 
       if (isCandidato) {
-        navigate('/dashboard/candidato', { replace: true });
+        navigate('/candidato', { replace: true });
       } else {
         navigate('/dashboard', { replace: true });
       }
@@ -189,10 +245,6 @@ export default function AuthWelcome() {
   if (!person) {
     return null;
   }
-
-  const firstName = person.full_name?.split(' ')[0] || 'colaborador';
-  const area = getAreaInfo(roles, isAdminMaster);
-  const AreaIcon = area.icon;
 
   return (
     <div className="flex min-h-[80dvh] items-center justify-center px-4 py-12">
@@ -211,10 +263,14 @@ export default function AuthWelcome() {
             <AreaIcon className="text-primary h-8 w-8" />
           </div>
           <h1 className="text-foreground text-3xl font-bold">
-            Seja bem-vindo, {firstName}! 👋
+            {isReturning
+              ? `Bom te ver novamente, ${identity.firstName}! 👋`
+              : `Seja bem-vindo, ${identity.firstName}! 👋`}
           </h1>
           <p className="text-muted-foreground mt-2">
-            É um prazer ter você de volta.
+            {isReturning
+              ? 'É bom ter você de volta.'
+              : 'É um prazer ter você de volta.'}
           </p>
         </div>
 
@@ -226,19 +282,49 @@ export default function AuthWelcome() {
             </h2>
             <p className="text-muted-foreground mb-8">{area.description}</p>
 
-            <div className="border-border bg-muted/30 mb-8 rounded-xl border p-6 text-left">
-              <div className="flex items-center justify-between">
+            <div className="border-border bg-muted/30 mb-6 rounded-xl border p-6 text-left">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-muted-foreground text-sm">Perfil</p>
-                  <p className="text-foreground font-medium">
-                    {area.profileLabel}
+                  <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+                    Usuário
+                  </p>
+                  <p className="text-foreground mt-1 text-sm font-medium">
+                    {identity.fullName}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    {identity.email}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-muted-foreground text-sm">Área</p>
-                  <p className="text-foreground font-medium">
-                    {area.areaLabel}
+                <div>
+                  <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+                    Perfil
                   </p>
+                  <p className="text-foreground mt-1 text-sm font-medium">
+                    {area.profileLabel}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    {identity.roleName}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+                    Contexto
+                  </p>
+                  <p className="text-foreground mt-1 text-sm font-medium">
+                    {identity.contextLabel}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    {identity.tenantName}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+                    Data/Hora
+                  </p>
+                  <div className="text-foreground mt-1 flex items-center gap-1.5 text-sm font-medium">
+                    <Clock className="h-3.5 w-3.5" />
+                    {identity.dateTime}
+                  </div>
                 </div>
               </div>
             </div>
@@ -257,7 +343,11 @@ export default function AuthWelcome() {
               disabled={isSubmitting}
               leftIcon={<ArrowRight className="h-5 w-5" />}
             >
-              {isSubmitting ? 'Acessando...' : 'Acessar minha área'}
+              {isSubmitting
+                ? 'Acessando...'
+                : isReturning
+                  ? 'Continuar'
+                  : 'Acessar minha área'}
             </Button>
           </div>
         </div>

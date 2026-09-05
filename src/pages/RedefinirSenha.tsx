@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { KeyRound, Eye, EyeOff, CheckCircle2, XCircle } from 'lucide-react';
+import {
+  KeyRound,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+  XCircle,
+  ShieldCheck,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { SEO } from '@/components/ui/SEO';
+import { PageLoader } from '@/components/ui/PageLoader';
 import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
 
@@ -16,14 +24,32 @@ const PASSWORD_REQUIREMENTS = [
   { label: 'Caractere especial', test: (p: string) => /[^A-Za-z0-9]/.test(p) },
 ];
 
+type Phase = 'form' | 'submitting' | 'success' | 'error';
+
 export default function RedefinirSenha() {
+  const {
+    changePassword,
+    isLoading,
+    recoveryMode,
+    resolvePostLoginDestination,
+  } = useAuth();
+  const navigate = useNavigate();
+
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswords, setShowPasswords] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [phase, setPhase] = useState<Phase>('form');
   const [error, setError] = useState('');
-  const { changePassword, logout } = useAuth();
-  const navigate = useNavigate();
+  const [recoveryChecked, setRecoveryChecked] = useState(false);
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!recoveryMode) {
+      setRecoveryChecked(true);
+      return;
+    }
+    setRecoveryChecked(true);
+  }, [isLoading, recoveryMode]);
 
   const passwordsMatch = newPassword === confirmPassword;
   const meetsRequirements = PASSWORD_REQUIREMENTS.every((req) =>
@@ -35,6 +61,13 @@ export default function RedefinirSenha() {
     e.preventDefault();
     setError('');
 
+    if (!recoveryMode) {
+      setError(
+        'Sessão de recuperação inválida ou expirada. Solicite um novo link.',
+      );
+      return;
+    }
+
     if (!passwordsMatch) {
       setError('As senhas não coincidem.');
       return;
@@ -45,22 +78,49 @@ export default function RedefinirSenha() {
       return;
     }
 
-    setIsSubmitting(true);
+    setPhase('submitting');
 
-    try {
-      const result = await changePassword('', newPassword);
-      if (result.error) {
-        setError(result.error);
-      } else {
-        await logout();
-        navigate('/login', { replace: true });
-      }
-    } catch {
-      setError('Erro ao redefinir senha. Tente novamente.');
-    } finally {
-      setIsSubmitting(false);
+    const result = await changePassword('', newPassword);
+    if (result.error) {
+      const lower = result.error.toLowerCase();
+      const isExpired =
+        lower.includes('expired') ||
+        lower.includes('otp') ||
+        lower.includes('token') ||
+        lower.includes('recovery') ||
+        lower.includes('already');
+      setError(
+        isExpired
+          ? 'Link expirado ou já utilizado. Solicite um novo link de recuperação.'
+          : 'Não foi possível redefinir a senha. Tente novamente.',
+      );
+      setPhase('error');
+      return;
     }
+
+    setPhase('success');
   };
+
+  if (isLoading || !recoveryChecked) {
+    return <PageLoader />;
+  }
+
+  if (!recoveryMode && phase !== 'success') {
+    return (
+      <RecoveryBlocked message="Este link de recuperação é inválido ou expirou. Solicite um novo link para continuar." />
+    );
+  }
+
+  if (phase === 'success') {
+    return (
+      <RecoverySuccess
+        onContinue={() => {
+          const target = resolvePostLoginDestination();
+          navigate(target, { replace: true });
+        }}
+      />
+    );
+  }
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
@@ -80,14 +140,13 @@ export default function RedefinirSenha() {
         <div className="border-border/40 bg-card shadow-glass rounded-3xl border p-8">
           <div className="mb-8 text-center">
             <div className="bg-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-              <KeyRound className="h-8 w-8" />
+              <KeyRound className="text-primary h-8 w-8" />
             </div>
             <h1 className="text-foreground text-3xl font-bold">
               Redefinir senha
             </h1>
             <p className="text-muted-foreground mt-2 text-sm">
-              Digite sua nova senha abaixo. Você será desconectado(a) após a
-              redefinição.
+              Defina uma nova senha para sua conta.
             </p>
           </div>
 
@@ -179,11 +238,11 @@ export default function RedefinirSenha() {
                 variant="primary"
                 size="xl"
                 className="w-full"
-                disabled={!isValid || isSubmitting}
-                loading={isSubmitting}
+                disabled={!isValid || phase === 'submitting'}
+                loading={phase === 'submitting'}
                 leftIcon={<KeyRound className="h-5 w-5" />}
               >
-                {isSubmitting ? 'Salvando...' : 'Redefinir senha'}
+                {phase === 'submitting' ? 'Salvando...' : 'Redefinir senha'}
               </Button>
             </div>
           </form>
@@ -195,6 +254,85 @@ export default function RedefinirSenha() {
             >
               Voltar para o login
             </Link>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function RecoveryBlocked({ message }: { message: string }) {
+  return (
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
+      <SEO
+        title={`Recuperação inválida — ${COMPANY.name}`}
+        description="O link de recuperação é inválido ou expirou."
+        noindex
+      />
+      <div className="bg-background/85 absolute inset-0 backdrop-blur-sm" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10 w-full max-w-md"
+      >
+        <div className="border-border/40 bg-card shadow-glass rounded-3xl border p-8 text-center">
+          <div className="bg-warning/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+            <ShieldCheck className="text-warning h-8 w-8" />
+          </div>
+          <h1 className="text-foreground text-2xl font-bold">
+            Link de recuperação inválido
+          </h1>
+          <p className="text-muted-foreground mt-3 text-sm">{message}</p>
+          <div className="mt-6 flex flex-col gap-3">
+            <Button asChild variant="primary" size="lg">
+              <Link to="/recuperar-senha">Solicitar novo link</Link>
+            </Button>
+            <Button asChild variant="ghost" size="lg">
+              <Link to="/login">Voltar para o login</Link>
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function RecoverySuccess({ onContinue }: { onContinue: () => void }) {
+  return (
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
+      <SEO
+        title={`Senha redefinida — ${COMPANY.name}`}
+        description="Sua senha foi redefinida com sucesso."
+        noindex
+      />
+      <div className="bg-background/85 absolute inset-0 backdrop-blur-sm" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10 w-full max-w-md"
+      >
+        <div className="border-border/40 bg-card shadow-glass rounded-3xl border p-8 text-center">
+          <div className="bg-success/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+            <CheckCircle2 className="text-success h-8 w-8" />
+          </div>
+          <h1 className="text-foreground text-2xl font-bold">
+            Senha redefinida
+          </h1>
+          <p className="text-muted-foreground mt-3 text-sm">
+            Sua senha foi atualizada com sucesso. Você já pode acessar sua
+            conta.
+          </p>
+          <div className="mt-6">
+            <Button
+              onClick={onContinue}
+              variant="primary"
+              size="lg"
+              className="w-full"
+            >
+              Acessar minha área
+            </Button>
           </div>
         </div>
       </motion.div>

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useCallback, useState } from 'react';
+import React, { Suspense, lazy, useCallback } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useIntro } from '@/contexts/IntroContext';
@@ -11,12 +11,10 @@ import { ToastProvider } from '@/components/feedback';
 import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 import { PublicLayout } from '@/components/layout/PublicLayout';
 import { AppShell } from '@/components/layout/AppShell';
-import { AccessibilityWidget } from '@/components/ui/AccessibilityWidget';
-import { ChatWidget } from '@/components/ui/ChatWidget';
-import { HumanChatWidget } from '@/components/ui/HumanChatWidget';
+import { FloatingHelpWidgets } from '@/components/layout/FloatingHelpWidgets';
 import NotFound from '@/pages/NotFound';
 import DashboardHome from '@/pages/dashboard/DashboardHome';
-import DashboardCandidato from '@/pages/dashboard/DashboardCandidato';
+
 import TenantsPage from '@/pages/dashboard/TenantsPage';
 import ClientesPage from '@/pages/dashboard/ClientesPage';
 import OnboardingPage from '@/pages/dashboard/OnboardingPage';
@@ -72,6 +70,22 @@ const Privacidade = lazy(() => import('@/pages/Privacidade'));
 const Termos = lazy(() => import('@/pages/Termos'));
 const Cadastro = lazy(() => import('@/pages/Cadastro'));
 const Login = lazy(() => import('@/pages/Login'));
+const EntrarHub = lazy(() => import('@/pages/auth/Entrar'));
+const EntrarAdmin = lazy(() =>
+  import('@/pages/auth/EntrarContexto').then((m) => ({
+    default: m.EntrarAdmin,
+  })),
+);
+const EntrarCandidato = lazy(() =>
+  import('@/pages/auth/EntrarContexto').then((m) => ({
+    default: m.EntrarCandidato,
+  })),
+);
+const EntrarEmpresa = lazy(() =>
+  import('@/pages/auth/EntrarContexto').then((m) => ({
+    default: m.EntrarEmpresa,
+  })),
+);
 const CadastroCandidato = lazy(() => import('@/pages/CadastroCandidato'));
 const CadastroEmpresa = lazy(() => import('@/pages/CadastroEmpresa'));
 const RecuperarSenha = lazy(() => import('@/pages/RecuperarSenha'));
@@ -82,6 +96,24 @@ const PrimeiroAcessoTermos = lazy(
   () => import('@/pages/primeiro-acesso/Termos'),
 );
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
+const CandidateDashboard = lazy(() => import('@/pages/candidato/Dashboard'));
+const CandidateVagas = lazy(() => import('@/pages/candidato/Vagas'));
+const CandidateCandidaturas = lazy(
+  () => import('@/pages/candidato/Candidaturas'),
+);
+const CandidateFavoritas = lazy(() => import('@/pages/candidato/Favoritas'));
+const CandidateCurriculo = lazy(() => import('@/pages/candidato/Curriculo'));
+const CandidatePerfil = lazy(() => import('@/pages/candidato/Perfil'));
+const CandidateNotificacoes = lazy(
+  () => import('@/pages/candidato/Notificacoes'),
+);
+const CandidateConfiguracoes = lazy(
+  () => import('@/pages/candidato/Configuracoes'),
+);
+const CandidateAlertas = lazy(() => import('@/pages/candidato/Alertas'));
+import { CandidateShell } from '@/components/portal/CandidateShell';
+import { CandidateProvider } from '@/contexts/CandidateContext';
+import { CandidateRoute } from '@/components/auth/CandidateRoute';
 import ComingSoonPage from '@/pages/dashboard/ComingSoonPage';
 import VisaoGeralPage from '@/pages/dashboard/VisaoGeral';
 import VagasPage from '@/pages/dashboard/Vagas';
@@ -141,7 +173,6 @@ import RelatorioSuportePage from '@/pages/dashboard/relatorios/RelatorioSuporteP
 
 const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   DashboardHome,
-  DashboardCandidato,
   TenantsPage,
   ClientesPage,
   OnboardingPage,
@@ -222,9 +253,6 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
 
 function App() {
   const { introComplete, setIntroComplete } = useIntro();
-  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
-  const [isHumanChatOpen, setIsHumanChatOpen] = useState(false);
-  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
 
   const handleIntroFinish = useCallback(() => {
     setIntroComplete(true);
@@ -312,7 +340,6 @@ function App() {
                     'finance_manager',
                     'recruiter',
                     'rh_manager',
-                    'candidato',
                     'stock_manager',
                     'security_manager',
                     'facilities_manager',
@@ -342,14 +369,7 @@ function App() {
                 </PermissionGuard>
               }
             />
-            <Route
-              path="candidato"
-              element={
-                <PermissionGuard permission="candidates.read">
-                  <DashboardCandidato />
-                </PermissionGuard>
-              }
-            />
+
             <Route
               path="rbac-auditoria"
               element={
@@ -805,6 +825,26 @@ function App() {
             }
           />
           <Route
+            path="/candidato/*"
+            element={
+              <CandidateRoute>
+                <CandidateProvider>
+                  <CandidateShell />
+                </CandidateProvider>
+              </CandidateRoute>
+            }
+          >
+            <Route index element={<CandidateDashboard />} />
+            <Route path="vagas" element={<CandidateVagas />} />
+            <Route path="candidaturas" element={<CandidateCandidaturas />} />
+            <Route path="favoritas" element={<CandidateFavoritas />} />
+            <Route path="alertas" element={<CandidateAlertas />} />
+            <Route path="curriculo" element={<CandidateCurriculo />} />
+            <Route path="perfil" element={<CandidatePerfil />} />
+            <Route path="notificacoes" element={<CandidateNotificacoes />} />
+            <Route path="configuracoes" element={<CandidateConfiguracoes />} />
+          </Route>
+          <Route
             path="*"
             element={
               <PublicLayout>
@@ -844,6 +884,13 @@ function App() {
                     <Route path="/privacidade" element={<Privacidade />} />
                     <Route path="/termos" element={<Termos />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/entrar" element={<EntrarHub />} />
+                    <Route path="/entrar/admin" element={<EntrarAdmin />} />
+                    <Route
+                      path="/entrar/candidato"
+                      element={<EntrarCandidato />}
+                    />
+                    <Route path="/entrar/empresa" element={<EntrarEmpresa />} />
                     <Route path="/cadastro" element={<Cadastro />} />
                     <Route
                       path="/recuperar-senha"
@@ -868,26 +915,7 @@ function App() {
             }
           />
         </Routes>
-        <AccessibilityWidget
-          open={isAccessibilityOpen}
-          onOpenChange={setIsAccessibilityOpen}
-          onOpenChat={() => {
-            setIsAccessibilityOpen(false);
-            setIsAiChatOpen(true);
-          }}
-        />
-        <ChatWidget
-          isOpen={isAiChatOpen}
-          onOpenChange={setIsAiChatOpen}
-          onRequestHuman={() => {
-            setIsAccessibilityOpen(false);
-            setIsHumanChatOpen(true);
-          }}
-        />
-        <HumanChatWidget
-          isOpen={isHumanChatOpen}
-          onOpenChange={setIsHumanChatOpen}
-        />
+        <FloatingHelpWidgets />
       </ToastProvider>
     </ErrorBoundary>
   );

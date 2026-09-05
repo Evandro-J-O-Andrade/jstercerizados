@@ -10,9 +10,11 @@ import { ConfirmDialog } from '@/components/feedback';
 import { costCenterRepository } from '@/repositories/finance.repository';
 import type { CostCenter, CostCenterCreateInput } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/feedback/ToastContext';
 
 export default function FinanceiroCentrosCustoPage() {
   const { currentTenantId } = useAuth();
+  const { addToast } = useToast();
   const [items, setItems] = useState<CostCenter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,8 +66,12 @@ export default function FinanceiroCentrosCustoPage() {
         status: 'active',
       });
       await load();
+      addToast({ type: 'success', message: 'Centro de custo criado com sucesso!' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao salvar');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao salvar',
+      });
     }
   };
 
@@ -75,8 +81,12 @@ export default function FinanceiroCentrosCustoPage() {
       await costCenterRepository.remove(deleteId, currentTenantId);
       setDeleteId(null);
       await load();
+      addToast({ type: 'success', message: 'Centro de custo excluído com sucesso.' });
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao excluir');
+      addToast({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Erro ao excluir',
+      });
     }
   };
 

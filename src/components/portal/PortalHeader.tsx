@@ -122,7 +122,7 @@ export function PortalHeader({
           className="hidden items-center gap-2 md:flex"
         >
           <Globe className="h-4 w-4" />
-          <span className="text-sm">Site público</span>
+          <span className="text-sm">Voltar para o site</span>
         </Button>
 
         <div

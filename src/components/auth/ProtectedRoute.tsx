@@ -37,6 +37,7 @@ export function ProtectedRoute({
     roles,
     permissions,
     isAdminMaster,
+    isCandidate,
     authError,
   } = useAuth();
   const location = useLocation();
@@ -78,6 +79,15 @@ export function ProtectedRoute({
 
   if (!isAuthenticated || !person) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // RBAC hardlock: candidato puro nunca deve entrar em /dashboard/*
+  if (
+    !isAdminMaster &&
+    isCandidate &&
+    location.pathname.startsWith('/dashboard')
+  ) {
+    return <Navigate to="/candidato" replace />;
   }
 
   if (requireAdminMaster && !isAdminMaster) {
