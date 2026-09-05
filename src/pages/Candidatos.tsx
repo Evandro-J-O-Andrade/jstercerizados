@@ -112,7 +112,7 @@ export default function Candidatos() {
             transition={{ delay: 0.5, duration: 0.6 }}
             className="mt-8 flex justify-center"
           >
-            <Link to="/login">
+            <Link to="/entrar">
               <Button variant="primary">Entrar na sua conta</Button>
             </Link>
           </motion.div>

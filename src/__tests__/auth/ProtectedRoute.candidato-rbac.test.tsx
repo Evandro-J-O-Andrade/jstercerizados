@@ -74,7 +74,12 @@ function renderWithRoute(
             </ProtectedRoute>
           }
         />
-        <Route path="/candidato" element={<div data-testid="candidate-dashboard">Candidate Portal</div>} />
+        <Route
+          path="/candidato"
+          element={
+            <div data-testid="candidate-dashboard">Candidate Portal</div>
+          }
+        />
       </Routes>
     </MemoryRouter>,
   );
@@ -245,7 +250,7 @@ describe('ProtectedRoute — candidato RBAC (P1 — redirect contextual)', () =>
     expect(container.textContent).not.toContain('Portal Candidato');
   });
 
-  it(' TESTE 7: usuário não autenticado é redirecionado para /login (não para /candidato)', () => {
+  it(' TESTE 7: usuário não autenticado é redirecionado para /entrar (não para /candidato)', () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: false,
       isLoading: false,
@@ -285,13 +290,21 @@ describe('ProtectedRoute — candidato RBAC (P1 — redirect contextual)', () =>
               </ProtectedRoute>
             }
           />
-          <Route path="/login" element={<div data-testid="login-page">Login</div>} />
-          <Route path="/candidato" element={<div data-testid="candidate-dashboard">Candidate Portal</div>} />
+          <Route
+            path="/entrar"
+            element={<div data-testid="entrar-page">Entrar</div>}
+          />
+          <Route
+            path="/candidato"
+            element={
+              <div data-testid="candidate-dashboard">Candidate Portal</div>
+            }
+          />
         </Routes>
       </MemoryRouter>,
     );
 
-    expect(screen.getByTestId('login-page')).toBeInTheDocument();
+    expect(screen.getByTestId('entrar-page')).toBeInTheDocument();
     expect(screen.queryByTestId('candidate-dashboard')).not.toBeInTheDocument();
     expect(screen.queryByTestId('dashboard-shell')).not.toBeInTheDocument();
   });

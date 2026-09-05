@@ -18,7 +18,7 @@ export function CandidateRoute({ children }: CandidateRouteProps) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/entrar" replace />;
   }
 
   if (!isCandidate) {

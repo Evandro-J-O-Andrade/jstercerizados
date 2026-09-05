@@ -28,7 +28,7 @@ export default function AlterarSenha() {
 
   useEffect(() => {
     if (!isAuthenticated || !person) {
-      navigate('/login', { replace: true });
+      navigate('/entrar', { replace: true });
     }
   }, [isAuthenticated, person, navigate]);
 
@@ -65,7 +65,7 @@ export default function AlterarSenha() {
       if (result.error) {
         setError(result.error);
       } else {
-        navigate('/login', { replace: true });
+        navigate('/entrar', { replace: true });
       }
     } catch {
       setError('Erro ao alterar senha. Tente novamente.');
