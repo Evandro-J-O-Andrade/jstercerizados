@@ -119,10 +119,8 @@ export function mapApplication(
   row: Database['public']['Tables']['applications']['Row'],
   extras?: Partial<Application>,
 ): Application {
-  const { current_status, ...rest } = row;
   return {
-    ...rest,
-    current_stage: current_status,
+    ...row,
     job: extras?.job,
     candidate: extras?.candidate,
     history: extras?.history ?? [],

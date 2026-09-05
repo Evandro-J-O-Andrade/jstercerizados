@@ -10,7 +10,6 @@ import { mapApplication } from '@/types/domain/mappers';
 
 type JobRow = Database['public']['Tables']['jobs']['Row'];
 type CandidateRow = Database['public']['Tables']['candidates']['Row'];
-type ApplicationRow = Database['public']['Tables']['applications']['Row'];
 
 export class ApplicationsRepository extends SupabaseRepository {
   async findAll(
@@ -47,7 +46,7 @@ export class ApplicationsRepository extends SupabaseRepository {
     if (filters?.jobId) query = query.eq('job_id', filters.jobId);
     if (filters?.candidateId)
       query = query.eq('candidate_id', filters.candidateId);
-    if (filters?.stage) query = query.eq('current_status', filters.stage);
+    if (filters?.stage) query = query.eq('current_stage', filters.stage);
     if (filters?.source) query = query.eq('source', filters.source);
 
     if (filters?.search) {
@@ -65,7 +64,7 @@ export class ApplicationsRepository extends SupabaseRepository {
     return (data || []).map((row) => {
       const job = (row.job || null) as JobRow | null;
       const candidate = (row.candidate || null) as CandidateRow | null;
-      return mapApplication(row as ApplicationRow, {
+      return mapApplication(row as Application, {
         job: job ?? undefined,
         candidate: candidate ?? undefined,
       });
@@ -97,7 +96,7 @@ export class ApplicationsRepository extends SupabaseRepository {
 
     const job = (data.job || null) as JobRow | null;
     const candidate = (data.candidate || null) as CandidateRow | null;
-    return mapApplication(data as ApplicationRow, {
+    return mapApplication(data as Application, {
       job: job ?? undefined,
       candidate: candidate ?? undefined,
     });
@@ -126,7 +125,7 @@ export class ApplicationsRepository extends SupabaseRepository {
       tenant_id: input.tenant_id,
       job_id: input.job_id,
       candidate_id: input.candidate_id,
-      current_status: 'submitted',
+      current_stage: 'submitted',
       source: input.source ?? 'website',
       profile_snapshot: input.profile_snapshot ?? null,
       match_score: input.match_score ?? null,
@@ -157,7 +156,7 @@ export class ApplicationsRepository extends SupabaseRepository {
 
     const job = (data.job || null) as JobRow | null;
     const candidate = (data.candidate || null) as CandidateRow | null;
-    return mapApplication(data as ApplicationRow, {
+    return mapApplication(data as Application, {
       job: job ?? undefined,
       candidate: candidate ?? undefined,
     });
@@ -176,7 +175,7 @@ export class ApplicationsRepository extends SupabaseRepository {
       payload.candidate_id = input.candidate_id;
     if (input.source !== undefined) payload.source = input.source;
     if (input.current_stage !== undefined)
-      payload.current_status = input.current_stage;
+      payload.current_stage = input.current_stage;
     if (input.notes !== undefined) payload.notes = input.notes;
 
     const { data, error } = await this.supabase
@@ -203,7 +202,7 @@ export class ApplicationsRepository extends SupabaseRepository {
 
     const job = (data.job || null) as JobRow | null;
     const candidate = (data.candidate || null) as CandidateRow | null;
-    return mapApplication(data as ApplicationRow, {
+    return mapApplication(data as Application, {
       job: job ?? undefined,
       candidate: candidate ?? undefined,
     });
