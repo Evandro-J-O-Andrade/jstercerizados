@@ -206,7 +206,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       title: 'Painel Administrativo',
       subtitle: 'Acesse sua conta para gerenciar operações, RH e relatórios.',
       icon: <Shield className="h-8 w-8" />,
-      placeholderEmail: 'admin@jstercerizados.com.br',
+      placeholderEmail: 'admin@jsempregos.com.br',
       allowSignup: false,
       allowOAuth: false,
       emailLabel: 'E-mail administrativo',

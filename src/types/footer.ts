@@ -43,8 +43,8 @@ export function normalizeRoleName(
     r === 'finance_manager' ||
     r === 'fiscal' ||
     r === 'finance' ||
-    r === 'it_admin' ||
-    r === 'support' ||
+    r === 'it_operator' ||
+    r === 'support_agent' ||
     r === 'viewer' ||
     r === 'lawyer'
   )
@@ -56,7 +56,8 @@ export function normalizeRoleName(
     r === 'facilities_manager'
   )
     return 'provider';
-  if (r === 'operations_manager' || r === 'operator') return 'company';
+  if (r === 'operations_manager' || r === 'operations_operator')
+    return 'company';
   return 'manager';
 }
 

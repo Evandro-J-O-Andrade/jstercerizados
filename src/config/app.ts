@@ -5,7 +5,7 @@ export const APP_CONFIG = {
   fullName: COMPANY.tradingName,
   description: COMPANY.description,
   version: '1.0.0',
-  url: 'https://jsterceirizados.com.br',
+  url: 'https://jsempregos.com.br',
   locale: 'pt-BR',
 } as const;
 

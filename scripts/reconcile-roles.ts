@@ -341,7 +341,7 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     'applications.interview',
     'reports.read',
   ],
-  support: [
+  support_agent: [
     'dashboard.read',
     'support_tickets.read',
     'support_tickets.create',
@@ -439,7 +439,7 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     'files.read',
     'people.read',
   ],
-  it_admin: [
+  it_operator: [
     'dashboard.read',
     'people.read',
     'people.create',

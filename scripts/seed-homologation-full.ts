@@ -104,7 +104,7 @@ const TEST_USERS = [
   {
     email: 'teste.suporte@jsempregos.com.br',
     name: 'Suporte Teste',
-    role: 'support',
+    role: 'support_agent',
     scope: 'tenant',
     domain: 'suporte',
   },
@@ -809,7 +809,7 @@ async function generateDocumentation() {
   lines.push(`- ${TEST_USERS[6].email} (operations_manager)`);
   lines.push('');
   lines.push('### Suporte');
-  lines.push(`- ${TEST_USERS[8].email} (support)`);
+  lines.push(`- ${TEST_USERS[8].email} (support_agent)`);
   lines.push('');
   lines.push('### Visualizador');
   lines.push(`- ${TEST_USERS[9].email} (viewer)`);

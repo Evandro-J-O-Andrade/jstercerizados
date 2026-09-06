@@ -2,7 +2,7 @@ export const JS_AI_KNOWLEDGE = {
   company: {
     name: 'J&S Empregos LTDA',
     positioning: 'Agência de Empregos e Assessoria em RH',
-    site: 'https://jstercerizados.com.br',
+    site: 'https://jsempregos.com.br',
     whatsapp: '5511968380592',
   },
   priorities: [

@@ -1,102 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://jrtelempregos.com.br/</loc>
+    <loc>https://jsempregos.com.br/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/vagas</loc>
+    <loc>https://jsempregos.com.br/vagas</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/empresas</loc>
+    <loc>https://jsempregos.com.br/empresas</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/candidatos</loc>
+    <loc>https://jsempregos.com.br/candidatos</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/servicos</loc>
+    <loc>https://jsempregos.com.br/servicos</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/servicos/recrutamento-selecao</loc>
+    <loc>https://jsempregos.com.br/servicos/recrutamento-selecao</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/servicos/mao-de-obra-temporaria</loc>
+    <loc>https://jsempregos.com.br/servicos/mao-de-obra-temporaria</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/servicos/mao-de-obra-efetiva</loc>
+    <loc>https://jsempregos.com.br/servicos/mao-de-obra-efetiva</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/servicos/hunting</loc>
+    <loc>https://jsempregos.com.br/servicos/hunting</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/servicos/banco-de-talentos</loc>
+    <loc>https://jsempregos.com.br/servicos/banco-de-talentos</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/servicos/avaliacao-perfil</loc>
+    <loc>https://jsempregos.com.br/servicos/avaliacao-perfil</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/servicos/facilities</loc>
+    <loc>https://jsempregos.com.br/servicos/facilities</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/trabalhe-conosco</loc>
+    <loc>https://jsempregos.com.br/trabalhe-conosco</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/processo-seletivo</loc>
+    <loc>https://jsempregos.com.br/processo-seletivo</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/sobre</loc>
+    <loc>https://jsempregos.com.br/sobre</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/clientes</loc>
+    <loc>https://jsempregos.com.br/clientes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/contato</loc>
+    <loc>https://jsempregos.com.br/contato</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/faq</loc>
+    <loc>https://jsempregos.com.br/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/suporte</loc>
+    <loc>https://jsempregos.com.br/suporte</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://jrtelempregos.com.br/login</loc>
+    <loc>https://jsempregos.com.br/login</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>

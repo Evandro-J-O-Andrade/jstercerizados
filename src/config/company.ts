@@ -4,7 +4,7 @@ export const COMPANY = {
   brand: 'J&S Empregos',
   cnpj: '63.251.959/0001-10',
   phone: '(11) 96838-0592',
-  email: 'comercial@jsterceirizados.com.br',
+  email: 'comercial@jsempregos.com.br',
   whatsapp: '5511968380592',
   description:
     'Assessoria em Recursos Humanos, recrutamento, mão de obra temporária e efetiva, terceirização e facilities. Mais eficiência em RH, mais agilidade para sua empresa.',
@@ -39,13 +39,12 @@ export const COMPANY = {
 } as const;
 
 export const SOCIAL_LINKS = {
-  instagram:
-    'https://www.instagram.com/jstercerizados?igsh=MWpsMmxzN2t5aGl5MA%3D%3D',
-  facebook: 'https://facebook.com/jsterceirizados',
-  tiktok: 'https://tiktok.com/@jsterceirizados',
-  linkedin: 'https://linkedin.com/company/jsterceirizados',
-  youtube: 'https://youtube.com/@jsterceirizados',
-  twitter: 'https://twitter.com/jsterceirizados',
+  instagram: 'https://www.instagram.com/jsempregos',
+  facebook: 'https://facebook.com/jsempregos',
+  tiktok: 'https://tiktok.com/@jsempregos',
+  linkedin: 'https://linkedin.com/company/jsempregos',
+  youtube: 'https://youtube.com/@jsempregos',
+  twitter: 'https://twitter.com/jsempregos',
   whatsapp: 'https://wa.me/5511968380592',
-  email: 'mailto:contato@jsterceirizados.com.br',
+  email: 'mailto:contato@jsempregos.com.br',
 } as const;

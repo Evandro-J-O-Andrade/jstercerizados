@@ -41,14 +41,15 @@ export type RoleName =
   | 'recruiter'
   | 'finance_manager'
   | 'finance'
-  | 'support'
+  | 'support_agent'
   | 'commercial'
   | 'candidato'
   | 'stock_manager'
   | 'security_manager'
   | 'facilities_manager'
   | 'lawyer'
-  | 'it_admin'
+  | 'it_operator'
+  | 'operations_operator'
   | 'viewer';
 
 export interface Permission {

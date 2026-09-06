@@ -65,7 +65,7 @@ const server = createServer(async (req, res) => {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${apiKey}`,
-            'HTTP-Referer': 'https://jstercerizados.com.br',
+            'HTTP-Referer': 'https://jsempregos.com.br',
             'X-OpenRouter-Title': 'J&S Empregos LTDA',
           },
           body: JSON.stringify({

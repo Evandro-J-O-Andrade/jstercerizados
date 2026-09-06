@@ -103,7 +103,7 @@ const TEST_USERS = [
   {
     email: 'teste.suporte@jsempregos.com.br',
     name: 'Suporte Teste',
-    role: 'support',
+    role: 'support_agent',
     scope: 'tenant',
   },
   {

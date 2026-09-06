@@ -21,12 +21,12 @@ export const SEO_CONFIG = {
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://jsterceirizados.com.br',
+    url: 'https://jsempregos.com.br',
     siteName: COMPANY.name,
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@jsterceirizados',
+    site: '@jsempregos',
   },
   robots: {
     index: true,

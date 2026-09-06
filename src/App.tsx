@@ -334,7 +334,7 @@ function App() {
                     'admin_master',
                     'tenant_admin',
                     'operations_manager',
-                    'operator',
+                    'operations_operator',
                     'commercial',
                     'finance',
                     'finance_manager',
@@ -344,8 +344,8 @@ function App() {
                     'security_manager',
                     'facilities_manager',
                     'lawyer',
-                    'it_admin',
-                    'support',
+                    'it_operator',
+                    'support_agent',
                     'viewer',
                   ]}
                 >
