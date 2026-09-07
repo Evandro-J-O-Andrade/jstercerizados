@@ -31,6 +31,7 @@
     "@radix-ui/react-toast": "^1.2.14",
     "@supabase/supabase-js": "^2.112.3",
     "class-variance-authority": "^0.7.1",
+    "cloudflare": "^7.1.0",
     "clsx": "^2.1.1",
     "countup.js": "^2.10.1",
     "framer-motion": "^12.23.12",

@@ -16,7 +16,7 @@
 | Tagline                                      | `Mais eficiência em RH. Mais resultados para sua empresa.`                                                                                         |
 | Posicionamento                               | Agência de Empregos + Assessoria em RH, Mão de Obra Temporária/Efetiva, Terceirização e Facilities                                                 |
 | Stack                                        | React 19 + TypeScript (ESM), Vite, TailwindCSS v4 (via `@tailwindcss/jit`), Framer Motion, Lucide React, Zod, Zustand, Supabase JS, OpenRouter SDK |
-| Domínio / e-mail                             | `jsterceirizados.com.br` / `comercial@jsterceirizados.com.br`                                                                                      |
+| Domínio / e-mail                             | `jsempregos.com.br` / `comercial@jsempregos.com.br`                                                                                                |
 | WhatsApp                                     | `(11) 96838-0592`                                                                                                                                  |
 
 ### Stack técnico (package.json)
