@@ -161,9 +161,9 @@ grant execute on function public.resolve_page_template(text, uuid, uuid) to anon
 insert into public.page_templates (key, title, body, metadata)
 values (
   'sobre_greeting',
-  'Saudacao dinamica da pagina Sobre',
-  'Ola, %person.full_name%! Somos a %company.name% (%company.tagline%). Sua empresa atual: %tenant.name%.',
-  '{"description": "Banner da pagina /sobre que personaliza por usuario logado."}'::jsonb
+  'Saudacao institucional da pagina Sobre',
+  'A J&S Empregos LTDA conecta pessoas e empresas por meio de solucoes estrategicas em Recursos Humanos, recrutamento, selecao, mao de obra temporaria e efetiva, e terceirizacao de servicos.',
+  '{"description": "Banner da pagina /sobre com conteudo institucional, sem variaveis de sessao."}'::jsonb
 )
 on conflict (key) do update set
   title = excluded.title,

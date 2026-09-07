@@ -76,11 +76,11 @@ describe('getRecoveryRedirectUrl', () => {
 
   it('uses VITE_SITE_URL in production (HTTPS)', () => {
     setViteEnv({
-      VITE_SITE_URL: 'https://jsterceirizados.com.br',
+      VITE_SITE_URL: 'https://jsempregos.com.br',
       VITE_APP_ENV: 'production',
     });
     const r = getRecoveryRedirectUrl();
-    expect(r.url).toBe(`https://jsterceirizados.com.br${RECOVERY_PATH}`);
+    expect(r.url).toBe(`https://jsempregos.com.br${RECOVERY_PATH}`);
     expect(r.env).toBe('production');
     expect(r.source).toBe('site-url');
     expect(isRecoveryUrlSafe(r)).toBe(true);

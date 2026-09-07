@@ -1067,14 +1067,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data.session) {
+        let resolvedTenantId = profileData.tenantId ?? null;
+        let resolvedRoleId = profileData.roleId ?? null;
+
+        if (!resolvedTenantId || !resolvedRoleId) {
+          const { data: tenantData, error: tenantError } = await supabase
+            .from('tenants')
+            .select('id')
+            .eq('slug', 'js-empregos')
+            .maybeSingle();
+
+          if (tenantError || !tenantData?.id) {
+            console.error('[AUTH:REGISTER] tenant resolve failed', tenantError);
+            await supabase.auth.signOut();
+            return {
+              error:
+                'Cadastro indisponível no momento. Contate o administrador.',
+            };
+          }
+
+          resolvedTenantId = tenantData.id;
+
+          if (!resolvedRoleId) {
+            const { data: roleData, error: roleError } = await supabase
+              .from('roles')
+              .select('id')
+              .eq('name', 'candidato')
+              .maybeSingle();
+
+            if (roleError || !roleData?.id) {
+              console.error('[AUTH:REGISTER] role resolve failed', roleError);
+              await supabase.auth.signOut();
+              return {
+                error:
+                  'Cadastro indisponível no momento. Contate o administrador.',
+              };
+            }
+
+            resolvedRoleId = roleData.id;
+          }
+        }
+
         const { error: bootstrapError } = await supabase.rpc(
           'bootstrap_candidate_identity',
           {
             p_auth_user_id: data.user.id,
             p_full_name: profileData.full_name,
             p_email: profileData.email,
-            p_tenant_id: profileData.tenantId ?? null,
-            p_role_id: profileData.roleId ?? null,
+            p_tenant_id: resolvedTenantId,
+            p_role_id: resolvedRoleId,
           },
         );
 

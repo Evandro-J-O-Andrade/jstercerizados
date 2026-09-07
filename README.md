@@ -172,17 +172,17 @@ CNPJ: 63.251.959/0001-10
 **Contato:**
 
 - Telefone: (11) 96838-0592
-- E-mail: comercial@jsterceirizados.com.br
+- E-mail: comercial@jsempregos.com.br
 - WhatsApp: https://wa.me/5511968380592
 - Endereço: Rodovia João Afonso de Souza Castellano, 411, Sala 04, Poá/SP
 
 **Redes sociais:**
 
-- [Instagram](https://www.instagram.com/jstercerizados?igsh=MWpsMmxzN2t5aGl5MA%3D%3D)
-- [Facebook](https://facebook.com/jsterceirizados)
-- [LinkedIn](https://linkedin.com/company/jsterceirizados)
-- [YouTube](https://youtube.com/@jsterceirizados)
-- [TikTok](https://tiktok.com/@jsterceirizados)
+- [Instagram](https://www.instagram.com/jsempregos)
+- [Facebook](https://facebook.com/jsempregos)
+- [LinkedIn](https://linkedin.com/company/jsempregos)
+- [YouTube](https://youtube.com/@jsempregos)
+- [TikTok](https://tiktok.com/@jsempregos)
 
 ---
 

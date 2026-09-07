@@ -8,6 +8,7 @@ import { AuthRoute } from '@/components/auth/AuthRoute';
 import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ToastProvider } from '@/components/feedback';
+import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
 import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 import { PublicLayout } from '@/components/layout/PublicLayout';
 import { AppShell } from '@/components/layout/AppShell';
@@ -848,7 +849,7 @@ function App() {
             path="*"
             element={
               <PublicLayout>
-                <Suspense fallback={null}>
+                <Suspense fallback={<RouteLoadingFallback />}>
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/vagas" element={<Vagas />} />

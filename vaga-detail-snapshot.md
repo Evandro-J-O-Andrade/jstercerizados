@@ -69,6 +69,6 @@
       - generic [ref=f4e101]:
         - button "Enviar candidatura" [ref=f4e102]
         - generic [ref=f4e106]:
-          - generic [ref=f4e107]: comercial@jsterceirizados.com.br
+          - generic [ref=f4e107]: comercial@jsempregos.com.br
           - generic [ref=f4e111]: Seg a Sex, 08h às 18h
           - generic [ref=f4e115]: Poá - SP

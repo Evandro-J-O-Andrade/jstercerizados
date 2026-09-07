@@ -124,9 +124,9 @@ Os mocks atuais usam `localStorage` e não têm dados pré-cadastrados. Vamos cr
 
 **Empresas globais (companies)**:
 
-| Nome              | Nome Fantasia     | CNPJ               | Tipo              | Email                            | Telefone        |
-| ----------------- | ----------------- | ------------------ | ----------------- | -------------------------------- | --------------- |
-| J&S Empregos LTDA | J&S Terceirizados | 12.345.678/0001-90 | `limited_company` | comercial@jsterceirizados.com.br | (11) 96838-0592 |
+| Nome              | Nome Fantasia     | CNPJ               | Tipo              | Email                       | Telefone        |
+| ----------------- | ----------------- | ------------------ | ----------------- | --------------------------- | --------------- |
+| J&S Empregos LTDA | J&S Terceirizados | 12.345.678/0001-90 | `limited_company` | comercial@jsempregos.com.br | (11) 96838-0592 |
 
 **Relationships** (para tenant `a1b2c3d4-e5f6-7890-abcd-ef1234567890`):
 
@@ -339,11 +339,11 @@ Sugestão: configurações do tenant J&S:
 | Chave             | Valor                                    |
 | ----------------- | ---------------------------------------- |
 | `site.name`       | `J&S Empregos LTDA`                      |
-| `site.url`        | `https://jsterceirizados.com.br`         |
+| `site.url`        | `https://jsempregos.com.br`              |
 | `site.logo`       | `/uploads/images/configuracoes/logo.png` |
 | `whatsapp.number` | `5511968380592`                          |
 | `phone.number`    | `(11) 96838-0592`                        |
-| `email.contact`   | `comercial@jsterceirizados.com.br`       |
+| `email.contact`   | `comercial@jsempregos.com.br`            |
 | `primary_color`   | `#16a34a`                                |
 
 **Status**: ❌ Precisa criar migration de seed
