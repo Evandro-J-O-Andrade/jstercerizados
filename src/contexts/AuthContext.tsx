@@ -488,6 +488,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [loadAuthData]);
 
+  const verifyTurnstileToken = async (
+    token?: string,
+  ): Promise<{ ok: boolean; error?: string }> => {
+    if (!token) {
+      return { ok: true };
+    }
+
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl) {
+      return { ok: false, error: 'Supabase não configurado.' };
+    }
+
+    const siteverifyUrl = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/turnstile-siteverify`;
+
+    try {
+      const response = await fetch(siteverifyUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!response.ok) {
+        return { ok: false, error: 'Falha ao verificar CAPTCHA.' };
+      }
+
+      const result = (await response.json()) as {
+        success?: boolean;
+        error?: string;
+      };
+
+      if (!result.success) {
+        return {
+          ok: false,
+          error: 'Verificação de CAPTCHA inválida. Tente novamente.',
+        };
+      }
+
+      return { ok: true };
+    } catch (err) {
+      console.error('[AUTH:TURNSTILE] siteverify failed', err);
+      return { ok: false, error: 'Falha ao verificar CAPTCHA.' };
+    }
+  };
+
   const login = async (
     email: string,
     password: string,
@@ -519,11 +563,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       console.log('[AUTH:LOGIN] start', { email });
+
+      if (options.turnstileToken) {
+        const turnstileResult = await verifyTurnstileToken(
+          options.turnstileToken,
+        );
+        if (!turnstileResult.ok) {
+          setIsLoading(false);
+          return { error: turnstileResult.error };
+        }
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
         options: {
-          captchaToken: options.turnstileToken,
+          captchaToken: options.turnstileToken ?? undefined,
         },
       });
 
@@ -1046,6 +1101,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      if (profileData.turnstileToken) {
+        const turnstileResult = await verifyTurnstileToken(
+          profileData.turnstileToken,
+        );
+        if (!turnstileResult.ok) {
+          return { error: turnstileResult.error };
+        }
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
