@@ -6,13 +6,11 @@ export function RouteLoadingFallback() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex items-center justify-center py-12"
+      className="flex items-center justify-center"
     >
-      <div className="flex items-center gap-3">
-        <span className="relative flex h-3 w-3">
-          <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-          <span className="bg-primary relative inline-flex h-3 w-3 rounded-full" />
-        </span>
+      <div className="relative h-12 w-12">
+        <div className="absolute inset-0 rounded-full border-2 border-gray-800/60" />
+        <div className="border-t-primary border-r-primary absolute inset-0 animate-spin rounded-full border-2 border-transparent shadow-[0_0_15px_rgba(212,160,23,0.35)]" />
       </div>
     </motion.div>
   );
