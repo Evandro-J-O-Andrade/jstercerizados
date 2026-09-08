@@ -1,8 +1,9 @@
 export const IMAGES = {
   logo: {
-    principal: '/images/global/brand/logo-js-empregos.jpg',
+    principal: '/images/global/brand/logo-js-empregos.png',
     light: '/images/global/brand/logo-js-empregos-light.png',
     dark: '/images/global/brand/logo-js-empregos-dark.png',
+    fallback: '/images/global/brand/logo-js-empregos-fallback.png',
     sidebar: '/images/global/brand/sidebar-logo.svg',
     sidebarIcon: '/images/global/brand/sidebar-icon.svg',
     favicon: '/images/favicons/favicon-32x32.png',
