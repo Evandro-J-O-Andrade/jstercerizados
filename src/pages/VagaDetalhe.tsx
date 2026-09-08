@@ -18,6 +18,8 @@ import {
   Hourglass,
 } from 'lucide-react';
 
+const SITE_URL = 'https://www.jsempregos.com.br';
+
 const CONTRATO_LABELS: Record<string, string> = {
   CLT: 'CLT',
   ESTAGIO: 'Estágio',
@@ -111,6 +113,15 @@ export default function VagaDetalhe() {
         }`
       : (vaga.salarioTexto ?? null);
 
+  const employmentTypeMap: Record<string, string> = {
+    CLT: 'FULL_TIME',
+    ESTAGIO: 'INTERN',
+    TEMPORARIO: 'TEMPORARY',
+    FREELA: 'CONTRACTOR',
+    TERCEIRIZADO: 'CONTRACTOR',
+    CD: 'CONTRACTOR',
+  };
+
   return (
     <div className="min-h-screen">
       <SEO
@@ -130,6 +141,37 @@ export default function VagaDetalhe() {
           'seleção',
         ]}
         type="WebSite"
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Vagas', href: '/vagas' },
+          { label: vaga.titulo, href: `/vagas/${vaga.slug}` },
+        ]}
+        jobPosting={{
+          title: vaga.titulo,
+          description:
+            vaga.descricao ||
+            `Oportunidade de ${vaga.titulo} na ${COMPANY.name}.`,
+          datePosted: vaga.data_publicacao,
+          validThrough: vaga.expiresAt ?? undefined,
+          hiringOrgName: vaga.empresa ?? COMPANY.name,
+          hiringOrgUrl: SITE_URL,
+          hiringOrgLogo: vaga.empresaLogo,
+          city: vaga.cidade,
+          state: vaga.estado,
+          employmentType: vaga.tipoContrato
+            ? employmentTypeMap[vaga.tipoContrato]
+            : undefined,
+          salaryMin: vaga.salarioMin,
+          salaryMax: vaga.salarioMax,
+          salaryUnit: vaga.salarioTipo === 'hora' ? 'HOUR' : 'MONTH',
+          benefits:
+            vaga.beneficios && vaga.beneficios.length > 0
+              ? vaga.beneficios
+              : undefined,
+          requirements: vaga.requisitos,
+          responsibilities: vaga.responsibilities,
+          slug: vaga.slug,
+        }}
       />
       <Section className="pt-20 md:pt-32">
         <Container>

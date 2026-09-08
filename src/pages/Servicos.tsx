@@ -28,6 +28,10 @@ export default function Servicos() {
   return (
     <>
       <SEO
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Serviços', href: '/servicos' },
+        ]}
         title={`Serviços — ${COMPANY.name}`}
         description="Assessoria em RH, recrutamento, mão de obra temporária e efetiva, terceirização, facilities, limpeza, jardinagem e portaria."
         keywords={[

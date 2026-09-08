@@ -49,6 +49,10 @@ export default function ProcessoSeletivo() {
   return (
     <div>
       <SEO
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Processo Seletivo', href: '/processo-seletivo' },
+        ]}
         title={`Processo Seletivo — ${COMPANY.name}`}
         description="Conheça as etapas do nosso processo seletivo: cadastro, candidatura, entrevista e contratação."
         keywords={[

@@ -127,6 +127,10 @@ export default function ServicoDetalhe() {
   return (
     <div>
       <SEO
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Serviços', href: '/servicos' },
+        ]}
         title={`${service.title} — ${COMPANY.name}`}
         description={service.shortDescription}
         keywords={[

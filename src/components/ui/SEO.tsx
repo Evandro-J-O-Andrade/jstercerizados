@@ -1,6 +1,13 @@
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { SEO_CONFIG, COMPANY, SOCIAL_LINKS } from '@/config';
+import { SEO_CONFIG, SOCIAL_LINKS } from '@/config';
+import {
+  buildBreadcrumbSchema,
+  buildWebSiteSchema,
+  buildJobPostingSchema,
+  getOrganizationSchema,
+} from '@/utils/schema';
+import type { BreadcrumbItem } from '@/types/seo';
 
 interface SEOProps {
   title?: string;
@@ -9,6 +16,26 @@ interface SEOProps {
   image?: string;
   noindex?: boolean;
   type?: 'WebSite' | 'Organization' | 'FAQPage' | 'Service' | 'Article';
+  breadcrumbs?: BreadcrumbItem[];
+  jobPosting?: {
+    title: string;
+    description: string;
+    datePosted?: string;
+    validThrough?: string;
+    hiringOrgName: string;
+    hiringOrgUrl?: string;
+    hiringOrgLogo?: string;
+    city?: string;
+    state?: string;
+    employmentType?: string;
+    salaryMin?: number;
+    salaryMax?: number;
+    salaryUnit?: string;
+    benefits?: string[];
+    requirements?: string;
+    responsibilities?: string;
+    slug: string;
+  };
 }
 
 export function SEO({
@@ -18,6 +45,8 @@ export function SEO({
   image,
   noindex = false,
   type = 'WebSite',
+  breadcrumbs,
+  jobPosting,
 }: SEOProps) {
   const location = useLocation();
   const url = `${SEO_CONFIG.openGraph.url}${location.pathname}`;
@@ -73,43 +102,39 @@ export function SEO({
   }, [pageTitle, pageDesc, pageKeywords, pageImage, noindex, type, url]);
 
   const getSchemaOrg = () => {
-    const base = {
+    if (jobPosting) {
+      return buildJobPostingSchema(jobPosting);
+    }
+    if (breadcrumbs) {
+      return buildBreadcrumbSchema(breadcrumbs);
+    }
+    if (type === 'Organization') {
+      return getOrganizationSchema();
+    }
+    if (type === 'WebSite') {
+      return buildWebSiteSchema();
+    }
+    if (type === 'FAQPage') {
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        name: pageTitle,
+        description: pageDesc,
+        mainEntity: [],
+      };
+    }
+    return {
       '@context': 'https://schema.org',
       '@type': type,
       name: pageTitle,
       description: pageDesc,
       url,
       sameAs: [
-        SEO_CONFIG.openGraph.url,
         SOCIAL_LINKS.instagram,
         SOCIAL_LINKS.facebook,
         SOCIAL_LINKS.linkedin,
       ],
     };
-
-    if (type === 'Organization') {
-      return {
-        ...base,
-        '@type': 'Organization',
-        logo: '/images/global/brand/logo-js-empregos.png',
-        contactPoint: {
-          '@type': 'ContactPoint',
-          telephone: `+55${COMPANY.whatsapp}`,
-          contactType: 'customer service',
-          availableLanguage: 'Portuguese',
-        },
-      };
-    }
-
-    if (type === 'FAQPage') {
-      return {
-        ...base,
-        '@type': 'FAQPage',
-        mainEntity: [],
-      };
-    }
-
-    return base;
   };
 
   return (

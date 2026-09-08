@@ -269,6 +269,10 @@ export default function Sobre() {
   return (
     <div className="pt-20">
       <SEO
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Sobre', href: '/sobre' },
+        ]}
         title={`Sobre — ${COMPANY.name}`}
         description={`Conheça a ${COMPANY.name}: assessoria em RH, recrutamento, mão de obra e facilities com excelência.`}
         keywords={[
