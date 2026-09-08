@@ -21,19 +21,13 @@
 
 BEGIN;
 
-UPDATE public.company_relationships AS cr
-SET metadata = cr.metadata || jsonb_build_object(
+UPDATE public.company_relationships
+SET metadata = metadata || jsonb_build_object(
   'hero_image_url', '/images/clientes/mistral-vidros-real.jpg'
 )
-FROM public.companies c
-WHERE c.id = cr.company_id
-  AND c.tenant_id = cr.tenant_id
-  AND c.name = 'Mistral Vidros'
-  AND c.status = 'active'
-  AND cr.status = 'active'
-  AND cr.relationship_type = 'client'
-  AND coalesce(c.metadata->>'is_test', 'false') <> 'true'
-  AND coalesce(cr.metadata->>'hero_image_url', '') = '/images/clientes/mistral-vidros-real.webp';
+WHERE id = '4043d781-9c20-4120-b9e7-aa542e880227'
+  AND relationship_type = 'client'
+  AND coalesce(metadata->>'hero_image_url', '') = '/images/clientes/mistral-vidros-real.webp';
 
 -- Validation
 SELECT
