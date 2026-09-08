@@ -1,7 +1,7 @@
 {
   "name": "JSEmpregos",
   "short_name": "JS Empregos",
-  "description": "Plataforma SaaS para Gestão de Empresas de Terceirização",
+  "description": "Agência de Empregos e Consultoria de RH — recrutamento, seleção, mão de obra temporária e efetiva, terceirização e facilities.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "hsl(215,82%,97%)",
@@ -9,19 +9,19 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "/images/global/brand/logo-js-empregos.png",
+      "src": "/images/favicons/favicon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/images/global/brand/logo-js-empregos.png",
+      "src": "/images/favicons/favicon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "/images/brand/apple-touch-icon.svg",
+      "src": "/images/favicons/apple-touch-icon.png",
       "sizes": "180x180",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ]
 }

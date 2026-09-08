@@ -69,7 +69,7 @@ export const FALLBACK_IMAGES = {
 
 export const HERO_ASSETS = {
   cardheros: '/images/home/cards/cardheros.png',
-  bannerjs: '/images/sobre/banner-js-empregos.png',
+  bannerjs: '/images/sobre/banner-js-empregos.jpg',
   homeSlides: [
     '/images/home/banners/banner-principal.webp',
     '/images/home/banners/banner-secundario.webp',

@@ -1,10 +1,11 @@
 export const IMAGES = {
   logo: {
-    light: '/images/global/brand/logo-js-empregos.png',
-    dark: '/images/global/brand/logo-js-empregos.png',
+    principal: '/images/global/brand/logo-js-empregos.jpg',
+    light: '/images/global/brand/logo-js-empregos-light.png',
+    dark: '/images/global/brand/logo-js-empregos-dark.png',
     sidebar: '/images/global/brand/sidebar-logo.svg',
     sidebarIcon: '/images/global/brand/sidebar-icon.svg',
-    favicon: '/images/global/favicon/favicon.svg',
+    favicon: '/images/favicons/favicon-32x32.png',
   },
   hero: {
     background: '/images/home/hero/hero-profissional.svg',
