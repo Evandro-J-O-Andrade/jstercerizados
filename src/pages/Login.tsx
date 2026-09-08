@@ -23,6 +23,7 @@ import { IMAGES } from '@/config/images';
 import { cn } from '@/utils';
 import { normalizeError } from '@/lib/error-normalizer';
 import { Turnstile } from '@/components/auth/Turnstile';
+import type { TurnstileHandle } from '@/components/auth/Turnstile';
 
 const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -82,6 +83,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
   // exibimos o estado no botao; o backend (Edge Function) fara a
   // verificacao real antes de chamar signInWithPassword/signUp.
   const submittedRef = useRef(false);
+  const turnstileRef = useRef<TurnstileHandle>(null);
   const {
     login,
     loginWithProvider,
@@ -121,6 +123,8 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
   useEffect(() => {
     setError('');
     submittedRef.current = false;
+    setTurnstileToken(null);
+    turnstileRef.current?.reset();
     if (authMode === 'signin') resetSignup();
     else resetForm();
   }, [authMode, resetForm, resetSignup]);
@@ -128,6 +132,13 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
   const onInvalid = (formErrors: unknown) => {
     console.error('[AUTH:FORM_INVALID]', formErrors);
   };
+
+  const resetCaptcha = () => {
+    setTurnstileToken(null);
+    turnstileRef.current?.reset();
+  };
+
+  const isCaptchaError = (message: string) => /captcha/i.test(message ?? '');
 
   const onSignIn = async (data: LoginFormData): Promise<void> => {
     setError('');
@@ -140,11 +151,19 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       });
       if (result.error) {
         submittedRef.current = true;
-        setError(normalizeError(result.error).userMessage);
+        const userMessage = normalizeError(result.error).userMessage;
+        setError(userMessage);
+        if (isCaptchaError(userMessage)) {
+          resetCaptcha();
+        }
       }
     } catch (err) {
       submittedRef.current = true;
-      setError(normalizeError(err).userMessage);
+      const userMessage = normalizeError(err).userMessage;
+      setError(userMessage);
+      if (isCaptchaError(userMessage)) {
+        resetCaptcha();
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -163,7 +182,11 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       });
       if (result.error) {
         submittedRef.current = true;
-        setError(normalizeError(result.error).userMessage);
+        const userMessage = normalizeError(result.error).userMessage;
+        setError(userMessage);
+        if (isCaptchaError(userMessage)) {
+          resetCaptcha();
+        }
       } else {
         setError(
           'Cadastro realizado. Verifique seu e-mail para confirmar a conta antes de entrar.',
@@ -171,7 +194,11 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       }
     } catch (err) {
       submittedRef.current = true;
-      setError(normalizeError(err).userMessage);
+      const userMessage = normalizeError(err).userMessage;
+      setError(userMessage);
+      if (isCaptchaError(userMessage)) {
+        resetCaptcha();
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -485,7 +512,10 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
                     </Link>
                   </div>
 
-                  <Turnstile onTokenChange={setTurnstileToken} />
+                  <Turnstile
+                    ref={turnstileRef}
+                    onTokenChange={setTurnstileToken}
+                  />
 
                   <Button
                     type="submit"
@@ -553,7 +583,10 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
                     {...rhfRegisterSignup('confirmPassword')}
                   />
 
-                  <Turnstile onTokenChange={setTurnstileToken} />
+                  <Turnstile
+                    ref={turnstileRef}
+                    onTokenChange={setTurnstileToken}
+                  />
 
                   <Button
                     type="submit"

@@ -11,6 +11,7 @@ import { getSupabaseClient } from '@/lib/supabase';
 import type { User, Session } from '@supabase/supabase-js';
 import { normalizeError } from '@/lib/error-normalizer';
 import { normalizePermissions } from '@/utils/rbac-normalize';
+import { isTurnstileEnabled } from '@/utils/turnstile-config';
 import type {
   Person,
   TenantMembership,
@@ -491,6 +492,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const verifyTurnstileToken = async (
     token?: string,
   ): Promise<{ ok: boolean; error?: string }> => {
+    if (isTurnstileEnabled() && !token) {
+      return {
+        ok: false,
+        error: 'Conclua a verificação de segurança.',
+      };
+    }
+
     if (!token) {
       return { ok: true };
     }
@@ -563,6 +571,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       console.log('[AUTH:LOGIN] start', { email });
+
+      if (isTurnstileEnabled() && !options.turnstileToken) {
+        setIsLoading(false);
+        return { error: 'Conclua a verificação de segurança.' };
+      }
 
       if (options.turnstileToken) {
         const turnstileResult = await verifyTurnstileToken(
@@ -1101,6 +1114,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      if (isTurnstileEnabled() && !profileData.turnstileToken) {
+        return { error: 'Conclua a verificação de segurança.' };
+      }
+
       if (profileData.turnstileToken) {
         const turnstileResult = await verifyTurnstileToken(
           profileData.turnstileToken,

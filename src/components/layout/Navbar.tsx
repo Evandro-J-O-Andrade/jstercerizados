@@ -247,9 +247,11 @@ export function Navbar() {
       <div className="flex items-center justify-between px-6 py-3 sm:px-8 lg:px-12">
         <Link to="/" className="flex items-center gap-4 pl-2">
           <motion.img
-            src={IMAGES.logo.dark}
+            src={
+              resolvedTheme === 'dark' ? IMAGES.logo.dark : IMAGES.logo.light
+            }
             alt={COMPANY.name}
-            className="drop-shadow-glow h-12 w-auto"
+            className="drop-shadow-glow h-16 w-auto"
             whileHover={{ scale: 1.05 }}
             loading="eager"
           />

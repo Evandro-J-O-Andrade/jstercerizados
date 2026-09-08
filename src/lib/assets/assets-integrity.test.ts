@@ -116,6 +116,7 @@ describe('GATE-ASSETS-02: Asset Runtime Integrity', () => {
   describe('IMAGES config', () => {
     it('todos os assets de imagem existem fisicamente', () => {
       const paths = [
+        IMAGES.logo.principal,
         IMAGES.logo.light,
         IMAGES.logo.dark,
         IMAGES.logo.sidebar,
