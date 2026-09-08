@@ -29,7 +29,7 @@ export const CLIENTS_LIST: Client[] = [
     id: 'client-03',
     name: 'Mistral Vidros',
     logo: '/images/clientes/Mistral Vidros.jpg',
-    image: '/images/clientes/mistral-vidros-real.webp',
+    image: '/images/clientes/mistral-vidros-real.jpg',
     website: 'https://mistralvidros.com.br/',
     description:
       'Vidros e espelhos de alta qualidade para projetos residenciais, comerciais e arquitetônicos.',
