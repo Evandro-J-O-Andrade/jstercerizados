@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "hostinger-email": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.mail.hostinger.com/mcp"],
+      "env": {
+        "Authorization": "Bearer ENTER_TOKEN_HERE"
+      }
+    }
+  }
+}

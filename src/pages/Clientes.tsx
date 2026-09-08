@@ -147,6 +147,9 @@ function ClientCase({
 
   const showImage = client.image && imageLoaded;
   const primaryMedia = showImage ? client.image : client.logo;
+  const showLogo = Boolean(
+    client.logo && client.image && client.logo !== client.image,
+  );
 
   if (!primaryMedia) {
     return (
@@ -195,7 +198,7 @@ function ClientCase({
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
         <div className="absolute right-0 bottom-0 left-0 p-6 sm:p-8">
-          {client.logo && (
+          {showLogo && client.logo ? (
             <div className="mb-4 h-12 w-auto">
               <SafeImage
                 src={client.logo}
@@ -203,7 +206,7 @@ function ClientCase({
                 className="h-full w-auto object-contain drop-shadow-lg"
               />
             </div>
-          )}
+          ) : null}
           <h3 className="text-2xl font-bold text-white drop-shadow-md sm:text-3xl">
             {client.name}
           </h3>
