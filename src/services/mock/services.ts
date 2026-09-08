@@ -435,7 +435,6 @@ export const mockServices: Service[] = [
     image: SERVICE_IMAGES.zeladoriaReal ?? '/images/servicos/zeladoria.svg',
     gallery: [
       '/images/servicos/zeladoria/zeladoria.jpg',
-      '/images/servicos/zeladoria/zeladoria-real.png',
       '/images/servicos/zeladoria/zeladoria.svg',
     ],
     icon: 'wrench',
