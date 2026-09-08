@@ -1,7 +1,7 @@
 export const IMAGES = {
   logo: {
-    light: '/images/global/brand/logo.svg',
-    dark: '/images/global/brand/logo.svg',
+    light: '/images/global/brand/logo-js-empregos.png',
+    dark: '/images/global/brand/logo-js-empregos.png',
     sidebar: '/images/global/brand/sidebar-logo.svg',
     sidebarIcon: '/images/global/brand/sidebar-icon.svg',
     favicon: '/images/global/favicon/favicon.svg',

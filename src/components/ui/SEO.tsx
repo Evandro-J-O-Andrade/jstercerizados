@@ -91,7 +91,7 @@ export function SEO({
       return {
         ...base,
         '@type': 'Organization',
-        logo: '/images/brand/logo.svg',
+        logo: '/images/global/brand/logo-js-empregos.png',
         contactPoint: {
           '@type': 'ContactPoint',
           telephone: `+55${COMPANY.whatsapp}`,
