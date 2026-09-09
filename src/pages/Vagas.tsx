@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
+import { ErrorState } from '@/components/fallback/ErrorState';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
-import { mockGetVagas } from '@/services/mock/vagas';
 import { usePublicJobsAsVagas } from '@/hooks/useJobs';
 import { COMPANY } from '@/config';
 import type { Vaga } from '@/types/common';
@@ -98,7 +98,7 @@ export default function Vagas() {
   const [dataDias, setDataDias] = useState('');
   const [showMoreFilters, setShowMoreFilters] = useState(false);
 
-  const { jobs: dbJobs } = usePublicJobsAsVagas();
+  const { jobs: dbJobs, isLoading, error, refetch } = usePublicJobsAsVagas();
 
   const hasAnyFilter = useMemo(
     () =>
@@ -125,8 +125,7 @@ export default function Vagas() {
   );
 
   const vagas = useMemo(() => {
-    const source = dbJobs.length > 0 ? dbJobs : mockGetVagas();
-    return filterVagas(source, {
+    return filterVagas(dbJobs, {
       searchTerm,
       cidade: cidadeFilter,
       estado: estadoFilter,
@@ -348,25 +347,52 @@ export default function Vagas() {
             </div>
           </motion.div>
 
-          {/* Vagas Grid */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {vagas.length === 0 ? (
-              <motion.div
-                variants={staggerItem('up')}
-                className="bg-card shadow-premium col-span-full rounded-2xl p-12 text-center"
-              >
-                <p className="text-muted-foreground">
-                  Nenhuma vaga encontrada com os filtros aplicados.
-                </p>
-              </motion.div>
-            ) : (
-              vagas.map((vaga) => (
+          {/* Estados de loading, erro e vazio */}
+          {isLoading ? (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-card border-border flex h-64 animate-pulse flex-col rounded-2xl border p-6"
+                >
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="space-y-2">
+                      <div className="bg-muted h-5 w-40 rounded" />
+                      <div className="bg-muted h-4 w-24 rounded" />
+                    </div>
+                    <div className="bg-muted h-6 w-16 rounded-full" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="bg-muted h-4 w-full rounded" />
+                    <div className="bg-muted h-4 w-3/4 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <ErrorState
+              title="Erro ao carregar vagas"
+              message={error}
+              onRetry={refetch}
+            />
+          ) : vagas.length === 0 ? (
+            <motion.div
+              variants={staggerItem('up')}
+              className="bg-card shadow-premium col-span-full rounded-2xl p-12 text-center"
+            >
+              <p className="text-muted-foreground">
+                Nenhuma vaga encontrada com os filtros aplicados.
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerReveal(0.1)}
+              className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {vagas.map((vaga) => (
                 <motion.div
                   key={vaga.id}
                   variants={staggerItem('up')}
@@ -466,9 +492,9 @@ export default function Vagas() {
                     </Link>
                   </div>
                 </motion.div>
-              ))
-            )}
-          </motion.div>
+              ))}
+            </motion.div>
+          )}
 
           {vagas.length > 0 && vagas.length < 100 && (
             <motion.div

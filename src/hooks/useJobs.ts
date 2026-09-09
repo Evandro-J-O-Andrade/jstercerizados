@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { jobsRepository } from '@/repositories/jobs.repository';
-import { mockGetVagas } from '@/services/mock/vagas';
 import { mapPublicJobV1ToVaga } from '@/types/domain/job-mapper';
 import type { Job, JobStatus } from '@/types/domain/job';
 import type { Vaga } from '@/types/common';
@@ -158,14 +157,12 @@ export function usePublicJobsAsVagas(opts?: {
         setItems(mapped);
         setSource('db');
       } else {
-        console.info('[usePublicJobsAsVagas] DB vazio — fallback MOCK');
         setItems([]);
-        setSource('mock');
+        setSource('none');
       }
     } catch (err) {
-      console.warn('[usePublicJobsAsVagas] Erro DB — fallback MOCK', err);
       setItems([]);
-      setSource('mock');
+      setSource('none');
       setError(err instanceof Error ? err.message : 'Erro ao carregar vagas');
     } finally {
       setIsLoading(false);
@@ -213,25 +210,11 @@ export function usePublicJobBySlugAsVaga(slug?: string) {
 
       if (mapped) {
         setItem(mapped);
-        return;
-      }
-
-      const mockMatch = mockGetVagas().find((v) => v.slug === slug) ?? null;
-      if (mockMatch) {
-        console.info(
-          '[usePublicJobBySlugAsVaga] DB sem match — usando fallback MOCK',
-        );
-        setItem(mockMatch);
       } else {
         setItem(null);
       }
     } catch (err) {
-      console.warn(
-        '[usePublicJobBySlugAsVaga] Erro DB — usando fallback MOCK',
-        err,
-      );
-      const mockMatch = mockGetVagas().find((v) => v.slug === slug) ?? null;
-      setItem(mockMatch);
+      setItem(null);
       setError(err instanceof Error ? err.message : 'Erro ao carregar vaga');
     } finally {
       setIsLoading(false);
