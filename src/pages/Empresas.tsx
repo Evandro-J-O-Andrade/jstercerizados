@@ -4,12 +4,11 @@ import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
+import { ErrorState } from '@/components/fallback/ErrorState';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
-import { CLIENTS_LIST } from '@/mock/clients';
-import { PARTNERS_LOGOS } from '@/mock/partners';
+import { usePublicClients } from '@/hooks/usePublicCompanies';
 import { ClientCard } from '@/components/sections/ClientCard';
-import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import {
   Phone,
@@ -23,6 +22,8 @@ import {
 } from 'lucide-react';
 
 export default function Empresas() {
+  const { clients, isLoading, error, refetch } = usePublicClients();
+
   return (
     <div className="min-h-screen">
       <SEO
@@ -171,69 +172,42 @@ export default function Empresas() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={staggerReveal(0.1)}
-              className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
+              className="mt-10"
             >
-              {CLIENTS_LIST.filter((client) => client.name && client.logo).map(
-                (client, index) => (
-                  <motion.div key={client.id} variants={staggerItem('up')}>
-                    <ClientCard client={client} index={index} />
-                  </motion.div>
-                ),
+              {isLoading ? (
+                <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-card border-border flex h-32 animate-pulse flex-col items-center justify-center rounded-2xl border p-6"
+                    >
+                      <div className="bg-muted h-12 w-24 rounded" />
+                    </div>
+                  ))}
+                </div>
+              ) : error ? (
+                <ErrorState
+                  title="Erro ao carregar clientes"
+                  message={error}
+                  onRetry={refetch}
+                />
+              ) : clients.length === 0 ? (
+                <div className="bg-card shadow-premium col-span-full rounded-2xl p-12 text-center">
+                  <p className="text-muted-foreground">
+                    Nenhum cliente disponível no momento.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4">
+                  {clients
+                    .filter((client) => client.name && client.logo)
+                    .map((client, index) => (
+                      <motion.div key={client.id} variants={staggerItem('up')}>
+                        <ClientCard client={client} index={index} />
+                      </motion.div>
+                    ))}
+                </div>
               )}
-            </motion.div>
-          </motion.div>
-
-          {/* Nossos parceiros */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
-            className="mt-24"
-          >
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-center text-3xl font-bold sm:text-4xl"
-            >
-              Nossos parceiros
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center text-lg"
-            >
-              Construímos uma rede de parceiros estratégicos para ampliar nossas
-              soluções e entregar mais eficiência aos nossos clientes.
-            </motion.p>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={staggerReveal(0.1)}
-              className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-6"
-            >
-              {PARTNERS_LOGOS.map((partner) => (
-                <motion.div
-                  key={partner.name}
-                  variants={staggerItem('up')}
-                  whileHover={{ scale: 1.05 }}
-                  className="group bg-muted/50 border-border/50 relative overflow-hidden rounded-2xl border"
-                >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden">
-                    <SafeImage
-                      src={partner.photo}
-                      fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%232a2a2a'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='16'%3EEmpresa%3C/text%3E%3C/svg%3E"
-                      alt={partner.name}
-                      className="h-full w-full object-cover grayscale-[40%] transition-all duration-300 group-hover:grayscale-0"
-                    />
-                  </div>
-                  <div className="p-3 text-center">
-                    <span className="text-foreground text-xs font-semibold">
-                      {partner.name}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
             </motion.div>
           </motion.div>
 
