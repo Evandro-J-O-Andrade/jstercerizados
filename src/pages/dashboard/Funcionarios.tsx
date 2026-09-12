@@ -22,21 +22,6 @@ const EMPLOYEE_STATUS = [
   { value: 'on_leave', label: 'Afastado' },
 ] as const;
 
-const EMPLOYMENT_TYPE_OPTIONS = [
-  { value: 'clt', label: 'CLT' },
-  { value: 'internship', label: 'Estágio' },
-  { value: 'temporary', label: 'Temporário' },
-  { value: 'freelance', label: 'Freelance' },
-  { value: 'contracted', label: 'Contratado' },
-  { value: 'cd', label: 'CD' },
-] as const;
-
-const WORK_MODE_OPTIONS = [
-  { value: 'onsite', label: 'Presencial' },
-  { value: 'hybrid', label: 'Híbrido' },
-  { value: 'remote', label: 'Remoto' },
-] as const;
-
 export default function Funcionarios() {
   const { currentTenantId, isAdminMaster } = useAuth();
   const { addToast } = useToast();
@@ -45,27 +30,14 @@ export default function Funcionarios() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [selected, setSelected] = useState<Employee | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [form, setForm] = useState({
-    person_id: '',
-    company_id: '',
-    registration: '',
-    job_title: '',
-    department: '',
-    cost_center: '',
+    employee_code: '',
     hire_date: '',
     termination_date: '',
-    probation_end_date: '',
-    employment_type: 'clt',
-    work_mode: 'onsite',
     salary: '',
-    salary_currency: 'BRL',
-    salary_frequency: 'monthly',
     status: 'active',
-    manager_id: '',
-    notes: '',
   });
 
   useEffect(() => {
@@ -78,7 +50,10 @@ export default function Funcionarios() {
       setError(null);
 
       try {
-        const data = await employeesRepository.findAll(currentTenantId);
+        const data = await employeesRepository.findAll(currentTenantId, {
+          status: statusFilter === 'all' ? undefined : statusFilter,
+          search: search || undefined,
+        });
         if (!cancelled) {
           setEmployees(data);
         }
@@ -102,51 +77,27 @@ export default function Funcionarios() {
     return () => {
       cancelled = true;
     };
-  }, [currentTenantId, search, statusFilter, departmentFilter]);
+  }, [currentTenantId, search, statusFilter]);
 
   const openCreate = () => {
     setSelected(null);
     setForm({
-      person_id: '',
-      company_id: '',
-      registration: '',
-      job_title: '',
-      department: '',
-      cost_center: '',
+      employee_code: '',
       hire_date: '',
       termination_date: '',
-      probation_end_date: '',
-      employment_type: 'clt',
-      work_mode: 'onsite',
       salary: '',
-      salary_currency: 'BRL',
-      salary_frequency: 'monthly',
       status: 'active',
-      manager_id: '',
-      notes: '',
     });
   };
 
   const openEdit = (employee: Employee) => {
     setSelected(employee);
     setForm({
-      person_id: employee.person_id,
-      company_id: employee.company_id || '',
-      registration: employee.registration || '',
-      job_title: employee.job_title || '',
-      department: employee.department || '',
-      cost_center: employee.cost_center || '',
-      hire_date: employee.hire_date || '',
+      employee_code: employee.employee_code,
+      hire_date: employee.hire_date,
       termination_date: employee.termination_date || '',
-      probation_end_date: employee.probation_end_date || '',
-      employment_type: employee.employment_type || 'clt',
-      work_mode: employee.work_mode || 'onsite',
       salary: employee.salary?.toString() || '',
-      salary_currency: employee.salary_currency || 'BRL',
-      salary_frequency: employee.salary_frequency || 'monthly',
-      status: employee.status || 'active',
-      manager_id: employee.manager_id || '',
-      notes: employee.notes || '',
+      status: employee.status,
     });
   };
 
@@ -156,23 +107,11 @@ export default function Funcionarios() {
 
     try {
       const payload: EmployeeCreateInput | EmployeeUpdateInput = {
-        person_id: form.person_id,
-        company_id: form.company_id || null,
-        registration: form.registration || null,
-        job_title: form.job_title || null,
-        department: form.department || null,
-        cost_center: form.cost_center || null,
-        hire_date: form.hire_date || null,
+        employee_code: form.employee_code,
+        hire_date: form.hire_date,
         termination_date: form.termination_date || null,
-        probation_end_date: form.probation_end_date || null,
-        employment_type: form.employment_type,
-        work_mode: form.work_mode,
         salary: form.salary ? Number(form.salary) : null,
-        salary_currency: form.salary_currency,
-        salary_frequency: form.salary_frequency,
         status: form.status,
-        manager_id: form.manager_id || null,
-        notes: form.notes || null,
       };
 
       if (selected) {
@@ -198,23 +137,11 @@ export default function Funcionarios() {
 
       setSelected(null);
       setForm({
-        person_id: '',
-        company_id: '',
-        registration: '',
-        job_title: '',
-        department: '',
-        cost_center: '',
+        employee_code: '',
         hire_date: '',
         termination_date: '',
-        probation_end_date: '',
-        employment_type: 'clt',
-        work_mode: 'onsite',
         salary: '',
-        salary_currency: 'BRL',
-        salary_frequency: 'monthly',
         status: 'active',
-        manager_id: '',
-        notes: '',
       });
     } catch (err) {
       setError(
@@ -255,25 +182,12 @@ export default function Funcionarios() {
   const filtered = employees.filter((employee) => {
     const matchesSearch =
       !search ||
-      (employee.job_title || '').toLowerCase().includes(search.toLowerCase()) ||
-      (employee.registration || '')
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      (employee.department || '').toLowerCase().includes(search.toLowerCase());
+      (employee.employee_code || '').toLowerCase().includes(search.toLowerCase()) ||
+      (employee.person?.full_name || '').toLowerCase().includes(search.toLowerCase());
     const matchesStatus =
       statusFilter === 'all' || employee.status === statusFilter;
-    const matchesDepartment =
-      departmentFilter === 'all' || employee.department === departmentFilter;
-    return matchesSearch && matchesStatus && matchesDepartment;
+    return matchesSearch && matchesStatus;
   });
-
-  const departments = Array.from(
-    new Set(
-      employees
-        .map((emp) => emp.department)
-        .filter((dept): dept is string => Boolean(dept)),
-    ),
-  );
 
   const statusLabel = (value: string) =>
     EMPLOYEE_STATUS.find((s) => s.value === value)?.label || value;
@@ -299,7 +213,7 @@ export default function Funcionarios() {
             <Search className="text-muted-foreground h-4 w-4" />
             <input
               type="text"
-              placeholder="Buscar por cargo, matrícula ou departamento..."
+              placeholder="Buscar por matrícula ou nome..."
               className="bg-transparent text-sm outline-none"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -315,18 +229,6 @@ export default function Funcionarios() {
               {EMPLOYEE_STATUS.map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
-                </option>
-              ))}
-            </select>
-            <select
-              className="rounded-lg border px-3 py-1.5 text-sm"
-              value={departmentFilter}
-              onChange={(e) => setDepartmentFilter(e.target.value)}
-            >
-              <option value="all">Todos os departamentos</option>
-              {departments.map((dept) => (
-                <option key={dept} value={dept}>
-                  {dept}
                 </option>
               ))}
             </select>
@@ -361,12 +263,6 @@ export default function Funcionarios() {
                     Nome
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Cargo
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Departamento
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
                     Status
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-semibold tracking-wider uppercase">
@@ -381,16 +277,10 @@ export default function Funcionarios() {
                     className="hover:bg-muted/30 transition-colors"
                   >
                     <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {employee.registration || '—'}
+                      {employee.employee_code || '—'}
                     </td>
                     <td className="text-foreground px-4 py-3 text-sm font-medium">
                       {employee.person?.full_name || 'Sem nome'}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {employee.job_title || '—'}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {employee.department || '—'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span
@@ -442,110 +332,18 @@ export default function Funcionarios() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Person ID
+                    Matrícula
                   </label>
                   <input
                     type="text"
                     required
                     className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.person_id}
+                    value={form.employee_code}
                     onChange={(e) =>
-                      setForm({ ...form, person_id: e.target.value })
-                    }
-                    placeholder="UUID da pessoa"
-                  />
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Matrícula
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.registration}
-                    onChange={(e) =>
-                      setForm({ ...form, registration: e.target.value })
+                      setForm({ ...form, employee_code: e.target.value })
                     }
                     placeholder="Ex: 12345"
                   />
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Cargo
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.job_title}
-                    onChange={(e) =>
-                      setForm({ ...form, job_title: e.target.value })
-                    }
-                    placeholder="Ex: Analista Administrativo"
-                  />
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Departamento
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.department}
-                    onChange={(e) =>
-                      setForm({ ...form, department: e.target.value })
-                    }
-                    placeholder="Ex: RH"
-                  />
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Centro de Custo
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.cost_center}
-                    onChange={(e) =>
-                      setForm({ ...form, cost_center: e.target.value })
-                    }
-                    placeholder="Ex: CC-001"
-                  />
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Tipo de Contrato
-                  </label>
-                  <select
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.employment_type}
-                    onChange={(e) =>
-                      setForm({ ...form, employment_type: e.target.value })
-                    }
-                  >
-                    {EMPLOYMENT_TYPE_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Modalidade
-                  </label>
-                  <select
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.work_mode}
-                    onChange={(e) =>
-                      setForm({ ...form, work_mode: e.target.value })
-                    }
-                  >
-                    {WORK_MODE_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
@@ -557,6 +355,19 @@ export default function Funcionarios() {
                     value={form.hire_date}
                     onChange={(e) =>
                       setForm({ ...form, hire_date: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
+                    Data de Desligamento
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full rounded-lg border px-3 py-2 text-sm"
+                    value={form.termination_date}
+                    onChange={(e) =>
+                      setForm({ ...form, termination_date: e.target.value })
                     }
                   />
                 </div>
@@ -592,20 +403,6 @@ export default function Funcionarios() {
                     placeholder="0,00"
                   />
                 </div>
-                <div className="sm:col-span-2">
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Observações
-                  </label>
-                  <textarea
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    rows={3}
-                    value={form.notes}
-                    onChange={(e) =>
-                      setForm({ ...form, notes: e.target.value })
-                    }
-                    placeholder="Notas internas"
-                  />
-                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button type="submit" variant="primary" size="sm">
@@ -619,23 +416,11 @@ export default function Funcionarios() {
                     onClick={() => {
                       setSelected(null);
                       setForm({
-                        person_id: '',
-                        company_id: '',
-                        registration: '',
-                        job_title: '',
-                        department: '',
-                        cost_center: '',
+                        employee_code: '',
                         hire_date: '',
                         termination_date: '',
-                        probation_end_date: '',
-                        employment_type: 'clt',
-                        work_mode: 'onsite',
                         salary: '',
-                        salary_currency: 'BRL',
-                        salary_frequency: 'monthly',
                         status: 'active',
-                        manager_id: '',
-                        notes: '',
                       });
                     }}
                   >

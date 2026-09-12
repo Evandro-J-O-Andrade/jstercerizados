@@ -15,11 +15,6 @@ import type {
   RecruitmentProcess,
   RecruitmentStage,
   Employee,
-  EmployeeExperience,
-  EmployeeEducation,
-  EmployeeCourse,
-  EmployeeLanguage,
-  EmployeeSkill,
   EmployeeDocument,
 } from '@/types/domain';
 
@@ -181,45 +176,8 @@ export function mapEmployee(
   return {
     ...row,
     person: extras?.person,
-    company: extras?.company ?? null,
-    manager: extras?.manager ?? null,
     documents: extras?.documents ?? [],
-    education: extras?.education ?? [],
-    experiences: extras?.experiences ?? [],
-    skills: extras?.skills ?? [],
-    languages: extras?.languages ?? [],
-    courses: extras?.courses ?? [],
   };
-}
-
-export function mapEmployeeExperience(
-  row: Database['public']['Tables']['employee_experiences']['Row'],
-): EmployeeExperience {
-  return { ...row };
-}
-
-export function mapEmployeeEducation(
-  row: Database['public']['Tables']['employee_education']['Row'],
-): EmployeeEducation {
-  return { ...row };
-}
-
-export function mapEmployeeCourse(
-  row: Database['public']['Tables']['employee_courses']['Row'],
-): EmployeeCourse {
-  return { ...row };
-}
-
-export function mapEmployeeLanguage(
-  row: Database['public']['Tables']['employee_languages']['Row'],
-): EmployeeLanguage {
-  return { ...row };
-}
-
-export function mapEmployeeSkill(
-  row: Database['public']['Tables']['employee_skills']['Row'],
-): EmployeeSkill {
-  return { ...row };
 }
 
 export function mapEmployeeDocument(

@@ -33,8 +33,8 @@ export default function RelatorioRhPage() {
     if (search) {
       const term = search.toLowerCase();
       data = data.filter((item) =>
-        item.job_title?.toLowerCase().includes(term) ||
-        item.department?.toLowerCase().includes(term)
+        item.employee_code?.toLowerCase().includes(term) ||
+        item.person?.full_name?.toLowerCase().includes(term)
       );
     }
     if (statusFilter !== 'all') {
@@ -100,7 +100,7 @@ export default function RelatorioRhPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por cargo ou departamento..."
+            placeholder="Buscar por matrícula ou nome..."
             className="w-full bg-transparent text-sm outline-none"
           />
         </div>
@@ -122,16 +122,16 @@ export default function RelatorioRhPage() {
           <table className="min-w-full text-left text-sm">
             <thead className="bg-muted">
               <tr>
-                <th className="px-4 py-3 font-medium text-muted-foreground">Cargo</th>
-                <th className="px-4 py-3 font-medium text-muted-foreground">Departamento</th>
+                <th className="px-4 py-3 font-medium text-muted-foreground">Matrícula</th>
+                <th className="px-4 py-3 font-medium text-muted-foreground">Nome</th>
                 <th className="px-4 py-3 font-medium text-muted-foreground">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filtered.map((item) => (
                 <tr key={item.id} className="hover:bg-muted">
-                  <td className="px-4 py-3 text-foreground">{item.job_title || '—'}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{item.department || '—'}</td>
+                  <td className="px-4 py-3 text-foreground">{item.employee_code || '—'}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{item.person?.full_name || '—'}</td>
                   <td className="px-4 py-3">
                     <Badge variant={item.status === 'active' ? 'default' : 'secondary'}>
                       {item.status === 'active' ? 'Ativo' : 'Inativo'}

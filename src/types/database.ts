@@ -1305,22 +1305,11 @@ export interface Database {
           id: string;
           tenant_id: string;
           person_id: string;
-          company_id: string | null;
-          registration: string | null;
-          job_title: string | null;
-          department: string | null;
-          cost_center: string | null;
-          hire_date: string | null;
+          employee_code: string;
+          hire_date: string;
           termination_date: string | null;
-          probation_end_date: string | null;
-          employment_type: string | null;
-          work_mode: string | null;
           salary: number | null;
-          salary_currency: string | null;
-          salary_frequency: string | null;
-          status: string | null;
-          manager_id: string | null;
-          notes: string | null;
+          status: string;
           created_at: string;
           updated_at: string;
         };
@@ -1328,22 +1317,11 @@ export interface Database {
           id?: string;
           tenant_id: string;
           person_id: string;
-          company_id?: string | null;
-          registration?: string | null;
-          job_title?: string | null;
-          department?: string | null;
-          cost_center?: string | null;
-          hire_date?: string | null;
+          employee_code: string;
+          hire_date: string;
           termination_date?: string | null;
-          probation_end_date?: string | null;
-          employment_type?: string | null;
-          work_mode?: string | null;
           salary?: number | null;
-          salary_currency?: string | null;
-          salary_frequency?: string | null;
-          status?: string | null;
-          manager_id?: string | null;
-          notes?: string | null;
+          status?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -1351,22 +1329,11 @@ export interface Database {
           id?: string;
           tenant_id?: string;
           person_id?: string;
-          company_id?: string | null;
-          registration?: string | null;
-          job_title?: string | null;
-          department?: string | null;
-          cost_center?: string | null;
-          hire_date?: string | null;
+          employee_code?: string;
+          hire_date?: string;
           termination_date?: string | null;
-          probation_end_date?: string | null;
-          employment_type?: string | null;
-          work_mode?: string | null;
           salary?: number | null;
-          salary_currency?: string | null;
-          salary_frequency?: string | null;
-          status?: string | null;
-          manager_id?: string | null;
-          notes?: string | null;
+          status?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -1412,17 +1379,77 @@ export interface Database {
           updated_at?: string;
         };
       };
-      employee_education: {
+      employee_positions: {
         Row: {
           id: string;
           employee_id: string;
-          institution: string;
-          course: string;
-          degree_level: string | null;
-          field_of_study: string | null;
-          start_date: string | null;
+          position_id: string;
+          start_date: string;
           end_date: string | null;
-          is_completed: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          employee_id: string;
+          position_id: string;
+          start_date: string;
+          end_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          employee_id?: string;
+          position_id?: string;
+          start_date?: string;
+          end_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      employee_contracts: {
+        Row: {
+          id: string;
+          employee_id: string;
+          contract_type: string;
+          start_date: string;
+          end_date: string | null;
+          salary: number | null;
+          file_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          employee_id: string;
+          contract_type: string;
+          start_date: string;
+          end_date?: string | null;
+          salary?: number | null;
+          file_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          employee_id?: string;
+          contract_type?: string;
+          start_date?: string;
+          end_date?: string | null;
+          salary?: number | null;
+          file_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      employee_status_history: {
+        Row: {
+          id: string;
+          employee_id: string;
+          status: string;
+          start_date: string;
+          end_date: string | null;
           notes: string | null;
           created_at: string;
           updated_at: string;
@@ -1430,13 +1457,9 @@ export interface Database {
         Insert: {
           id?: string;
           employee_id: string;
-          institution: string;
-          course: string;
-          degree_level?: string | null;
-          field_of_study?: string | null;
-          start_date?: string | null;
+          status: string;
+          start_date: string;
           end_date?: string | null;
-          is_completed?: boolean;
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -1444,157 +1467,68 @@ export interface Database {
         Update: {
           id?: string;
           employee_id?: string;
-          institution?: string;
-          course?: string;
-          degree_level?: string | null;
-          field_of_study?: string | null;
-          start_date?: string | null;
-          end_date?: string | null;
-          is_completed?: boolean;
-          notes?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      employee_experiences: {
-        Row: {
-          id: string;
-          employee_id: string;
-          company_name: string;
-          job_title: string;
-          start_date: string;
-          end_date: string | null;
-          is_current: boolean;
-          description: string | null;
-          achievements: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          employee_id: string;
-          company_name: string;
-          job_title: string;
-          start_date: string;
-          end_date?: string | null;
-          is_current?: boolean;
-          description?: string | null;
-          achievements?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          employee_id?: string;
-          company_name?: string;
-          job_title?: string;
+          status?: string;
           start_date?: string;
           end_date?: string | null;
-          is_current?: boolean;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      departments: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          name: string;
+          description: string | null;
+          parent_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          name: string;
           description?: string | null;
-          achievements?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      employee_skills: {
-        Row: {
-          id: string;
-          employee_id: string;
-          skill_name: string;
-          proficiency_level: string | null;
-          years_experience: number | null;
-          is_certified: boolean;
-          certification_name: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          employee_id: string;
-          skill_name: string;
-          proficiency_level?: string | null;
-          years_experience?: number | null;
-          is_certified?: boolean;
-          certification_name?: string | null;
+          parent_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          employee_id?: string;
-          skill_name?: string;
-          proficiency_level?: string | null;
-          years_experience?: number | null;
-          is_certified?: boolean;
-          certification_name?: string | null;
+          tenant_id?: string;
+          name?: string;
+          description?: string | null;
+          parent_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
       };
-      employee_languages: {
+      positions: {
         Row: {
           id: string;
-          employee_id: string;
-          language: string;
-          proficiency: string | null;
-          is_primary: boolean;
+          tenant_id: string;
+          title: string;
+          description: string | null;
+          department_id: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          employee_id: string;
-          language: string;
-          proficiency?: string | null;
-          is_primary?: boolean;
+          tenant_id: string;
+          title: string;
+          description?: string | null;
+          department_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          employee_id?: string;
-          language?: string;
-          proficiency?: string | null;
-          is_primary?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      employee_courses: {
-        Row: {
-          id: string;
-          employee_id: string;
-          course_name: string;
-          institution: string | null;
-          completion_date: string | null;
-          expiry_date: string | null;
-          certificate_url: string | null;
-          hours: number | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          employee_id: string;
-          course_name: string;
-          institution?: string | null;
-          completion_date?: string | null;
-          expiry_date?: string | null;
-          certificate_url?: string | null;
-          hours?: number | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          employee_id?: string;
-          course_name?: string;
-          institution?: string | null;
-          completion_date?: string | null;
-          expiry_date?: string | null;
-          certificate_url?: string | null;
-          hours?: number | null;
+          tenant_id?: string;
+          title?: string;
+          description?: string | null;
+          department_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };

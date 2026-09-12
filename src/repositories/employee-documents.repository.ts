@@ -75,7 +75,6 @@ export class EmployeeDocumentsRepository extends SupabaseRepository {
     input: EmployeeDocumentUpdateInput,
   ): Promise<EmployeeDocument | null> {
     if (!this.supabase) return null;
-
     const payload: Record<string, unknown> = {};
     if (input.document_type !== undefined)
       payload.document_type = input.document_type;

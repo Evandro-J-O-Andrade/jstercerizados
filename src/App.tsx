@@ -97,21 +97,21 @@ const PrimeiroAcessoTermos = lazy(
   () => import('@/pages/primeiro-acesso/Termos'),
 );
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
-const CandidateDashboard = lazy(() => import('@/pages/candidato/Dashboard'));
-const CandidateVagas = lazy(() => import('@/pages/candidato/Vagas'));
+const CandidateDashboard = lazy(() => import('@/features/candidato/pages/Dashboard'));
+const CandidateVagas = lazy(() => import('@/features/candidato/pages/Vagas'));
 const CandidateCandidaturas = lazy(
-  () => import('@/pages/candidato/Candidaturas'),
+  () => import('@/features/candidato/pages/Candidaturas'),
 );
-const CandidateFavoritas = lazy(() => import('@/pages/candidato/Favoritas'));
-const CandidateCurriculo = lazy(() => import('@/pages/candidato/Curriculo'));
-const CandidatePerfil = lazy(() => import('@/pages/candidato/Perfil'));
+const CandidateFavoritas = lazy(() => import('@/features/candidato/pages/Favoritas'));
+const CandidateCurriculo = lazy(() => import('@/features/candidato/pages/Curriculo'));
+const CandidatePerfil = lazy(() => import('@/features/candidato/pages/Perfil'));
 const CandidateNotificacoes = lazy(
-  () => import('@/pages/candidato/Notificacoes'),
+  () => import('@/features/candidato/pages/Notificacoes'),
 );
 const CandidateConfiguracoes = lazy(
-  () => import('@/pages/candidato/Configuracoes'),
+  () => import('@/features/candidato/pages/Configuracoes'),
 );
-const CandidateAlertas = lazy(() => import('@/pages/candidato/Alertas'));
+const CandidateAlertas = lazy(() => import('@/features/candidato/pages/Alertas'));
 import { CandidateShell } from '@/components/portal/CandidateShell';
 import { CandidateProvider } from '@/contexts/CandidateContext';
 import { CandidateRoute } from '@/components/auth/CandidateRoute';
@@ -137,11 +137,6 @@ import ProcessosSeletivosPage from '@/pages/dashboard/ProcessosSeletivos';
 import EtapasPage from '@/pages/dashboard/Etapas';
 import FuncionariosPage from '@/pages/dashboard/Funcionarios';
 import FuncionarioDetalhe from '@/pages/dashboard/FuncionarioDetalhe';
-import ExperienciasPage from '@/pages/dashboard/Experiencias';
-import FormacaoPage from '@/pages/dashboard/Formacao';
-import CursosPage from '@/pages/dashboard/Cursos';
-import IdiomasPage from '@/pages/dashboard/Idiomas';
-import HabilidadesPage from '@/pages/dashboard/Habilidades';
 import DocumentosRhPage from '@/pages/dashboard/DocumentosRh';
 import BancoDeTalentosPage from '@/pages/dashboard/BancoDeTalentos';
 import DashboardRhPage from '@/pages/dashboard/DashboardRh';
@@ -214,11 +209,6 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   ProcessosSeletivosPage,
   EtapasPage,
   FuncionariosPage,
-  ExperienciasPage,
-  FormacaoPage,
-  CursosPage,
-  IdiomasPage,
-  HabilidadesPage,
   DocumentosRhPage,
   BancoDeTalentosPage,
   DashboardRhPage,
@@ -440,46 +430,6 @@ function App() {
               element={
                 <PermissionGuard permission="employees.read">
                   <FuncionarioDetalhe />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="experiencias"
-              element={
-                <PermissionGuard permission="employees.read">
-                  <ExperienciasPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="formacao"
-              element={
-                <PermissionGuard permission="employees.read">
-                  <FormacaoPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="cursos"
-              element={
-                <PermissionGuard permission="employees.read">
-                  <CursosPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="idiomas"
-              element={
-                <PermissionGuard permission="employees.read">
-                  <IdiomasPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="habilidades"
-              element={
-                <PermissionGuard permission="employees.read">
-                  <HabilidadesPage />
                 </PermissionGuard>
               }
             />

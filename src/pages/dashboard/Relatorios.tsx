@@ -1,21 +1,29 @@
-'use client';
-
 import { useEffect, useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import {
   Users,
   Briefcase,
   Building2,
   Wallet,
-  FileText,
-  Calculator,
   Package,
   Headphones,
-  CircleDollarSign,
-  Wrench,
   UserCog,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import type { LucideIcon } from 'lucide-react';
+import {
+  DashboardCard,
+  DashboardErrorState,
+  DashboardMetricGrid,
+  DashboardSection,
+  DashboardSkeleton,
+} from '@/components/dashboard';
+import {
+  filterDashboardMetrics,
+  type DashboardMetric,
+} from '@/components/dashboard/dashboard-model';
 import { EmptyState } from '@/components/fallback';
 import { employeesRepository } from '@/repositories/employees.repository';
 import { jobsRepository } from '@/repositories/jobs.repository';
@@ -32,20 +40,24 @@ import type { Company } from '@/types/domain/company';
 import type { AccountPayable } from '@/types/domain/finance';
 import type { AccountReceivable } from '@/types/domain/finance';
 import type { CashFlow } from '@/types/domain/finance';
+import { useAccount } from '@/contexts/AccountContext';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface ModuleSummary {
   id: string;
   title: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: LucideIcon;
   total: number;
-  color: string;
-  bg: string;
   route: string;
+  permission: string;
+  format?: 'number' | 'currency';
+  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
 }
 
 export default function RelatoriosPage() {
   const { currentTenantId } = useAuth();
+  const { activePermissions } = useAccount();
+  const { isAdminMaster } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -62,20 +74,23 @@ export default function RelatoriosPage() {
     { id: string; status: string; priority: string }[]
   >([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!currentTenantId) return;
+    const tenantId = currentTenantId;
     setLoading(true);
+    setError(null);
     Promise.all([
-      employeesRepository.findAll(currentTenantId),
-      jobsRepository.findAll(currentTenantId),
-      companiesRepository.findAll(currentTenantId),
-      accountsPayableRepository.findAll(currentTenantId),
-      accountsReceivableRepository.findAll(currentTenantId),
-      cashFlowRepository.findAll(currentTenantId),
-      stockRepository.findProducts(currentTenantId),
-      servicesRepository.findServices(currentTenantId),
-      supportRepository.findTickets(currentTenantId),
+      employeesRepository.findAll(tenantId),
+      jobsRepository.findAll(tenantId),
+      companiesRepository.findAll(tenantId),
+      accountsPayableRepository.findAll(tenantId),
+      accountsReceivableRepository.findAll(tenantId),
+      cashFlowRepository.findAll(tenantId),
+      stockRepository.findProducts(tenantId),
+      servicesRepository.findServices(tenantId),
+      supportRepository.findTickets(tenantId),
     ])
       .then(([emp, jobsData, comp, pay, rec, cf, stock, svc, supp]) => {
         setEmployees(emp);
@@ -88,174 +103,252 @@ export default function RelatoriosPage() {
         setServices(svc);
         setTickets(supp);
       })
-      .catch(() => {})
+      .catch((err) =>
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Erro ao carregar relatório geral',
+        ),
+      )
       .finally(() => setLoading(false));
   }, [currentTenantId]);
 
-  const formatCurrency = (value: number) =>
-    value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-  const summaries = useMemo<ModuleSummary[]>(() => {
-    const totalPayables = payables.reduce((sum, item) => sum + item.amount, 0);
-    const totalReceivables = receivables.reduce(
-      (sum, item) => sum + item.amount,
-      0,
-    );
-
-    return [
+  const summaries = useMemo<ModuleSummary[]>(
+    () => [
       {
         id: 'rh',
         title: 'RH',
         icon: Users,
         total: employees.length,
-        color: 'text-blue-700',
-        bg: 'bg-blue-50',
         route: '/dashboard/rh',
+        permission: 'people.read',
+        tone: 'primary',
       },
       {
         id: 'recrutamento',
         title: 'Recrutamento',
         icon: Briefcase,
         total: jobs.length,
-        color: 'text-purple-700',
-        bg: 'bg-purple-50',
         route: '/dashboard/recrutamento',
+        permission: 'jobs.read',
+        tone: 'warning',
       },
       {
         id: 'crm',
         title: 'CRM',
         icon: Building2,
         total: companies.length,
-        color: 'text-emerald-700',
-        bg: 'bg-emerald-50',
-        route: '/dashboard/crm',
+        route: '/dashboard/empresas',
+        permission: 'companies.read',
+        tone: 'success',
       },
       {
         id: 'financeiro',
         title: 'Financeiro',
         icon: Wallet,
-        total: totalPayables + totalReceivables,
-        color: 'text-green-700',
-        bg: 'bg-green-50',
+        total:
+          payables.reduce((sum, item) => sum + item.amount, 0) +
+          receivables.reduce((sum, item) => sum + item.amount, 0),
         route: '/dashboard/financeiro',
-      },
-      {
-        id: 'faturamento',
-        title: 'Faturamento',
-        icon: FileText,
-        total: 0,
-        color: 'text-orange-700',
-        bg: 'bg-orange-50',
-        route: '/dashboard/faturamento',
-      },
-      {
-        id: 'fiscal',
-        title: 'Fiscal',
-        icon: Calculator,
-        total: 0,
-        color: 'text-red-700',
-        bg: 'bg-red-50',
-        route: '/dashboard/fiscal',
-      },
-      {
-        id: 'contabilidade',
-        title: 'Contabilidade',
-        icon: CircleDollarSign,
-        total: 0,
-        color: 'text-indigo-700',
-        bg: 'bg-indigo-50',
-        route: '/dashboard/contabilidade',
+        permission: 'finance.read',
+        format: 'currency',
+        tone: 'success',
       },
       {
         id: 'estoque',
         title: 'Estoque',
         icon: Package,
         total: products.length,
-        color: 'text-amber-700',
-        bg: 'bg-amber-50',
         route: '/dashboard/estoque',
-      },
-      {
-        id: 'almoxarifado',
-        title: 'Almoxarifado',
-        icon: Wrench,
-        total: 0,
-        color: 'text-teal-700',
-        bg: 'bg-teal-50',
-        route: '/dashboard/almoxarifado',
+        permission: 'stock_movements.read',
+        tone: 'warning',
       },
       {
         id: 'servicos',
         title: 'Serviços',
         icon: UserCog,
         total: services.length,
-        color: 'text-cyan-700',
-        bg: 'bg-cyan-50',
         route: '/dashboard/servicos',
+        permission: 'service_orders.read',
+        tone: 'primary',
       },
       {
         id: 'suporte',
         title: 'Suporte',
         icon: Headphones,
         total: tickets.length,
-        color: 'text-pink-700',
-        bg: 'bg-pink-50',
         route: '/dashboard/suporte',
+        permission: 'support_tickets.read',
+        tone: 'danger',
       },
-    ];
-  }, [
-    employees,
-    jobs,
-    companies,
-    payables,
-    receivables,
-    products,
-    services,
-    tickets,
-  ]);
+    ],
+    [
+      companies.length,
+      employees.length,
+      jobs.length,
+      payables,
+      products.length,
+      receivables,
+      services.length,
+      tickets.length,
+    ],
+  );
+  const visibleSummaries = filterDashboardMetrics(
+    summaries.map((summary) => ({
+      id: summary.id,
+      label: summary.title,
+      value: summary.total,
+      icon: summary.icon,
+      href: summary.route,
+      permission: summary.permission,
+      format: summary.format,
+      tone: summary.tone,
+      description: `Abrir módulo de ${summary.title.toLowerCase()}`,
+    })),
+    activePermissions,
+    isAdminMaster,
+  );
 
-  const financeKpis = useMemo(() => {
-    const totalPayables = payables.reduce((sum, item) => sum + item.amount, 0);
-    const totalReceivables = receivables.reduce(
-      (sum, item) => sum + item.amount,
-      0,
-    );
-    const totalIncome = cashFlows
-      .filter((item) => item.type === 'income')
-      .reduce((sum, item) => sum + item.amount, 0);
-    const totalExpense = cashFlows
-      .filter((item) => item.type === 'expense')
-      .reduce((sum, item) => sum + item.amount, 0);
-    const balance = totalIncome - totalExpense;
-    return {
-      totalPayables,
-      totalReceivables,
-      totalIncome,
-      totalExpense,
-      balance,
-    };
-  }, [payables, receivables, cashFlows]);
+  const financeKpis = useMemo(
+    () => ({
+      totalPayables: payables.reduce((sum, item) => sum + item.amount, 0),
+      totalReceivables: receivables.reduce((sum, item) => sum + item.amount, 0),
+      totalIncome: cashFlows
+        .filter((item) => item.type === 'income')
+        .reduce((sum, item) => sum + item.amount, 0),
+      totalExpense: cashFlows
+        .filter((item) => item.type === 'expense')
+        .reduce((sum, item) => sum + item.amount, 0),
+    }),
+    [payables, receivables, cashFlows],
+  );
+  const financeBalance = financeKpis.totalIncome - financeKpis.totalExpense;
+  const financeMetrics: DashboardMetric[] = [
+    {
+      id: 'reports-payables',
+      label: 'Contas a pagar',
+      value: financeKpis.totalPayables,
+      icon: ArrowUpCircle,
+      permission: 'finance.read',
+      format: 'currency',
+      tone: 'danger',
+    },
+    {
+      id: 'reports-receivables',
+      label: 'Contas a receber',
+      value: financeKpis.totalReceivables,
+      icon: ArrowDownCircle,
+      permission: 'finance.read',
+      format: 'currency',
+      tone: 'success',
+    },
+    {
+      id: 'reports-income',
+      label: 'Entradas',
+      value: financeKpis.totalIncome,
+      icon: TrendingUp,
+      permission: 'finance.read',
+      format: 'currency',
+      tone: 'success',
+    },
+    {
+      id: 'reports-expense',
+      label: 'Saídas',
+      value: financeKpis.totalExpense,
+      icon: TrendingDown,
+      permission: 'finance.read',
+      format: 'currency',
+      tone: 'danger',
+    },
+    {
+      id: 'reports-balance',
+      label: 'Saldo',
+      value: financeBalance,
+      icon: Wallet,
+      permission: 'finance.read',
+      format: 'currency',
+      tone: 'neutral',
+    },
+  ];
+  const visibleFinanceMetrics = filterDashboardMetrics(
+    financeMetrics,
+    activePermissions,
+    isAdminMaster,
+  );
 
-  const operationalKpis = useMemo(() => {
-    const activeEmployees = employees.filter(
-      (item) => item.status === 'active',
-    ).length;
-    const publishedJobs = jobs.filter(
-      (item) => item.status === 'published',
-    ).length;
-    const activeServices = services.filter((item) => item.active).length;
-    const openTickets = tickets.filter(
-      (item) => item.status === 'open' || item.status === 'in_progress',
-    ).length;
-    return { activeEmployees, publishedJobs, activeServices, openTickets };
-  }, [employees, jobs, services, tickets]);
+  const operationalMetrics: DashboardMetric[] = [
+    {
+      id: 'reports-active-employees',
+      label: 'Funcionários ativos',
+      value: employees.filter((item) => item.status === 'active').length,
+      icon: Users,
+      permission: 'people.read',
+      tone: 'primary',
+    },
+    {
+      id: 'reports-published-jobs',
+      label: 'Vagas publicadas',
+      value: jobs.filter((item) => item.status === 'published').length,
+      icon: Briefcase,
+      permission: 'jobs.read',
+      tone: 'warning',
+    },
+    {
+      id: 'reports-active-services',
+      label: 'Serviços ativos',
+      value: services.filter((item) => item.active).length,
+      icon: UserCog,
+      permission: 'service_orders.read',
+      tone: 'success',
+    },
+    {
+      id: 'reports-open-tickets',
+      label: 'Chamados abertos',
+      value: tickets.filter(
+        (item) => item.status === 'open' || item.status === 'in_progress',
+      ).length,
+      icon: Headphones,
+      permission: 'support_tickets.read',
+      tone: 'danger',
+    },
+  ];
+  const visibleOperationalMetrics = filterDashboardMetrics(
+    operationalMetrics,
+    activePermissions,
+    isAdminMaster,
+  );
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground text-sm">
-          Carregando relatório geral...
-        </p>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-foreground text-xl font-semibold">
+            Relatório Geral
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Visão consolidada de todos os módulos da operação.
+          </p>
+        </div>
+        <DashboardSkeleton count={7} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-foreground text-xl font-semibold">
+            Relatório Geral
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Visão consolidada de todos os módulos da operação.
+          </p>
+        </div>
+        <DashboardErrorState
+          message={error}
+          onRetry={() => window.location.reload()}
+        />
       </div>
     );
   }
@@ -271,122 +364,57 @@ export default function RelatoriosPage() {
         </p>
       </div>
 
-      <motion.div
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        {summaries.map((module) => {
-          const Icon = module.icon;
-          return (
-            <Card key={module.id} className="p-4">
-              <div className="flex items-center gap-3">
-                <div className={`rounded-lg ${module.bg} p-2 ${module.color}`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-muted-foreground text-xs">
-                    {module.title}
-                  </p>
-                  <p className="text-foreground text-lg font-semibold">
-                    {module.id === 'financeiro'
-                      ? formatCurrency(module.total)
-                      : module.total}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          );
-        })}
-      </motion.div>
+      {visibleSummaries.length > 0 ? (
+        <DashboardMetricGrid>
+          {visibleSummaries.map((metric) => (
+            <DashboardCard key={metric.id} metric={metric} />
+          ))}
+        </DashboardMetricGrid>
+      ) : (
+        <EmptyState
+          title="Nenhum módulo disponível"
+          description="Seu perfil não possui módulos liberados para visualização."
+        />
+      )}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="p-4">
-          <h3 className="text-foreground mb-4 text-sm font-semibold">
-            Financeiro
-          </h3>
-          {financeKpis.totalPayables === 0 &&
-          financeKpis.totalReceivables === 0 &&
-          financeKpis.totalIncome === 0 &&
-          financeKpis.totalExpense === 0 ? (
+      <div className="grid gap-6 lg:grid-cols-2">
+        <DashboardSection
+          title="Financeiro"
+          description="Resumo dos lançamentos e fluxo de caixa."
+          icon={Wallet}
+        >
+          {visibleFinanceMetrics.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {visibleFinanceMetrics.map((metric) => (
+                <DashboardCard key={metric.id} metric={metric} />
+              ))}
+            </div>
+          ) : (
             <EmptyState
               title="Sem dados financeiros"
               description="Quando houver lançamentos, os indicadores aparecerão aqui."
             />
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="border-border rounded-lg border p-3">
-                <p className="text-muted-foreground text-xs">Contas a pagar</p>
-                <p className="text-sm font-semibold text-red-700">
-                  {formatCurrency(financeKpis.totalPayables)}
-                </p>
-              </div>
-              <div className="border-border rounded-lg border p-3">
-                <p className="text-muted-foreground text-xs">
-                  Contas a receber
-                </p>
-                <p className="text-sm font-semibold text-green-700">
-                  {formatCurrency(financeKpis.totalReceivables)}
-                </p>
-              </div>
-              <div className="border-border rounded-lg border p-3">
-                <p className="text-muted-foreground text-xs">Entradas</p>
-                <p className="text-sm font-semibold text-green-700">
-                  {formatCurrency(financeKpis.totalIncome)}
-                </p>
-              </div>
-              <div className="border-border rounded-lg border p-3">
-                <p className="text-muted-foreground text-xs">Saídas</p>
-                <p className="text-sm font-semibold text-red-700">
-                  {formatCurrency(financeKpis.totalExpense)}
-                </p>
-              </div>
-              <div className="border-border rounded-lg border p-3 sm:col-span-2">
-                <p className="text-muted-foreground text-xs">Saldo</p>
-                <p
-                  className={`text-sm font-semibold ${financeKpis.balance >= 0 ? 'text-green-700' : 'text-red-700'}`}
-                >
-                  {formatCurrency(financeKpis.balance)}
-                </p>
-              </div>
-            </div>
           )}
-        </Card>
+        </DashboardSection>
 
-        <Card className="p-4">
-          <h3 className="text-foreground mb-4 text-sm font-semibold">
-            Operacional
-          </h3>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="border-border rounded-lg border p-3">
-              <p className="text-muted-foreground text-xs">
-                Funcionários ativos
-              </p>
-              <p className="text-foreground text-sm font-semibold">
-                {operationalKpis.activeEmployees}
-              </p>
+        <DashboardSection
+          title="Operacional"
+          description="Indicadores de pessoas, recrutamento, serviços e suporte."
+          icon={Briefcase}
+        >
+          {visibleOperationalMetrics.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {visibleOperationalMetrics.map((metric) => (
+                <DashboardCard key={metric.id} metric={metric} />
+              ))}
             </div>
-            <div className="border-border rounded-lg border p-3">
-              <p className="text-muted-foreground text-xs">Vagas publicadas</p>
-              <p className="text-foreground text-sm font-semibold">
-                {operationalKpis.publishedJobs}
-              </p>
-            </div>
-            <div className="border-border rounded-lg border p-3">
-              <p className="text-muted-foreground text-xs">Serviços ativos</p>
-              <p className="text-foreground text-sm font-semibold">
-                {operationalKpis.activeServices}
-              </p>
-            </div>
-            <div className="border-border rounded-lg border p-3">
-              <p className="text-muted-foreground text-xs">Chamados abertos</p>
-              <p className="text-foreground text-sm font-semibold">
-                {operationalKpis.openTickets}
-              </p>
-            </div>
-          </div>
-        </Card>
+          ) : (
+            <EmptyState
+              title="Sem dados operacionais"
+              description="Quando houver dados na operação, os indicadores aparecerão aqui."
+            />
+          )}
+        </DashboardSection>
       </div>
     </div>
   );

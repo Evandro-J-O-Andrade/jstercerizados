@@ -18,7 +18,7 @@ export default function DocumentosRh() {
   const [employees, setEmployees] = useState<
     Array<{
       id: string;
-      job_title?: string | null;
+      employee_code?: string | null;
       person?: { full_name?: string } | null;
     }>
   >([]);
@@ -27,7 +27,16 @@ export default function DocumentosRh() {
   const [search, setSearch] = useState('');
   const [employeeFilter, setEmployeeFilter] = useState<string>('all');
   const [selected, setSelected] = useState<EmployeeDocument | null>(null);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    employee_id: string;
+    document_type: string;
+    document_name: string;
+    document_url: string;
+    issue_date: string;
+    expiry_date: string;
+    is_verified: boolean;
+    notes: string;
+  }>({
     employee_id: '',
     document_type: '',
     document_name: '',
@@ -57,7 +66,7 @@ export default function DocumentosRh() {
           setEmployees(
             employeesData.map((emp) => ({
               id: emp.id,
-              job_title: emp.job_title,
+              employee_code: emp.employee_code,
               person: emp.person,
             })),
           );
@@ -80,7 +89,7 @@ export default function DocumentosRh() {
     return () => {
       cancelled = true;
     };
-  }, [currentTenantId]);
+  }, [currentTenantId, employeeFilter]);
 
   const openCreate = () => {
     setSelected(null);
@@ -182,7 +191,6 @@ export default function DocumentosRh() {
   const filtered = documents.filter((doc) => {
     const matchesSearch =
       !search ||
-      doc.document_name.toLowerCase().includes(search.toLowerCase()) ||
       doc.document_type.toLowerCase().includes(search.toLowerCase());
     const matchesEmployee =
       employeeFilter === 'all' || doc.employee_id === employeeFilter;
@@ -192,7 +200,7 @@ export default function DocumentosRh() {
   const employeeLabel = (employeeId: string) => {
     const emp = employees.find((e) => e.id === employeeId);
     const name = emp?.person?.full_name;
-    return name || emp?.job_title || '—';
+    return name || emp?.employee_code || '—';
   };
 
   return (
@@ -264,7 +272,7 @@ export default function DocumentosRh() {
                     Tipo
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Nome
+                    Arquivo
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
                     Validade
@@ -293,7 +301,7 @@ export default function DocumentosRh() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 hover:underline"
                       >
-                        {doc.document_name}
+                        {doc.document_url}
                         <ExternalLink className="h-3 w-3" />
                       </a>
                     </td>
@@ -369,22 +377,7 @@ export default function DocumentosRh() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Nome
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.document_name}
-                    onChange={(e) =>
-                      setForm({ ...form, document_name: e.target.value })
-                    }
-                    placeholder="Ex: RG 123456789"
-                  />
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    URL
+                    URL do Arquivo
                   </label>
                   <input
                     type="url"
@@ -423,33 +416,6 @@ export default function DocumentosRh() {
                     }
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="is_verified"
-                    checked={form.is_verified}
-                    onChange={(e) =>
-                      setForm({ ...form, is_verified: e.target.checked })
-                    }
-                  />
-                  <label htmlFor="is_verified" className="text-sm">
-                    Verificado
-                  </label>
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Observações
-                  </label>
-                  <textarea
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    rows={3}
-                    value={form.notes}
-                    onChange={(e) =>
-                      setForm({ ...form, notes: e.target.value })
-                    }
-                    placeholder="Notas adicionais"
-                  />
-                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button type="submit" variant="primary" size="sm">
@@ -485,4 +451,3 @@ export default function DocumentosRh() {
     </ModuleWorkspace>
   );
 }
-

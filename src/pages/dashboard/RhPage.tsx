@@ -176,10 +176,7 @@ export default function RhPage() {
                           Nome
                         </th>
                         <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                          Cargo
-                        </th>
-                        <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                          Departamento
+                          Matrícula
                         </th>
                         <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
                           Status
@@ -196,10 +193,7 @@ export default function RhPage() {
                             {employee.person?.full_name ?? 'Sem nome'}
                           </td>
                           <td className="text-muted-foreground px-4 py-3 text-sm">
-                            {employee.job_title ?? '—'}
-                          </td>
-                          <td className="text-muted-foreground px-4 py-3 text-sm">
-                            {employee.department ?? '—'}
+                            {employee.employee_code ?? '—'}
                           </td>
                           <td className="text-muted-foreground px-4 py-3 text-sm">
                             <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
