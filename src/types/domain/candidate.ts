@@ -260,37 +260,20 @@ export interface CandidatePreferenceUpdateInput {
 
 export interface JobMatch {
   id: string;
-  candidate_id: string;
-  job_id: string;
   tenant_id: string;
-  score: number;
-  reasons: Record<string, unknown>;
-  algorithm_version: string | null;
-  is_eligible: boolean;
-  sent_notification: boolean;
-  invalidated_at: string | null;
-  invalidated_reason: string | null;
+  candidate_id: string;
+  demand_id: string;
+  score: number | null;
+  status: string;
   created_at: string;
   updated_at: string;
+  job_id: string | null;
+  match_details: Record<string, unknown>;
+  notified_at: string | null;
+  applied_at: string | null;
 }
 
-export interface JobMatchCreateInput {
+export interface JobMatchGenerateResult {
   candidate_id: string;
-  job_id: string;
-  tenant_id: string;
   score: number;
-  reasons?: Record<string, unknown>;
-  algorithm_version?: string | null;
-  is_eligible?: boolean;
-  sent_notification?: boolean;
-}
-
-export interface JobMatchUpdateInput {
-  score?: number;
-  reasons?: Record<string, unknown>;
-  algorithm_version?: string | null;
-  is_eligible?: boolean;
-  sent_notification?: boolean;
-  invalidated_at?: string | null;
-  invalidated_reason?: string | null;
 }

@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { getSupabaseClient } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import type { GlobalDashboardStats } from '@/pages/dashboard/global-dashboard-model';
-import type { DomainEvent } from '@/types/domain/security';
+import type { DomainEventSummary } from '@/types/domain/security';
 
 export interface GlobalDashboardData extends GlobalDashboardStats {
-  recentEvents: DomainEvent[];
+  recentEvents: DomainEventSummary[];
   loading: boolean;
   error: string | null;
 }
@@ -113,7 +113,7 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
             applications,
             serviceOrders,
             supportTickets,
-            recentEvents: (events ?? []) as DomainEvent[],
+            recentEvents: (events ?? []) as DomainEventSummary[],
             loading: false,
             error: null,
           });

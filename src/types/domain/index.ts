@@ -6,7 +6,12 @@ export type { Role, RoleCreateInput, RoleUpdateInput } from './role';
 
 export type { Permission, PermissionCreateInput } from './permission';
 
-export type { SecurityEvent, AuditLog, DomainEvent } from './security';
+export type {
+  SecurityEvent,
+  AuditLog,
+  DomainEvent,
+  DomainEventSummary,
+} from './security';
 
 export type {
   Notification,
