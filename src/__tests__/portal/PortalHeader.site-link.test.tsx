@@ -20,7 +20,7 @@ vi.mock('@/contexts/AccountContext', () => ({
       email: 'm@x.com',
       personId: 'p1',
       roleName: 'admin_master',
-      roleScope: 'platform',
+      roleScope: 'global',
       tenantName: '',
       contextLabel: 'Painel Administrativo',
       greeting: '',

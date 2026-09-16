@@ -52,7 +52,7 @@ export function PortalHeader({
   const displayName = person?.full_name?.trim() || 'Usuário';
 
   const contextLabel = activeRole
-    ? normalizeRoleScope(activeRole.scope) === 'platform'
+    ? normalizeRoleScope(activeRole.scope) === 'global'
       ? 'Painel Administrativo'
       : 'Área do Usuário'
     : 'Área do Usuário';
@@ -63,7 +63,7 @@ export function PortalHeader({
   const tenantLabel = currentMembership
     ? 'Tenant selecionado'
     : activeRole
-      ? normalizeRoleScope(activeRole.scope) === 'platform'
+      ? normalizeRoleScope(activeRole.scope) === 'global'
         ? 'Plataforma'
         : ''
       : '';

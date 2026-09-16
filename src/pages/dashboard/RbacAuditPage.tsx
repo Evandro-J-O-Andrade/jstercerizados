@@ -16,7 +16,7 @@ type Person = {
 type Role = {
   id: string;
   name: string;
-  is_global: boolean;
+  scope: 'global' | 'tenant';
   description: string | null;
 };
 
@@ -374,7 +374,7 @@ export default function RbacAuditPage() {
                           key={r.id}
                           className={cn(
                             'rounded-full px-2 py-0.5 text-xs',
-                            r.is_global
+                            r.scope === 'global'
                               ? 'bg-primary/10 text-primary'
                               : 'bg-accent/10 text-accent',
                           )}
@@ -424,4 +424,3 @@ export default function RbacAuditPage() {
     </ModuleWorkspace>
   );
 }
-

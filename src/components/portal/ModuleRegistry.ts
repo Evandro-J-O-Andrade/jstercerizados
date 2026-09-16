@@ -39,7 +39,7 @@ export interface ModuleDefinition {
   category: ModuleCategory;
   requiredPermissions?: string[];
   features?: ModuleFeature[];
-  scope: 'platform' | 'tenant';
+  scope: 'global' | 'tenant';
 }
 
 export const PORTAL_MODULES: ModuleDefinition[] = [
@@ -50,7 +50,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     icon: 'globe',
     route: '/dashboard/global',
     category: 'plataforma',
-    scope: 'platform',
+    scope: 'global',
     requiredPermissions: ['domain_events.read'],
     features: [
       {
@@ -79,7 +79,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     icon: 'building2',
     route: '/dashboard/tenants',
     category: 'plataforma',
-    scope: 'platform',
+    scope: 'global',
     requiredPermissions: ['tenants.read'],
     features: [
       {
@@ -131,7 +131,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     icon: 'rocket',
     route: '/dashboard/onboarding',
     category: 'plataforma',
-    scope: 'platform',
+    scope: 'global',
     requiredPermissions: ['tenants.read'],
     features: [
       {
@@ -171,7 +171,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     icon: 'credit-card',
     route: '/dashboard/assinaturas',
     category: 'plataforma',
-    scope: 'platform',
+    scope: 'global',
     requiredPermissions: ['finance.read'],
     features: [
       {
@@ -225,7 +225,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     icon: 'bar-chart',
     route: '/dashboard/gestao-saas',
     category: 'plataforma',
-    scope: 'platform',
+    scope: 'global',
     requiredPermissions: ['domain_events.read'],
     features: [
       {
@@ -273,7 +273,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     icon: 'users',
     route: '/dashboard/usuarios',
     category: 'seguranca',
-    scope: 'platform',
+    scope: 'global',
     requiredPermissions: ['people.read'],
     features: [
       {
@@ -325,7 +325,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     icon: 'shield',
     route: '/dashboard/roles-permissoes',
     category: 'seguranca',
-    scope: 'platform',
+    scope: 'global',
     requiredPermissions: ['roles.read'],
     features: [
       {
@@ -391,7 +391,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     icon: 'file-text',
     route: '/dashboard/auditoria',
     category: 'seguranca',
-    scope: 'platform',
+    scope: 'global',
     requiredPermissions: ['audit.read'],
     features: [
       {
@@ -2121,7 +2121,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     icon: 'plug',
     route: '/dashboard/integracoes',
     category: 'plataforma',
-    scope: 'platform',
+    scope: 'global',
     requiredPermissions: ['integrations.manage'],
     features: [
       {
@@ -2217,7 +2217,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     icon: 'settings',
     route: '/dashboard/configuracoes',
     category: 'plataforma',
-    scope: 'platform',
+    scope: 'global',
     requiredPermissions: ['tenant.manage'],
     features: [
       {
@@ -2371,7 +2371,7 @@ export function hasModulePermission(
 
 export function getAvailableModules(
   permissions: Permission[],
-  scope: 'platform' | 'tenant' | ('platform' | 'tenant')[] = 'tenant',
+  scope: 'global' | 'tenant' | ('global' | 'tenant')[] = 'tenant',
 ): ModuleDefinition[] {
   const scopes = Array.isArray(scope) ? scope : [scope];
   return PORTAL_MODULES.filter((module) => {
@@ -2383,7 +2383,7 @@ export function getAvailableModules(
 export function getAvailableFeatures(
   permissions: Permission[],
   module: ModuleDefinition,
-  scope: 'platform' | 'tenant' | ('platform' | 'tenant')[] = 'tenant',
+  scope: 'global' | 'tenant' | ('global' | 'tenant')[] = 'tenant',
 ): ModuleFeature[] {
   const scopes = Array.isArray(scope) ? scope : [scope];
   if (!module.features) return [];

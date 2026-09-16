@@ -100,7 +100,10 @@ describe('DashboardHome — RBAC redirect (P0)', () => {
       <MemoryRouter initialEntries={['/dashboard']}>
         <Routes>
           <Route path="/dashboard" element={<DashboardHome />} />
-          <Route path="/candidato" element={<div data-testid="candidate-portal">Portal Candidato</div>} />
+          <Route
+            path="/candidato"
+            element={<div data-testid="candidate-portal">Portal Candidato</div>}
+          />
           <Route path="*" element={<LocationDisplay />} />
         </Routes>
       </MemoryRouter>,
@@ -127,7 +130,7 @@ describe('DashboardHome — RBAC redirect (P0)', () => {
         email: 'admin@js.com',
         personId: 'p1',
         roleName: 'admin_master',
-        roleScope: 'platform' as const,
+        roleScope: 'global' as const,
         tenantName: 'J&S',
         contextLabel: 'Gestão da Plataforma',
         greeting: 'Olá',
@@ -148,7 +151,7 @@ describe('DashboardHome — RBAC redirect (P0)', () => {
       },
       categoryMeta: {} as any,
       activeTenantId: null,
-      effectiveScopes: ['platform', 'tenant'],
+      effectiveScopes: ['global', 'tenant'],
       availableMemberships: [],
       switchAccount: vi.fn(),
     } as any);

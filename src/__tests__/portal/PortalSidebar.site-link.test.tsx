@@ -21,7 +21,7 @@ vi.mock('@/contexts/AccountContext', () => ({
       email: 'm@x.com',
       personId: 'p1',
       roleName: 'admin_master',
-      roleScope: 'platform',
+      roleScope: 'global',
       tenantName: '',
       contextLabel: 'Painel Administrativo',
       greeting: '',
@@ -47,17 +47,28 @@ vi.mock('@/components/layout/GlobalNavActions', () => ({
 
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: { children?: React.ReactNode } & Record<string, unknown>) => (
+    div: ({
+      children,
+      ...props
+    }: { children?: React.ReactNode } & Record<string, unknown>) => (
       <div {...(props as Record<string, unknown>)}>{children}</div>
     ),
-    aside: ({ children, ...props }: { children?: React.ReactNode } & Record<string, unknown>) => (
+    aside: ({
+      children,
+      ...props
+    }: { children?: React.ReactNode } & Record<string, unknown>) => (
       <aside {...(props as Record<string, unknown>)}>{children}</aside>
     ),
-    span: ({ children, ...props }: { children?: React.ReactNode } & Record<string, unknown>) => (
+    span: ({
+      children,
+      ...props
+    }: { children?: React.ReactNode } & Record<string, unknown>) => (
       <span {...(props as Record<string, unknown>)}>{children}</span>
     ),
   },
-  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
 import { PortalSidebar } from '@/components/portal/PortalSidebar';

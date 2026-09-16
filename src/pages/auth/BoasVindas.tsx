@@ -190,7 +190,7 @@ export default function AuthWelcome() {
     const tenantName =
       activeTenant?.name || (currentTenantId ? 'Tenant' : 'Plataforma');
     const contextLabel =
-      roleScope === 'platform' ? 'Gestão da Plataforma' : tenantName;
+      roleScope === 'global' ? 'Gestão da Plataforma' : tenantName;
 
     const now = new Date();
     const dateTime = now.toLocaleString('pt-BR', {

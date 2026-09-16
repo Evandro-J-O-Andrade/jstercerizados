@@ -1,5 +1,5 @@
-export function normalizeRoleScope(scope: string): 'platform' | 'tenant' {
-  if (scope === 'global') return 'platform';
+export function normalizeRoleScope(scope: string): 'global' | 'tenant' {
+  if (scope === 'global') return 'global';
   if (scope === 'tenant') return 'tenant';
   return 'tenant';
 }

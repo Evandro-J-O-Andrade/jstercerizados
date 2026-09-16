@@ -114,7 +114,7 @@ export interface Database {
           id: string;
           name: string;
           description: string | null;
-          scope: 'system' | 'tenant';
+          scope: 'global' | 'tenant';
           created_at: string;
           updated_at: string;
         };
@@ -122,7 +122,7 @@ export interface Database {
           id?: string;
           name: string;
           description?: string | null;
-          scope?: 'system' | 'tenant';
+          scope?: 'global' | 'tenant';
           created_at?: string;
           updated_at?: string;
         };
@@ -130,7 +130,7 @@ export interface Database {
           id?: string;
           name?: string;
           description?: string | null;
-          scope?: 'system' | 'tenant';
+          scope?: 'global' | 'tenant';
           created_at?: string;
           updated_at?: string;
         };

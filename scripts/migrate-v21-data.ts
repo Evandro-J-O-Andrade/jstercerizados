@@ -62,11 +62,18 @@ interface MigrationReport {
 
 function parseArgs(): Args {
   const args = process.argv.slice(2);
-  const mode = (args.find(a => a.startsWith('--mode='))?.split('=')[1] || 'analyze') as Mode;
-  const sourceUrl = args.find(a => a.startsWith('--source-url='))?.split('=')[1] || DEFAULT_SOURCE_URL;
-  const sourceKey = args.find(a => a.startsWith('--source-key='))?.split('=')[1] || DEFAULT_SOURCE_KEY;
+  const mode = (args.find((a) => a.startsWith('--mode='))?.split('=')[1] ||
+    'analyze') as Mode;
+  const sourceUrl =
+    args.find((a) => a.startsWith('--source-url='))?.split('=')[1] ||
+    DEFAULT_SOURCE_URL;
+  const sourceKey =
+    args.find((a) => a.startsWith('--source-key='))?.split('=')[1] ||
+    DEFAULT_SOURCE_KEY;
   const authorized = args.includes('--authorized');
-  const tenantSlug = args.find(a => a.startsWith('--tenant-slug='))?.split('=')[1] || TENANT_SLUG;
+  const tenantSlug =
+    args.find((a) => a.startsWith('--tenant-slug='))?.split('=')[1] ||
+    TENANT_SLUG;
 
   return { mode, sourceUrl, sourceKey, authorized, tenantSlug };
 }
@@ -79,9 +86,16 @@ function logSection(title: string) {
   console.log(`\n=== ${title} ===`);
 }
 
-function logResult(action: string, table: string, status: string, message?: string) {
+function logResult(
+  action: string,
+  table: string,
+  status: string,
+  message?: string,
+) {
   const statusIcon = status === 'ok' ? '✅' : status === 'skip' ? '⏭️' : '❌';
-  console.log(`  ${statusIcon} [${action}] ${table}: ${status}${message ? ` - ${message}` : ''}`);
+  console.log(
+    `  ${statusIcon} [${action}] ${table}: ${status}${message ? ` - ${message}` : ''}`,
+  );
 }
 
 // =============================================================================
@@ -101,7 +115,10 @@ function createSourceClient(url: string, key: string): SupabaseClient {
 // CONTAGENS
 // =============================================================================
 
-async function countTable(client: SupabaseClient, table: string): Promise<number> {
+async function countTable(
+  client: SupabaseClient,
+  table: string,
+): Promise<number> {
   const { count, error } = await client
     .from(table)
     .select('*', { count: 'exact', head: true });
@@ -114,7 +131,10 @@ async function countTable(client: SupabaseClient, table: string): Promise<number
   return count ?? 0;
 }
 
-async function countAllTables(client: SupabaseClient, tables: string[]): Promise<CountResult[]> {
+async function countAllTables(
+  client: SupabaseClient,
+  tables: string[],
+): Promise<CountResult[]> {
   const results: CountResult[] = [];
   for (const table of tables) {
     const count = await countTable(client, table);
@@ -128,12 +148,16 @@ async function countAllTables(client: SupabaseClient, tables: string[]): Promise
 // =============================================================================
 
 async function validateInvariant001(client: SupabaseClient): Promise<boolean> {
-  const { count } = await client.from('people').select('*', { count: 'exact', head: true });
+  const { count } = await client
+    .from('people')
+    .select('*', { count: 'exact', head: true });
   return (count ?? 0) >= 1; // Pelo menos 1 pessoa (admin_master)
 }
 
 async function validateInvariant002(client: SupabaseClient): Promise<boolean> {
-  const { count } = await client.from('tenant_memberships').select('*', { count: 'exact', head: true });
+  const { count } = await client
+    .from('tenant_memberships')
+    .select('*', { count: 'exact', head: true });
   return (count ?? 0) >= 1; // Pelo menos 1 membership
 }
 
@@ -142,7 +166,7 @@ async function validateInvariant003(client: SupabaseClient): Promise<boolean> {
     .from('roles')
     .select('id')
     .eq('name', 'admin_master')
-    .eq('is_global', true)
+    .eq('scope', 'global')
     .single();
 
   if (error || !roles) return false;
@@ -170,14 +194,21 @@ async function validateInvariant004(client: SupabaseClient): Promise<boolean> {
   const { data: tenants, error: tenantError } = await client
     .from('tenants')
     .select('id')
-    .in('id', companies.map(c => c.tenant_id));
+    .in(
+      'id',
+      companies.map((c) => c.tenant_id),
+    );
 
-  return !tenantError && tenants !== null && tenants.length === companies.length;
+  return (
+    !tenantError && tenants !== null && tenants.length === companies.length
+  );
 }
 
 async function validateInvariant005(client: SupabaseClient): Promise<boolean> {
   // Tenant isolation é garantida por RLS. Aqui verificamos se há apenas 1 tenant.
-  const { count } = await client.from('tenants').select('*', { count: 'exact', head: true });
+  const { count } = await client
+    .from('tenants')
+    .select('*', { count: 'exact', head: true });
   return (count ?? 0) === 1;
 }
 
@@ -203,7 +234,7 @@ async function validateInvariant007(client: SupabaseClient): Promise<boolean> {
   if (error || !jobs || jobs.length === 0) return true;
 
   // Verificar se os company_id existem em companies
-  const companyIds = jobs.map(j => j.company_id).filter(Boolean);
+  const companyIds = jobs.map((j) => j.company_id).filter(Boolean);
   if (companyIds.length === 0) return true;
 
   const { data: companies, error: companyError } = await client
@@ -211,7 +242,11 @@ async function validateInvariant007(client: SupabaseClient): Promise<boolean> {
     .select('id')
     .in('id', companyIds);
 
-  return !companyError && companies !== null && companies.length === companyIds.length;
+  return (
+    !companyError &&
+    companies !== null &&
+    companies.length === companyIds.length
+  );
 }
 
 async function validateInvariant008(client: SupabaseClient): Promise<boolean> {
@@ -231,7 +266,7 @@ async function validateInvariant009(client: SupabaseClient): Promise<boolean> {
 
   if (error || !data || data.length === 0) return true;
 
-  const authUserIds = data.map(p => p.auth_user_id);
+  const authUserIds = data.map((p) => p.auth_user_id);
   const uniqueIds = new Set(authUserIds);
 
   return uniqueIds.size === authUserIds.length;
@@ -252,7 +287,10 @@ async function validateInvariant010(client: SupabaseClient): Promise<boolean> {
     const { data: tenants, error: tenantError } = await client
       .from('tenants')
       .select('id')
-      .in('id', data.map(r => r.tenant_id));
+      .in(
+        'id',
+        data.map((r) => r.tenant_id),
+      );
 
     if (tenantError || !tenants || tenants.length !== data.length) {
       return false;
@@ -262,19 +300,50 @@ async function validateInvariant010(client: SupabaseClient): Promise<boolean> {
   return true;
 }
 
-async function validateAllInvariants(client: SupabaseClient, mode: Mode): Promise<boolean> {
+async function validateAllInvariants(
+  client: SupabaseClient,
+  mode: Mode,
+): Promise<boolean> {
   logSection('INVARIANTS');
 
   const invariants = [
-    { id: 'INVARIANT-001', fn: validateInvariant001, desc: 'COUNT(people) preservado' },
-    { id: 'INVARIANT-002', fn: validateInvariant002, desc: 'COUNT(tenant_memberships) preservado' },
-    { id: 'INVARIANT-003', fn: validateInvariant003, desc: 'admin_master global' },
+    {
+      id: 'INVARIANT-001',
+      fn: validateInvariant001,
+      desc: 'COUNT(people) preservado',
+    },
+    {
+      id: 'INVARIANT-002',
+      fn: validateInvariant002,
+      desc: 'COUNT(tenant_memberships) preservado',
+    },
+    {
+      id: 'INVARIANT-003',
+      fn: validateInvariant003,
+      desc: 'admin_master global',
+    },
     { id: 'INVARIANT-004', fn: validateInvariant004, desc: 'Sem FKs órfãs' },
-    { id: 'INVARIANT-005', fn: validateInvariant005, desc: 'Isolamento tenant' },
-    { id: 'INVARIANT-006', fn: validateInvariant006, desc: 'notifications sem user_id' },
-    { id: 'INVARIANT-007', fn: validateInvariant007, desc: 'jobs.company_id válido' },
+    {
+      id: 'INVARIANT-005',
+      fn: validateInvariant005,
+      desc: 'Isolamento tenant',
+    },
+    {
+      id: 'INVARIANT-006',
+      fn: validateInvariant006,
+      desc: 'notifications sem user_id',
+    },
+    {
+      id: 'INVARIANT-007',
+      fn: validateInvariant007,
+      desc: 'jobs.company_id válido',
+    },
     { id: 'INVARIANT-008', fn: validateInvariant008, desc: 'Sem roles legacy' },
-    { id: 'INVARIANT-009', fn: validateInvariant009, desc: 'auth_user_id único' },
+    {
+      id: 'INVARIANT-009',
+      fn: validateInvariant009,
+      desc: 'auth_user_id único',
+    },
     { id: 'INVARIANT-010', fn: validateInvariant010, desc: 'tenant_id válido' },
   ];
 
@@ -298,7 +367,10 @@ async function validateAllInvariants(client: SupabaseClient, mode: Mode): Promis
 // PHASES
 // =============================================================================
 
-async function phase1Preserve(client: SupabaseClient, mode: Mode): Promise<MigrationReport[]> {
+async function phase1Preserve(
+  client: SupabaseClient,
+  mode: Mode,
+): Promise<MigrationReport[]> {
   logSection('PHASE 1 — PRESERVE');
   const reports: MigrationReport[] = [];
 
@@ -357,7 +429,10 @@ async function phase1Preserve(client: SupabaseClient, mode: Mode): Promise<Migra
   return reports;
 }
 
-async function phase2Transform(client: SupabaseClient, mode: Mode): Promise<MigrationReport[]> {
+async function phase2Transform(
+  client: SupabaseClient,
+  mode: Mode,
+): Promise<MigrationReport[]> {
   logSection('PHASE 2 — TRANSFORM');
   const reports: MigrationReport[] = [];
 
@@ -367,7 +442,12 @@ async function phase2Transform(client: SupabaseClient, mode: Mode): Promise<Migr
     logResult('TRANSFORM', 'companies', 'skip', 'tabela não existe');
   } else {
     if (mode === 'analyze') {
-      logResult('TRANSFORM', 'companies', 'ok', `${companiesCount} rows → add tenant_id`);
+      logResult(
+        'TRANSFORM',
+        'companies',
+        'ok',
+        `${companiesCount} rows → add tenant_id`,
+      );
     } else if (mode === 'dry-run') {
       // Verificar se coluna já existe
       const { data, error } = await client
@@ -376,7 +456,12 @@ async function phase2Transform(client: SupabaseClient, mode: Mode): Promise<Migr
         .limit(1);
 
       if (error || !data || data.length === 0) {
-        logResult('TRANSFORM', 'companies', 'ok', `${companiesCount} rows → add tenant_id`);
+        logResult(
+          'TRANSFORM',
+          'companies',
+          'ok',
+          `${companiesCount} rows → add tenant_id`,
+        );
       } else {
         logResult('TRANSFORM', 'companies', 'ok', 'tenant_id já existe');
       }
@@ -398,7 +483,12 @@ async function phase2Transform(client: SupabaseClient, mode: Mode): Promise<Migr
     logResult('TRANSFORM', 'jobs', 'skip', 'tabela não existe');
   } else {
     if (mode === 'analyze') {
-      logResult('TRANSFORM', 'jobs', 'ok', `${jobsCount} rows → company_relationship_id → company_id`);
+      logResult(
+        'TRANSFORM',
+        'jobs',
+        'ok',
+        `${jobsCount} rows → company_relationship_id → company_id`,
+      );
     } else if (mode === 'dry-run') {
       const { data, error } = await client
         .from('jobs')
@@ -406,7 +496,12 @@ async function phase2Transform(client: SupabaseClient, mode: Mode): Promise<Migr
         .limit(1);
 
       if (error || !data || data.length === 0 || !data[0].company_id) {
-        logResult('TRANSFORM', 'jobs', 'ok', `${jobsCount} rows → company_relationship_id → company_id`);
+        logResult(
+          'TRANSFORM',
+          'jobs',
+          'ok',
+          `${jobsCount} rows → company_relationship_id → company_id`,
+        );
       } else {
         logResult('TRANSFORM', 'jobs', 'ok', 'company_id já existe');
       }
@@ -428,7 +523,12 @@ async function phase2Transform(client: SupabaseClient, mode: Mode): Promise<Migr
     logResult('TRANSFORM', 'notifications', 'skip', 'tabela não existe');
   } else {
     if (mode === 'analyze') {
-      logResult('TRANSFORM', 'notifications', 'ok', `${notificationsCount} rows → user_id → recipient_person_id`);
+      logResult(
+        'TRANSFORM',
+        'notifications',
+        'ok',
+        `${notificationsCount} rows → user_id → recipient_person_id`,
+      );
     } else if (mode === 'dry-run') {
       const { data, error } = await client
         .from('notifications')
@@ -436,9 +536,19 @@ async function phase2Transform(client: SupabaseClient, mode: Mode): Promise<Migr
         .limit(1);
 
       if (error || !data || data.length === 0 || !data[0].recipient_person_id) {
-        logResult('TRANSFORM', 'notifications', 'ok', `${notificationsCount} rows → user_id → recipient_person_id`);
+        logResult(
+          'TRANSFORM',
+          'notifications',
+          'ok',
+          `${notificationsCount} rows → user_id → recipient_person_id`,
+        );
       } else {
-        logResult('TRANSFORM', 'notifications', 'ok', 'recipient_person_id já existe');
+        logResult(
+          'TRANSFORM',
+          'notifications',
+          'ok',
+          'recipient_person_id já existe',
+        );
       }
     }
 
@@ -455,7 +565,10 @@ async function phase2Transform(client: SupabaseClient, mode: Mode): Promise<Migr
   return reports;
 }
 
-async function phase3Reconcile(client: SupabaseClient, mode: Mode): Promise<MigrationReport[]> {
+async function phase3Reconcile(
+  client: SupabaseClient,
+  mode: Mode,
+): Promise<MigrationReport[]> {
   logSection('PHASE 3 — RECONCILE');
   const reports: MigrationReport[] = [];
 
@@ -464,9 +577,19 @@ async function phase3Reconcile(client: SupabaseClient, mode: Mode): Promise<Migr
     logResult('RECONCILE', 'domain_events', 'skip', 'tabela não existe');
   } else {
     if (mode === 'analyze') {
-      logResult('RECONCILE', 'domain_events', 'ok', `${domainEventsCount} rows → ajustar aggregate fields`);
+      logResult(
+        'RECONCILE',
+        'domain_events',
+        'ok',
+        `${domainEventsCount} rows → ajustar aggregate fields`,
+      );
     } else if (mode === 'dry-run') {
-      logResult('RECONCILE', 'domain_events', 'ok', `${domainEventsCount} rows → preservar estrutura rica`);
+      logResult(
+        'RECONCILE',
+        'domain_events',
+        'ok',
+        `${domainEventsCount} rows → preservar estrutura rica`,
+      );
     }
 
     reports.push({
@@ -482,7 +605,10 @@ async function phase3Reconcile(client: SupabaseClient, mode: Mode): Promise<Migr
   return reports;
 }
 
-async function phase4New(client: SupabaseClient, mode: Mode): Promise<MigrationReport[]> {
+async function phase4New(
+  client: SupabaseClient,
+  mode: Mode,
+): Promise<MigrationReport[]> {
   logSection('PHASE 4 — NEW');
   const reports: MigrationReport[] = [];
 
@@ -592,7 +718,10 @@ async function phase4New(client: SupabaseClient, mode: Mode): Promise<MigrationR
   return reports;
 }
 
-async function phase5Seed(client: SupabaseClient, mode: Mode): Promise<MigrationReport[]> {
+async function phase5Seed(
+  client: SupabaseClient,
+  mode: Mode,
+): Promise<MigrationReport[]> {
   logSection('PHASE 5 — SEED');
   const reports: MigrationReport[] = [];
 
@@ -625,14 +754,29 @@ async function phase5Seed(client: SupabaseClient, mode: Mode): Promise<Migration
     }
 
     if (currentCount >= seed.rows) {
-      logResult('SEED', seed.table, 'skip', `${currentCount} rows (seed não necessário)`);
+      logResult(
+        'SEED',
+        seed.table,
+        'skip',
+        `${currentCount} rows (seed não necessário)`,
+      );
       continue;
     }
 
     if (mode === 'analyze') {
-      logResult('SEED', seed.table, 'ok', `${currentCount} → ${seed.rows} rows`);
+      logResult(
+        'SEED',
+        seed.table,
+        'ok',
+        `${currentCount} → ${seed.rows} rows`,
+      );
     } else if (mode === 'dry-run') {
-      logResult('SEED', seed.table, 'ok', `${currentCount} → ${seed.rows} rows`);
+      logResult(
+        'SEED',
+        seed.table,
+        'ok',
+        `${currentCount} → ${seed.rows} rows`,
+      );
     }
 
     reports.push({
@@ -648,7 +792,10 @@ async function phase5Seed(client: SupabaseClient, mode: Mode): Promise<Migration
   return reports;
 }
 
-async function phase6Validate(client: SupabaseClient, mode: Mode): Promise<boolean> {
+async function phase6Validate(
+  client: SupabaseClient,
+  mode: Mode,
+): Promise<boolean> {
   logSection('PHASE 6 — VALIDATE');
   return validateAllInvariants(client, mode);
 }
@@ -657,7 +804,10 @@ async function phase6Validate(client: SupabaseClient, mode: Mode): Promise<boole
 // REMOVE
 // =============================================================================
 
-async function phaseRemove(client: SupabaseClient, mode: Mode): Promise<MigrationReport[]> {
+async function phaseRemove(
+  client: SupabaseClient,
+  mode: Mode,
+): Promise<MigrationReport[]> {
   logSection('PHASE REMOVE — Tabelas legacy');
   const reports: MigrationReport[] = [];
 
@@ -724,7 +874,10 @@ async function main() {
       .limit(1);
 
     if (testError) {
-      console.error('❌ Erro ao conectar ao banco de origem:', testError.message);
+      console.error(
+        '❌ Erro ao conectar ao banco de origem:',
+        testError.message,
+      );
       process.exit(1);
     }
 
@@ -744,16 +897,29 @@ async function main() {
       const seedReports = await phase5Seed(client, 'analyze');
       const removeReports = await phaseRemove(client, 'analyze');
 
-      allReports.push(...preserveReports, ...transformReports, ...reconcileReports, ...newReports, ...seedReports, ...removeReports);
+      allReports.push(
+        ...preserveReports,
+        ...transformReports,
+        ...reconcileReports,
+        ...newReports,
+        ...seedReports,
+        ...removeReports,
+      );
 
       logSection('ANALYSIS SUMMARY');
       log(`Total tables analyzed: ${allReports.length}`);
-      log(`PRESERVE: ${allReports.filter(r => r.action === 'PRESERVE').length}`);
-      log(`TRANSFORM: ${allReports.filter(r => r.action === 'TRANSFORM').length}`);
-      log(`RECONCILE: ${allReports.filter(r => r.action === 'RECONCILE').length}`);
-      log(`NEW: ${allReports.filter(r => r.action === 'NEW').length}`);
-      log(`SEED: ${allReports.filter(r => r.action === 'SEED').length}`);
-      log(`REMOVE: ${allReports.filter(r => r.action === 'REMOVE').length}`);
+      log(
+        `PRESERVE: ${allReports.filter((r) => r.action === 'PRESERVE').length}`,
+      );
+      log(
+        `TRANSFORM: ${allReports.filter((r) => r.action === 'TRANSFORM').length}`,
+      );
+      log(
+        `RECONCILE: ${allReports.filter((r) => r.action === 'RECONCILE').length}`,
+      );
+      log(`NEW: ${allReports.filter((r) => r.action === 'NEW').length}`);
+      log(`SEED: ${allReports.filter((r) => r.action === 'SEED').length}`);
+      log(`REMOVE: ${allReports.filter((r) => r.action === 'REMOVE').length}`);
 
       const invariantsOk = await validateAllInvariants(client, 'analyze');
       logSection('INVARIANT SUMMARY');
@@ -764,7 +930,9 @@ async function main() {
         process.exit(1);
       }
 
-      log('\n✅ Analysis complete. Review the report above before proceeding to dry-run.');
+      log(
+        '\n✅ Analysis complete. Review the report above before proceeding to dry-run.',
+      );
     } else if (args.mode === 'dry-run') {
       logSection('DRY-RUN MODE');
       log('Executing in controlled transaction...\n');
@@ -777,16 +945,29 @@ async function main() {
       const seedReports = await phase5Seed(client, 'dry-run');
       const removeReports = await phaseRemove(client, 'dry-run');
 
-      allReports.push(...preserveReports, ...transformReports, ...reconcileReports, ...newReports, ...seedReports, ...removeReports);
+      allReports.push(
+        ...preserveReports,
+        ...transformReports,
+        ...reconcileReports,
+        ...newReports,
+        ...seedReports,
+        ...removeReports,
+      );
 
       logSection('DRY-RUN SUMMARY');
       log(`Total tables: ${allReports.length}`);
-      log(`PRESERVE: ${allReports.filter(r => r.action === 'PRESERVE').length}`);
-      log(`TRANSFORM: ${allReports.filter(r => r.action === 'TRANSFORM').length}`);
-      log(`RECONCILE: ${allReports.filter(r => r.action === 'RECONCILE').length}`);
-      log(`NEW: ${allReports.filter(r => r.action === 'NEW').length}`);
-      log(`SEED: ${allReports.filter(r => r.action === 'SEED').length}`);
-      log(`REMOVE: ${allReports.filter(r => r.action === 'REMOVE').length}`);
+      log(
+        `PRESERVE: ${allReports.filter((r) => r.action === 'PRESERVE').length}`,
+      );
+      log(
+        `TRANSFORM: ${allReports.filter((r) => r.action === 'TRANSFORM').length}`,
+      );
+      log(
+        `RECONCILE: ${allReports.filter((r) => r.action === 'RECONCILE').length}`,
+      );
+      log(`NEW: ${allReports.filter((r) => r.action === 'NEW').length}`);
+      log(`SEED: ${allReports.filter((r) => r.action === 'SEED').length}`);
+      log(`REMOVE: ${allReports.filter((r) => r.action === 'REMOVE').length}`);
 
       const invariantsOk = await validateAllInvariants(client, 'dry-run');
       logSection('INVARIANT SUMMARY');

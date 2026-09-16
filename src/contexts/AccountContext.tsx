@@ -18,7 +18,7 @@ export interface AccountIdentity {
   email: string;
   personId: string;
   roleName: string;
-  roleScope: 'platform' | 'tenant';
+  roleScope: 'global' | 'tenant';
   tenantName: string;
   contextLabel: string;
   greeting: string;
@@ -34,7 +34,7 @@ export interface AccountContextType {
   modulesByCategory: Record<ModuleCategory, ModuleDefinition[]>;
   categoryMeta: typeof CATEGORY_META;
   activeTenantId: string | null;
-  effectiveScopes: ('platform' | 'tenant')[];
+  effectiveScopes: ('global' | 'tenant')[];
   availableMemberships: {
     id: string;
     tenant_id: string;
@@ -79,7 +79,7 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
       activeTenant?.name || (currentTenantId ? 'Tenant' : 'Plataforma');
 
     const contextLabel =
-      roleScope === 'platform' ? 'Gestão da Plataforma' : tenantName;
+      roleScope === 'global' ? 'Gestão da Plataforma' : tenantName;
 
     const hour = new Date().getHours();
     let greeting = 'Boa noite';
@@ -100,12 +100,12 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
     };
   }, [person, roles, currentTenantId, tenants, isAdminMaster]);
 
-  const effectiveScopes = useMemo<('platform' | 'tenant')[]>(() => {
+  const effectiveScopes = useMemo<('global' | 'tenant')[]>(() => {
     const roleScopes = new Set(roles.map((r) => r.scope));
-    const scopes: ('platform' | 'tenant')[] = [];
+    const scopes: ('global' | 'tenant')[] = [];
 
     if (roleScopes.has('global')) {
-      scopes.push('platform');
+      scopes.push('global');
       const hasAdminMaster = roles.some(
         (r) => r.scope === 'global' && r.name === 'admin_master',
       );

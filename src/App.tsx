@@ -97,13 +97,19 @@ const PrimeiroAcessoTermos = lazy(
   () => import('@/pages/primeiro-acesso/Termos'),
 );
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
-const CandidateDashboard = lazy(() => import('@/features/candidato/pages/Dashboard'));
+const CandidateDashboard = lazy(
+  () => import('@/features/candidato/pages/Dashboard'),
+);
 const CandidateVagas = lazy(() => import('@/features/candidato/pages/Vagas'));
 const CandidateCandidaturas = lazy(
   () => import('@/features/candidato/pages/Candidaturas'),
 );
-const CandidateFavoritas = lazy(() => import('@/features/candidato/pages/Favoritas'));
-const CandidateCurriculo = lazy(() => import('@/features/candidato/pages/Curriculo'));
+const CandidateFavoritas = lazy(
+  () => import('@/features/candidato/pages/Favoritas'),
+);
+const CandidateCurriculo = lazy(
+  () => import('@/features/candidato/pages/Curriculo'),
+);
 const CandidatePerfil = lazy(() => import('@/features/candidato/pages/Perfil'));
 const CandidateNotificacoes = lazy(
   () => import('@/features/candidato/pages/Notificacoes'),
@@ -111,7 +117,9 @@ const CandidateNotificacoes = lazy(
 const CandidateConfiguracoes = lazy(
   () => import('@/features/candidato/pages/Configuracoes'),
 );
-const CandidateAlertas = lazy(() => import('@/features/candidato/pages/Alertas'));
+const CandidateAlertas = lazy(
+  () => import('@/features/candidato/pages/Alertas'),
+);
 import { CandidateShell } from '@/components/portal/CandidateShell';
 import { CandidateProvider } from '@/contexts/CandidateContext';
 import { CandidateRoute } from '@/components/auth/CandidateRoute';
@@ -258,7 +266,7 @@ function App() {
   }
 
   const platformModules = PORTAL_MODULES.filter(
-    (module) => module.scope === 'platform',
+    (module) => module.scope === 'global',
   );
   const tenantModules = PORTAL_MODULES.filter(
     (module) => module.scope === 'tenant',
