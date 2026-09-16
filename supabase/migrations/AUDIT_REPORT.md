@@ -1,0 +1,1 @@
+﻿# AUDITORIA READ-ONLY — Migrations 20260909-10*

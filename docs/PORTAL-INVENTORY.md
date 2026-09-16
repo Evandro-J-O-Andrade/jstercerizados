@@ -1,7 +1,7 @@
-# Portal Inventory
+'1# Portal Inventory
 
-**Data:** 2026-08-25  
-**Escopo:** Rotas, páginas, módulos, features e mapeamento atual do Portal  
+**Data:** 2026-08-25
+**Escopo:** Rotas, páginas, módulos, features e mapeamento atual do Portal
 **Objetivo:** Base para cruzamento RBAC real → Portal sem regressão visual
 
 ---

@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 import {
   Activity,
   ArrowUpRight,
   BarChart3,
-  Briefcase,
+  BriefcaseBusiness,
   Building2,
   CheckCircle2,
   CircleDollarSign,
@@ -17,38 +16,24 @@ import {
   Wrench,
 } from 'lucide-react';
 import { NavLink, Navigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { ModuleIcon } from '@/components/portal/PortalSidebar';
-import { getSupabaseClient } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 import {
-  buildGlobalDashboardKpis,
-  type GlobalDashboardStats,
-} from './global-dashboard-model';
-
-interface DashboardStats extends GlobalDashboardStats {
-  notifications: number;
-  recentEvents: Array<{
-    id: string;
-    event_name: string;
-    aggregate_type: string;
-    created_at: string;
-  }>;
-  loading: boolean;
-  error: string | null;
-}
-
-const ICONS = {
-  tenants: Building2,
-  companies: Building2,
-  people: Users,
-  candidates: Users,
-  jobs: Briefcase,
-  applications: FileText,
-  'service-orders': Wrench,
-  'support-tickets': Headphones,
-} as const;
+  DashboardCard,
+  DashboardErrorState,
+  DashboardMetricGrid,
+  DashboardSection,
+  DashboardSkeleton,
+} from '@/components/dashboard';
+import {
+  filterDashboardMetrics,
+  type DashboardMetric,
+} from '@/components/dashboard/dashboard-model';
+import { EmptyState } from '@/components/fallback';
+import { ModuleIcon } from '@/components/portal/PortalSidebar';
+import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { useGlobalDashboardStats } from '@/hooks/useGlobalDashboardStats';
+import { buildGlobalDashboardKpis } from './global-dashboard-model';
 
 const MODULE_GROUPS = [
   { category: 'plataforma', label: 'Plataforma' },
@@ -58,157 +43,77 @@ const MODULE_GROUPS = [
   { category: 'documentos', label: 'Documentos' },
 ] as const;
 
+const KPI_ICONS = {
+  tenants: Building2,
+  companies: Building2,
+  people: Users,
+  candidates: Users,
+  jobs: BriefcaseBusiness,
+  applications: FileText,
+  'service-orders': Wrench,
+  'support-tickets': Headphones,
+} as const;
+
+const KPI_PERMISSIONS: Record<string, string> = {
+  tenants: 'tenants.read',
+  companies: 'companies.read',
+  people: 'people.read',
+  candidates: 'candidates.read',
+  jobs: 'jobs.read',
+  applications: 'applications.read',
+  'service-orders': 'service_orders.read',
+  'support-tickets': 'support_tickets.read',
+};
+
+const KPI_ROUTES: Record<string, string> = {
+  tenants: '/dashboard/tenants',
+  companies: '/dashboard/empresas',
+  people: '/dashboard/usuarios',
+  candidates: '/dashboard/candidatos',
+  jobs: '/dashboard/vagas',
+  applications: '/dashboard/candidaturas',
+  'service-orders': '/dashboard/servicos',
+  'support-tickets': '/dashboard/suporte',
+};
+
 function formatNumber(value: number) {
   return value.toLocaleString('pt-BR');
 }
 
-function permissionGranted(
-  permissions: { resource: string; action: string }[],
-  permission: string,
-) {
-  if (!permission) return true;
-  return permissions.some(
-    (item) => `${item.resource}.${item.action}` === permission,
-  );
-}
-
 export default function DashboardHome() {
-  const {
-    currentTenantId,
-    tenantMemberships,
-    isAdminMaster,
-    isCandidate,
-   } = useAuth();
+  const { isAdminMaster, isCandidate } = useAuth();
   const { availableModules, activePermissions, identity } = useAccount();
-
-  const [stats, setStats] = useState<DashboardStats>({
-    tenants: 0,
-    companies: 0,
-    people: 0,
-    candidates: 0,
-    jobs: 0,
-    applications: 0,
-    serviceOrders: 0,
-    supportTickets: 0,
-    notifications: 0,
-    recentEvents: [],
-    loading: true,
-    error: null,
-  });
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchStats = async () => {
-      const supabase = getSupabaseClient();
-      if (!supabase) {
-        setStats((prev) => ({
-          ...prev,
-          loading: false,
-          error: 'Supabase não está configurado.',
-        }));
-        return;
-      }
-
-      try {
-        const activeTenantId =
-          currentTenantId || tenantMemberships[0]?.tenant_id;
-        const globalScope = isAdminMaster;
-
-        const countTable = async (table: string) => {
-          let query = supabase
-            .from(table)
-            .select('*', { count: 'exact', head: true });
-          if (!globalScope && activeTenantId)
-            query = query.eq('tenant_id', activeTenantId);
-          const { count, error } = await query;
-          if (error) throw error;
-          return count ?? 0;
-        };
-
-        const [
-          tenants,
-          companies,
-          people,
-          candidates,
-          jobs,
-          applications,
-          serviceOrders,
-          supportTickets,
-        ] = await Promise.all([
-          globalScope ? countTable('tenants') : Promise.resolve(0),
-          countTable('companies'),
-          countTable('people'),
-          countTable('candidates'),
-          countTable('jobs'),
-          countTable('applications'),
-          countTable('service_orders'),
-          countTable('support_tickets'),
-        ]);
-
-        let eventsQuery = supabase
-          .from('domain_events')
-          .select('id, event_name, aggregate_type, created_at')
-          .order('created_at', { ascending: false })
-          .limit(8);
-        if (!globalScope && activeTenantId) {
-          eventsQuery = eventsQuery.eq('tenant_id', activeTenantId);
-        }
-        const { data: events, error: eventsError } = await eventsQuery;
-        if (eventsError) throw eventsError;
-
-        if (cancelled) return;
-        setStats({
-          tenants,
-          companies,
-          people,
-          candidates,
-          jobs,
-          applications,
-          serviceOrders,
-          supportTickets,
-          notifications: 0,
-          recentEvents: events ?? [],
-          loading: false,
-          error: null,
-        });
-      } catch (error) {
-        if (cancelled) return;
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'Não foi possível carregar os indicadores.';
-        console.error('[DASHBOARD:GLOBAL] Failed to load stats:', error);
-        setStats((prev) => ({ ...prev, loading: false, error: message }));
-      }
-    };
-
-    fetchStats();
-    return () => {
-      cancelled = true;
-    };
-  }, [currentTenantId, isAdminMaster, tenantMemberships]);
+  const stats = useGlobalDashboardStats();
 
   const kpis = useMemo(() => buildGlobalDashboardKpis(stats), [stats]);
-  const visibleKpis = useMemo(
+  const metrics = useMemo<DashboardMetric[]>(
     () =>
-      kpis.filter((kpi) => {
-        const permissionById: Record<string, string> = {
-          tenants: 'tenants.read',
-          companies: 'companies.read',
-          people: 'people.read',
-          candidates: 'candidates.read',
-          jobs: 'jobs.read',
-          applications: 'applications.read',
-          'service-orders': 'service_orders.read',
-          'support-tickets': 'support.read',
-        };
-        return (
-          isAdminMaster ||
-          permissionGranted(activePermissions, permissionById[kpi.id])
-        );
-      }),
-    [activePermissions, isAdminMaster, kpis],
+      kpis.map((kpi) => ({
+        id: kpi.id,
+        label: kpi.label,
+        value: kpi.value,
+        description: kpi.description,
+        icon: KPI_ICONS[kpi.id as keyof typeof KPI_ICONS] ?? BarChart3,
+        href: KPI_ROUTES[kpi.id],
+        permission: KPI_PERMISSIONS[kpi.id],
+        format: 'number',
+        tone:
+          kpi.id === 'candidates' || kpi.id === 'jobs'
+            ? 'warning'
+            : kpi.id === 'support-tickets'
+              ? 'danger'
+              : kpi.id === 'applications' || kpi.id === 'people'
+                ? 'primary'
+                : kpi.id === 'service-orders'
+                  ? 'neutral'
+                  : 'success',
+      })),
+    [kpis],
+  );
+  const visibleMetrics = filterDashboardMetrics(
+    metrics,
+    activePermissions,
+    isAdminMaster,
   );
 
   const moduleGroups = useMemo(
@@ -224,7 +129,6 @@ export default function DashboardHome() {
 
   const operationalVolume = stats.serviceOrders + stats.supportTickets;
 
-  // Defesa em profundidade: candidato puro nunca deve renderizar o Dashboard Global/Admin
   if (!isAdminMaster && isCandidate) {
     return <Navigate to="/candidato" replace />;
   }
@@ -242,7 +146,9 @@ export default function DashboardHome() {
             <div>
               <div className="text-primary mb-2 flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
                 <ShieldCheck className="h-4 w-4" />
-                Admin Master · Gestão Global
+                {isAdminMaster
+                  ? 'Admin Master · Gestão Global'
+                  : 'Portal · Visão consolidada'}
               </div>
               <h2 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
                 {identity.greeting}, {identity.firstName}.
@@ -263,87 +169,29 @@ export default function DashboardHome() {
           </div>
         </section>
 
-        {stats.error && (
-          <section className="border-warning/30 bg-warning/10 text-warning rounded-xl border p-4 text-sm">
-            Não foi possível carregar todos os indicadores. O painel continua
-            exibindo os dados disponíveis.
-            <span className="sr-only"> {stats.error}</span>
-          </section>
+        {stats.error ? (
+          <DashboardErrorState message={stats.error} />
+        ) : stats.loading ? (
+          <DashboardSkeleton count={visibleMetrics.length || 8} />
+        ) : visibleMetrics.length > 0 ? (
+          <DashboardMetricGrid>
+            {visibleMetrics.map((metric) => (
+              <DashboardCard key={metric.id} metric={metric} />
+            ))}
+          </DashboardMetricGrid>
+        ) : (
+          <EmptyState
+            title="Nenhum indicador disponível"
+            description="Seu perfil não possui indicadores liberados para visualização."
+          />
         )}
 
-        <section>
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <h3 className="text-foreground text-lg font-semibold">
-                Visão executiva
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Indicadores agregados em tempo real a partir do banco.
-              </p>
-            </div>
-            <div className="text-muted-foreground hidden items-center gap-1.5 text-xs sm:flex">
-              <span className="bg-success h-2 w-2 rounded-full" />
-              Dados ao vivo
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {stats.loading
-              ? Array.from({ length: 8 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="bg-card border-border animate-pulse rounded-xl border p-5"
-                  >
-                    <div className="bg-muted h-4 w-28 rounded" />
-                    <div className="bg-muted mt-4 h-8 w-20 rounded" />
-                    <div className="bg-muted mt-3 h-3 w-36 rounded" />
-                  </div>
-                ))
-              : visibleKpis.map((kpi, index) => {
-                  const Icon = ICONS[kpi.id as keyof typeof ICONS] ?? BarChart3;
-                  return (
-                    <motion.div
-                      key={kpi.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.04 }}
-                      className="bg-card border-border group rounded-xl border p-5 shadow-sm transition-shadow hover:shadow-md"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="bg-primary/10 text-primary rounded-lg p-2.5">
-                          <Icon className="h-5 w-5" />
-                        </div>
-                        <ArrowUpRight className="text-muted-foreground h-4 w-4 opacity-50 transition-opacity group-hover:opacity-100" />
-                      </div>
-                      <p className="text-foreground mt-5 text-2xl font-bold">
-                        {formatNumber(kpi.value)}
-                      </p>
-                      <p className="text-foreground mt-1 text-sm font-medium">
-                        {kpi.label}
-                      </p>
-                      <p className="text-muted-foreground mt-1 text-xs">
-                        {kpi.description}
-                      </p>
-                    </motion.div>
-                  );
-                })}
-          </div>
-        </section>
-
-        <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr]">
-          <div className="bg-card border-border rounded-xl border p-5 shadow-sm">
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <h3 className="text-foreground font-semibold">
-                  Todos os domínios
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  Acesso rápido aos módulos autorizados.
-                </p>
-              </div>
-              <BarChart3 className="text-muted-foreground h-5 w-5" />
-            </div>
-
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr]">
+          <DashboardSection
+            title="Todos os domínios"
+            description="Acesso rápido aos módulos autorizados."
+            icon={BarChart3}
+          >
             <div className="space-y-6">
               {moduleGroups.map((group) => (
                 <div key={group.category}>
@@ -375,21 +223,14 @@ export default function DashboardHome() {
                 </div>
               ))}
             </div>
-          </div>
+          </DashboardSection>
 
           <div className="space-y-6">
-            <div className="bg-card border-border rounded-xl border p-5 shadow-sm">
-              <div className="mb-5 flex items-center justify-between">
-                <div>
-                  <h3 className="text-foreground font-semibold">
-                    Volume operacional
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    Ordens e chamados registrados.
-                  </p>
-                </div>
-                <Activity className="text-primary h-5 w-5" />
-              </div>
+            <DashboardSection
+              title="Volume operacional"
+              description="Ordens e chamados registrados."
+              icon={Activity}
+            >
               <div className="flex items-end justify-between gap-4">
                 <div>
                   <p className="text-foreground text-3xl font-bold">
@@ -408,20 +249,13 @@ export default function DashboardHome() {
                   </p>
                 </div>
               </div>
-            </div>
+            </DashboardSection>
 
-            <div className="bg-card border-border rounded-xl border p-5 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <h3 className="text-foreground font-semibold">
-                    Atividade recente
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    Últimos eventos registrados.
-                  </p>
-                </div>
-                <Activity className="text-muted-foreground h-5 w-5" />
-              </div>
+            <DashboardSection
+              title="Atividade recente"
+              description="Últimos eventos registrados."
+              icon={Activity}
+            >
               {stats.recentEvents.length === 0 ? (
                 <div className="border-border flex items-center gap-3 rounded-lg border border-dashed p-4">
                   <CheckCircle2 className="text-success h-5 w-5 shrink-0" />
@@ -441,7 +275,7 @@ export default function DashboardHome() {
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="text-foreground truncate text-sm font-medium">
-                          {event.event_name}
+                          {event.event_type}
                         </p>
                         <p className="text-muted-foreground truncate text-xs">
                           {event.aggregate_type || 'Evento de domínio'}
@@ -457,11 +291,11 @@ export default function DashboardHome() {
                   ))}
                 </div>
               )}
-            </div>
+            </DashboardSection>
           </div>
-        </section>
+        </div>
 
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <NavLink
             to="/dashboard/financeiro"
             className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors"
@@ -498,7 +332,7 @@ export default function DashboardHome() {
               </p>
             </div>
           </NavLink>
-        </section>
+        </div>
       </div>
     </ModuleWorkspace>
   );

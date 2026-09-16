@@ -2,11 +2,31 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Search, Download } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Download,
+  Package,
+  CheckCircle2,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  RotateCcw,
+  ClipboardList,
+  ShieldCheck,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { EmptyState, ErrorState } from '@/components/fallback';
+import { EmptyState } from '@/components/fallback';
+import {
+  DashboardCard,
+  DashboardErrorState,
+  DashboardMetricGrid,
+  DashboardSkeleton,
+} from '@/components/dashboard';
+import {
+  filterDashboardMetrics,
+  type DashboardMetric,
+} from '@/components/dashboard/dashboard-model';
 import { useToast } from '@/components/feedback/ToastContext';
 import { warehouseRepository } from '@/repositories/warehouse.repository';
 import type {
@@ -18,12 +38,14 @@ import type {
   EPI,
 } from '@/types/domain/warehouse';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAccount } from '@/contexts/AccountContext';
 
 type Tab =
   'warehouses' | 'entries' | 'issues' | 'returns' | 'custodies' | 'epis';
 
 export default function Almoxarifado() {
-  const { currentTenantId } = useAuth();
+  const { currentTenantId, isAdminMaster } = useAuth();
+  const { activePermissions } = useAccount();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('warehouses');
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -98,19 +120,105 @@ export default function Almoxarifado() {
     };
   }, [warehouses, entries, issues, returns, custodies, epis]);
 
+  const metrics = useMemo<DashboardMetric[]>(
+    () => [
+      {
+        id: 'warehouses',
+        label: 'Almoxarifados',
+        value: kpis.totalWarehouses,
+        description: 'Unidades cadastradas',
+        icon: Package,
+        tone: 'neutral',
+        permission: 'warehouse.dashboard.read',
+        format: 'number',
+      },
+      {
+        id: 'active-warehouses',
+        label: 'Ativos',
+        value: kpis.activeWarehouses,
+        description: 'Almoxarifados em operação',
+        icon: CheckCircle2,
+        tone: 'success',
+        permission: 'warehouse.dashboard.read',
+        format: 'number',
+      },
+      {
+        id: 'entries',
+        label: 'Entradas',
+        value: kpis.totalEntries,
+        description: 'Recebimentos registrados',
+        icon: ArrowDownCircle,
+        tone: 'primary',
+        permission: 'warehouse.dashboard.read',
+        format: 'number',
+      },
+      {
+        id: 'issues',
+        label: 'Saídas',
+        value: kpis.totalIssues,
+        description: 'Baixas registradas',
+        icon: ArrowUpCircle,
+        tone: 'warning',
+        permission: 'warehouse.dashboard.read',
+        format: 'number',
+      },
+      {
+        id: 'returns',
+        label: 'Devoluções',
+        value: kpis.totalReturns,
+        description: 'Itens devolvidos',
+        icon: RotateCcw,
+        tone: 'success',
+        permission: 'warehouse.dashboard.read',
+        format: 'number',
+      },
+      {
+        id: 'custodies',
+        label: 'Custódias',
+        value: kpis.totalCustodies,
+        description: 'Itens sob responsabilidade',
+        icon: ClipboardList,
+        tone: 'primary',
+        permission: 'warehouse.dashboard.read',
+        format: 'number',
+      },
+      {
+        id: 'epis',
+        label: 'EPIs',
+        value: kpis.totalEpis,
+        description: 'Equipamentos registrados',
+        icon: ShieldCheck,
+        tone: 'neutral',
+        permission: 'warehouse.dashboard.read',
+        format: 'number',
+      },
+    ],
+    [
+      kpis.activeWarehouses,
+      kpis.totalCustodies,
+      kpis.totalEntries,
+      kpis.totalEpis,
+      kpis.totalIssues,
+      kpis.totalReturns,
+      kpis.totalWarehouses,
+    ],
+  );
+  const visibleMetrics = filterDashboardMetrics(
+    metrics,
+    activePermissions,
+    isAdminMaster,
+  );
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground text-sm">
-          Carregando almoxarifado...
-        </p>
-      </div>
-    );
+    return <DashboardSkeleton count={7} />;
   }
 
   if (error) {
     return (
-      <ErrorState message={error} onRetry={() => window.location.reload()} />
+      <DashboardErrorState
+        message={error}
+        onRetry={() => window.location.reload()}
+      />
     );
   }
 
@@ -139,50 +247,18 @@ export default function Almoxarifado() {
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Almoxarifados</p>
-          <p className="text-foreground text-lg font-semibold">
-            {kpis.totalWarehouses}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Ativos</p>
-          <p className="text-success text-lg font-semibold">
-            {kpis.activeWarehouses}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Entradas</p>
-          <p className="text-foreground text-lg font-semibold">
-            {kpis.totalEntries}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Saídas</p>
-          <p className="text-foreground text-lg font-semibold">
-            {kpis.totalIssues}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Devoluções</p>
-          <p className="text-foreground text-lg font-semibold">
-            {kpis.totalReturns}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Custódias</p>
-          <p className="text-foreground text-lg font-semibold">
-            {kpis.totalCustodies}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">EPIs</p>
-          <p className="text-foreground text-lg font-semibold">
-            {kpis.totalEpis}
-          </p>
-        </Card>
-      </div>
+      {visibleMetrics.length > 0 ? (
+        <DashboardMetricGrid>
+          {visibleMetrics.map((metric) => (
+            <DashboardCard key={metric.id} metric={metric} />
+          ))}
+        </DashboardMetricGrid>
+      ) : (
+        <EmptyState
+          title="Nenhum indicador de almoxarifado disponível"
+          description="Seu perfil não possui indicadores de almoxarifado liberados para visualização."
+        />
+      )}
 
       <div className="border-border flex gap-2 overflow-x-auto border-b">
         {[
@@ -224,7 +300,14 @@ export default function Almoxarifado() {
                 className="w-full bg-transparent text-sm outline-none"
               />
             </div>
-            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de novo almoxarifado' })}>
+            <Button
+              onClick={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de novo almoxarifado',
+                })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" />
               Novo almoxarifado
             </Button>
@@ -235,7 +318,12 @@ export default function Almoxarifado() {
               title="Nenhum almoxarifado cadastrado"
               description="Quando houver almoxarifados registrados, eles aparecerão aqui."
               actionLabel="Novo almoxarifado"
-              onAction={() => addToast({ type: 'info', message: 'Formulário de novo almoxarifado' })}
+              onAction={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de novo almoxarifado',
+                })
+              }
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -296,7 +384,14 @@ export default function Almoxarifado() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova entrada' })}>
+            <Button
+              onClick={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de nova entrada',
+                })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" />
               Nova entrada
             </Button>
@@ -307,7 +402,12 @@ export default function Almoxarifado() {
               title="Nenhuma entrada registrada"
               description="Quando houver entradas, elas aparecerão aqui."
               actionLabel="Nova entrada"
-              onAction={() => addToast({ type: 'info', message: 'Formulário de nova entrada' })}
+              onAction={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de nova entrada',
+                })
+              }
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -362,7 +462,11 @@ export default function Almoxarifado() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova saída' })}>
+            <Button
+              onClick={() =>
+                addToast({ type: 'info', message: 'Formulário de nova saída' })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" />
               Nova saída
             </Button>
@@ -373,7 +477,9 @@ export default function Almoxarifado() {
               title="Nenhuma saída registrada"
               description="Quando houver saídas, elas aparecerão aqui."
               actionLabel="Nova saída"
-              onAction={() => addToast({ type: 'info', message: 'Formulário de nova saída' })}
+              onAction={() =>
+                addToast({ type: 'info', message: 'Formulário de nova saída' })
+              }
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -432,7 +538,14 @@ export default function Almoxarifado() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova devolução' })}>
+            <Button
+              onClick={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de nova devolução',
+                })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" />
               Nova devolução
             </Button>
@@ -443,7 +556,12 @@ export default function Almoxarifado() {
               title="Nenhuma devolução registrada"
               description="Quando houver devoluções, elas aparecerão aqui."
               actionLabel="Nova devolução"
-              onAction={() => addToast({ type: 'info', message: 'Formulário de nova devolução' })}
+              onAction={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de nova devolução',
+                })
+              }
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -496,7 +614,14 @@ export default function Almoxarifado() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova custódia' })}>
+            <Button
+              onClick={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de nova custódia',
+                })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" />
               Nova custódia
             </Button>
@@ -507,7 +632,12 @@ export default function Almoxarifado() {
               title="Nenhuma custódia registrada"
               description="Quando houver custódias, elas aparecerão aqui."
               actionLabel="Nova custódia"
-              onAction={() => addToast({ type: 'info', message: 'Formulário de nova custódia' })}
+              onAction={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de nova custódia',
+                })
+              }
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -566,7 +696,11 @@ export default function Almoxarifado() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de novo EPI' })}>
+            <Button
+              onClick={() =>
+                addToast({ type: 'info', message: 'Formulário de novo EPI' })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" />
               Novo EPI
             </Button>
@@ -577,7 +711,9 @@ export default function Almoxarifado() {
               title="Nenhum EPI registrado"
               description="Quando houver EPIs, eles aparecerão aqui."
               actionLabel="Novo EPI"
-              onAction={() => addToast({ type: 'info', message: 'Formulário de novo EPI' })}
+              onAction={() =>
+                addToast({ type: 'info', message: 'Formulário de novo EPI' })
+              }
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">

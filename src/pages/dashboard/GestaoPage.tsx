@@ -1,85 +1,69 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
+import { BarChart3, BriefcaseBusiness, Building2, Users } from 'lucide-react';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { Card } from '@/components/ui/Card';
-import { Building2, Users, BarChart3 } from 'lucide-react';
-import { getSupabaseClient } from '@/lib/supabase';
+import {
+  DashboardCard,
+  DashboardErrorState,
+  DashboardMetricGrid,
+  DashboardSkeleton,
+} from '@/components/dashboard';
+import {
+  filterDashboardMetrics,
+  type DashboardMetric,
+} from '@/components/dashboard/dashboard-model';
+import { EmptyState } from '@/components/fallback';
+import { useAccount } from '@/contexts/AccountContext';
 import { useAuth } from '@/contexts/AuthContext';
-
-interface StatCard {
-  label: string;
-  value: number;
-  icon: React.ComponentType<{ className?: string }>;
-}
+import { useGlobalDashboardStats } from '@/hooks/useGlobalDashboardStats';
 
 export default function GestaoPage() {
-  const { isAdminMaster, tenantMemberships, currentTenantId } = useAuth();
-  const [stats, setStats] = useState<StatCard[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { activePermissions } = useAccount();
+  const { isAdminMaster } = useAuth();
+  const stats = useGlobalDashboardStats();
 
-  useEffect(() => {
-    const supabase = getSupabaseClient();
-    if (!supabase) return;
-
-    const fetchStats = async () => {
-      try {
-        const isPlatform = isAdminMaster;
-        let companies = 0;
-        let people = 0;
-        let jobs = 0;
-
-        if (isPlatform) {
-          const [{ count: cCount }, { count: pCount }, { count: jCount }] =
-            await Promise.all([
-              supabase
-                .from('companies')
-                .select('*', { count: 'exact', head: true }),
-              supabase
-                .from('people')
-                .select('*', { count: 'exact', head: true }),
-              supabase.from('jobs').select('*', { count: 'exact', head: true }),
-            ]);
-          companies = cCount || 0;
-          people = pCount || 0;
-          jobs = jCount || 0;
-        } else {
-          const activeTenantId =
-            currentTenantId || tenantMemberships[0]?.tenant_id;
-          if (activeTenantId) {
-            const [{ count: cCount }, { count: pCount }, { count: jCount }] =
-              await Promise.all([
-                supabase
-                  .from('companies')
-                  .select('*', { count: 'exact', head: true })
-                  .eq('tenant_id', activeTenantId),
-                supabase
-                  .from('people')
-                  .select('*', { count: 'exact', head: true })
-                  .eq('tenant_id', activeTenantId),
-                supabase
-                  .from('jobs')
-                  .select('*', { count: 'exact', head: true })
-                  .eq('tenant_id', activeTenantId),
-              ]);
-            companies = cCount || 0;
-            people = pCount || 0;
-            jobs = jCount || 0;
-          }
-        }
-
-        setStats([
-          { label: 'Empresas', value: companies, icon: Building2 },
-          { label: 'Colaboradores', value: people, icon: Users },
-          { label: 'Vagas', value: jobs, icon: BarChart3 },
-        ]);
-      } catch (error) {
-        console.error('[GESTAO] Failed to load stats:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, [isAdminMaster, currentTenantId, tenantMemberships]);
+  const metrics = useMemo<DashboardMetric[]>(
+    () => [
+      {
+        id: 'companies',
+        label: 'Empresas',
+        value: stats.companies,
+        description: 'Empresas cadastradas na operação',
+        icon: Building2,
+        tone: 'success',
+        href: '/dashboard/empresas',
+        permission: 'companies.read',
+        format: 'number',
+      },
+      {
+        id: 'people',
+        label: 'Colaboradores',
+        value: stats.people,
+        description: 'Pessoas vinculadas à operação',
+        icon: Users,
+        tone: 'primary',
+        href: '/dashboard/usuarios',
+        permission: 'people.read',
+        format: 'number',
+      },
+      {
+        id: 'jobs',
+        label: 'Vagas',
+        value: stats.jobs,
+        description: 'Vagas cadastradas no recrutamento',
+        icon: BriefcaseBusiness,
+        tone: 'warning',
+        href: '/dashboard/vagas',
+        permission: 'jobs.read',
+        format: 'number',
+      },
+    ],
+    [stats.companies, stats.jobs, stats.people],
+  );
+  const visibleMetrics = filterDashboardMetrics(
+    metrics,
+    activePermissions,
+    isAdminMaster,
+  );
 
   return (
     <ModuleWorkspace
@@ -88,31 +72,24 @@ export default function GestaoPage() {
       icon={BarChart3}
       breadcrumbItems={[{ label: 'Gestão' }]}
     >
-      {loading ? (
-        <div className="text-muted-foreground text-sm">
-          Carregando indicadores...
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {stats.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Card key={item.label} className="p-6">
-                <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                  {item.label}
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-foreground text-2xl font-semibold">
-                    {item.value.toLocaleString('pt-BR')}
-                  </span>
-                  <Icon className="text-primary h-5 w-5" />
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
+      <div className="space-y-6">
+        {stats.error ? (
+          <DashboardErrorState message={stats.error} />
+        ) : stats.loading ? (
+          <DashboardSkeleton count={3} />
+        ) : visibleMetrics.length > 0 ? (
+          <DashboardMetricGrid>
+            {visibleMetrics.map((metric) => (
+              <DashboardCard key={metric.id} metric={metric} />
+            ))}
+          </DashboardMetricGrid>
+        ) : (
+          <EmptyState
+            title="Nenhum indicador disponível"
+            description="Seu perfil não possui indicadores liberados para visualização."
+          />
+        )}
+      </div>
     </ModuleWorkspace>
   );
 }
-

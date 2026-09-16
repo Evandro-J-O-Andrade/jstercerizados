@@ -7,7 +7,7 @@ import {
 } from '@/utils/schema';
 import type { BreadcrumbItem } from '@/types/seo';
 
-const SITE_URL = 'https://www.jsempregos.com.br';
+const SITE_URL = 'https://jsempregos.com.br';
 
 describe('buildBreadcrumbSchema', () => {
   it('creates valid BreadcrumbList with correct positions', () => {

@@ -2,22 +2,41 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Search, Download } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Download,
+  FileText,
+  ShoppingCart,
+  ClipboardList,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { EmptyState, ErrorState } from '@/components/fallback';
+import { EmptyState } from '@/components/fallback';
+import {
+  DashboardCard,
+  DashboardErrorState,
+  DashboardMetricGrid,
+  DashboardSkeleton,
+} from '@/components/dashboard';
+import {
+  filterDashboardMetrics,
+  type DashboardMetric,
+} from '@/components/dashboard/dashboard-model';
 import { billingRepository } from '@/repositories/billing.repository';
 import { invoiceRepository } from '@/repositories/invoice.repository';
 import type { Invoice, Sale, Quote } from '@/types/domain/billing';
 import type { Invoice as DomainInvoice } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAccount } from '@/contexts/AccountContext';
 import { useToast } from '@/components/feedback/ToastContext';
 
 type Tab = 'invoices' | 'sales' | 'quotes';
 
 export default function FaturamentoPage() {
-  const { currentTenantId } = useAuth();
+  const { currentTenantId, isAdminMaster } = useAuth();
+  const { activePermissions } = useAccount();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('invoices');
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -92,22 +111,67 @@ export default function FaturamentoPage() {
     };
   }, [invoices, sales, quotes]);
 
+  const metrics = useMemo<DashboardMetric[]>(
+    () => [
+      {
+        id: 'invoice-total',
+        label: 'Total faturado',
+        value: kpis.invoiceTotal,
+        description: `${kpis.invoiceCount} fatura(s)`,
+        icon: FileText,
+        tone: 'success',
+        permission: 'finance.read',
+        format: 'currency',
+      },
+      {
+        id: 'sale-total',
+        label: 'Total vendas',
+        value: kpis.saleTotal,
+        description: `${kpis.saleCount} venda(s)`,
+        icon: ShoppingCart,
+        tone: 'primary',
+        permission: 'finance.read',
+        format: 'currency',
+      },
+      {
+        id: 'quote-total',
+        label: 'Total orçamentos',
+        value: kpis.quoteTotal,
+        description: `${kpis.quoteCount} orçamento(s)`,
+        icon: ClipboardList,
+        tone: 'warning',
+        permission: 'finance.read',
+        format: 'currency',
+      },
+    ],
+    [
+      kpis.invoiceCount,
+      kpis.invoiceTotal,
+      kpis.quoteCount,
+      kpis.quoteTotal,
+      kpis.saleCount,
+      kpis.saleTotal,
+    ],
+  );
+  const visibleMetrics = filterDashboardMetrics(
+    metrics,
+    activePermissions,
+    isAdminMaster,
+  );
+
   const formatCurrency = (value: number) =>
     value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground text-sm">
-          Carregando faturamento...
-        </p>
-      </div>
-    );
+    return <DashboardSkeleton count={3} />;
   }
 
   if (error) {
     return (
-      <ErrorState message={error} onRetry={() => window.location.reload()} />
+      <DashboardErrorState
+        message={error}
+        onRetry={() => window.location.reload()}
+      />
     );
   }
 
@@ -134,35 +198,15 @@ export default function FaturamentoPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Total faturado</p>
-          <p className="text-foreground text-lg font-semibold">
-            {formatCurrency(kpis.invoiceTotal)}
-          </p>
-          <p className="text-muted-foreground text-xs">
-            {kpis.invoiceCount} fatura(s)
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Total vendas</p>
-          <p className="text-foreground text-lg font-semibold">
-            {formatCurrency(kpis.saleTotal)}
-          </p>
-          <p className="text-muted-foreground text-xs">
-            {kpis.saleCount} venda(s)
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Total orçamentos</p>
-          <p className="text-foreground text-lg font-semibold">
-            {formatCurrency(kpis.quoteTotal)}
-          </p>
-          <p className="text-muted-foreground text-xs">
-            {kpis.quoteCount} orçamento(s)
-          </p>
-        </Card>
-      </div>
+      {visibleMetrics.length > 0 ? (
+        <DashboardMetricGrid>
+          {visibleMetrics.map((metric) => (
+            <DashboardCard key={metric.id} metric={metric} />
+          ))}
+        </DashboardMetricGrid>
+      ) : (
+        <DashboardErrorState message="Nenhum indicador de faturamento está liberado para o seu perfil." />
+      )}
 
       <div className="border-border flex gap-2 overflow-x-auto border-b">
         {[
@@ -201,7 +245,11 @@ export default function FaturamentoPage() {
                 className="w-full bg-transparent text-sm outline-none"
               />
             </div>
-            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova fatura' })}>
+            <Button
+              onClick={() =>
+                addToast({ type: 'info', message: 'Formulário de nova fatura' })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" />
               Nova fatura
             </Button>
@@ -212,7 +260,9 @@ export default function FaturamentoPage() {
               title="Nenhuma fatura cadastrada"
               description="Quando houver faturas registradas, elas aparecerão aqui."
               actionLabel="Nova fatura"
-              onAction={() => addToast({ type: 'info', message: 'Formulário de nova fatura' })}
+              onAction={() =>
+                addToast({ type: 'info', message: 'Formulário de nova fatura' })
+              }
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -306,7 +356,11 @@ export default function FaturamentoPage() {
                 className="w-full bg-transparent text-sm outline-none"
               />
             </div>
-            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova venda' })}>
+            <Button
+              onClick={() =>
+                addToast({ type: 'info', message: 'Formulário de nova venda' })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" />
               Nova venda
             </Button>
@@ -317,7 +371,9 @@ export default function FaturamentoPage() {
               title="Nenhuma venda cadastrada"
               description="Quando houver vendas registradas, elas aparecerão aqui."
               actionLabel="Nova venda"
-              onAction={() => addToast({ type: 'info', message: 'Formulário de nova venda' })}
+              onAction={() =>
+                addToast({ type: 'info', message: 'Formulário de nova venda' })
+              }
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -370,7 +426,14 @@ export default function FaturamentoPage() {
           transition={{ duration: 0.3 }}
         >
           <div className="flex justify-end">
-            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de novo orçamento' })}>
+            <Button
+              onClick={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de novo orçamento',
+                })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" />
               Novo orçamento
             </Button>
@@ -381,7 +444,12 @@ export default function FaturamentoPage() {
               title="Nenhum orçamento cadastrado"
               description="Quando houver orçamentos registrados, eles aparecerão aqui."
               actionLabel="Novo orçamento"
-              onAction={() => addToast({ type: 'info', message: 'Formulário de novo orçamento' })}
+              onAction={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de novo orçamento',
+                })
+              }
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -461,7 +529,12 @@ export default function FaturamentoPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => addToast({ type: 'info', message: 'Abrir gestão de notas fiscais' })}
+              onClick={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Abrir gestão de notas fiscais',
+                })
+              }
             >
               Gerenciar
             </Button>

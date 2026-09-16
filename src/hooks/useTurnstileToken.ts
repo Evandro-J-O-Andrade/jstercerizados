@@ -15,6 +15,7 @@ declare global {
           'error-callback'?: () => void;
           'expired-callback'?: () => void;
           theme?: 'light' | 'dark' | 'auto';
+          action?: string;
         },
       ) => string;
       reset: (widgetId?: string) => void;
@@ -71,9 +72,9 @@ export interface UseTurnstileTokenResult {
 
 export function useTurnstileToken(
   containerRef: React.RefObject<HTMLElement | null>,
-  options: { enabled?: boolean } = {},
+  options: { enabled?: boolean; action?: string } = {},
 ): UseTurnstileTokenResult {
-  const { enabled = true } = options;
+  const { enabled = true, action } = options;
   const siteKey = getTurnstileSiteKey();
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -119,6 +120,7 @@ export function useTurnstileToken(
               setToken(null);
             }
           },
+          ...(action ? { action } : {}),
         });
         setLoading(false);
       })
@@ -140,7 +142,7 @@ export function useTurnstileToken(
         widgetIdRef.current = null;
       }
     };
-  }, [enabled, siteKey, containerRef]);
+  }, [enabled, siteKey, containerRef, action]);
 
   return { token, error, loading, reset };
 }

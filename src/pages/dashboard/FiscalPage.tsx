@@ -2,23 +2,43 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Search, Download } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Download,
+  FileText,
+  CheckCircle2,
+  XCircle,
+  FileBadge,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { EmptyState, ErrorState } from '@/components/fallback';
+import { EmptyState } from '@/components/fallback';
+import {
+  DashboardCard,
+  DashboardErrorState,
+  DashboardMetricGrid,
+  DashboardSkeleton,
+} from '@/components/dashboard';
+import {
+  filterDashboardMetrics,
+  type DashboardMetric,
+} from '@/components/dashboard/dashboard-model';
 import { fiscalRepository } from '@/repositories/fiscal.repository';
 import type {
   FiscalDocument,
   FiscalConfiguration,
 } from '@/types/domain/fiscal';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAccount } from '@/contexts/AccountContext';
 import { useToast } from '@/components/feedback/ToastContext';
 
 type Tab = 'documents' | 'configuration';
 
 export default function FiscalPage() {
-  const { currentTenantId } = useAuth();
+  const { currentTenantId, isAdminMaster } = useAuth();
+  const { activePermissions } = useAccount();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('documents');
   const [documents, setDocuments] = useState<FiscalDocument[]>([]);
@@ -74,22 +94,70 @@ export default function FiscalPage() {
     return { total, issued, cancelled, draft };
   }, [documents]);
 
+  const metrics = useMemo<DashboardMetric[]>(
+    () => [
+      {
+        id: 'total-documents',
+        label: 'Total documentos',
+        value: kpis.total,
+        description: 'Documentos fiscais registrados',
+        icon: FileText,
+        tone: 'neutral',
+        permission: 'fiscal.dashboard.read',
+        format: 'number',
+      },
+      {
+        id: 'issued',
+        label: 'Emitidas',
+        value: kpis.issued,
+        description: 'Notas fiscais emitidas',
+        icon: CheckCircle2,
+        tone: 'success',
+        permission: 'fiscal.dashboard.read',
+        format: 'number',
+      },
+      {
+        id: 'cancelled',
+        label: 'Canceladas',
+        value: kpis.cancelled,
+        description: 'Notas fiscais canceladas',
+        icon: XCircle,
+        tone: 'danger',
+        permission: 'fiscal.dashboard.read',
+        format: 'number',
+      },
+      {
+        id: 'draft',
+        label: 'Rascunhos',
+        value: kpis.draft,
+        description: 'Documentos pendentes de emissão',
+        icon: FileBadge,
+        tone: 'warning',
+        permission: 'fiscal.dashboard.read',
+        format: 'number',
+      },
+    ],
+    [kpis.cancelled, kpis.draft, kpis.issued, kpis.total],
+  );
+  const visibleMetrics = filterDashboardMetrics(
+    metrics,
+    activePermissions,
+    isAdminMaster,
+  );
+
   const formatCurrency = (value: number) =>
     value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground text-sm">
-          Carregando dados fiscais...
-        </p>
-      </div>
-    );
+    return <DashboardSkeleton count={4} />;
   }
 
   if (error) {
     return (
-      <ErrorState message={error} onRetry={() => window.location.reload()} />
+      <DashboardErrorState
+        message={error}
+        onRetry={() => window.location.reload()}
+      />
     );
   }
 
@@ -116,26 +184,18 @@ export default function FiscalPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Total documentos</p>
-          <p className="text-foreground text-lg font-semibold">{kpis.total}</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Emitidas</p>
-          <p className="text-success text-lg font-semibold">{kpis.issued}</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Canceladas</p>
-          <p className="text-destructive text-lg font-semibold">
-            {kpis.cancelled}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground text-xs">Rascunhos</p>
-          <p className="text-warning text-lg font-semibold">{kpis.draft}</p>
-        </Card>
-      </div>
+      {visibleMetrics.length > 0 ? (
+        <DashboardMetricGrid>
+          {visibleMetrics.map((metric) => (
+            <DashboardCard key={metric.id} metric={metric} />
+          ))}
+        </DashboardMetricGrid>
+      ) : (
+        <EmptyState
+          title="Nenhum indicador fiscal disponível"
+          description="Seu perfil não possui indicadores fiscais liberados para visualização."
+        />
+      )}
 
       <div className="border-border flex gap-2 overflow-x-auto border-b">
         {[
@@ -184,7 +244,14 @@ export default function FiscalPage() {
               <option value="cancelled">Cancelada</option>
               <option value="voided">Inutilizada</option>
             </select>
-            <Button onClick={() => addToast({ type: 'info', message: 'Formulário de nova nota fiscal' })}>
+            <Button
+              onClick={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de nova nota fiscal',
+                })
+              }
+            >
               <Plus className="mr-2 h-4 w-4" />
               Nova nota
             </Button>
@@ -195,7 +262,12 @@ export default function FiscalPage() {
               title="Nenhuma nota fiscal cadastrada"
               description="Quando houver notas fiscais registradas, elas aparecerão aqui."
               actionLabel="Nova nota"
-              onAction={() => addToast({ type: 'info', message: 'Formulário de nova nota fiscal' })}
+              onAction={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Formulário de nova nota fiscal',
+                })
+              }
             />
           ) : (
             <div className="border-border overflow-x-auto rounded-xl border">
@@ -289,7 +361,12 @@ export default function FiscalPage() {
                 </p>
               </div>
               <Button
-                onClick={() => addToast({ type: 'info', message: 'Formulário de configuração fiscal' })}
+                onClick={() =>
+                  addToast({
+                    type: 'info',
+                    message: 'Formulário de configuração fiscal',
+                  })
+                }
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Editar configuração

@@ -1,0 +1,4488 @@
+{
+  "tables": {
+    "people": [
+      {
+        "table_schema": "public",
+        "table_name": "people",
+        "ordinal_position": 1,
+        "column_name": "id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "uuid_generate_v4()",
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "people",
+        "ordinal_position": 2,
+        "column_name": "auth_user_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "people",
+        "ordinal_position": 3,
+        "column_name": "full_name",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "people",
+        "ordinal_position": 4,
+        "column_name": "email",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "people",
+        "ordinal_position": 5,
+        "column_name": "phone",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "people",
+        "ordinal_position": 6,
+        "column_name": "status",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'active'::text",
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "people",
+        "ordinal_position": 7,
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "people",
+        "ordinal_position": 8,
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "people",
+        "ordinal_position": 9,
+        "column_name": "metadata",
+        "data_type": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'{}'::jsonb",
+        "udt_name": "jsonb"
+      }
+    ],
+    "tenants": [
+      {
+        "table_schema": "public",
+        "table_name": "tenants",
+        "ordinal_position": 1,
+        "column_name": "id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "uuid_generate_v4()",
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenants",
+        "ordinal_position": 2,
+        "column_name": "name",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenants",
+        "ordinal_position": 3,
+        "column_name": "slug",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenants",
+        "ordinal_position": 4,
+        "column_name": "status",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'active'::text",
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenants",
+        "ordinal_position": 5,
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenants",
+        "ordinal_position": 6,
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      }
+    ],
+    "tenant_memberships": [
+      {
+        "table_schema": "public",
+        "table_name": "tenant_memberships",
+        "ordinal_position": 1,
+        "column_name": "id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "uuid_generate_v4()",
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_memberships",
+        "ordinal_position": 2,
+        "column_name": "person_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_memberships",
+        "ordinal_position": 3,
+        "column_name": "tenant_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_memberships",
+        "ordinal_position": 4,
+        "column_name": "status",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'active'::text",
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_memberships",
+        "ordinal_position": 5,
+        "column_name": "joined_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_memberships",
+        "ordinal_position": 6,
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_memberships",
+        "ordinal_position": 7,
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_memberships",
+        "ordinal_position": 8,
+        "column_name": "membership_role",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'member'::text",
+        "udt_name": "text"
+      }
+    ],
+    "tenant_settings": [
+      {
+        "table_schema": "public",
+        "table_name": "tenant_settings",
+        "ordinal_position": 1,
+        "column_name": "id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "uuid_generate_v4()",
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_settings",
+        "ordinal_position": 2,
+        "column_name": "tenant_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_settings",
+        "ordinal_position": 3,
+        "column_name": "key",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_settings",
+        "ordinal_position": 4,
+        "column_name": "value",
+        "data_type": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'{}'::jsonb",
+        "udt_name": "jsonb"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_settings",
+        "ordinal_position": 5,
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "tenant_settings",
+        "ordinal_position": 6,
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      }
+    ],
+    "roles": [
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 1,
+        "column_name": "id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "uuid_generate_v4()",
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 2,
+        "column_name": "name",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 3,
+        "column_name": "description",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 4,
+        "column_name": "scope",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'tenant'::text",
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 5,
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 6,
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 7,
+        "column_name": "status",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'active'::text",
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 8,
+        "column_name": "slug",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 9,
+        "column_name": "level",
+        "data_type": "integer",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "int4"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 10,
+        "column_name": "sector",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "roles",
+        "ordinal_position": 11,
+        "column_name": "replacement_role_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "uuid"
+      }
+    ],
+    "permissions": [
+      {
+        "table_schema": "public",
+        "table_name": "permissions",
+        "ordinal_position": 1,
+        "column_name": "id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "uuid_generate_v4()",
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "permissions",
+        "ordinal_position": 2,
+        "column_name": "resource",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "permissions",
+        "ordinal_position": 3,
+        "column_name": "action",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "permissions",
+        "ordinal_position": 4,
+        "column_name": "description",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "permissions",
+        "ordinal_position": 5,
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "permissions",
+        "ordinal_position": 6,
+        "column_name": "code",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "permissions",
+        "ordinal_position": 7,
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      }
+    ],
+    "role_permissions": [
+      {
+        "table_schema": "public",
+        "table_name": "role_permissions",
+        "ordinal_position": 1,
+        "column_name": "id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "uuid_generate_v4()",
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "role_permissions",
+        "ordinal_position": 2,
+        "column_name": "role_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "role_permissions",
+        "ordinal_position": 3,
+        "column_name": "permission_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "role_permissions",
+        "ordinal_position": 4,
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      }
+    ],
+    "role_assignments": [
+      {
+        "table_schema": "public",
+        "table_name": "role_assignments",
+        "ordinal_position": 1,
+        "column_name": "id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "uuid_generate_v4()",
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "role_assignments",
+        "ordinal_position": 2,
+        "column_name": "person_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "role_assignments",
+        "ordinal_position": 3,
+        "column_name": "role_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "role_assignments",
+        "ordinal_position": 4,
+        "column_name": "tenant_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "role_assignments",
+        "ordinal_position": 5,
+        "column_name": "assigned_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "role_assignments",
+        "ordinal_position": 6,
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "public",
+        "table_name": "role_assignments",
+        "ordinal_position": 7,
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()",
+        "udt_name": "timestamptz"
+      }
+    ],
+    "auth.users": [
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 1,
+        "column_name": "instance_id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 2,
+        "column_name": "id",
+        "data_type": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null,
+        "udt_name": "uuid"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 3,
+        "column_name": "aud",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 4,
+        "column_name": "role",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 5,
+        "column_name": "email",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 6,
+        "column_name": "encrypted_password",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 7,
+        "column_name": "email_confirmed_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 8,
+        "column_name": "invited_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 9,
+        "column_name": "confirmation_token",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 10,
+        "column_name": "confirmation_sent_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 11,
+        "column_name": "recovery_token",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 12,
+        "column_name": "recovery_sent_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 13,
+        "column_name": "email_change_token_new",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 14,
+        "column_name": "email_change",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 15,
+        "column_name": "email_change_sent_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 16,
+        "column_name": "last_sign_in_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 17,
+        "column_name": "raw_app_meta_data",
+        "data_type": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "jsonb"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 18,
+        "column_name": "raw_user_meta_data",
+        "data_type": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "jsonb"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 19,
+        "column_name": "is_super_admin",
+        "data_type": "boolean",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "bool"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 20,
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 21,
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 22,
+        "column_name": "phone",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "NULL::character varying",
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 23,
+        "column_name": "phone_confirmed_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 24,
+        "column_name": "phone_change",
+        "data_type": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "''::character varying",
+        "udt_name": "text"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 25,
+        "column_name": "phone_change_token",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": "''::character varying",
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 26,
+        "column_name": "phone_change_sent_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 27,
+        "column_name": "confirmed_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 28,
+        "column_name": "email_change_token_current",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": "''::character varying",
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 29,
+        "column_name": "email_change_confirm_status",
+        "data_type": "smallint",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "0",
+        "udt_name": "int2"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 30,
+        "column_name": "banned_until",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 31,
+        "column_name": "reauthentication_token",
+        "data_type": "character varying",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": "''::character varying",
+        "udt_name": "varchar"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 32,
+        "column_name": "reauthentication_sent_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 33,
+        "column_name": "is_sso_user",
+        "data_type": "boolean",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "false",
+        "udt_name": "bool"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 34,
+        "column_name": "deleted_at",
+        "data_type": "timestamp with time zone",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null,
+        "udt_name": "timestamptz"
+      },
+      {
+        "table_schema": "auth",
+        "table_name": "users",
+        "ordinal_position": 35,
+        "column_name": "is_anonymous",
+        "data_type": "boolean",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "false",
+        "udt_name": "bool"
+      }
+    ]
+  },
+  "rls": [
+    {
+      "relname": "people",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "permissions",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "role_assignments",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "role_permissions",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "roles",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "tenant_memberships",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "tenant_settings",
+      "relrowsecurity": true
+    },
+    {
+      "relname": "tenants",
+      "relrowsecurity": true
+    }
+  ],
+  "functions": [
+    {
+      "schema": "public",
+      "name": "bootstrap_candidate_identity",
+      "args": "p_auth_user_id uuid, p_full_name text, p_email text, p_tenant_id uuid DEFAULT NULL::uuid, p_role_id uuid DEFAULT NULL::uuid",
+      "result": "TABLE(person_id uuid, tenant_membership_id uuid, role_assignment_id uuid, first_login_state_person_id uuid, candidate_id uuid)",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "bootstrap_candidate_identity",
+      "args": "p_auth_user_id uuid, p_full_name text, p_email text, p_phone text DEFAULT NULL::text, p_tenant_id uuid DEFAULT NULL::uuid, p_role_id uuid DEFAULT NULL::uuid",
+      "result": "TABLE(person_id uuid, tenant_membership_id uuid, role_assignment_id uuid, first_login_state_person_id uuid, candidate_id uuid)",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "domain_event_emit",
+      "args": "p_tenant_id uuid, p_event_type text, p_aggregate_type text, p_aggregate_id uuid, p_payload jsonb DEFAULT '{}'::jsonb, p_idempotency_key text DEFAULT NULL::text",
+      "result": "uuid",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "emit_domain_event",
+      "args": "p_event_name text, p_aggregate_type text, p_aggregate_id uuid, p_tenant_id uuid, p_payload jsonb DEFAULT '{}'::jsonb, p_idempotency_key text DEFAULT NULL::text",
+      "result": "uuid",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "handle_auth_user_deleted",
+      "args": "",
+      "result": "trigger",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "handle_auth_user_updated",
+      "args": "",
+      "result": "trigger",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "handle_new_auth_user",
+      "args": "",
+      "result": "trigger",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "is_admin_master",
+      "args": "",
+      "result": "boolean",
+      "language": "sql",
+      "security_definer": true,
+      "volatility": "s"
+    },
+    {
+      "schema": "public",
+      "name": "is_admin_master",
+      "args": "auth_uid uuid",
+      "result": "boolean",
+      "language": "sql",
+      "security_definer": true,
+      "volatility": "s"
+    },
+    {
+      "schema": "public",
+      "name": "is_tenant_member",
+      "args": "p_tenant_id uuid",
+      "result": "boolean",
+      "language": "sql",
+      "security_definer": true,
+      "volatility": "s"
+    },
+    {
+      "schema": "public",
+      "name": "is_valid_cnpj",
+      "args": "p_value text",
+      "result": "boolean",
+      "language": "plpgsql",
+      "security_definer": false,
+      "volatility": "i"
+    },
+    {
+      "schema": "public",
+      "name": "is_valid_cpf",
+      "args": "p_value text",
+      "result": "boolean",
+      "language": "plpgsql",
+      "security_definer": false,
+      "volatility": "i"
+    },
+    {
+      "schema": "public",
+      "name": "media_for_entity",
+      "args": "p_entity_type text, p_entity_id uuid",
+      "result": "TABLE(id uuid, bucket_id text, storage_path text, file_url text, file_name text, mime_type text, width integer, height integer, is_primary boolean, sort_order integer, alt_text text)",
+      "language": "sql",
+      "security_definer": false,
+      "volatility": "s"
+    },
+    {
+      "schema": "public",
+      "name": "normalize_cnpj",
+      "args": "p_value text",
+      "result": "text",
+      "language": "sql",
+      "security_definer": false,
+      "volatility": "i"
+    },
+    {
+      "schema": "public",
+      "name": "normalize_cpf",
+      "args": "p_value text",
+      "result": "text",
+      "language": "sql",
+      "security_definer": false,
+      "volatility": "i"
+    },
+    {
+      "schema": "public",
+      "name": "repair_candidate_chain",
+      "args": "p_person_id uuid, p_tenant_id uuid DEFAULT NULL::uuid, p_role_code text DEFAULT 'candidato'::text",
+      "result": "TABLE(person_id uuid, tenant_membership_id uuid, role_assignment_id uuid, candidate_id uuid, created_membership boolean, created_assignment boolean, created_candidate boolean)",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "set_primary_media",
+      "args": "p_entity_type text, p_entity_id uuid, p_media_id uuid",
+      "result": "void",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "update_updated_at",
+      "args": "",
+      "result": "trigger",
+      "language": "plpgsql",
+      "security_definer": false,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "user_has_permission",
+      "args": "p_auth_user_id uuid, p_resource text, p_action text, p_tenant_id uuid DEFAULT NULL::uuid",
+      "result": "boolean",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "s"
+    },
+    {
+      "schema": "public",
+      "name": "user_permissions",
+      "args": "p_auth_user_id uuid, p_tenant_id uuid",
+      "result": "TABLE(resource text, action text, description text)",
+      "language": "plpgsql",
+      "security_definer": true,
+      "volatility": "v"
+    },
+    {
+      "schema": "public",
+      "name": "user_tenant_ids",
+      "args": "",
+      "result": "SETOF uuid",
+      "language": "sql",
+      "security_definer": true,
+      "volatility": "s"
+    }
+  ],
+  "triggers": [
+    {
+      "table_name": "people",
+      "trigger_name": "trg_audit_data_deletion_requests",
+      "tgtype": 11,
+      "definition": "CREATE TRIGGER trg_audit_data_deletion_requests BEFORE DELETE ON public.people FOR EACH ROW EXECUTE FUNCTION lgpd_legal_hold_check()"
+    },
+    {
+      "table_name": "people",
+      "trigger_name": "trg_audit_people",
+      "tgtype": 29,
+      "definition": "CREATE TRIGGER trg_audit_people AFTER INSERT OR DELETE OR UPDATE ON public.people FOR EACH ROW EXECUTE FUNCTION audit_log_insert()"
+    },
+    {
+      "table_name": "people",
+      "trigger_name": "trg_set_updated_at_people",
+      "tgtype": 19,
+      "definition": "CREATE TRIGGER trg_set_updated_at_people BEFORE UPDATE ON public.people FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "permissions",
+      "trigger_name": "trg_set_updated_at_permissions",
+      "tgtype": 19,
+      "definition": "CREATE TRIGGER trg_set_updated_at_permissions BEFORE UPDATE ON public.permissions FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "permissions",
+      "trigger_name": "update_permissions_updated_at",
+      "tgtype": 19,
+      "definition": "CREATE TRIGGER update_permissions_updated_at BEFORE UPDATE ON public.permissions FOR EACH ROW EXECUTE FUNCTION update_updated_at()"
+    },
+    {
+      "table_name": "role_assignments",
+      "trigger_name": "trg_audit_role_assignments",
+      "tgtype": 29,
+      "definition": "CREATE TRIGGER trg_audit_role_assignments AFTER INSERT OR DELETE OR UPDATE ON public.role_assignments FOR EACH ROW EXECUTE FUNCTION audit_log_insert()"
+    },
+    {
+      "table_name": "role_assignments",
+      "trigger_name": "update_role_assignments_updated_at",
+      "tgtype": 19,
+      "definition": "CREATE TRIGGER update_role_assignments_updated_at BEFORE UPDATE ON public.role_assignments FOR EACH ROW EXECUTE FUNCTION update_updated_at()"
+    },
+    {
+      "table_name": "roles",
+      "trigger_name": "trg_set_updated_at_roles",
+      "tgtype": 19,
+      "definition": "CREATE TRIGGER trg_set_updated_at_roles BEFORE UPDATE ON public.roles FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "tenant_memberships",
+      "trigger_name": "trg_audit_tenant_memberships",
+      "tgtype": 29,
+      "definition": "CREATE TRIGGER trg_audit_tenant_memberships AFTER INSERT OR DELETE OR UPDATE ON public.tenant_memberships FOR EACH ROW EXECUTE FUNCTION audit_log_insert()"
+    },
+    {
+      "table_name": "tenant_memberships",
+      "trigger_name": "trg_set_updated_at_tenant_memberships",
+      "tgtype": 19,
+      "definition": "CREATE TRIGGER trg_set_updated_at_tenant_memberships BEFORE UPDATE ON public.tenant_memberships FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "tenant_settings",
+      "trigger_name": "trg_set_updated_at_tenant_settings",
+      "tgtype": 19,
+      "definition": "CREATE TRIGGER trg_set_updated_at_tenant_settings BEFORE UPDATE ON public.tenant_settings FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "table_name": "tenants",
+      "trigger_name": "trg_audit_tenants",
+      "tgtype": 29,
+      "definition": "CREATE TRIGGER trg_audit_tenants AFTER INSERT OR DELETE OR UPDATE ON public.tenants FOR EACH ROW EXECUTE FUNCTION audit_log_insert()"
+    },
+    {
+      "table_name": "tenants",
+      "trigger_name": "trg_set_updated_at_tenants",
+      "tgtype": 19,
+      "definition": "CREATE TRIGGER trg_set_updated_at_tenants BEFORE UPDATE ON public.tenants FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    }
+  ],
+  "views": [
+    {
+      "table_name": "financial_kpis",
+      "view_definition": " SELECT tenant_id,\n    sum(amount) FILTER (WHERE (type = 'credit'::text)) AS total_credit,\n    sum(amount) FILTER (WHERE (type = 'debit'::text)) AS total_debit,\n    (sum(amount) FILTER (WHERE (type = 'credit'::text)) - sum(amount) FILTER (WHERE (type = 'debit'::text))) AS balance\n   FROM financial_transactions\n  WHERE (tenant_id IN ( SELECT user_tenant_ids() AS user_tenant_ids))\n  GROUP BY tenant_id;"
+    },
+    {
+      "table_name": "public_companies_by_type",
+      "view_definition": " SELECT c.id AS company_id,\n    c.name AS company_name,\n    c.legal_name,\n    c.trading_name,\n    COALESCE(( SELECT ma.file_url\n           FROM media_assets ma\n          WHERE ((ma.tenant_id = c.tenant_id) AND (ma.entity_type = 'company'::text) AND (ma.entity_id = c.id) AND ((ma.is_primary = true) OR (ma.alt_text ~~* '%logo%'::text)))\n          ORDER BY ma.is_primary DESC, ma.sort_order, ma.created_at\n         LIMIT 1), c.logo_url) AS logo_url,\n    COALESCE(( SELECT ma.file_url\n           FROM media_assets ma\n          WHERE ((ma.tenant_id = c.tenant_id) AND (ma.entity_type = 'company'::text) AND (ma.entity_id = c.id) AND ((ma.alt_text ~~* '%hero%'::text) OR (ma.title ~~* '%hero%'::text)))\n          ORDER BY ma.sort_order, ma.created_at\n         LIMIT 1), (cr.metadata ->> 'hero_image_url'::text), NULL::text) AS image_url,\n    COALESCE((cr.metadata ->> 'description'::text), c.description) AS description,\n    c.website,\n    c.industry,\n    c.size AS company_size,\n    c.status AS company_status,\n    cr.id AS relationship_id,\n    cr.status AS relationship_status,\n    crt.code AS relationship_type,\n    crt.name AS relationship_type_name,\n    cr.metadata AS relationship_metadata,\n    cr.started_at AS relationship_started_at,\n    COALESCE(( SELECT jsonb_object_agg(lower(csl.platform), csl.url) AS jsonb_object_agg\n           FROM company_social_links csl\n          WHERE ((csl.tenant_id = cr.tenant_id) AND (csl.company_id = c.id) AND (csl.is_active = true))), '{}'::jsonb) AS socials\n   FROM ((companies c\n     JOIN company_relationships cr ON ((cr.company_id = c.id)))\n     JOIN company_relationship_types crt ON ((crt.code = cr.relationship_type)))\n  WHERE ((c.status = 'active'::text) AND (cr.status = 'active'::text) AND (COALESCE((c.metadata ->> 'is_test'::text), 'false'::text) <> 'true'::text));"
+    },
+    {
+      "table_name": "public_jobs_v1",
+      "view_definition": " SELECT j.id AS job_id,\n    j.title,\n    j.slug,\n    j.status,\n    j.description,\n    j.responsibilities,\n    j.requirements,\n    j.benefits,\n    COALESCE(j.contract_type, j.employment_type, 'clt'::text) AS contract_type,\n    j.work_mode,\n        CASE\n            WHEN ((j.city IS NOT NULL) AND (j.state IS NOT NULL)) THEN TRIM(BOTH ' '::text FROM ((j.city || ', '::text) || j.state))\n            WHEN (j.city IS NOT NULL) THEN j.city\n            WHEN (j.location IS NOT NULL) THEN j.location\n            ELSE NULL::text\n        END AS location,\n    j.location AS location_raw,\n    j.city,\n    j.state,\n        CASE\n            WHEN ((j.salary IS NOT NULL) AND (length(TRIM(BOTH FROM j.salary)) > 0)) THEN j.salary\n            WHEN ((j.salary_min IS NOT NULL) AND (j.salary_max IS NOT NULL)) THEN ((('R$ '::text || to_char(j.salary_min, 'FM999G999G990D00'::text)) || ' – R$ '::text) || to_char(j.salary_max, 'FM999G999G990D00'::text))\n            WHEN (j.salary_min IS NOT NULL) THEN ('R$ '::text || to_char(j.salary_min, 'FM999G999G990D00'::text))\n            ELSE NULL::text\n        END AS salary_text,\n    j.salary_min,\n    j.salary_max,\n    j.salary_type,\n    c.id AS company_id,\n    c.name AS company_name,\n    COALESCE(( SELECT ma.file_url\n           FROM media_assets ma\n          WHERE ((ma.tenant_id = j.tenant_id) AND (ma.entity_type = 'company'::text) AND (ma.entity_id = c.id) AND ((ma.is_primary = true) OR (ma.alt_text ~~* '%logo%'::text)))\n          ORDER BY ma.is_primary DESC, ma.sort_order, ma.created_at\n         LIMIT 1), c.logo_url) AS company_logo_url,\n    j.seniority,\n    j.work_hours,\n    (j.metadata ->> 'area'::text) AS area,\n    (j.metadata ->> 'work_schedule'::text) AS work_schedule,\n    j.published_at,\n    j.expires_at,\n    j.metadata,\n    j.views_count,\n    j.applications_count,\n    j.tenant_id\n   FROM (jobs j\n     LEFT JOIN companies c ON ((c.id = j.company_id)))\n  WHERE (j.status = 'published'::text);"
+    },
+    {
+      "table_name": "public_services_v1",
+      "view_definition": " SELECT id,\n    name,\n    slug,\n    category,\n    short_description,\n    description,\n    card_image_url,\n    hero_image_url,\n    hero_title,\n    hero_subtitle,\n    icon,\n    benefits,\n    process_steps,\n    cta_title,\n    cta_description,\n    cta_button_text,\n    cta_button_url,\n    COALESCE(( SELECT jsonb_agg(jsonb_build_object('url', ma.file_url, 'alt', ma.alt_text, 'sort_order', ma.sort_order) ORDER BY ma.is_primary DESC, ma.sort_order, ma.created_at) AS jsonb_agg\n           FROM media_assets ma\n          WHERE ((ma.tenant_id = s.tenant_id) AND (ma.entity_type = 'service'::text) AND (ma.entity_id = s.id))), '[]'::jsonb) AS gallery,\n    status,\n    published_at,\n    display_order,\n    seo_title,\n    seo_description,\n    seo_keywords\n   FROM services s\n  WHERE ((status = 'published'::text) AND (tenant_id = ( SELECT tenants.id\n           FROM tenants\n          WHERE (tenants.slug = 'js-empregos'::text)\n         LIMIT 1)));"
+    },
+    {
+      "table_name": "recruitment_kpis",
+      "view_definition": " SELECT tenant_id,\n    count(*) FILTER (WHERE (status = 'open'::text)) AS open_demands,\n    count(*) FILTER (WHERE (status = 'closed'::text)) AS closed_demands,\n    count(*) AS total_demands\n   FROM recruitment_demands\n  WHERE (tenant_id IN ( SELECT user_tenant_ids() AS user_tenant_ids))\n  GROUP BY tenant_id;"
+    }
+  ],
+  "constraints": [
+    {
+      "table_schema": "public",
+      "table_name": "people",
+      "constraint_name": "2200_234074_1_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "people",
+      "constraint_name": "2200_234074_3_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "people",
+      "constraint_name": "2200_234074_4_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "people",
+      "constraint_name": "2200_234074_6_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "people",
+      "constraint_name": "2200_234074_7_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "people",
+      "constraint_name": "2200_234074_8_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "people",
+      "constraint_name": "2200_234074_9_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "people",
+      "constraint_name": "people_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "people",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "people",
+      "constraint_name": "people_auth_user_id_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "auth_user_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "people",
+      "foreign_column_name": "auth_user_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "2200_234155_1_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "2200_234155_2_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "2200_234155_3_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "2200_234155_5_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "2200_234155_7_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "permissions_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "permissions",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "permissions_code_unique",
+      "constraint_type": "UNIQUE",
+      "column_name": "code",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "permissions",
+      "foreign_column_name": "code"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "uq_permission_resource_action",
+      "constraint_type": "UNIQUE",
+      "column_name": "action",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "permissions",
+      "foreign_column_name": "resource"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "uq_permission_resource_action",
+      "constraint_type": "UNIQUE",
+      "column_name": "resource",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "permissions",
+      "foreign_column_name": "action"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "uq_permission_resource_action",
+      "constraint_type": "UNIQUE",
+      "column_name": "resource",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "permissions",
+      "foreign_column_name": "resource"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "permissions",
+      "constraint_name": "uq_permission_resource_action",
+      "constraint_type": "UNIQUE",
+      "column_name": "action",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "permissions",
+      "foreign_column_name": "action"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "2200_234185_1_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "2200_234185_2_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "2200_234185_3_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "2200_234185_5_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "2200_234185_6_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "2200_234185_7_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "role_assignments_person_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "person_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "people",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "role_assignments_role_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "role_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "roles",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "role_assignments_tenant_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "tenant_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenants",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "role_assignments_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_assignments",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "uq_role_assignment_person_role_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "role_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_assignments",
+      "foreign_column_name": "tenant_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "uq_role_assignment_person_role_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "person_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_assignments",
+      "foreign_column_name": "person_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "uq_role_assignment_person_role_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "person_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_assignments",
+      "foreign_column_name": "role_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "uq_role_assignment_person_role_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "person_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_assignments",
+      "foreign_column_name": "tenant_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "uq_role_assignment_person_role_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "role_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_assignments",
+      "foreign_column_name": "person_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "uq_role_assignment_person_role_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "tenant_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_assignments",
+      "foreign_column_name": "tenant_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "uq_role_assignment_person_role_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "tenant_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_assignments",
+      "foreign_column_name": "role_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "uq_role_assignment_person_role_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "tenant_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_assignments",
+      "foreign_column_name": "person_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_assignments",
+      "constraint_name": "uq_role_assignment_person_role_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "role_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_assignments",
+      "foreign_column_name": "role_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "2200_234166_1_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "2200_234166_2_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "2200_234166_3_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "2200_234166_4_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "role_permissions_permission_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "permission_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "permissions",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "role_permissions_role_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "role_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "roles",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "role_permissions_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_permissions",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "uq_role_permission",
+      "constraint_type": "UNIQUE",
+      "column_name": "permission_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_permissions",
+      "foreign_column_name": "permission_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "uq_role_permission",
+      "constraint_type": "UNIQUE",
+      "column_name": "permission_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_permissions",
+      "foreign_column_name": "role_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "uq_role_permission",
+      "constraint_type": "UNIQUE",
+      "column_name": "role_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_permissions",
+      "foreign_column_name": "role_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "role_permissions",
+      "constraint_name": "uq_role_permission",
+      "constraint_type": "UNIQUE",
+      "column_name": "role_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "role_permissions",
+      "foreign_column_name": "permission_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "roles",
+      "constraint_name": "2200_234142_1_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "roles",
+      "constraint_name": "2200_234142_2_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "roles",
+      "constraint_name": "2200_234142_4_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "roles",
+      "constraint_name": "2200_234142_5_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "roles",
+      "constraint_name": "2200_234142_6_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "roles",
+      "constraint_name": "2200_234142_7_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "roles",
+      "constraint_name": "roles_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "roles",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "roles",
+      "constraint_name": "roles_name_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "name",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "roles",
+      "foreign_column_name": "name"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "2200_234100_1_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "2200_234100_2_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "2200_234100_3_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "2200_234100_4_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "2200_234100_5_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "2200_234100_6_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "2200_234100_7_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "2200_234100_8_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "tenant_memberships_person_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "person_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "people",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "tenant_memberships_tenant_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "tenant_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenants",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "tenant_memberships_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenant_memberships",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "uq_tenant_membership_person_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "person_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenant_memberships",
+      "foreign_column_name": "person_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "uq_tenant_membership_person_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "person_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenant_memberships",
+      "foreign_column_name": "tenant_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "uq_tenant_membership_person_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "tenant_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenant_memberships",
+      "foreign_column_name": "person_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_memberships",
+      "constraint_name": "uq_tenant_membership_person_tenant",
+      "constraint_type": "UNIQUE",
+      "column_name": "tenant_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenant_memberships",
+      "foreign_column_name": "tenant_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "2200_234124_1_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "2200_234124_2_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "2200_234124_3_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "2200_234124_4_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "2200_234124_5_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "2200_234124_6_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "tenant_settings_tenant_id_fkey",
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "tenant_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenants",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "tenant_settings_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenant_settings",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "uq_tenant_settings_tenant_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "tenant_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenant_settings",
+      "foreign_column_name": "tenant_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "uq_tenant_settings_tenant_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "key",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenant_settings",
+      "foreign_column_name": "tenant_id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "uq_tenant_settings_tenant_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "key",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenant_settings",
+      "foreign_column_name": "key"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenant_settings",
+      "constraint_name": "uq_tenant_settings_tenant_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "tenant_id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenant_settings",
+      "foreign_column_name": "key"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenants",
+      "constraint_name": "2200_234087_1_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenants",
+      "constraint_name": "2200_234087_2_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenants",
+      "constraint_name": "2200_234087_3_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenants",
+      "constraint_name": "2200_234087_4_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenants",
+      "constraint_name": "2200_234087_5_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenants",
+      "constraint_name": "2200_234087_6_not_null",
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table_schema": null,
+      "foreign_table_name": null,
+      "foreign_column_name": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenants",
+      "constraint_name": "tenants_pkey",
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenants",
+      "foreign_column_name": "id"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "tenants",
+      "constraint_name": "tenants_slug_key",
+      "constraint_type": "UNIQUE",
+      "column_name": "slug",
+      "foreign_table_schema": "public",
+      "foreign_table_name": "tenants",
+      "foreign_column_name": "slug"
+    }
+  ],
+  "policies": [
+    {
+      "schemaname": "public",
+      "tablename": "people",
+      "policyname": "people_member_read",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "SELECT",
+      "qual": "(is_admin_master() OR (auth.uid() = auth_user_id) OR (EXISTS ( SELECT 1\n   FROM tenant_memberships tm\n  WHERE ((tm.person_id = people.id) AND (tm.status = 'active'::text)))))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "permissions",
+      "policyname": "permissions_member_read",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "SELECT",
+      "qual": "true"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "role_assignments",
+      "policyname": "role_assignments_member_read",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "SELECT",
+      "qual": "(is_admin_master() OR is_tenant_member(tenant_id))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "role_assignments",
+      "policyname": "role_assignments_member_update",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "UPDATE",
+      "qual": "(is_admin_master() OR is_tenant_member(tenant_id))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "role_assignments",
+      "policyname": "role_assignments_member_write",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "INSERT",
+      "qual": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "role_permissions",
+      "policyname": "role_permissions_member_read",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "SELECT",
+      "qual": "(is_admin_master() OR (EXISTS ( SELECT 1\n   FROM roles r\n  WHERE ((r.id = role_permissions.role_id) AND (r.scope = 'tenant'::text)))))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "roles",
+      "policyname": "roles_member_read",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "SELECT",
+      "qual": "(is_admin_master() OR (scope = 'tenant'::text))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "roles",
+      "policyname": "roles_select",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "SELECT",
+      "qual": "((auth.role() = 'authenticated'::text) OR (auth.role() = 'service_role'::text))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "tenant_memberships",
+      "policyname": "tenant_memberships_member_read",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "SELECT",
+      "qual": "(is_admin_master() OR is_tenant_member(tenant_id))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "tenant_memberships",
+      "policyname": "tenant_memberships_member_update",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "UPDATE",
+      "qual": "(is_admin_master() OR is_tenant_member(tenant_id))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "tenant_memberships",
+      "policyname": "tenant_memberships_member_write",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "INSERT",
+      "qual": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "tenant_settings",
+      "policyname": "tenant_settings_member_read",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "SELECT",
+      "qual": "(is_admin_master() OR is_tenant_member(tenant_id))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "tenant_settings",
+      "policyname": "tenant_settings_member_update",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "UPDATE",
+      "qual": "(is_admin_master() OR is_tenant_member(tenant_id))"
+    },
+    {
+      "schemaname": "public",
+      "tablename": "tenant_settings",
+      "policyname": "tenant_settings_member_write",
+      "permissive": "PERMISSIVE",
+      "roles": "{public}",
+      "cmd": "INSERT",
+      "qual": null
+    },
+    {
+      "schemaname": "public",
+      "tablename": "tenants",
+      "policyname": "tenants_member_read",
+      "permissive": "PERMISSIVE",
+      "roles": "{authenticated}",
+      "cmd": "SELECT",
+      "qual": "is_tenant_member(id)"
+    }
+  ],
+  "buckets": [
+    {
+      "name": "avatars",
+      "public": true,
+      "file_size_limit": "5242880",
+      "allowed_mime_types": ["image/jpeg", "image/png", "image/webp"]
+    },
+    {
+      "name": "private-documents",
+      "public": false,
+      "file_size_limit": "20971520",
+      "allowed_mime_types": [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ]
+    },
+    {
+      "name": "public-media",
+      "public": true,
+      "file_size_limit": "10485760",
+      "allowed_mime_types": [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/svg+xml",
+        "image/gif"
+      ]
+    },
+    {
+      "name": "services-images",
+      "public": true,
+      "file_size_limit": "5242880",
+      "allowed_mime_types": ["image/jpeg", "image/png", "image/webp"]
+    }
+  ],
+  "indexes": [
+    {
+      "index_name": "idx_people_auth_user_id",
+      "column_name": "auth_user_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_people_status",
+      "column_name": "status",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "people_auth_user_id_key",
+      "column_name": "auth_user_id",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "people_pkey",
+      "column_name": "id",
+      "indisunique": true,
+      "indisprimary": true
+    },
+    {
+      "index_name": "permissions_code_unique",
+      "column_name": "code",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "permissions_pkey",
+      "column_name": "id",
+      "indisunique": true,
+      "indisprimary": true
+    },
+    {
+      "index_name": "uq_permission_resource_action",
+      "column_name": "resource",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "uq_permission_resource_action",
+      "column_name": "action",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_role_assignments_person_id",
+      "column_name": "person_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_role_assignments_person_tenant",
+      "column_name": "tenant_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_role_assignments_person_tenant",
+      "column_name": "person_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_role_assignments_tenant_id",
+      "column_name": "tenant_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "role_assignments_pkey",
+      "column_name": "id",
+      "indisunique": true,
+      "indisprimary": true
+    },
+    {
+      "index_name": "uq_role_assignment_person_role_tenant",
+      "column_name": "tenant_id",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "uq_role_assignment_person_role_tenant",
+      "column_name": "person_id",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "uq_role_assignment_person_role_tenant",
+      "column_name": "role_id",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_role_permissions_permission_id",
+      "column_name": "permission_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_role_permissions_role_id",
+      "column_name": "role_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "role_permissions_pkey",
+      "column_name": "id",
+      "indisunique": true,
+      "indisprimary": true
+    },
+    {
+      "index_name": "uq_role_permission",
+      "column_name": "role_id",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "uq_role_permission",
+      "column_name": "permission_id",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_roles_level_sector",
+      "column_name": "level",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_roles_level_sector",
+      "column_name": "scope",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_roles_level_sector",
+      "column_name": "sector",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_roles_scope",
+      "column_name": "scope",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "roles_name_key",
+      "column_name": "name",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "roles_pkey",
+      "column_name": "id",
+      "indisunique": true,
+      "indisprimary": true
+    },
+    {
+      "index_name": "roles_slug_unique",
+      "column_name": "slug",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_tenant_memberships_person_id",
+      "column_name": "person_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_tenant_memberships_status",
+      "column_name": "tenant_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_tenant_memberships_status",
+      "column_name": "status",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_tenant_memberships_tenant_id",
+      "column_name": "tenant_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "tenant_memberships_pkey",
+      "column_name": "id",
+      "indisunique": true,
+      "indisprimary": true
+    },
+    {
+      "index_name": "uq_tenant_membership_person_tenant",
+      "column_name": "person_id",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "uq_tenant_membership_person_tenant",
+      "column_name": "tenant_id",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "idx_tenant_settings_tenant_id",
+      "column_name": "tenant_id",
+      "indisunique": false,
+      "indisprimary": false
+    },
+    {
+      "index_name": "tenant_settings_pkey",
+      "column_name": "id",
+      "indisunique": true,
+      "indisprimary": true
+    },
+    {
+      "index_name": "uq_tenant_settings_tenant_key",
+      "column_name": "tenant_id",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "uq_tenant_settings_tenant_key",
+      "column_name": "key",
+      "indisunique": true,
+      "indisprimary": false
+    },
+    {
+      "index_name": "tenants_pkey",
+      "column_name": "id",
+      "indisunique": true,
+      "indisprimary": true
+    },
+    {
+      "index_name": "tenants_slug_key",
+      "column_name": "slug",
+      "indisunique": true,
+      "indisprimary": false
+    }
+  ],
+  "rowCounts": [
+    {
+      "tbl": "people",
+      "cnt": "32"
+    },
+    {
+      "tbl": "tenants",
+      "cnt": "3"
+    },
+    {
+      "tbl": "tenant_memberships",
+      "cnt": "34"
+    },
+    {
+      "tbl": "tenant_settings",
+      "cnt": "21"
+    },
+    {
+      "tbl": "roles",
+      "cnt": "52"
+    },
+    {
+      "tbl": "permissions",
+      "cnt": "230"
+    },
+    {
+      "tbl": "role_permissions",
+      "cnt": "739"
+    },
+    {
+      "tbl": "role_assignments",
+      "cnt": "28"
+    }
+  ],
+  "rolesData": [
+    {
+      "id": "28fa734f-601d-4a4f-a7e9-1c5557d0ef23",
+      "name": "accountant",
+      "description": "Accountant",
+      "scope": "tenant",
+      "created_at": "2026-08-25T17:44:05.643Z",
+      "updated_at": "2026-09-04T07:30:24.685Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000020",
+      "name": "accounting_assistant",
+      "description": "Auxiliar Contábil",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "ef9d88da-0188-4dee-af90-43009b64a616",
+      "name": "accounting_manager",
+      "description": "Accounting Manager",
+      "scope": "tenant",
+      "created_at": "2026-08-25T17:44:05.715Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000007",
+      "name": "accounting_supervisor",
+      "description": "Supervisor Contábil",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "name": "admin_master",
+      "description": "Administrador global do sistema",
+      "scope": "global",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000019",
+      "name": "billing_assistant",
+      "description": "Auxiliar de Faturamento",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "e12dfe36-6c52-43c9-92be-b302437b5bba",
+      "name": "billing_manager",
+      "description": "Billing Manager",
+      "scope": "tenant",
+      "created_at": "2026-08-25T17:44:05.764Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000006",
+      "name": "billing_supervisor",
+      "description": "Supervisor de Faturamento",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "14eed158-ab7e-49e3-ab61-a7ee2355693d",
+      "name": "candidato",
+      "description": "Candidato do banco de talentos",
+      "scope": "tenant",
+      "created_at": "2026-08-30T08:13:39.563Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000007",
+      "name": "commercial",
+      "description": "Comercial",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000026",
+      "name": "commercial_assistant",
+      "description": "Auxiliar Comercial",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000001",
+      "name": "commercial_manager",
+      "description": "Gerente Comercial",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000013",
+      "name": "commercial_supervisor",
+      "description": "Supervisor Comercial",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000024",
+      "name": "facilities_assistant",
+      "description": "Auxiliar de Facilities",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000011",
+      "name": "facilities_manager",
+      "description": "Gerente de Facilities",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000012",
+      "name": "facilities_supervisor",
+      "description": "Supervisor de Facilities",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000005",
+      "name": "finance",
+      "description": "Analista Financeiro",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000018",
+      "name": "finance_assistant",
+      "description": "Auxiliar Financeiro",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000004",
+      "name": "finance_manager",
+      "description": "Gerente Financeiro",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000005",
+      "name": "finance_supervisor",
+      "description": "Supervisor Financeiro",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000021",
+      "name": "fiscal_assistant",
+      "description": "Auxiliar Fiscal",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "5e2af066-0f2d-4111-ae98-d918b8f361f3",
+      "name": "fiscal_manager",
+      "description": "Fiscal Manager",
+      "scope": "tenant",
+      "created_at": "2026-08-25T17:44:05.520Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000008",
+      "name": "fiscal_supervisor",
+      "description": "Supervisor Fiscal",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000013",
+      "name": "it_admin",
+      "description": "Administrador de TI",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000027",
+      "name": "it_assistant",
+      "description": "Auxiliar de TI",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000002",
+      "name": "it_manager",
+      "description": "Gerente de TI",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000029",
+      "name": "it_operator",
+      "description": "Operador de TI",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:32:37.575Z",
+      "updated_at": "2026-09-04T07:32:37.575Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000014",
+      "name": "it_supervisor",
+      "description": "Supervisor de TI",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000012",
+      "name": "lawyer",
+      "description": "Jurídico",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000023",
+      "name": "operations_assistant",
+      "description": "Auxiliar de Operações",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000008",
+      "name": "operations_manager",
+      "description": "Gerente de Operações",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000031",
+      "name": "operations_operator",
+      "description": "Operador de Operações",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:32:37.575Z",
+      "updated_at": "2026-09-04T07:32:37.575Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000009",
+      "name": "operations_supervisor",
+      "description": "Supervisor de Operações",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "7002337d-2742-4d5f-9737-f523fd765a2f",
+      "name": "operator",
+      "description": "Operador",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000003",
+      "name": "recruiter",
+      "description": "Recrutador",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000016",
+      "name": "rh",
+      "description": "Profissional de RH",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000017",
+      "name": "rh_assistant",
+      "description": "Auxiliar de RH",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000002",
+      "name": "rh_manager",
+      "description": "Gerente de Recursos Humanos",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000004",
+      "name": "rh_supervisor",
+      "description": "Supervisor de RH",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000025",
+      "name": "security_assistant",
+      "description": "Auxiliar de Segurança",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000010",
+      "name": "security_manager",
+      "description": "Gerente de Segurança",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000011",
+      "name": "security_supervisor",
+      "description": "Supervisor de Segurança",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000022",
+      "name": "stock_assistant",
+      "description": "Auxiliar de Estoque",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000009",
+      "name": "stock_manager",
+      "description": "Gerente de Estoque",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000010",
+      "name": "stock_supervisor",
+      "description": "Supervisor de Estoque",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000006",
+      "name": "support",
+      "description": "Suporte",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000030",
+      "name": "support_agent",
+      "description": "Agente de Suporte",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:32:37.575Z",
+      "updated_at": "2026-09-04T07:32:37.575Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000028",
+      "name": "support_assistant",
+      "description": "Auxiliar de Suporte",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000003",
+      "name": "support_manager",
+      "description": "Gerente de Suporte",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000015",
+      "name": "support_supervisor",
+      "description": "Supervisor de Suporte",
+      "scope": "tenant",
+      "created_at": "2026-09-04T07:29:50.397Z",
+      "updated_at": "2026-09-04T07:29:50.397Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000001",
+      "name": "tenant_admin",
+      "description": "Administrador do tenant",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000014",
+      "name": "viewer",
+      "description": "Visualizador",
+      "scope": "tenant",
+      "created_at": "2026-08-22T05:42:35.559Z",
+      "updated_at": "2026-09-05T03:12:38.401Z"
+    }
+  ],
+  "peopleSample": [
+    {
+      "id": "db115328-a1ee-4ff4-95e1-33e5c50c9f0f",
+      "auth_user_id": null,
+      "full_name": "Person A",
+      "email": "person-a@test.local",
+      "phone": null,
+      "status": "active",
+      "created_at": "2026-08-22T05:35:12.657Z",
+      "updated_at": "2026-08-22T05:35:12.657Z",
+      "metadata": {}
+    },
+    {
+      "id": "1cf61b5c-211b-478d-b102-c6f603c6f9f6",
+      "auth_user_id": null,
+      "full_name": "Person B",
+      "email": "person-b@test.local",
+      "phone": null,
+      "status": "active",
+      "created_at": "2026-08-22T05:35:12.657Z",
+      "updated_at": "2026-08-22T05:35:12.657Z",
+      "metadata": {}
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "auth_user_id": null,
+      "full_name": "Admin Master",
+      "email": "admin@jsempregos.com.br",
+      "phone": null,
+      "status": "active",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "updated_at": "2026-08-22T05:35:13.661Z",
+      "metadata": {}
+    }
+  ],
+  "tenantMembershipsSample": [
+    {
+      "id": "3f94d936-0559-445b-a4fd-c8df2ecd4906",
+      "person_id": "db115328-a1ee-4ff4-95e1-33e5c50c9f0f",
+      "tenant_id": "c874b8b2-ab32-4478-84f7-29f14878c6f3",
+      "status": "active",
+      "joined_at": "2026-08-22T05:35:12.657Z",
+      "created_at": "2026-08-22T05:35:12.657Z",
+      "updated_at": "2026-08-22T05:35:12.657Z",
+      "membership_role": "member"
+    },
+    {
+      "id": "77905c6e-a382-4ce1-a0d0-e38f98a01278",
+      "person_id": "1cf61b5c-211b-478d-b102-c6f603c6f9f6",
+      "tenant_id": "20ee28ae-724e-40f6-8467-e815251325ed",
+      "status": "active",
+      "joined_at": "2026-08-22T05:35:12.657Z",
+      "created_at": "2026-08-22T05:35:12.657Z",
+      "updated_at": "2026-08-22T05:35:12.657Z",
+      "membership_role": "member"
+    },
+    {
+      "id": "f76409ca-6b89-4c77-bca4-4cadb5087529",
+      "person_id": "00000000-0000-0000-0000-000000000001",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "status": "active",
+      "joined_at": "2026-08-22T05:35:13.661Z",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "updated_at": "2026-08-22T05:35:13.661Z",
+      "membership_role": "member"
+    },
+    {
+      "id": "821f1dd0-39b6-4ce9-9d3a-d1d544592382",
+      "person_id": "00000000-0000-0000-0000-000000000002",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "status": "active",
+      "joined_at": "2026-08-22T05:35:13.661Z",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "updated_at": "2026-08-22T05:35:13.661Z",
+      "membership_role": "member"
+    },
+    {
+      "id": "709b4824-8c6a-4930-b1f2-107958869607",
+      "person_id": "00000000-0000-0000-0000-000000000003",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "status": "active",
+      "joined_at": "2026-08-22T05:35:13.661Z",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "updated_at": "2026-08-22T05:35:13.661Z",
+      "membership_role": "member"
+    }
+  ],
+  "rolesSample": [
+    {
+      "id": "30000000-0000-0000-0000-000000000029",
+      "name": "it_operator",
+      "description": "Operador de TI",
+      "scope": "tenant"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000030",
+      "name": "support_agent",
+      "description": "Agente de Suporte",
+      "scope": "tenant"
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000031",
+      "name": "operations_operator",
+      "description": "Operador de Operações",
+      "scope": "tenant"
+    },
+    {
+      "id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "name": "admin_master",
+      "description": "Administrador global do sistema",
+      "scope": "global"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000001",
+      "name": "tenant_admin",
+      "description": "Administrador do tenant",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000002",
+      "name": "rh_manager",
+      "description": "Gerente de Recursos Humanos",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000004",
+      "name": "finance_manager",
+      "description": "Gerente Financeiro",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000008",
+      "name": "operations_manager",
+      "description": "Gerente de Operações",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000003",
+      "name": "recruiter",
+      "description": "Recrutador",
+      "scope": "tenant"
+    },
+    {
+      "id": "e12dfe36-6c52-43c9-92be-b302437b5bba",
+      "name": "billing_manager",
+      "description": "Billing Manager",
+      "scope": "tenant"
+    },
+    {
+      "id": "ef9d88da-0188-4dee-af90-43009b64a616",
+      "name": "accounting_manager",
+      "description": "Accounting Manager",
+      "scope": "tenant"
+    },
+    {
+      "id": "5e2af066-0f2d-4111-ae98-d918b8f361f3",
+      "name": "fiscal_manager",
+      "description": "Fiscal Manager",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000009",
+      "name": "stock_manager",
+      "description": "Gerente de Estoque",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000010",
+      "name": "security_manager",
+      "description": "Gerente de Segurança",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000011",
+      "name": "facilities_manager",
+      "description": "Gerente de Facilities",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000012",
+      "name": "lawyer",
+      "description": "Jurídico",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000005",
+      "name": "finance",
+      "description": "Analista Financeiro",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000007",
+      "name": "commercial",
+      "description": "Comercial",
+      "scope": "tenant"
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000014",
+      "name": "viewer",
+      "description": "Visualizador",
+      "scope": "tenant"
+    },
+    {
+      "id": "14eed158-ab7e-49e3-ab61-a7ee2355693d",
+      "name": "candidato",
+      "description": "Candidato do banco de talentos",
+      "scope": "tenant"
+    }
+  ],
+  "roleAssignmentsSample": [
+    {
+      "id": "96b01b40-8908-4208-b336-fd1902fb8f17",
+      "person_id": "00000000-0000-0000-0000-000000000002",
+      "role_id": "10000000-0000-0000-0000-000000000001",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "assigned_at": "2026-08-22T05:35:13.661Z",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "updated_at": "2026-09-02T14:02:40.167Z",
+      "role_name": "tenant_admin",
+      "person_name": "Admin Tenant",
+      "tenant_name": "J&S Empregos LTDA"
+    },
+    {
+      "id": "3b774e67-81b1-4e85-ad00-e8f4aa0ea94b",
+      "person_id": "00000000-0000-0000-0000-000000000003",
+      "role_id": "10000000-0000-0000-0000-000000000008",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "assigned_at": "2026-08-22T05:35:13.661Z",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "updated_at": "2026-09-02T14:02:40.167Z",
+      "role_name": "operations_manager",
+      "person_name": "Gerente Operacional",
+      "tenant_name": "J&S Empregos LTDA"
+    },
+    {
+      "id": "00c1df51-63fd-4b1b-b41f-e823732de181",
+      "person_id": "a9562696-bc73-4369-8d4c-4da0077d57fc",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "tenant_id": null,
+      "assigned_at": "2026-08-22T07:32:49.653Z",
+      "created_at": "2026-08-22T07:32:49.653Z",
+      "updated_at": "2026-09-02T14:02:40.167Z",
+      "role_name": "admin_master",
+      "person_name": "Evandro Andrade",
+      "tenant_name": null
+    },
+    {
+      "id": "323912d5-021f-493e-825c-c790e890c255",
+      "person_id": "a6798b31-fed1-42a4-bc36-d107b0ffaf51",
+      "role_id": "10000000-0000-0000-0000-000000000001",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "assigned_at": "2026-08-25T16:29:22.358Z",
+      "created_at": "2026-08-25T16:29:22.358Z",
+      "updated_at": "2026-09-02T14:02:40.167Z",
+      "role_name": "tenant_admin",
+      "person_name": "Gestor J&S Empregos",
+      "tenant_name": "J&S Empregos LTDA"
+    },
+    {
+      "id": "8263a8e2-c961-4039-8eb5-e9938405e705",
+      "person_id": "993ae2a4-64d6-475b-8a5c-d71f788ed178",
+      "role_id": "10000000-0000-0000-0000-000000000004",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "assigned_at": "2026-08-25T16:29:23.570Z",
+      "created_at": "2026-08-25T16:29:23.570Z",
+      "updated_at": "2026-09-02T14:02:40.167Z",
+      "role_name": "finance_manager",
+      "person_name": "Financeiro J&S Empregos",
+      "tenant_name": "J&S Empregos LTDA"
+    },
+    {
+      "id": "93ac74f8-f4f8-4368-9a67-ca2a19fed5e3",
+      "person_id": "79c4eefb-c826-40e4-aa66-5decdc76ec2a",
+      "role_id": "10000000-0000-0000-0000-000000000001",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "assigned_at": "2026-08-25T19:24:44.036Z",
+      "created_at": "2026-08-25T19:24:44.036Z",
+      "updated_at": "2026-09-02T14:02:40.167Z",
+      "role_name": "tenant_admin",
+      "person_name": "Tenant Admin Teste",
+      "tenant_name": "J&S Empregos LTDA"
+    },
+    {
+      "id": "dcbebb97-0dc5-4d5a-a00c-cc29128d3750",
+      "person_id": "5c19c8b9-ac31-4f23-ad96-65c0b617924d",
+      "role_id": "10000000-0000-0000-0000-000000000002",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "assigned_at": "2026-08-25T19:24:44.817Z",
+      "created_at": "2026-08-25T19:24:44.817Z",
+      "updated_at": "2026-09-02T14:02:40.167Z",
+      "role_name": "rh_manager",
+      "person_name": "RH Teste",
+      "tenant_name": "J&S Empregos LTDA"
+    },
+    {
+      "id": "0b3d021e-dfd8-479c-adce-f56ffae6a260",
+      "person_id": "fd29323b-b942-497d-bf7c-bad324012481",
+      "role_id": "10000000-0000-0000-0000-000000000004",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "assigned_at": "2026-08-25T19:24:45.527Z",
+      "created_at": "2026-08-25T19:24:45.527Z",
+      "updated_at": "2026-09-02T14:02:40.167Z",
+      "role_name": "finance_manager",
+      "person_name": "Financeiro Teste",
+      "tenant_name": "J&S Empregos LTDA"
+    },
+    {
+      "id": "51f51413-2f1f-4607-9887-99b1a079b38e",
+      "person_id": "41bb38a4-3010-4858-a693-cc174a6e0372",
+      "role_id": "5e2af066-0f2d-4111-ae98-d918b8f361f3",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "assigned_at": "2026-08-25T19:24:46.298Z",
+      "created_at": "2026-08-25T19:24:46.298Z",
+      "updated_at": "2026-09-02T14:02:40.167Z",
+      "role_name": "fiscal_manager",
+      "person_name": "Fiscal Teste",
+      "tenant_name": "J&S Empregos LTDA"
+    },
+    {
+      "id": "7e26ee66-0507-47a6-8197-25baa58dc236",
+      "person_id": "a722a803-af60-42a9-a2fe-db60f192e7ea",
+      "role_id": "28fa734f-601d-4a4f-a7e9-1c5557d0ef23",
+      "tenant_id": "d480af07-ab6b-4561-ac3a-2a0b0c1267b5",
+      "assigned_at": "2026-08-25T19:24:47.039Z",
+      "created_at": "2026-08-25T19:24:47.039Z",
+      "updated_at": "2026-09-02T14:02:40.167Z",
+      "role_name": "accountant",
+      "person_name": "Contador Teste",
+      "tenant_name": "J&S Empregos LTDA"
+    }
+  ],
+  "permissionsSample": [
+    {
+      "id": "36b362d5-bff6-40c5-8ba7-b6788b5214dd",
+      "resource": "employees",
+      "action": "read",
+      "description": "Visualizar funcionários",
+      "created_at": "2026-09-03T21:35:21.982Z",
+      "code": "employees.read",
+      "updated_at": "2026-09-03T21:35:21.982Z"
+    },
+    {
+      "id": "e0995c5b-5f0a-4288-a35d-6f414e08957b",
+      "resource": "sessions",
+      "action": "read",
+      "description": "Ler sessões",
+      "created_at": "2026-09-03T21:38:58.538Z",
+      "code": "sessions.read",
+      "updated_at": "2026-09-03T21:38:58.538Z"
+    },
+    {
+      "id": "4c60df53-aa46-4123-883f-91b46e6baa81",
+      "resource": "stock.dashboard",
+      "action": "read",
+      "description": "Ler dashboard de estoque",
+      "created_at": "2026-09-03T21:38:58.538Z",
+      "code": "stock.dashboard.read",
+      "updated_at": "2026-09-03T21:38:58.538Z"
+    },
+    {
+      "id": "fa08216f-f742-4d1a-b4da-51751fb9f792",
+      "resource": "warehouse.dashboard",
+      "action": "read",
+      "description": "Ler dashboard de almoxarifado",
+      "created_at": "2026-09-03T21:38:58.538Z",
+      "code": "warehouse.dashboard.read",
+      "updated_at": "2026-09-03T21:38:58.538Z"
+    },
+    {
+      "id": "ca0408d7-9eda-42b2-8ebc-4b50460785d9",
+      "resource": "service_orders.dashboard",
+      "action": "read",
+      "description": "Ler dashboard de ordens de serviço",
+      "created_at": "2026-09-03T21:38:58.538Z",
+      "code": "service_orders.dashboard.read",
+      "updated_at": "2026-09-03T21:38:58.538Z"
+    },
+    {
+      "id": "63326b93-6b37-4954-af73-4fe822ba2a37",
+      "resource": "support.dashboard",
+      "action": "read",
+      "description": "Ler dashboard de suporte",
+      "created_at": "2026-09-03T21:38:58.538Z",
+      "code": "support.dashboard.read",
+      "updated_at": "2026-09-03T21:38:58.538Z"
+    },
+    {
+      "id": "f12784ab-1068-481d-b889-bc450fd67126",
+      "resource": "finance",
+      "action": "delete",
+      "description": "Remover lançamento financeiro",
+      "created_at": "2026-08-25T17:23:14.169Z",
+      "code": "finance.delete",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "88f9b040-2cb6-49ef-b38e-20e5e0c0a628",
+      "resource": "finance",
+      "action": "forecast",
+      "description": "Projetar fluxo de caixa",
+      "created_at": "2026-08-25T17:23:14.302Z",
+      "code": "finance.forecast",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "974c8211-8db6-422f-b197-accd54c5c03a",
+      "resource": "finance",
+      "action": "reconcile",
+      "description": "Reconciliar lançamento",
+      "created_at": "2026-08-25T17:23:14.431Z",
+      "code": "finance.reconcile",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "6f4fd139-63ee-4268-8999-96fb889bc457",
+      "resource": "finance",
+      "action": "update",
+      "description": "Atualizar lançamento financeiro",
+      "created_at": "2026-08-25T17:23:14.553Z",
+      "code": "finance.update",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "aae4ef2f-6f16-486a-b341-b5bf50409ae1",
+      "resource": "integrations",
+      "action": "delete",
+      "description": "Remover integração",
+      "created_at": "2026-08-25T17:23:14.675Z",
+      "code": "integrations.delete",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "b62f2fc7-d725-454d-8cb3-0aa6fe2f0a31",
+      "resource": "integrations",
+      "action": "test",
+      "description": "Testar integração",
+      "created_at": "2026-08-25T17:23:14.801Z",
+      "code": "integrations.test",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "2ac90a4c-40b7-424a-b795-e5a48dad1422",
+      "resource": "jobs",
+      "action": "archive",
+      "description": "Arquivar vaga",
+      "created_at": "2026-08-25T17:23:14.914Z",
+      "code": "jobs.archive",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "df8de99c-6e69-4d7d-a1d8-c1fb370d5848",
+      "resource": "people",
+      "action": "disable",
+      "description": "Desativar pessoa/usuário",
+      "created_at": "2026-08-25T17:23:15.034Z",
+      "code": "people.disable",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "059ba644-4e06-4a73-9bcf-b7b0d38fbf9a",
+      "resource": "permissions",
+      "action": "create",
+      "description": "Criar permissão",
+      "created_at": "2026-08-25T17:23:15.176Z",
+      "code": "permissions.create",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "53308a34-09d3-4322-8d83-ea899ecded0e",
+      "resource": "permissions",
+      "action": "read",
+      "description": "Visualizar permissões",
+      "created_at": "2026-08-25T17:23:15.290Z",
+      "code": "permissions.read",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "c277cb1f-f45d-42ae-a91e-bef87cbf2ace",
+      "resource": "recruitment",
+      "action": "close",
+      "description": "recruitment.close",
+      "created_at": "2026-08-25T17:23:15.411Z",
+      "code": "recruitment.close",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "95f461c2-c031-4da8-a4f4-5adeb964da29",
+      "resource": "reports",
+      "action": "generate",
+      "description": "Gerar relatório",
+      "created_at": "2026-08-25T17:23:15.541Z",
+      "code": "reports.generate",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "475e33fb-2323-4bc1-a38f-3ceef8362f03",
+      "resource": "service_orders",
+      "action": "cancel",
+      "description": "Cancelar ordem de serviço",
+      "created_at": "2026-08-25T17:23:15.679Z",
+      "code": "service_orders.cancel",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    },
+    {
+      "id": "6d3755fe-05a0-4e13-bfcc-73dcd35618a1",
+      "resource": "support_tickets",
+      "action": "close",
+      "description": "Fechar chamado",
+      "created_at": "2026-08-25T17:23:15.810Z",
+      "code": "support_tickets.close",
+      "updated_at": "2026-09-02T14:02:40.167Z"
+    }
+  ],
+  "rolePermissionsSample": [
+    {
+      "id": "c7a31066-f659-4ed8-a64b-30f4b0841e69",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "c49ddf68-ed63-4cf2-b54d-d2251a815272",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "tenants",
+      "action": "create"
+    },
+    {
+      "id": "7e820817-b27a-4725-9be8-f99b1e8a26b5",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "bf4e553e-898b-4e0b-a31f-a793a6735bde",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "tenants",
+      "action": "read"
+    },
+    {
+      "id": "fba8d949-4290-4b72-8276-63286cd37397",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "f3427e6f-4a90-4dce-9bdd-41a6198c4aaf",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "tenants",
+      "action": "update"
+    },
+    {
+      "id": "9d488c10-06a3-4f71-ad90-91c3a491849c",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "46c37233-614c-4608-badb-01767d4acff1",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "tenants",
+      "action": "delete"
+    },
+    {
+      "id": "64f436f2-f73b-46a1-9fa0-4097363efb3c",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "ea7fa862-3f34-40b5-b97c-15c73b46151d",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "people",
+      "action": "create"
+    },
+    {
+      "id": "6847014b-8a44-457e-9926-90475d64c81e",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "0d4761e4-1151-4cc5-b501-0b3907e6eeb9",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "people",
+      "action": "read"
+    },
+    {
+      "id": "609c6236-62fd-4419-842b-e384aed0d2bf",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "9f3ed31c-4e44-46aa-bb57-f848ec5028b5",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "people",
+      "action": "update"
+    },
+    {
+      "id": "57e3d834-0f8b-42de-8cc3-49e85b2046be",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "ecb60027-34ff-4d1c-b4cd-86251e95d8c1",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "people",
+      "action": "delete"
+    },
+    {
+      "id": "57f35a79-436d-4182-aed6-c5f10319991b",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "c47a1dd6-4942-429c-8709-6fa9131abee4",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "roles",
+      "action": "create"
+    },
+    {
+      "id": "7c3e5815-4101-4294-806a-988452b77c24",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "738d6262-c02d-40ae-b2f9-93af299ed743",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "roles",
+      "action": "read"
+    },
+    {
+      "id": "cecad7bf-50f0-4fae-82f0-a69ea8acc9c9",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "57f35f00-777c-4224-b96a-9bdd6f05cb84",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "roles",
+      "action": "update"
+    },
+    {
+      "id": "19d7275b-0b8b-4cce-b6e3-d178b24c0a64",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "11aa3eed-48cd-4f29-ad63-efdd4d76c918",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "roles",
+      "action": "delete"
+    },
+    {
+      "id": "7da73861-65c9-40c5-9b49-ad83deb53f63",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "a4eb685e-4786-44da-9424-ba5c717010d2",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "companies",
+      "action": "create"
+    },
+    {
+      "id": "03f416d7-84c2-4c77-acc6-a6c58be1ae48",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "5c9e957d-8a99-4d19-8de1-469a526e85dc",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "companies",
+      "action": "read"
+    },
+    {
+      "id": "f0146a71-dd0e-46ee-9c8b-926bdd008d8e",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "73b96008-1e57-4c03-9438-f5d0164df60b",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "companies",
+      "action": "update"
+    },
+    {
+      "id": "d6289f67-e920-431b-a3a6-9d3407da97e9",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "4a0db6f9-a591-47fc-bb0b-4d97fe293129",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "companies",
+      "action": "delete"
+    },
+    {
+      "id": "da13b390-a19a-445d-bef8-91a9dbf6261a",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "2e0a6201-20f4-489b-8e3e-fb042cb7ff01",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "products",
+      "action": "create"
+    },
+    {
+      "id": "7966bee1-e6b9-4b22-b0cb-ed1ed7fc0892",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "13322f98-970c-41ff-9903-3a8f922d7f71",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "products",
+      "action": "read"
+    },
+    {
+      "id": "9c375b20-ce20-479e-8671-c51809a9862c",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "8aba243f-a68f-400f-bed1-40fc0a611fad",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "products",
+      "action": "update"
+    },
+    {
+      "id": "28b113a9-62c1-4872-bcb7-282be29a7ec3",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "02fa198c-5c9f-4c53-9611-f65759e398f9",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "products",
+      "action": "delete"
+    },
+    {
+      "id": "1f2160f6-6b87-494a-9ee4-c8e4e82e3bc8",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "a6671cf6-95d2-4205-956c-71f83a22d90d",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "stock_movements",
+      "action": "create"
+    },
+    {
+      "id": "788b91d1-ebbf-4709-a961-305623f57a25",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "880caed1-8255-4bef-86a2-f1828e7f9536",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "stock_movements",
+      "action": "read"
+    },
+    {
+      "id": "1b01638d-cff9-438c-a72a-a816b6cce1b6",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "bf709be3-1926-4bad-ae68-8429b2f99794",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "purchase_orders",
+      "action": "create"
+    },
+    {
+      "id": "9423a0e4-2c00-43eb-a711-f9868c073820",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "afaa01f4-6ee6-407a-a320-ba31dca7d1a7",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "purchase_orders",
+      "action": "read"
+    },
+    {
+      "id": "6107f2fa-05fc-4407-9c6d-c37c743c6523",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "234900b7-5537-41b5-bbf1-2091df6cfbd6",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "purchase_orders",
+      "action": "update"
+    },
+    {
+      "id": "219d1fe1-f2d8-49cc-8d29-7710713e4f5e",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "58369814-3cdf-40bc-9f33-7ad065b51f7d",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "purchase_orders",
+      "action": "confirm"
+    },
+    {
+      "id": "d5947e35-c07d-4e8a-a786-c1f11dd0113a",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "9afe631f-1a1c-41c2-91db-11ce0af5ee21",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "purchase_receipts",
+      "action": "create"
+    },
+    {
+      "id": "f9ef4c2f-e1ab-45ce-844f-805388c83104",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "ed76790a-c742-4d45-8f9f-38bbe4ed51fe",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "purchase_receipts",
+      "action": "read"
+    },
+    {
+      "id": "ae9df1ea-1fd9-4d27-af51-d21f06a559fd",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "96a4d936-2265-4241-aca0-84637b9f541a",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "purchase_receipts",
+      "action": "confirm"
+    },
+    {
+      "id": "7763c38f-d930-4288-b94a-cbf9956eddd6",
+      "role_id": "68c5ae35-219d-41ad-bfef-68c46c91cdc5",
+      "permission_id": "2712e7f0-c117-464e-b6c5-add090f68d85",
+      "created_at": "2026-08-22T05:35:13.661Z",
+      "role_name": "admin_master",
+      "resource": "service_orders",
+      "action": "create"
+    }
+  ],
+  "functionDefs": [
+    {
+      "proname": "bootstrap_candidate_identity",
+      "definition": "CREATE OR REPLACE FUNCTION public.bootstrap_candidate_identity(p_auth_user_id uuid, p_full_name text, p_email text, p_tenant_id uuid DEFAULT NULL::uuid, p_role_id uuid DEFAULT NULL::uuid)\n RETURNS TABLE(person_id uuid, tenant_membership_id uuid, role_assignment_id uuid, first_login_state_person_id uuid, candidate_id uuid)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\nDECLARE\n  v_person_id uuid;\n  v_tenant_membership_id uuid;\n  v_role_assignment_id uuid;\n  v_first_login_state_person_id uuid;\n  v_candidate_id uuid;\nBEGIN\n  SET LOCAL row_security = off;\n\n  -- 1. People (idempotent)\n  SELECT id INTO v_person_id\n  FROM public.people\n  WHERE auth_user_id = p_auth_user_id;\n\n  IF v_person_id IS NULL THEN\n    INSERT INTO public.people (auth_user_id, full_name, email, status)\n    VALUES (p_auth_user_id, p_full_name, p_email, 'active')\n    RETURNING id INTO v_person_id;\n  END IF;\n\n  -- 2. Tenant membership (idempotent)\n  IF p_tenant_id IS NOT NULL THEN\n    SELECT id INTO v_tenant_membership_id\n    FROM public.tenant_memberships\n    WHERE person_id = v_person_id\n      AND tenant_id = p_tenant_id;\n\n    IF v_tenant_membership_id IS NULL THEN\n      INSERT INTO public.tenant_memberships (\n        person_id, tenant_id, status, joined_at\n      ) VALUES (\n        v_person_id, p_tenant_id, 'active', now()\n      )\n      RETURNING id INTO v_tenant_membership_id;\n    END IF;\n  END IF;\n\n  -- 3. Role assignment (idempotent)\n  IF p_role_id IS NOT NULL THEN\n    SELECT id INTO v_role_assignment_id\n    FROM public.role_assignments\n    WHERE person_id = v_person_id\n      AND role_id = p_role_id;\n\n    IF v_role_assignment_id IS NULL THEN\n      INSERT INTO public.role_assignments (\n        person_id, role_id, tenant_id, assigned_at\n      ) VALUES (\n        v_person_id, p_role_id, p_tenant_id, now()\n      )\n      RETURNING id INTO v_role_assignment_id;\n    END IF;\n  END IF;\n\n  -- 4. First login state (idempotent)\n  SELECT person_id INTO v_first_login_state_person_id\n  FROM public.first_login_state\n  WHERE person_id = v_person_id;\n\n  IF v_first_login_state_person_id IS NULL THEN\n    INSERT INTO public.first_login_state (\n      person_id, signup_origin, must_change_password, first_login_completed\n    ) VALUES (\n      v_person_id, 'self_signup', false, false\n    )\n    RETURNING person_id INTO v_first_login_state_person_id;\n  END IF;\n\n  -- 5. Candidate (idempotent)\n  IF p_tenant_id IS NOT NULL THEN\n    SELECT id INTO v_candidate_id\n    FROM public.candidates\n    WHERE person_id = v_person_id\n      AND tenant_id = p_tenant_id;\n\n    IF v_candidate_id IS NULL THEN\n      INSERT INTO public.candidates (person_id, tenant_id, status)\n      VALUES (v_person_id, p_tenant_id, 'active')\n      RETURNING id INTO v_candidate_id;\n    END IF;\n  END IF;\n\n  RETURN QUERY\n  SELECT v_person_id, v_tenant_membership_id, v_role_assignment_id,\n         v_first_login_state_person_id, v_candidate_id;\nEND;\n$function$\n"
+    },
+    {
+      "proname": "bootstrap_candidate_identity",
+      "definition": "CREATE OR REPLACE FUNCTION public.bootstrap_candidate_identity(p_auth_user_id uuid, p_full_name text, p_email text, p_phone text DEFAULT NULL::text, p_tenant_id uuid DEFAULT NULL::uuid, p_role_id uuid DEFAULT NULL::uuid)\n RETURNS TABLE(person_id uuid, tenant_membership_id uuid, role_assignment_id uuid, first_login_state_person_id uuid, candidate_id uuid)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$ declare v_person_id uuid; v_tenant_membership_id uuid; v_role_assignment_id uuid; v_first_login_state_person_id uuid; v_candidate_id uuid; v_expected_tenant_id uuid; v_auth_email text; begin if auth.uid() is null then raise exception 'authentication required'; end if; if auth.uid() <> p_auth_user_id then raise exception 'cannot bootstrap another user'; end if; v_auth_email := lower(coalesce(auth.jwt() ->> 'email','')); if v_auth_email = '' or lower(coalesce(p_email,'')) <> v_auth_email then raise exception 'email does not match authenticated user'; end if; if nullif(trim(coalesce(p_full_name,'')),'') is null then raise exception 'full name is required'; end if; select t.id into v_expected_tenant_id from public.tenants t where t.slug='js-empregos' limit 1; if v_expected_tenant_id is null then raise exception 'candidate tenant js-empregos not configured'; end if; if p_tenant_id is distinct from v_expected_tenant_id then raise exception 'invalid candidate tenant'; end if; if p_role_id is not null then raise exception 'candidate bootstrap does not accept a role assignment'; end if; select p.id into v_person_id from public.people p where p.auth_user_id=p_auth_user_id limit 1; if v_person_id is null then insert into public.people (auth_user_id,full_name,email,phone,status) values (p_auth_user_id,trim(p_full_name),p_email,p_phone,'active') returning id into v_person_id; end if; select tm.id into v_tenant_membership_id from public.tenant_memberships tm where tm.person_id=v_person_id and tm.tenant_id=p_tenant_id limit 1; if v_tenant_membership_id is null then insert into public.tenant_memberships (person_id,tenant_id,status,joined_at) values (v_person_id,p_tenant_id,'active',now()) returning id into v_tenant_membership_id; end if; select fls.person_id into v_first_login_state_person_id from public.first_login_state fls where fls.person_id=v_person_id limit 1; if v_first_login_state_person_id is null then insert into public.first_login_state (person_id,must_change_password,first_login_completed) values (v_person_id,true,false) returning public.first_login_state.person_id into v_first_login_state_person_id; end if; select c.id into v_candidate_id from public.candidates c where c.person_id=v_person_id and c.tenant_id=p_tenant_id limit 1; if v_candidate_id is null then insert into public.candidates (person_id,tenant_id,status) values (v_person_id,p_tenant_id,'active') returning id into v_candidate_id; end if; return query select v_person_id,v_tenant_membership_id,v_role_assignment_id,v_first_login_state_person_id,v_candidate_id; end; $function$\n"
+    },
+    {
+      "proname": "domain_event_emit",
+      "definition": "CREATE OR REPLACE FUNCTION public.domain_event_emit(p_tenant_id uuid, p_event_type text, p_aggregate_type text, p_aggregate_id uuid, p_payload jsonb DEFAULT '{}'::jsonb, p_idempotency_key text DEFAULT NULL::text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$ declare v_event_id uuid; v_actor uuid := coalesce(current_setting('app.current_person_id', true)::uuid, (select p.id from public.people p where p.auth_user_id = auth.uid())); v_correlation uuid := coalesce(current_setting('app.correlation_id', true)::uuid, gen_random_uuid()); v_causation uuid := coalesce(current_setting('app.causation_id', true)::uuid, null); v_idempotency_key text := coalesce(p_idempotency_key, p_event_type || ':' || p_aggregate_type || ':' || p_aggregate_id::text || ':' || to_char(now(), 'YYYYMMDDHH24MISSUS')); begin insert into public.domain_events (tenant_id,event_type,aggregate_type,aggregate_id,actor_person_id,payload,correlation_id,causation_id,idempotency_key) values (p_tenant_id,p_event_type,p_aggregate_type,p_aggregate_id,v_actor,p_payload,v_correlation,v_causation,v_idempotency_key) on conflict (idempotency_key) do nothing returning id into v_event_id; if v_event_id is null then select id into v_event_id from public.domain_events where idempotency_key=v_idempotency_key; end if; return v_event_id; end; $function$\n"
+    },
+    {
+      "proname": "emit_domain_event",
+      "definition": "CREATE OR REPLACE FUNCTION public.emit_domain_event(p_event_name text, p_aggregate_type text, p_aggregate_id uuid, p_tenant_id uuid, p_payload jsonb DEFAULT '{}'::jsonb, p_idempotency_key text DEFAULT NULL::text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n    DECLARE\n      v_event_id uuid;\n    BEGIN\n      v_event_id := public.domain_event_emit(\n        p_tenant_id,\n        p_event_name,\n        p_aggregate_type,\n        p_aggregate_id,\n        p_payload,\n        p_idempotency_key\n      );\n      RETURN v_event_id;\n    END;\n    $function$\n"
+    },
+    {
+      "proname": "handle_auth_user_deleted",
+      "definition": "CREATE OR REPLACE FUNCTION public.handle_auth_user_deleted()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\nBEGIN\n  UPDATE public.people\n  SET auth_user_id = NULL\n  WHERE auth_user_id = old.id;\n  RETURN old;\nEND;\n$function$\n"
+    },
+    {
+      "proname": "handle_auth_user_updated",
+      "definition": "CREATE OR REPLACE FUNCTION public.handle_auth_user_updated()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\nBEGIN\n  IF new.email IS DISTINCT FROM old.email THEN\n    UPDATE public.people\n    SET email = new.email\n    WHERE auth_user_id = new.id;\n  END IF;\n  RETURN new;\nEND;\n$function$\n"
+    },
+    {
+      "proname": "handle_new_auth_user",
+      "definition": "CREATE OR REPLACE FUNCTION public.handle_new_auth_user()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\nDECLARE\n  v_meta jsonb;\n  v_full_name text;\n  v_email text;\nBEGIN\n  v_meta := coalesce(new.raw_user_meta_data, '{}'::jsonb);\n  v_email := new.email;\n  v_full_name := v_meta ->> 'full_name';\n  IF v_full_name IS NULL OR v_full_name = '' THEN\n    v_full_name := v_meta ->> 'name';\n  END IF;\n  IF v_full_name IS NULL OR v_full_name = '' THEN\n    v_full_name := split_part(v_email, '@', 1);\n  END IF;\n\n  IF EXISTS (SELECT 1 FROM public.people WHERE auth_user_id = new.id) THEN\n    UPDATE public.people\n    SET email = new.email, full_name = v_full_name\n    WHERE auth_user_id = new.id\n      AND (email IS DISTINCT FROM new.email\n           OR full_name IS DISTINCT FROM v_full_name);\n  ELSE\n    INSERT INTO public.people (id, auth_user_id, full_name, email, status)\n    VALUES (gen_random_uuid(), new.id, v_full_name, v_email, 'active');\n  END IF;\n\n  RETURN new;\nEND;\n$function$\n"
+    },
+    {
+      "proname": "is_admin_master",
+      "definition": "CREATE OR REPLACE FUNCTION public.is_admin_master()\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\nAS $function$\n  SELECT EXISTS (\n    SELECT 1\n    FROM public.people p\n    JOIN public.role_assignments ra ON ra.person_id = p.id\n    JOIN public.roles r ON r.id = ra.role_id\n    WHERE p.auth_user_id = auth.uid()\n      AND r.name = 'admin_master'\n      AND r.scope = 'global'\n  )\n$function$\n"
+    },
+    {
+      "proname": "is_admin_master",
+      "definition": "CREATE OR REPLACE FUNCTION public.is_admin_master(auth_uid uuid)\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\nAS $function$\n  SELECT EXISTS (\n    SELECT 1\n    FROM public.people p\n    JOIN public.role_assignments ra ON ra.person_id = p.id\n    JOIN public.roles r ON r.id = ra.role_id\n    WHERE p.auth_user_id = $1\n      AND r.name = 'admin_master'\n      AND r.scope = 'global'\n  )\n$function$\n"
+    },
+    {
+      "proname": "is_tenant_member",
+      "definition": "CREATE OR REPLACE FUNCTION public.is_tenant_member(p_tenant_id uuid)\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  SELECT EXISTS (\n    SELECT 1\n    FROM public.people p\n    JOIN public.tenant_memberships tm ON tm.person_id = p.id\n    WHERE p.auth_user_id = auth.uid()\n      AND tm.tenant_id = p_tenant_id\n      AND tm.status = 'active'\n  );\n$function$\n"
+    },
+    {
+      "proname": "is_valid_cnpj",
+      "definition": "CREATE OR REPLACE FUNCTION public.is_valid_cnpj(p_value text)\n RETURNS boolean\n LANGUAGE plpgsql\n IMMUTABLE\n SET search_path TO 'public'\nAS $function$\nDECLARE\n  v_digits text;\n  v_d1 int; v_d2 int; v_sum int; v_rest int; v_i int;\n  v_weights1 int[] := ARRAY[5,4,3,2,9,8,7,6,5,4,3,2];\n  v_weights2 int[] := ARRAY[6,5,4,3,2,9,8,7,6,5,4,3,2];\nBEGIN\n  v_digits := public.normalize_cnpj(p_value);\n  IF v_digits IS NULL OR length(v_digits) <> 14 THEN\n    RETURN false;\n  END IF;\n  IF v_digits ~ '^(.)\\1{13}$' THEN\n    RETURN false;\n  END IF;\n\n  v_sum := 0;\n  FOR v_i IN 1..12 LOOP\n    v_sum := v_sum + (substring(v_digits, v_i, 1))::int * v_weights1[v_i];\n  END LOOP;\n  v_rest := v_sum % 11;\n  v_d1 := CASE WHEN v_rest < 2 THEN 0 ELSE 11 - v_rest END;\n  IF v_d1 <> (substring(v_digits, 13, 1))::int THEN\n    RETURN false;\n  END IF;\n\n  v_sum := 0;\n  FOR v_i IN 1..13 LOOP\n    v_sum := v_sum + (substring(v_digits, v_i, 1))::int * v_weights2[v_i];\n  END LOOP;\n  v_rest := v_sum % 11;\n  v_d2 := CASE WHEN v_rest < 2 THEN 0 ELSE 11 - v_rest END;\n  IF v_d2 <> (substring(v_digits, 14, 1))::int THEN\n    RETURN false;\n  END IF;\n\n  RETURN true;\nEND;\n$function$\n"
+    },
+    {
+      "proname": "is_valid_cpf",
+      "definition": "CREATE OR REPLACE FUNCTION public.is_valid_cpf(p_value text)\n RETURNS boolean\n LANGUAGE plpgsql\n IMMUTABLE\n SET search_path TO 'public'\nAS $function$\nDECLARE\n  v_digits text;\n  v_d1 int; v_d2 int; v_sum int; v_rest int; v_i int;\nBEGIN\n  v_digits := public.normalize_cpf(p_value);\n  IF v_digits IS NULL OR length(v_digits) <> 11 THEN\n    RETURN false;\n  END IF;\n  IF v_digits ~ '^(.)\\1{10}$' THEN\n    RETURN false;\n  END IF;\n\n  v_sum := 0;\n  FOR v_i IN 1..9 LOOP\n    v_sum := v_sum + (substring(v_digits, v_i, 1))::int * (11 - v_i);\n  END LOOP;\n  v_rest := (v_sum * 10) % 11;\n  v_d1 := CASE WHEN v_rest = 10 THEN 0 ELSE v_rest END;\n  IF v_d1 <> (substring(v_digits, 10, 1))::int THEN\n    RETURN false;\n  END IF;\n\n  v_sum := 0;\n  FOR v_i IN 1..10 LOOP\n    v_sum := v_sum + (substring(v_digits, v_i, 1))::int * (12 - v_i);\n  END LOOP;\n  v_rest := (v_sum * 10) % 11;\n  v_d2 := CASE WHEN v_rest = 10 THEN 0 ELSE v_rest END;\n  IF v_d2 <> (substring(v_digits, 11, 1))::int THEN\n    RETURN false;\n  END IF;\n\n  RETURN true;\nEND;\n$function$\n"
+    },
+    {
+      "proname": "media_for_entity",
+      "definition": "CREATE OR REPLACE FUNCTION public.media_for_entity(p_entity_type text, p_entity_id uuid)\n RETURNS TABLE(id uuid, bucket_id text, storage_path text, file_url text, file_name text, mime_type text, width integer, height integer, is_primary boolean, sort_order integer, alt_text text)\n LANGUAGE sql\n STABLE\n SET search_path TO 'public'\nAS $function$\n  SELECT\n    ma.id, ma.bucket_id, ma.storage_path, ma.file_url,\n    ma.file_name, ma.mime_type, ma.width, ma.height,\n    ma.is_primary, ma.sort_order, ma.alt_text\n  FROM public.media_assets ma\n  WHERE ma.entity_type = p_entity_type\n    AND ma.entity_id   = p_entity_id\n  ORDER BY ma.is_primary DESC, ma.sort_order ASC, ma.created_at ASC;\n$function$\n"
+    },
+    {
+      "proname": "normalize_cnpj",
+      "definition": "CREATE OR REPLACE FUNCTION public.normalize_cnpj(p_value text)\n RETURNS text\n LANGUAGE sql\n IMMUTABLE\n SET search_path TO 'public'\nAS $function$\n  SELECT CASE\n    WHEN p_value IS NULL OR btrim(p_value) = '' THEN NULL\n    ELSE regexp_replace(p_value, '[^0-9]', '', 'g')\n  END;\n$function$\n"
+    },
+    {
+      "proname": "normalize_cpf",
+      "definition": "CREATE OR REPLACE FUNCTION public.normalize_cpf(p_value text)\n RETURNS text\n LANGUAGE sql\n IMMUTABLE\n SET search_path TO 'public'\nAS $function$\n  SELECT CASE\n    WHEN p_value IS NULL OR btrim(p_value) = '' THEN NULL\n    ELSE regexp_replace(p_value, '[^0-9]', '', 'g')\n  END;\n$function$\n"
+    },
+    {
+      "proname": "repair_candidate_chain",
+      "definition": "CREATE OR REPLACE FUNCTION public.repair_candidate_chain(p_person_id uuid, p_tenant_id uuid DEFAULT NULL::uuid, p_role_code text DEFAULT 'candidato'::text)\n RETURNS TABLE(person_id uuid, tenant_membership_id uuid, role_assignment_id uuid, candidate_id uuid, created_membership boolean, created_assignment boolean, created_candidate boolean)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\nDECLARE\n  v_tenant_membership_id uuid;\n  v_role_assignment_id   uuid;\n  v_candidate_id         uuid;\n  v_role_id              uuid;\n  v_resolved_tenant_id   uuid;\n  v_created_membership   boolean := false;\n  v_created_assignment   boolean := false;\n  v_created_candidate    boolean := false;\nBEGIN\n  IF NOT EXISTS (SELECT 1 FROM public.people WHERE id = p_person_id) THEN\n    RAISE EXCEPTION 'repair_candidate_chain: person % não encontrada', p_person_id;\n  END IF;\n\n  IF p_tenant_id IS NOT NULL THEN\n    v_resolved_tenant_id := p_tenant_id;\n  ELSE\n    SELECT tm.tenant_id INTO v_resolved_tenant_id\n    FROM public.tenant_memberships tm\n    WHERE tm.person_id = p_person_id\n      AND tm.status = 'active'\n    ORDER BY tm.joined_at DESC NULLS LAST\n    LIMIT 1;\n  END IF;\n\n  IF v_resolved_tenant_id IS NULL THEN\n    RAISE EXCEPTION 'repair_candidate_chain: nenhum tenant resolvido para person %', p_person_id;\n  END IF;\n\n  SELECT id INTO v_tenant_membership_id\n  FROM public.tenant_memberships\n  WHERE person_id = p_person_id\n    AND tenant_id = v_resolved_tenant_id;\n\n  IF v_tenant_membership_id IS NULL THEN\n    INSERT INTO public.tenant_memberships (person_id, tenant_id, status, joined_at)\n    VALUES (p_person_id, v_resolved_tenant_id, 'active', now())\n    RETURNING id INTO v_tenant_membership_id;\n    v_created_membership := true;\n  END IF;\n\n  SELECT id INTO v_role_id\n  FROM public.roles\n  WHERE name = p_role_code\n  LIMIT 1;\n\n  IF v_role_id IS NOT NULL THEN\n    SELECT id INTO v_role_assignment_id\n    FROM public.role_assignments\n    WHERE person_id = p_person_id\n      AND role_id = v_role_id\n      AND (tenant_id = v_resolved_tenant_id OR tenant_id IS NULL);\n\n    IF v_role_assignment_id IS NULL THEN\n      INSERT INTO public.role_assignments (person_id, role_id, tenant_id, assigned_at)\n      VALUES (p_person_id, v_role_id, v_resolved_tenant_id, now())\n      RETURNING id INTO v_role_assignment_id;\n      v_created_assignment := true;\n    END IF;\n  END IF;\n\n  SELECT id INTO v_candidate_id\n  FROM public.candidates\n  WHERE person_id = p_person_id\n    AND tenant_id = v_resolved_tenant_id;\n\n  IF v_candidate_id IS NULL THEN\n    INSERT INTO public.candidates (person_id, tenant_id, status, created_at)\n    VALUES (p_person_id, v_resolved_tenant_id, 'active', now())\n    RETURNING id INTO v_candidate_id;\n    v_created_candidate := true;\n  END IF;\n\n  person_id := p_person_id;\n  tenant_membership_id := v_tenant_membership_id;\n  role_assignment_id := v_role_assignment_id;\n  candidate_id := v_candidate_id;\n  created_membership := v_created_membership;\n  created_assignment := v_created_assignment;\n  created_candidate := v_created_candidate;\nEND;\n$function$\n"
+    },
+    {
+      "proname": "set_primary_media",
+      "definition": "CREATE OR REPLACE FUNCTION public.set_primary_media(p_entity_type text, p_entity_id uuid, p_media_id uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\nBEGIN\n  UPDATE public.media_assets\n  SET is_primary = (id = p_media_id)\n  WHERE entity_type = p_entity_type\n    AND entity_id   = p_entity_id;\nEND;\n$function$\n"
+    },
+    {
+      "proname": "update_updated_at",
+      "definition": "CREATE OR REPLACE FUNCTION public.update_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\n    begin\n      new.updated_at = now();\n      return new;\n    end;\n    $function$\n"
+    },
+    {
+      "proname": "user_has_permission",
+      "definition": "CREATE OR REPLACE FUNCTION public.user_has_permission(p_auth_user_id uuid, p_resource text, p_action text, p_tenant_id uuid DEFAULT NULL::uuid)\n RETURNS boolean\n LANGUAGE plpgsql\n STABLE SECURITY DEFINER\nAS $function$\nDECLARE\n  v_person_id uuid;\nBEGIN\n  SELECT id INTO v_person_id\n  FROM public.people\n  WHERE auth_user_id = p_auth_user_id;\n\n  IF v_person_id IS NULL THEN\n    RETURN false;\n  END IF;\n\n  -- Check global role (admin_master bypasses tenant)\n  IF EXISTS (\n    SELECT 1\n    FROM public.role_assignments ra\n    JOIN public.roles r ON r.id = ra.role_id\n    JOIN public.role_permissions rp ON rp.role_id = r.id\n    JOIN public.permissions perm ON perm.id = rp.permission_id\n    WHERE ra.person_id = v_person_id\n      AND r.scope = 'global'\n      AND perm.resource = p_resource\n      AND perm.action = p_action\n  ) THEN\n    RETURN true;\n  END IF;\n\n  -- Check tenant-scoped role\n  IF p_tenant_id IS NOT NULL THEN\n    IF EXISTS (\n      SELECT 1\n      FROM public.role_assignments ra\n      JOIN public.roles r ON r.id = ra.role_id\n      JOIN public.role_permissions rp ON rp.role_id = r.id\n      JOIN public.permissions perm ON perm.id = rp.permission_id\n      JOIN public.tenant_memberships tm ON tm.tenant_id = ra.tenant_id\n      WHERE ra.person_id = v_person_id\n        AND r.scope = 'tenant'\n        AND perm.resource = p_resource\n        AND perm.action = p_action\n        AND tm.tenant_id = p_tenant_id\n    ) THEN\n      RETURN true;\n    END IF;\n  END IF;\n\n  RETURN false;\nEND;\n$function$\n"
+    },
+    {
+      "proname": "user_permissions",
+      "definition": "CREATE OR REPLACE FUNCTION public.user_permissions(p_auth_user_id uuid, p_tenant_id uuid)\n RETURNS TABLE(resource text, action text, description text)\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\nbegin\n  return query\n  select distinct perm.resource, perm.action, perm.description\n  from public.people pe\n  join public.role_assignments ra on ra.person_id = pe.id\n  join public.roles r on r.id = ra.role_id\n  join public.role_permissions rp on rp.role_id = ra.role_id\n  join public.permissions perm on perm.id = rp.permission_id\n  where pe.auth_user_id = p_auth_user_id\n    and (\n      ra.tenant_id = p_tenant_id\n      or (ra.tenant_id is null and r.scope = 'global')\n    );\nend;\n$function$\n"
+    },
+    {
+      "proname": "user_tenant_ids",
+      "definition": "CREATE OR REPLACE FUNCTION public.user_tenant_ids()\n RETURNS SETOF uuid\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\n  SELECT tm.tenant_id\n  FROM public.tenant_memberships tm\n  JOIN public.people p ON p.id = tm.person_id\n  WHERE p.auth_user_id = auth.uid()\n    AND tm.status = 'active';\n$function$\n"
+    }
+  ],
+  "allTables": [
+    "accounts_payable",
+    "accounts_receivable",
+    "activity_logs",
+    "administrative_approvals",
+    "administrative_documents",
+    "administrative_requests",
+    "administrative_tasks",
+    "ai_conversations",
+    "ai_messages",
+    "ai_usage",
+    "application_profile_snapshots",
+    "application_status_history",
+    "applications",
+    "audit_logs",
+    "automation_executions",
+    "automation_jobs",
+    "automation_templates",
+    "bank_reconciliations",
+    "blog_categories",
+    "blog_posts",
+    "calendar_events",
+    "calendar_integrations",
+    "calendars",
+    "candidate_courses",
+    "candidate_documents",
+    "candidate_education",
+    "candidate_experiences",
+    "candidate_job_alerts",
+    "candidate_languages",
+    "candidate_portal_modules",
+    "candidate_processes",
+    "candidate_profile_views",
+    "candidate_skills",
+    "candidates",
+    "chat_handoffs",
+    "chat_messages",
+    "chat_participants",
+    "chat_rooms",
+    "companies",
+    "company_contacts",
+    "company_locations",
+    "company_relationship_types",
+    "company_relationships",
+    "company_services",
+    "company_social_links",
+    "consents",
+    "contract_status_history",
+    "contracts",
+    "cost_centers",
+    "customer_feedback",
+    "customer_ratings",
+    "customers",
+    "dashboard_layouts",
+    "dashboard_widgets",
+    "data_deletion_requests",
+    "data_export_requests",
+    "data_retention_policies",
+    "departments",
+    "document_links",
+    "document_versions",
+    "domain_events",
+    "email_messages",
+    "email_templates",
+    "employee_contracts",
+    "employee_documents",
+    "employee_positions",
+    "employee_status_history",
+    "employees",
+    "epi_deliveries",
+    "epi_delivery_items",
+    "epi_return_items",
+    "epi_returns",
+    "event_deliveries",
+    "event_outbox",
+    "event_participants",
+    "faqs",
+    "favorite_jobs",
+    "feedback",
+    "file_access_logs",
+    "file_uploads",
+    "files",
+    "financial_accounts",
+    "financial_categories",
+    "financial_installment_cancellations",
+    "financial_installment_payments",
+    "financial_installments",
+    "financial_transactions",
+    "first_login_state",
+    "fiscal_api_requests",
+    "fiscal_api_responses",
+    "fiscal_configurations",
+    "fiscal_document_events",
+    "fiscal_document_items",
+    "fiscal_document_status_history",
+    "fiscal_documents",
+    "fiscal_integrations",
+    "footer_configs",
+    "global_navigation_links",
+    "integration_connections",
+    "integration_credentials",
+    "integration_errors",
+    "integration_events",
+    "integration_sync_jobs",
+    "integration_sync_runs",
+    "integration_webhooks",
+    "interactions",
+    "interview_feedback",
+    "interview_followups",
+    "interview_participants",
+    "interviews",
+    "invoice_items",
+    "invoices",
+    "job_matches",
+    "job_skills",
+    "jobs",
+    "leads",
+    "legal_acceptances",
+    "material_issue_items",
+    "material_issues",
+    "material_return_items",
+    "material_returns",
+    "media_assets",
+    "meeting_room_reservations",
+    "meeting_rooms",
+    "notification_deliveries",
+    "notification_preferences",
+    "notifications",
+    "page_templates",
+    "password_policies",
+    "payments",
+    "people",
+    "permissions",
+    "pos_cancellations",
+    "pos_cash_movements",
+    "pos_cashier_sessions",
+    "pos_cashiers",
+    "pos_daily_closures",
+    "pos_operators",
+    "pos_payments",
+    "pos_returns",
+    "pos_sale_items",
+    "pos_sales",
+    "pos_terminals",
+    "positions",
+    "privacy_requests",
+    "product_categories",
+    "products",
+    "provider_configs",
+    "providers",
+    "purchase_order_items",
+    "purchase_orders",
+    "purchase_quotation_items",
+    "purchase_quotations",
+    "purchase_receipt_divergences",
+    "purchase_receipt_items",
+    "purchase_receipts",
+    "purchase_request_items",
+    "purchase_requests",
+    "purchase_status_history",
+    "quote_items",
+    "quotes",
+    "receipts",
+    "recruitment_demands",
+    "recruitment_processes",
+    "recruitment_stages",
+    "report_definitions",
+    "report_executions",
+    "report_schedules",
+    "role_assignments",
+    "role_permissions",
+    "roles",
+    "sale_items",
+    "sales",
+    "security_events",
+    "service_acceptances",
+    "service_attachments",
+    "service_executions",
+    "service_occurrences",
+    "service_order_items",
+    "service_order_status_history",
+    "service_orders",
+    "service_sla",
+    "services",
+    "sessions",
+    "skills",
+    "stage_templates",
+    "stock_balances",
+    "stock_entries",
+    "stock_inventory",
+    "stock_inventory_items",
+    "stock_lots",
+    "stock_movements",
+    "suppliers",
+    "support_ticket_assignments",
+    "support_ticket_categories",
+    "support_ticket_messages",
+    "support_ticket_status_history",
+    "support_tickets",
+    "talent_pool_memberships",
+    "task_attachments",
+    "task_comments",
+    "task_status_history",
+    "tasks",
+    "tax_calculations",
+    "tax_rates",
+    "tenant_memberships",
+    "tenant_settings",
+    "tenants",
+    "third_party_custody",
+    "third_party_custody_items",
+    "validation_results",
+    "warehouse_locations",
+    "warehouses",
+    "webhook_deliveries",
+    "work_order_acceptances",
+    "work_order_assignments",
+    "work_order_attachments",
+    "work_order_checklists",
+    "work_order_materials",
+    "work_order_occurrences",
+    "work_orders"
+  ],
+  "profilesExists": [],
+  "peopleTenantIdColumn": [],
+  "authUsersColumns": [
+    {
+      "column_name": "instance_id",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "aud",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "role",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "email",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "encrypted_password",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "email_confirmed_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "invited_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "confirmation_token",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "confirmation_sent_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "recovery_token",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "recovery_sent_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "email_change_token_new",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "email_change",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "email_change_sent_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "last_sign_in_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "raw_app_meta_data",
+      "data_type": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "raw_user_meta_data",
+      "data_type": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "is_super_admin",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "phone",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": "NULL::character varying"
+    },
+    {
+      "column_name": "phone_confirmed_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "phone_change",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": "''::character varying"
+    },
+    {
+      "column_name": "phone_change_token",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": "''::character varying"
+    },
+    {
+      "column_name": "phone_change_sent_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "confirmed_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "email_change_token_current",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": "''::character varying"
+    },
+    {
+      "column_name": "email_change_confirm_status",
+      "data_type": "smallint",
+      "is_nullable": "YES",
+      "column_default": "0"
+    },
+    {
+      "column_name": "banned_until",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "reauthentication_token",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": "''::character varying"
+    },
+    {
+      "column_name": "reauthentication_sent_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "is_sso_user",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "false"
+    },
+    {
+      "column_name": "deleted_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "is_anonymous",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "false"
+    }
+  ]
+}

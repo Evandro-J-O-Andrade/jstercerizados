@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus, Building2, Eye, EyeOff } from 'lucide-react';
@@ -13,6 +13,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config/images';
 import { normalizeError } from '@/lib/error-normalizer';
+import { Turnstile } from '@/components/auth/Turnstile';
+import type { TurnstileHandle } from '@/components/auth/Turnstile';
 
 const companySchema = z
   .object({
@@ -33,6 +35,9 @@ type CompanyFormData = z.infer<typeof companySchema>;
 export default function CompanyRegister() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileHandle>(null);
+  const submittedRef = useRef(false);
   const { register: registerUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -46,15 +51,25 @@ export default function CompanyRegister() {
 
   const onSubmit = async (data: CompanyFormData): Promise<void> => {
     setError('');
+    submittedRef.current = false;
+
     try {
       const result = await registerUser(data.email, data.password, {
         email: data.email,
         full_name: data.full_name,
         phone: data.phone,
+        emailRedirectTo: '/entrar/empresa',
+        turnstileToken: turnstileToken ?? undefined,
       });
 
       if (result.error) {
-        setError(normalizeError(result.error).userMessage);
+        submittedRef.current = true;
+        const userMessage = normalizeError(result.error).userMessage;
+        setError(userMessage);
+        if (/captcha/i.test(userMessage)) {
+          setTurnstileToken(null);
+          turnstileRef.current?.reset();
+        }
       } else if (result.status === 'email_pending') {
         setError(
           'Cadastro realizado com sucesso. Verifique seu e-mail para confirmar a conta.',
@@ -179,6 +194,12 @@ export default function CompanyRegister() {
               type={showPassword ? 'text' : 'password'}
               error={errors.confirmPassword?.message}
               {...register('confirmPassword')}
+            />
+
+            <Turnstile
+              ref={turnstileRef}
+              onTokenChange={setTurnstileToken}
+              action="signup"
             />
 
             <Button

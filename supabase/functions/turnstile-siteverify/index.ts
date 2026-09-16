@@ -6,6 +6,7 @@ const SITEVERIFY_URL =
 const ALLOWED_ORIGINS = [
   'https://jsempregos.com.br',
   'https://www.jsempregos.com.br',
+  'https://jstercerizados.pages.dev',
   'http://localhost:3000',
   'http://localhost',
 ];

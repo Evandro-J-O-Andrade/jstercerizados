@@ -20,14 +20,16 @@ export interface TurnstileHandle {
 export interface TurnstileProps {
   onTokenChange?: (token: string | null) => void;
   className?: string;
+  action?: string;
 }
 
 export const Turnstile = forwardRef<TurnstileHandle, TurnstileProps>(
-  ({ onTokenChange, className }, ref) => {
+  ({ onTokenChange, className, action }, ref) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const enabled = isTurnstileEnabled();
     const { token, error, loading, reset } = useTurnstileToken(containerRef, {
       enabled,
+      action,
     });
 
     const handleTokenChange = useCallback(

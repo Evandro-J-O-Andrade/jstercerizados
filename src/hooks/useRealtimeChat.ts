@@ -100,7 +100,7 @@ export function useRealtimeChat(roomId: string | null) {
     try {
       const { error } = await supabase.from('chat_messages').insert({
         room_id: roomId,
-        role: 'visitor',
+        role: 'user',
         content: content.trim(),
       });
 

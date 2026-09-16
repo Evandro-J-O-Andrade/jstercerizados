@@ -131,6 +131,10 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
 
   const onInvalid = (formErrors: unknown) => {
     console.error('[AUTH:FORM_INVALID]', formErrors);
+    console.error(
+      '[AUTH:FORM_INVALID_JSON]',
+      JSON.stringify(formErrors, null, 2),
+    );
   };
 
   const resetCaptcha = () => {
@@ -178,6 +182,8 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       const result = await register(data.email, data.password, {
         full_name: data.full_name,
         email: data.email,
+        emailRedirectTo:
+          accessFlow === 'empresa' ? '/entrar/empresa' : '/entrar/candidato',
         turnstileToken: turnstileToken ?? undefined,
       });
       if (result.error) {
@@ -515,6 +521,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
                   <Turnstile
                     ref={turnstileRef}
                     onTokenChange={setTurnstileToken}
+                    action="login"
                   />
 
                   <Button
@@ -586,6 +593,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
                   <Turnstile
                     ref={turnstileRef}
                     onTokenChange={setTurnstileToken}
+                    action="signup"
                   />
 
                   <Button

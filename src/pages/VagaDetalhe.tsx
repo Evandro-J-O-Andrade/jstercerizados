@@ -18,7 +18,7 @@ import {
   Hourglass,
 } from 'lucide-react';
 
-const SITE_URL = 'https://www.jsempregos.com.br';
+const SITE_URL = 'https://jsempregos.com.br';
 
 const CONTRATO_LABELS: Record<string, string> = {
   CLT: 'CLT',

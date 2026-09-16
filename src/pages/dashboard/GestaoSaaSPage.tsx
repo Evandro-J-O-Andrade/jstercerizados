@@ -1,41 +1,80 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
+import { Activity, BarChart3, Building2, Users } from 'lucide-react';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { Card } from '@/components/ui/Card';
-import { BarChart3, Activity } from 'lucide-react';
-import { getSupabaseClient } from '@/lib/supabase';
-
-interface DomainEvent {
-  id: string;
-  event_name: string;
-  aggregate_type: string;
-  created_at: string;
-}
+import {
+  DashboardCard,
+  DashboardErrorState,
+  DashboardMetricGrid,
+  DashboardSection,
+  DashboardSkeleton,
+} from '@/components/dashboard';
+import {
+  filterDashboardMetrics,
+  type DashboardMetric,
+} from '@/components/dashboard/dashboard-model';
+import { EmptyState } from '@/components/fallback';
+import { useAccount } from '@/contexts/AccountContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useGlobalDashboardStats } from '@/hooks/useGlobalDashboardStats';
 
 export default function GestaoSaaSPage() {
-  const [events, setEvents] = useState<DomainEvent[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { activePermissions } = useAccount();
+  const { isAdminMaster } = useAuth();
+  const stats = useGlobalDashboardStats();
 
-  useEffect(() => {
-    const supabase = getSupabaseClient();
-    if (!supabase) return;
-
-    const fetchEvents = async () => {
-      try {
-        const { data } = await supabase
-          .from('domain_events')
-          .select('id, event_name, aggregate_type, created_at')
-          .order('created_at', { ascending: false })
-          .limit(20);
-        setEvents(data || []);
-      } catch (error) {
-        console.error('[GESTAO_SAAS] Failed to load:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
+  const metrics = useMemo<DashboardMetric[]>(
+    () => [
+      {
+        id: 'tenants',
+        label: 'Tenants',
+        value: stats.tenants,
+        description: 'Ambientes ativos na plataforma',
+        icon: Building2,
+        tone: 'primary',
+        href: '/dashboard/tenants',
+        permission: 'tenants.read',
+        format: 'number',
+      },
+      {
+        id: 'companies',
+        label: 'Empresas',
+        value: stats.companies,
+        description: 'Empresas cadastradas',
+        icon: Building2,
+        tone: 'success',
+        href: '/dashboard/empresas',
+        permission: 'companies.read',
+        format: 'number',
+      },
+      {
+        id: 'people',
+        label: 'Usuários',
+        value: stats.people,
+        description: 'Pessoas com identidade na plataforma',
+        icon: Users,
+        tone: 'warning',
+        href: '/dashboard/usuarios',
+        permission: 'people.read',
+        format: 'number',
+      },
+      {
+        id: 'events',
+        label: 'Eventos recentes',
+        value: stats.recentEvents.length,
+        description: 'Eventos registrados na plataforma',
+        icon: Activity,
+        tone: 'neutral',
+        permission: 'domain_events.read',
+        format: 'number',
+      },
+    ],
+    [stats.companies, stats.people, stats.recentEvents.length, stats.tenants],
+  );
+  const visibleMetrics = filterDashboardMetrics(
+    metrics,
+    activePermissions,
+    isAdminMaster,
+  );
 
   return (
     <ModuleWorkspace
@@ -46,33 +85,36 @@ export default function GestaoSaaSPage() {
         { label: 'Gestão SaaS', href: '/dashboard/gestao-saas' },
       ]}
     >
-      {loading ? (
-        <div className="text-muted-foreground text-sm">
-          Carregando métricas...
-        </div>
-      ) : (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Card className="p-6">
-              <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                Eventos recentes
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-foreground text-2xl font-semibold">
-                  {events.length}
-                </span>
-                <Activity className="text-primary h-5 w-5" />
-              </div>
-            </Card>
-          </div>
+      <div className="space-y-6">
+        {stats.error ? (
+          <DashboardErrorState message={stats.error} />
+        ) : stats.loading ? (
+          <DashboardSkeleton count={4} />
+        ) : visibleMetrics.length > 0 ? (
+          <DashboardMetricGrid>
+            {visibleMetrics.map((metric) => (
+              <DashboardCard key={metric.id} metric={metric} />
+            ))}
+          </DashboardMetricGrid>
+        ) : (
+          <EmptyState
+            title="Nenhum indicador disponível"
+            description="Seu perfil não possui indicadores liberados para visualização."
+          />
+        )}
 
-          {events.length > 0 && (
-            <Card className="overflow-hidden">
-              <div className="border-border border-b px-4 py-3">
-                <h3 className="text-foreground text-sm font-semibold">
-                  Eventos recentes da plataforma
-                </h3>
-              </div>
+        <DashboardSection
+          title="Eventos recentes da plataforma"
+          description="Atividade operacional registrada nos domínios autorizados."
+          icon={Activity}
+        >
+          {stats.recentEvents.length === 0 ? (
+            <EmptyState
+              title="Nenhum evento recente"
+              description="Quando houver atividade na plataforma, ela aparecerá aqui."
+            />
+          ) : (
+            <div className="border-border overflow-x-auto rounded-lg border">
               <table className="divide-border min-w-full divide-y">
                 <thead className="bg-muted/50">
                   <tr>
@@ -88,18 +130,18 @@ export default function GestaoSaaSPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-border divide-y">
-                  {events.slice(0, 10).map((event) => (
+                  {stats.recentEvents.slice(0, 10).map((event) => (
                     <tr
                       key={event.id}
                       className="hover:bg-muted/30 transition-colors"
                     >
                       <td className="text-foreground px-4 py-3 text-sm font-medium">
-                        {event.event_name}
+                        {event.event_type}
                       </td>
                       <td className="text-muted-foreground px-4 py-3 text-sm">
                         {event.aggregate_type || '—'}
                       </td>
-                      <td className="text-muted-foreground px-4 py-3 text-sm">
+                      <td className="text-muted-foreground px-4 py-3 text-sm whitespace-nowrap">
                         {new Date(event.created_at).toLocaleDateString(
                           'pt-BR',
                           {
@@ -114,10 +156,10 @@ export default function GestaoSaaSPage() {
                   ))}
                 </tbody>
               </table>
-            </Card>
+            </div>
           )}
-        </div>
-      )}
+        </DashboardSection>
+      </div>
     </ModuleWorkspace>
   );
 }

@@ -1,35 +1,36 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Users,
-  Briefcase,
+  Activity,
+  ArrowUpRight,
+  BriefcaseBusiness,
   Building2,
   FileText,
-  ArrowUpRight,
-  Activity,
-  Inbox,
+  Users,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import {
+  DashboardCard,
+  DashboardErrorState,
+  DashboardMetricGrid,
+  DashboardSection,
+  DashboardSkeleton,
+} from '@/components/dashboard';
+import {
+  filterDashboardMetrics,
+  type DashboardMetric,
+} from '@/components/dashboard/dashboard-model';
+import { EmptyState } from '@/components/fallback';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAccount } from '@/contexts/AccountContext';
 import { useNavigate } from 'react-router-dom';
 import { jobsRepository } from '@/repositories/jobs.repository';
 import { candidatesRepository } from '@/repositories/candidates.repository';
 import { companiesRepository } from '@/repositories/companies.repository';
-import { cn } from '@/utils';
 import type { Job, Candidate, Company } from '@/types/domain';
 
-interface StatCard {
-  label: string;
-  value: number | string;
-  icon: React.ComponentType<{ className?: string }>;
-  color: 'primary' | 'success' | 'accent' | 'warning';
-  href?: string;
-  description?: string;
-}
-
 export default function VisaoGeral() {
-  const { currentTenantId, roles, permissions, isAdminMaster, person } =
-    useAuth();
+  const { currentTenantId, roles, isAdminMaster, person } = useAuth();
+  const { activePermissions } = useAccount();
   const navigate = useNavigate();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -83,11 +84,11 @@ export default function VisaoGeral() {
   const greeting = firstName || displayName || null;
 
   const primaryRole = roles[0];
-  const roleLabel = primaryRole?.name || primaryRole?.name || null;
+  const roleLabel = primaryRole?.name || null;
 
   const subtitle = useMemo(() => {
     if (isAdminMaster) {
-      return 'Vis�o geral da plataforma.';
+      return 'Visão geral da plataforma.';
     }
     if (roleLabel) {
       const lower = roleLabel.toLowerCase();
@@ -98,108 +99,70 @@ export default function VisaoGeral() {
         return 'Confira suas oportunidades e candidaturas.';
       }
       if (lower.includes('empresa')) {
-        return 'Acompanhe suas vagas e processos de contrata��o.';
+        return 'Acompanhe suas vagas e processos de contratação.';
       }
     }
-    return 'Aqui est� o resumo da sua opera��o.';
+    return 'Aqui está o resumo da sua operação.';
   }, [isAdminMaster, roleLabel]);
 
-  const stats = useMemo<StatCard[]>(() => {
-    const base: StatCard[] = [];
-
-    if (isAdminMaster) {
-      base.push(
-        {
-          label: 'Candidatos',
-          value: candidates.length,
-          icon: Users,
-          color: 'primary',
-          href: '/dashboard/candidatos',
-          description: 'Cadastrados na plataforma',
-        },
-        {
-          label: 'Vagas',
-          value: jobs.length,
-          icon: Briefcase,
-          color: 'success',
-          href: '/dashboard/vagas',
-          description: 'Publicadas',
-        },
-        {
-          label: 'Empresas',
-          value: companies.length,
-          icon: Building2,
-          color: 'accent',
-          href: '/dashboard/empresas',
-          description: 'Parceiras cadastradas',
-        },
-        {
-          label: 'Processos',
-          value: '�',
-          icon: FileText,
-          color: 'warning',
-          href: '/dashboard/processos-seletivos',
-          description: 'Em andamento',
-        },
-      );
-      return base;
-    }
-
-    const canJobs = permissions.some(
-      (p) => `${p.resource}.${p.action}` === 'jobs.read',
-    );
-    const canCandidates = permissions.some(
-      (p) => `${p.resource}.${p.action}` === 'candidates.read',
-    );
-    const canCompanies = permissions.some(
-      (p) => `${p.resource}.${p.action}` === 'companies.read',
-    );
-
-    if (canJobs) {
-      base.push({
-        label: 'Vagas',
-        value: jobs.length,
-        icon: Briefcase,
-        color: 'success',
-        href: '/dashboard/vagas',
-        description: 'Publicadas',
-      });
-    }
-    if (canCandidates) {
-      base.push({
+  const metrics = useMemo<DashboardMetric[]>(
+    () => [
+      {
+        id: 'candidates',
         label: 'Candidatos',
         value: candidates.length,
+        description: 'Cadastrados na plataforma',
         icon: Users,
-        color: 'primary',
+        tone: 'primary',
         href: '/dashboard/candidatos',
-        description: 'Cadastrados',
-      });
-    }
-    if (canCompanies) {
-      base.push({
+        permission: 'candidates.read',
+        format: 'number',
+      },
+      {
+        id: 'jobs',
+        label: 'Vagas',
+        value: jobs.length,
+        description: 'Vagas publicadas',
+        icon: BriefcaseBusiness,
+        tone: 'success',
+        href: '/dashboard/vagas',
+        permission: 'jobs.read',
+        format: 'number',
+      },
+      {
+        id: 'companies',
         label: 'Empresas',
         value: companies.length,
+        description: 'Empresas parceiras cadastradas',
         icon: Building2,
-        color: 'accent',
+        tone: 'neutral',
         href: '/dashboard/empresas',
-        description: 'Parceiras',
-      });
-    }
-
-    return base;
-  }, [
+        permission: 'companies.read',
+        format: 'number',
+      },
+      {
+        id: 'processos',
+        label: 'Processos',
+        value: jobs.length,
+        description: 'Processos seletivos em andamento',
+        icon: FileText,
+        tone: 'warning',
+        href: '/dashboard/processos-seletivos',
+        permission: 'jobs.read',
+        format: 'number',
+      },
+    ],
+    [candidates.length, companies.length, jobs.length],
+  );
+  const visibleMetrics = filterDashboardMetrics(
+    metrics,
+    activePermissions,
     isAdminMaster,
-    jobs.length,
-    candidates.length,
-    companies.length,
-    permissions,
-  ]);
+  );
 
-  const quickActions = useMemo(() => {
-    const actions: { label: string; href: string; permission?: string }[] = [];
-
-    if (isAdminMaster) {
-      actions.push(
+  const quickActions = useMemo(
+    () =>
+      [
         {
           label: 'Publicar vaga',
           href: '/dashboard/vagas',
@@ -215,306 +178,195 @@ export default function VisaoGeral() {
           href: '/dashboard/empresas',
           permission: 'companies.create',
         },
-      );
-      return actions;
-    }
-
-    const canCreateJob = permissions.some(
-      (p) => `${p.resource}.${p.action}` === 'jobs.create',
-    );
-    const canCreateCandidate = permissions.some(
-      (p) => `${p.resource}.${p.action}` === 'candidates.create',
-    );
-    const canCreateCompany = permissions.some(
-      (p) => `${p.resource}.${p.action}` === 'companies.create',
-    );
-
-    if (canCreateJob)
-      actions.push({ label: 'Publicar vaga', href: '/dashboard/vagas' });
-    if (canCreateCandidate)
-      actions.push({
-        label: 'Cadastrar candidato',
-        href: '/dashboard/candidatos',
-      });
-    if (canCreateCompany)
-      actions.push({ label: 'Nova empresa', href: '/dashboard/empresas' });
-
-    return actions;
-  }, [isAdminMaster, permissions]);
+      ].filter(
+        (action) =>
+          isAdminMaster ||
+          activePermissions.some(
+            (item) => `${item.resource}.${item.action}` === action.permission,
+          ),
+      ),
+    [activePermissions, isAdminMaster],
+  );
 
   const recentJobs = useMemo(() => jobs.slice(0, 5), [jobs]);
   const recentCandidates = useMemo(() => candidates.slice(0, 5), [candidates]);
-
   const isEmpty =
-    !isLoading && !error && jobs.length === 0 && candidates.length === 0;
+    !isLoading &&
+    !error &&
+    jobs.length === 0 &&
+    candidates.length === 0 &&
+    companies.length === 0;
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-foreground text-3xl font-bold tracking-tight">
-          {greeting ? greeting : 'Bem-vindo'}
+          {greeting || 'Bem-vindo'}
         </h1>
         <p className="text-muted-foreground mt-2 text-base">{subtitle}</p>
       </div>
 
-      {isLoading && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: stats.length || 4 }).map((_, index) => (
-            <Card key={index} className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="bg-muted h-12 w-12 animate-pulse rounded-lg" />
-                <div className="flex-1 space-y-2">
-                  <div className="bg-muted h-4 w-16 animate-pulse rounded" />
-                  <div className="bg-muted h-6 w-24 animate-pulse rounded" />
-                </div>
-              </div>
-            </Card>
+      {error ? (
+        <DashboardErrorState
+          message={error}
+          onRetry={() => window.location.reload()}
+        />
+      ) : isLoading ? (
+        <DashboardSkeleton count={visibleMetrics.length || 4} />
+      ) : visibleMetrics.length > 0 ? (
+        <DashboardMetricGrid>
+          {visibleMetrics.map((metric) => (
+            <DashboardCard key={metric.id} metric={metric} />
           ))}
-        </div>
+        </DashboardMetricGrid>
+      ) : (
+        <EmptyState
+          title="Nenhum indicador disponível"
+          description="Seu perfil não possui indicadores liberados para visualização."
+        />
       )}
 
-      {error && (
-        <Card className="border-destructive/50 bg-destructive/5 p-6">
-          <p className="text-destructive text-sm">{error}</p>
-        </Card>
+      {isEmpty && (
+        <EmptyState
+          title="Tudo pronto por aqui"
+          description="Quando você publicar vagas e receber candidatos, os dados aparecerão aqui automaticamente."
+          actionLabel="Publicar vaga"
+          onAction={() => navigate('/dashboard/vagas')}
+        />
       )}
 
-      {!isLoading && !error && (
-        <>
-          {stats.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {stats.map((stat, index) => (
-                <Card
-                  key={stat.label}
-                  className={cn(
-                    'group relative overflow-hidden p-6 transition-all duration-200 hover:shadow-lg',
-                    stat.href && 'cursor-pointer',
-                  )}
-                  style={{ animationDelay: `${index * 50}ms` }}
-                  onClick={() => stat.href && navigate(stat.href)}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <DashboardSection
+          title="Visão geral"
+          description="Utilize a navegação lateral para acessar os módulos permitidos pelo seu perfil."
+          icon={Activity}
+          className="lg:col-span-2"
+        >
+          <p className="text-muted-foreground text-sm">
+            Os indicadores são carregados a partir dos dados reais da
+            plataforma.
+          </p>
+        </DashboardSection>
+
+        <DashboardSection
+          title="Acesso rápido"
+          description="Ações disponíveis para o seu perfil."
+          icon={ArrowUpRight}
+        >
+          {quickActions.length > 0 ? (
+            <div className="space-y-2">
+              {quickActions.map((action) => (
+                <Button
+                  key={action.label}
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => navigate(action.href)}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={cn(
-                          'flex h-12 w-12 items-center justify-center rounded-xl',
-                          stat.color === 'primary' &&
-                            'bg-primary/10 text-primary',
-                          stat.color === 'success' &&
-                            'bg-success/10 text-success',
-                          stat.color === 'accent' && 'bg-accent/10 text-accent',
-                          stat.color === 'warning' &&
-                            'bg-warning/10 text-warning',
-                        )}
-                      >
-                        <stat.icon className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <p className="text-foreground text-2xl font-bold">
-                          {stat.value}
-                        </p>
-                        <p className="text-muted-foreground text-sm font-medium">
-                          {stat.label}
-                        </p>
-                        {stat.description && (
-                          <p className="text-muted-foreground/70 mt-0.5 text-xs">
-                            {stat.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    {stat.href && (
-                      <ArrowUpRight className="text-muted-foreground group-hover:text-primary h-5 w-5 transition-colors" />
-                    )}
-                  </div>
-                </Card>
+                  <ArrowUpRight className="mr-2 h-4 w-4" />
+                  {action.label}
+                </Button>
               ))}
             </div>
+          ) : (
+            <p className="text-muted-foreground text-sm">
+              Nenhuma ação rápida disponível para este perfil.
+            </p>
           )}
+        </DashboardSection>
+      </div>
 
-          {isEmpty && (
-            <Card className="p-8">
-              <div className="flex flex-col items-center justify-center text-center">
-                <div className="bg-muted mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                  <Inbox className="text-muted-foreground h-8 w-8" />
+      {(jobs.length > 0 || candidates.length > 0) && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <DashboardSection
+            title="Vagas recentes"
+            description="Últimas vagas cadastradas."
+            icon={BriefcaseBusiness}
+            actions={
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/dashboard/vagas')}
+              >
+                Ver todas
+              </Button>
+            }
+          >
+            <div className="space-y-3">
+              {recentJobs.map((job) => (
+                <div
+                  key={job.id}
+                  className="border-border/50 hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-foreground truncate text-sm font-medium">
+                      {job.title}
+                    </p>
+                    <p className="text-muted-foreground mt-0.5 text-xs">
+                      {job.location || 'Sem localização'}
+                    </p>
+                  </div>
+                  <span className="bg-success/10 text-success ml-3 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium">
+                    {job.status === 'published'
+                      ? 'Publicada'
+                      : job.status === 'draft'
+                        ? 'Rascunho'
+                        : job.status}
+                  </span>
                 </div>
-                <h3 className="text-foreground text-lg font-semibold">
-                  Tudo pronto por aqui
-                </h3>
-                <p className="text-muted-foreground mt-2 max-w-md text-sm">
-                  Quando voc� publicar vagas e receber candidatos, os dados
-                  aparecer�o aqui automaticamente. Use o menu lateral para
-                  come�ar.
-                </p>
-                <div className="mt-6 flex gap-3">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => navigate('/dashboard/vagas')}
-                  >
-                    Publicar vaga
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate('/dashboard/candidatos')}
-                  >
-                    Ver candidatos
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          )}
-
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <Card className="p-6 lg:col-span-2">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-foreground text-lg font-semibold">
-                  Vis�o geral
-                </h2>
-                <Activity className="text-muted-foreground h-5 w-5" />
-              </div>
-              <p className="text-muted-foreground text-sm">
-                Utilize a navega��o lateral para acessar os m�dulos permitidos
-                pelo seu perfil. Os indicadores acima s�o carregados a partir
-                dos dados reais da plataforma.
-              </p>
-            </Card>
-
-            <Card className="p-6">
-              <h2 className="text-foreground mb-4 text-lg font-semibold">
-                Acesso r�pido
-              </h2>
-              {quickActions.length > 0 ? (
-                <div className="space-y-2">
-                  {quickActions.map((action) => (
-                    <Button
-                      key={action.label}
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={() => navigate(action.href)}
-                    >
-                      <ArrowUpRight className="mr-2 h-4 w-4" />
-                      {action.label}
-                    </Button>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  Nenhuma a��o r�pida dispon�vel para este perfil.
-                </p>
-              )}
-            </Card>
-          </div>
-
-          {(jobs.length > 0 || candidates.length > 0) && (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <Card className="p-6">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-foreground text-lg font-semibold">
-                    Vagas recentes
-                  </h2>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate('/dashboard/vagas')}
-                  >
-                    Ver todas
-                  </Button>
-                </div>
-                <div className="space-y-3">
-                  {recentJobs.map((job) => (
-                    <div
-                      key={job.id}
-                      className="border-border/50 hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-foreground truncate text-sm font-medium">
-                          {job.title}
-                        </p>
-                        <p className="text-muted-foreground mt-0.5 text-xs">
-                          {job.location || 'Sem localiza��o'}
-                        </p>
-                      </div>
-                      <span
-                        className={cn(
-                          'ml-3 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
-                          job.status === 'published' &&
-                            'bg-success/10 text-success',
-                          job.status === 'draft' &&
-                            'bg-warning/10 text-warning',
-                          job.status === 'archived' &&
-                            'bg-muted text-muted-foreground',
-                          job.status === 'hired' &&
-                            'bg-primary/10 text-primary',
-                          job.status === 'expired' &&
-                            'bg-destructive/10 text-destructive',
-                        )}
-                      >
-                        {job.status === 'published'
-                          ? 'Publicada'
-                          : job.status === 'draft'
-                            ? 'Rascunho'
-                            : job.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-
-              <Card className="p-6">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-foreground text-lg font-semibold">
-                    Candidatos recentes
-                  </h2>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate('/dashboard/candidatos')}
-                  >
-                    Ver todos
-                  </Button>
-                </div>
-                <div className="space-y-3">
-                  {recentCandidates.map((candidate) => (
-                    <div
-                      key={candidate.id}
-                      className="border-border/50 hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-foreground truncate text-sm font-medium">
-                          {candidate.person?.full_name || 'Sem nome'}
-                        </p>
-                        <p className="text-muted-foreground mt-0.5 text-xs">
-                          {candidate.person?.email || 'Sem email'}
-                        </p>
-                      </div>
-                      <span
-                        className={cn(
-                          'ml-3 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium',
-                          candidate.status === 'active'
-                            ? 'bg-success/10 text-success'
-                            : candidate.status === 'inactive'
-                              ? 'bg-warning/10 text-warning'
-                              : 'bg-muted text-muted-foreground',
-                        )}
-                      >
-                        {candidate.status === 'active'
-                          ? 'Ativo'
-                          : candidate.status === 'inactive'
-                            ? 'Inativo'
-                            : candidate.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+              ))}
             </div>
-          )}
-        </>
+          </DashboardSection>
+
+          <DashboardSection
+            title="Candidatos recentes"
+            description="Últimos candidatos cadastrados."
+            icon={Users}
+            actions={
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/dashboard/candidatos')}
+              >
+                Ver todos
+              </Button>
+            }
+          >
+            <div className="space-y-3">
+              {recentCandidates.map((candidate) => (
+                <div
+                  key={candidate.id}
+                  className="border-border/50 hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-foreground truncate text-sm font-medium">
+                      {candidate.person?.full_name || 'Sem nome'}
+                    </p>
+                    <p className="text-muted-foreground mt-0.5 text-xs">
+                      {candidate.person?.email || 'Sem email'}
+                    </p>
+                  </div>
+                  <span
+                    className={`ml-3 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                      candidate.status === 'active'
+                        ? 'bg-success/10 text-success'
+                        : candidate.status === 'inactive'
+                          ? 'bg-warning/10 text-warning'
+                          : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {candidate.status === 'active'
+                      ? 'Ativo'
+                      : candidate.status === 'inactive'
+                        ? 'Inativo'
+                        : candidate.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </DashboardSection>
+        </div>
       )}
     </div>
   );
 }
-

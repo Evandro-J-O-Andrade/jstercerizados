@@ -6,7 +6,7 @@ import type {
   WebSiteSchema,
 } from '@/types/seo';
 
-const SITE_URL = 'https://www.jsempregos.com.br';
+const SITE_URL = 'https://jsempregos.com.br';
 
 export function buildBreadcrumbSchema(
   items: BreadcrumbItem[],

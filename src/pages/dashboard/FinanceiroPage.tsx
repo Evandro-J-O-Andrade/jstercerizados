@@ -21,7 +21,17 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { EmptyState, ErrorState } from '@/components/fallback';
+import { EmptyState } from '@/components/fallback';
+import {
+  DashboardCard,
+  DashboardErrorState,
+  DashboardMetricGrid,
+  DashboardSkeleton,
+} from '@/components/dashboard';
+import {
+  filterDashboardMetrics,
+  type DashboardMetric,
+} from '@/components/dashboard/dashboard-model';
 import { ConfirmDialog } from '@/components/feedback';
 import {
   accountsPayableRepository,
@@ -48,6 +58,7 @@ import type {
   FinancialAccount,
 } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAccount } from '@/contexts/AccountContext';
 import { useToast } from '@/components/feedback/ToastContext';
 
 type TabValue =
@@ -65,7 +76,8 @@ type TabValue =
   | 'contas-financeiras';
 
 export default function FinanceiroPage() {
-  const { currentTenantId } = useAuth();
+  const { currentTenantId, isAdminMaster } = useAuth();
+  const { activePermissions } = useAccount();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<TabValue>('dashboard');
 
@@ -242,6 +254,126 @@ export default function FinanceiroPage() {
     };
   }, [payables, receivables, cashFlows]);
 
+  const metrics = useMemo<DashboardMetric[]>(
+    () => [
+      {
+        id: 'payable-total',
+        label: 'Contas a pagar',
+        value: kpis.payableTotal,
+        description: 'Total de obrigações registradas',
+        icon: ArrowUpCircle,
+        tone: 'danger',
+        href: '/dashboard/financeiro/contas-pagar',
+        permission: 'finance.accounts_payable.read',
+        format: 'currency',
+      },
+      {
+        id: 'payable-open',
+        label: 'Contas a pagar em aberto',
+        value: kpis.payableOpen,
+        description: 'Obrigações aguardando pagamento',
+        icon: Wallet,
+        tone: 'warning',
+        href: '/dashboard/financeiro/contas-pagar',
+        permission: 'finance.accounts_payable.read',
+        format: 'currency',
+      },
+      {
+        id: 'payable-overdue',
+        label: 'Contas a pagar vencidas',
+        value: kpis.payableOverdue,
+        description: 'Obrigações após o vencimento',
+        icon: ArrowUpCircle,
+        tone: 'danger',
+        href: '/dashboard/financeiro/contas-pagar',
+        permission: 'finance.accounts_payable.read',
+        format: 'currency',
+      },
+      {
+        id: 'receivable-total',
+        label: 'Contas a receber',
+        value: kpis.receivableTotal,
+        description: 'Total de recebimentos registrados',
+        icon: ArrowDownCircle,
+        tone: 'success',
+        href: '/dashboard/financeiro/contas-receber',
+        permission: 'finance.accounts_receivable.read',
+        format: 'currency',
+      },
+      {
+        id: 'receivable-open',
+        label: 'Contas a receber em aberto',
+        value: kpis.receivableOpen,
+        description: 'Recebimentos aguardando baixa',
+        icon: Wallet,
+        tone: 'primary',
+        href: '/dashboard/financeiro/contas-receber',
+        permission: 'finance.accounts_receivable.read',
+        format: 'currency',
+      },
+      {
+        id: 'receivable-overdue',
+        label: 'Contas a receber vencidas',
+        value: kpis.receivableOverdue,
+        description: 'Recebimentos após o vencimento',
+        icon: ArrowDownCircle,
+        tone: 'warning',
+        href: '/dashboard/financeiro/contas-receber',
+        permission: 'finance.accounts_receivable.read',
+        format: 'currency',
+      },
+      {
+        id: 'income',
+        label: 'Entradas do período',
+        value: kpis.totalIncome,
+        description: 'Movimentações positivas de caixa',
+        icon: TrendingUp,
+        tone: 'success',
+        href: '/dashboard/financeiro/fluxo-caixa',
+        permission: 'finance.cashflow.read',
+        format: 'currency',
+      },
+      {
+        id: 'expense',
+        label: 'Saídas do período',
+        value: kpis.totalExpense,
+        description: 'Movimentações negativas de caixa',
+        icon: TrendingDown,
+        tone: 'danger',
+        href: '/dashboard/financeiro/fluxo-caixa',
+        permission: 'finance.cashflow.read',
+        format: 'currency',
+      },
+      {
+        id: 'balance',
+        label: 'Saldo do período',
+        value: kpis.balance,
+        description: 'Resultado das entradas menos saídas',
+        icon: CircleDollarSign,
+        tone: kpis.balance >= 0 ? 'success' : 'danger',
+        href: '/dashboard/financeiro/fluxo-caixa',
+        permission: 'finance.cashflow.read',
+        format: 'currency',
+      },
+    ],
+    [
+      kpis.balance,
+      kpis.payableOpen,
+      kpis.payableOverdue,
+      kpis.payableTotal,
+      kpis.receivableOpen,
+      kpis.receivableOverdue,
+      kpis.receivableTotal,
+      kpis.totalExpense,
+      kpis.totalIncome,
+    ],
+  );
+  const visibleMetrics = filterDashboardMetrics(
+    metrics,
+    activePermissions,
+    isAdminMaster,
+  );
+
   const filteredPayables = useMemo(() => {
     let data = payables;
     if (searchPayable) {
@@ -391,17 +523,11 @@ export default function FinanceiroPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground text-sm">
-          Carregando dados financeiros...
-        </p>
-      </div>
-    );
+    return <DashboardSkeleton count={9} />;
   }
 
   if (error) {
-    return <ErrorState message={error} onRetry={loadData} />;
+    return <DashboardErrorState message={error} onRetry={loadData} />;
   }
 
   return (
@@ -465,92 +591,18 @@ export default function FinanceiroPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                label: 'Contas a pagar',
-                value: kpis.payableTotal,
-                icon: ArrowUpCircle,
-                color: 'text-red-700',
-                bg: 'bg-red-50',
-              },
-              {
-                label: 'Contas a pagar em aberto',
-                value: kpis.payableOpen,
-                icon: Wallet,
-                color: 'text-orange-700',
-                bg: 'bg-orange-50',
-              },
-              {
-                label: 'Contas a pagar vencidas',
-                value: kpis.payableOverdue,
-                icon: ArrowUpCircle,
-                color: 'text-red-700',
-                bg: 'bg-red-50',
-              },
-              {
-                label: 'Contas a receber',
-                value: kpis.receivableTotal,
-                icon: ArrowDownCircle,
-                color: 'text-green-700',
-                bg: 'bg-green-50',
-              },
-              {
-                label: 'Contas a receber em aberto',
-                value: kpis.receivableOpen,
-                icon: Wallet,
-                color: 'text-emerald-700',
-                bg: 'bg-emerald-50',
-              },
-              {
-                label: 'Contas a receber vencidas',
-                value: kpis.receivableOverdue,
-                icon: ArrowDownCircle,
-                color: 'text-red-700',
-                bg: 'bg-red-50',
-              },
-              {
-                label: 'Entradas do período',
-                value: kpis.totalIncome,
-                icon: TrendingUp,
-                color: 'text-green-700',
-                bg: 'bg-green-50',
-              },
-              {
-                label: 'Saídas do período',
-                value: kpis.totalExpense,
-                icon: TrendingDown,
-                color: 'text-red-700',
-                bg: 'bg-red-50',
-              },
-              {
-                label: 'Saldo do período',
-                value: kpis.balance,
-                icon: CircleDollarSign,
-                color: kpis.balance >= 0 ? 'text-green-700' : 'text-red-700',
-                bg: kpis.balance >= 0 ? 'bg-green-50' : 'bg-red-50',
-              },
-            ].map((kpi) => {
-              const Icon = kpi.icon;
-              return (
-                <Card key={kpi.label} className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`rounded-lg ${kpi.bg} p-2 ${kpi.color}`}>
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground text-xs">
-                        {kpi.label}
-                      </p>
-                      <p className="text-foreground text-lg font-semibold">
-                        {formatCurrency(kpi.value)}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
+          {visibleMetrics.length > 0 ? (
+            <DashboardMetricGrid>
+              {visibleMetrics.map((metric) => (
+                <DashboardCard key={metric.id} metric={metric} />
+              ))}
+            </DashboardMetricGrid>
+          ) : (
+            <EmptyState
+              title="Nenhum indicador financeiro disponível"
+              description="Seu perfil não possui indicadores financeiros liberados para visualização."
+            />
+          )}
 
           <div className="grid gap-4 lg:grid-cols-2">
             <Card className="p-4">
@@ -1075,14 +1127,18 @@ export default function FinanceiroPage() {
               <div className="flex gap-2">
                 <Button
                   variant="secondary"
-                  onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+                  onClick={() =>
+                    addToast({ type: 'info', message: 'Em breve' })
+                  }
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Salvar anotação
                 </Button>
                 <Button
                   variant="ghost"
-                  onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+                  onClick={() =>
+                    addToast({ type: 'info', message: 'Em breve' })
+                  }
                 >
                   <FileText className="mr-2 h-4 w-4" />
                   Exportar cálculo
@@ -1099,13 +1155,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Categorias
             </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
-              >
-                Gerenciar
-              </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+            >
+              Gerenciar
+            </Button>
           </div>
           {categories.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1144,13 +1200,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Centros de custo
             </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
-              >
-                Gerenciar
-              </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+            >
+              Gerenciar
+            </Button>
           </div>
           {costCenters.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1185,13 +1241,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Notas fiscais
             </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
-              >
-                Gerenciar
-              </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+            >
+              Gerenciar
+            </Button>
           </div>
           {invoices.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1226,13 +1282,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Transações financeiras
             </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
-              >
-                Gerenciar
-              </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+            >
+              Gerenciar
+            </Button>
           </div>
           {transactions.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1272,13 +1328,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Conciliação bancária
             </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
-              >
-                Gerenciar
-              </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+            >
+              Gerenciar
+            </Button>
           </div>
           {reconciliations.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1318,13 +1374,13 @@ export default function FinanceiroPage() {
             <h3 className="text-foreground text-sm font-semibold">
               Parcelamentos
             </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
-              >
-                Gerenciar
-              </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+            >
+              Gerenciar
+            </Button>
           </div>
           {installments.length === 0 ? (
             <p className="text-muted-foreground text-xs">
@@ -1361,13 +1417,13 @@ export default function FinanceiroPage() {
           <h3 className="text-foreground text-sm font-semibold">
             Contas financeiras
           </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => addToast({ type: 'info', message: 'Em breve' })}
-              >
-                Gerenciar
-              </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => addToast({ type: 'info', message: 'Em breve' })}
+          >
+            Gerenciar
+          </Button>
         </div>
         {financialAccounts.length === 0 ? (
           <p className="text-muted-foreground text-xs">

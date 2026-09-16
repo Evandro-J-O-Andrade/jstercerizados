@@ -57,6 +57,7 @@ interface AuthContextType {
       tenantId?: string;
       roleId?: string;
       turnstileToken?: string;
+      emailRedirectTo?: string;
     },
   ) => Promise<{ error?: string; status?: 'success' | 'email_pending' }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
@@ -590,9 +591,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          captchaToken: options.turnstileToken ?? undefined,
-        },
       });
 
       console.log('[AUTH:LOGIN] signIn result', {
@@ -1098,6 +1096,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       tenantId?: string;
       roleId?: string;
       turnstileToken?: string;
+      emailRedirectTo?: string;
     },
   ): Promise<{ error?: string; status?: 'success' | 'email_pending' }> => {
     setAuthError(null);
@@ -1135,7 +1134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             full_name: profileData.full_name,
             phone: profileData.phone ?? '',
           },
-          captchaToken: profileData.turnstileToken,
+          emailRedirectTo: `${import.meta.env?.VITE_SITE_URL || window.location.origin}${profileData.emailRedirectTo || '/entrar/candidato'}`,
         },
       });
 
