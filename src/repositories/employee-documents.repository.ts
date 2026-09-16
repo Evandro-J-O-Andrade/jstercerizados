@@ -54,12 +54,9 @@ export class EmployeeDocumentsRepository extends SupabaseRepository {
       .insert({
         employee_id: input.employee_id,
         document_type: input.document_type,
-        document_name: input.document_name,
-        document_url: input.document_url,
+        file_url: input.file_url,
         issue_date: input.issue_date,
         expiry_date: input.expiry_date,
-        is_verified: input.is_verified,
-        notes: input.notes,
       })
       .select('*')
       .single();
@@ -78,16 +75,10 @@ export class EmployeeDocumentsRepository extends SupabaseRepository {
     const payload: Record<string, unknown> = {};
     if (input.document_type !== undefined)
       payload.document_type = input.document_type;
-    if (input.document_name !== undefined)
-      payload.document_name = input.document_name;
-    if (input.document_url !== undefined)
-      payload.document_url = input.document_url;
+    if (input.file_url !== undefined) payload.file_url = input.file_url;
     if (input.issue_date !== undefined) payload.issue_date = input.issue_date;
     if (input.expiry_date !== undefined)
       payload.expiry_date = input.expiry_date;
-    if (input.is_verified !== undefined)
-      payload.is_verified = input.is_verified;
-    if (input.notes !== undefined) payload.notes = input.notes;
 
     const { data, error } = await this.supabase
       .from('employee_documents')

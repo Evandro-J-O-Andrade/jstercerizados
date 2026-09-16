@@ -30,21 +30,15 @@ export default function DocumentosRh() {
   const [form, setForm] = useState<{
     employee_id: string;
     document_type: string;
-    document_name: string;
-    document_url: string;
+    file_url: string;
     issue_date: string;
     expiry_date: string;
-    is_verified: boolean;
-    notes: string;
   }>({
     employee_id: '',
     document_type: '',
-    document_name: '',
-    document_url: '',
+    file_url: '',
     issue_date: '',
     expiry_date: '',
-    is_verified: false,
-    notes: '',
   });
 
   useEffect(() => {
@@ -96,12 +90,9 @@ export default function DocumentosRh() {
     setForm({
       employee_id: '',
       document_type: '',
-      document_name: '',
-      document_url: '',
+      file_url: '',
       issue_date: '',
       expiry_date: '',
-      is_verified: false,
-      notes: '',
     });
   };
 
@@ -110,12 +101,9 @@ export default function DocumentosRh() {
     setForm({
       employee_id: document.employee_id,
       document_type: document.document_type,
-      document_name: document.document_name,
-      document_url: document.document_url,
+      file_url: document.file_url,
       issue_date: document.issue_date || '',
       expiry_date: document.expiry_date || '',
-      is_verified: document.is_verified,
-      notes: document.notes || '',
     });
   };
 
@@ -128,12 +116,9 @@ export default function DocumentosRh() {
         {
           employee_id: form.employee_id,
           document_type: form.document_type,
-          document_name: form.document_name,
-          document_url: form.document_url,
+          file_url: form.file_url,
           issue_date: form.issue_date || null,
           expiry_date: form.expiry_date || null,
-          is_verified: form.is_verified,
-          notes: form.notes || null,
         };
 
       if (selected) {
@@ -160,12 +145,9 @@ export default function DocumentosRh() {
       setForm({
         employee_id: '',
         document_type: '',
-        document_name: '',
-        document_url: '',
+        file_url: '',
         issue_date: '',
         expiry_date: '',
-        is_verified: false,
-        notes: '',
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao salvar documento');
@@ -190,8 +172,7 @@ export default function DocumentosRh() {
 
   const filtered = documents.filter((doc) => {
     const matchesSearch =
-      !search ||
-      doc.document_type.toLowerCase().includes(search.toLowerCase());
+      !search || doc.document_type.toLowerCase().includes(search.toLowerCase());
     const matchesEmployee =
       employeeFilter === 'all' || doc.employee_id === employeeFilter;
     return matchesSearch && matchesEmployee;
@@ -296,12 +277,12 @@ export default function DocumentosRh() {
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
                       <a
-                        href={doc.document_url}
+                        href={doc.file_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 hover:underline"
                       >
-                        {doc.document_url}
+                        {doc.file_url}
                         <ExternalLink className="h-3 w-3" />
                       </a>
                     </td>
@@ -383,9 +364,9 @@ export default function DocumentosRh() {
                     type="url"
                     required
                     className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.document_url}
+                    value={form.file_url}
                     onChange={(e) =>
-                      setForm({ ...form, document_url: e.target.value })
+                      setForm({ ...form, file_url: e.target.value })
                     }
                     placeholder="https://..."
                   />
@@ -431,12 +412,9 @@ export default function DocumentosRh() {
                       setForm({
                         employee_id: '',
                         document_type: '',
-                        document_name: '',
-                        document_url: '',
+                        file_url: '',
                         issue_date: '',
                         expiry_date: '',
-                        is_verified: false,
-                        notes: '',
                       });
                     }}
                   >

@@ -98,21 +98,21 @@ export default function FuncionarioDetalhe() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate('/dashboard/funcionarios')}
-          className="rounded-lg p-2 hover:bg-muted"
+          className="hover:bg-muted rounded-lg p-2"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
-          <h1 className="text-xl font-semibold text-foreground">
+          <h1 className="text-foreground text-xl font-semibold">
             {employee.person?.full_name || 'Funcionário'}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Matrícula: {employee.employee_code || '—'}
           </p>
         </div>
       </div>
 
-      <div className="flex gap-2 border-b border-border">
+      <div className="border-border flex gap-2 border-b">
         {tabs.map((tab) => (
           <button
             key={tab.value}
@@ -130,66 +130,70 @@ export default function FuncionarioDetalhe() {
 
       {activeTab === 'overview' && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <div className="border-border bg-background rounded-xl border p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-blue-50 p-2 text-blue-700">
                 <Users className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Status</p>
-                <p className="text-lg font-semibold text-foreground">
+                <p className="text-muted-foreground text-xs">Status</p>
+                <p className="text-foreground text-lg font-semibold">
                   {getStatusLabel(employee.status || '')}
                 </p>
               </div>
             </div>
           </div>
-          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <div className="border-border bg-background rounded-xl border p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-yellow-50 p-2 text-yellow-700">
                 <Calendar className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Data de admissão</p>
-                <p className="text-lg font-semibold text-foreground">
+                <p className="text-muted-foreground text-xs">
+                  Data de admissão
+                </p>
+                <p className="text-foreground text-lg font-semibold">
                   {formatDate(employee.hire_date)}
                 </p>
               </div>
             </div>
           </div>
-          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <div className="border-border bg-background rounded-xl border p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-emerald-50 p-2 text-emerald-700">
                 <DollarSign className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Salário</p>
-                <p className="text-lg font-semibold text-foreground">
+                <p className="text-muted-foreground text-xs">Salário</p>
+                <p className="text-foreground text-lg font-semibold">
                   {formatCurrency(employee.salary)}
                 </p>
               </div>
             </div>
           </div>
-          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <div className="border-border bg-background rounded-xl border p-4 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-muted p-2 text-foreground">
+              <div className="bg-muted text-foreground rounded-lg p-2">
                 <FileText className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Matrícula</p>
-                <p className="text-lg font-semibold text-foreground">
+                <p className="text-muted-foreground text-xs">Matrícula</p>
+                <p className="text-foreground text-lg font-semibold">
                   {employee.employee_code || '—'}
                 </p>
               </div>
             </div>
           </div>
-          <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
+          <div className="border-border bg-background rounded-xl border p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-green-50 p-2 text-green-700">
                 <Briefcase className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Data de desligamento</p>
-                <p className="text-lg font-semibold text-foreground">
+                <p className="text-muted-foreground text-xs">
+                  Data de desligamento
+                </p>
+                <p className="text-foreground text-lg font-semibold">
                   {formatDate(employee.termination_date)}
                 </p>
               </div>
@@ -201,22 +205,24 @@ export default function FuncionarioDetalhe() {
       {activeTab === 'documents' && (
         <div className="space-y-3">
           {documents.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Nenhum documento registrado.
             </p>
           ) : (
             documents.map((doc) => (
               <div
                 key={doc.id}
-                className="rounded-lg border border-border bg-background p-4"
+                className="border-border bg-background rounded-lg border p-4"
               >
-                <p className="font-medium text-foreground">{doc.document_type}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-foreground font-medium">
+                  {doc.document_type}
+                </p>
+                <p className="text-muted-foreground text-xs">
                   Validade: {doc.expiry_date || '—'}
                 </p>
-                {doc.document_url && (
+                {doc.file_url && (
                   <a
-                    href={doc.document_url}
+                    href={doc.file_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-2 text-sm text-blue-600 hover:underline"
@@ -232,4 +238,3 @@ export default function FuncionarioDetalhe() {
     </div>
   );
 }
-
