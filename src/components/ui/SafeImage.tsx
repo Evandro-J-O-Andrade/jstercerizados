@@ -167,7 +167,7 @@ export function SafeImage({
             isLoading ? 'opacity-0' : 'opacity-100',
           )}
           style={{ objectFit }}
-          {...imgProps}
+          {...props}
         />
       )}
       {children}

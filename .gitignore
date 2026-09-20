@@ -32,6 +32,7 @@ tmp_*.png
 tmp_*.txt
 tmp_*.ts
 *.exe
+*.bat
 imagens para mover/
 sobre-hero.png
 sobre-local-hero.png
