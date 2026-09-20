@@ -32,6 +32,9 @@ tmp_*.png
 tmp_*.txt
 tmp_*.ts
 *.exe
+imagens para mover/
+sobre-hero.png
+sobre-local-hero.png
 supabase_dump_check.sql
 
 

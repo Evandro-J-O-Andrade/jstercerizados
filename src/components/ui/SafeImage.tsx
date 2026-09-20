@@ -47,6 +47,7 @@ export function SafeImage({
   skeleton = true,
   loading = 'lazy',
   objectFit = 'cover',
+  children,
   ...props
 }: SafeImageProps) {
   const categoryFallback =
@@ -166,9 +167,10 @@ export function SafeImage({
             isLoading ? 'opacity-0' : 'opacity-100',
           )}
           style={{ objectFit }}
-          {...props}
+          {...imgProps}
         />
       )}
+      {children}
     </div>
   );
 }

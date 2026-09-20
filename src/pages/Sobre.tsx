@@ -25,7 +25,7 @@ import { PageTemplateBanner } from '@/components/common/PageTemplateBanner';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { COMPANY, IMAGES } from '@/config';
 import { HERO_ASSETS, SERVICE_IMAGES } from '@/content/assets';
-import { staggerReveal, revealUp } from '@/animations/scroll';
+import { staggerReveal, revealUp, revealLeft, revealRight } from '@/animations/scroll';
 
 const valores = [
   {
@@ -339,7 +339,7 @@ export default function Sobre() {
               variants={revealUp}
             >
               <SafeImage
-                src={HERO_ASSETS.bannerjs}
+                src="/images/sobre/bannersobre.jpg"
                 fallbackSrc={IMAGES.hero.sobre.fallback}
                 alt={`Banner institucional da ${COMPANY.brand}`}
                 className="shadow-premium border-border relative aspect-[21/9] w-full overflow-hidden rounded-3xl border"
@@ -393,6 +393,73 @@ export default function Sobre() {
                     compreender o contexto de cada oportunidade e conectar
                     profissionais aptos às necessidades de cada empresa.
                   </p>
+                </div>
+              </motion.div>
+            </motion.div>
+          </Container>
+        </Section>
+
+        <Section>
+          <Container>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-100px' }}
+              variants={staggerReveal(0.15)}
+              className="mb-12 text-center"
+            >
+              <motion.h2
+                variants={revealUp}
+                className="text-foreground text-3xl font-bold sm:text-4xl"
+              >
+                Palavra do CEO
+              </motion.h2>
+              <motion.p
+                variants={revealUp}
+                className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+              >
+                A visão de quem lidera e transforma.
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-100px' }}
+              variants={revealUp}
+              className="grid gap-12 lg:grid-cols-[1fr_1.3fr] lg:items-center"
+            >
+              <motion.div variants={revealLeft}>
+                <div className="relative mx-auto max-w-sm lg:max-w-none">
+                  <div className="aspect-[4/5] overflow-hidden rounded-3xl border border-border bg-muted/30" />
+                  <div className="from-background/30 absolute inset-0 bg-gradient-to-t via-transparent to-transparent pointer-events-none" />
+                </div>
+              </motion.div>
+
+              <motion.div variants={revealRight}>
+                <span className="text-primary mb-4 block text-sm font-semibold tracking-[0.18em] uppercase">
+                  Fundador & CEO
+                </span>
+                <h2 className="text-foreground mb-6 text-3xl font-bold sm:text-4xl">
+                  José — Líder com visão de futuro
+                </h2>
+                <blockquote className="text-muted-foreground mb-6 border-l-4 border-primary pl-6 text-lg leading-8">
+                  "Com a implementação de uma metodologia de trabalho, inovação
+                  tecnológica, software em gestão, treinamento e desenvolvimento
+                  dos colaboradores, recrutamento e seleção assertivos, a J&S
+                  Terceirizados é capaz de proporcionar um serviço de Facilities
+                  que oferece boas práticas aos nossos clientes", afirma José.
+                </blockquote>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-primary/10 text-sm font-bold text-primary">
+                    CEO
+                  </div>
+                  <div>
+                    <p className="text-foreground font-semibold">José</p>
+                    <p className="text-muted-foreground text-sm">
+                      CEO — J&S Terceirizados e J&S Empregos
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             </motion.div>
@@ -611,12 +678,12 @@ export default function Sobre() {
               </motion.div>
 
               <motion.div variants={revealUp}>
-                <SafeImage
-                  src={SERVICE_IMAGES.recrutamento}
-                  fallbackSrc={IMAGES.hero.sobre.fallback}
-                  alt="Processo de recrutamento e seleção da J&S Empregos"
-                  className="shadow-premium border-border aspect-[4/3] w-full rounded-3xl border"
-                />
+                  <SafeImage
+                    src={SERVICE_IMAGES.recrutamento}
+                    fallbackSrc={IMAGES.hero.sobre.fallback}
+                    alt="Processo de recrutamento e seleção da J&S Empregos"
+                    className="shadow-premium border-border aspect-[4/3] w-full rounded-3xl border"
+                  />
               </motion.div>
             </motion.div>
           </Container>
@@ -729,7 +796,7 @@ export default function Sobre() {
               whileInView="visible"
               viewport={{ once: true, margin: '-100px' }}
               variants={staggerReveal(0.15)}
-              className="mb-12 text-center"
+              className="mb-16 text-center"
             >
               <motion.h2
                 variants={revealUp}
@@ -746,62 +813,62 @@ export default function Sobre() {
               </motion.p>
             </motion.div>
 
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-100px' }}
-              variants={staggerReveal(0.1)}
-              className="space-y-8"
-            >
-              {etapas.map((etapa, index) => {
-                const isEven = index % 2 === 0;
-                return (
-                  <motion.div
-                    key={etapa.number}
-                    variants={revealUp}
-                    className="bg-card border-border relative overflow-hidden rounded-3xl border shadow-sm"
-                  >
-                    <div
-                      className={`flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:items-center lg:gap-10 ${
-                        isEven
-                          ? 'lg:grid-cols-[1fr_1.1fr]'
-                          : 'lg:grid-cols-[1.1fr_1fr]'
-                      }`}
+            <div className="relative">
+              <div className="absolute left-8 top-0 bottom-0 w-px bg-border lg:left-1/2 lg:-ml-px" />
+
+              <div className="space-y-12 lg:space-y-16">
+                {etapas.map((etapa, index) => {
+                  const isEven = index % 2 === 0;
+                  return (
+                    <motion.div
+                      key={etapa.number}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, margin: '-100px' }}
+                      variants={revealUp}
+                      className="relative"
                     >
+                      <div className="absolute left-8 top-6 z-10 hidden h-4 w-4 -translate-x-1/2 rounded-full border-2 border-background bg-primary lg:left-1/2 lg:block" />
+
                       <div
-                        className={`relative overflow-hidden rounded-3xl ${
-                          isEven ? 'lg:order-1' : 'lg:order-2'
+                        className={`flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-center lg:gap-16 ${
+                          isEven ? 'lg:grid-cols-[1.1fr_1fr]' : 'lg:grid-cols-[1fr_1.1fr]'
                         }`}
                       >
-                        <SafeImage
-                          src={etapa.image || IMAGES.hero.sobre.fallback}
-                          fallbackSrc={IMAGES.hero.sobre.fallback}
-                          alt={etapa.title}
-                          className="aspect-[16/10] h-full w-full object-cover"
-                        />
-                        <div className="from-background/80 via-background/20 absolute inset-0 bg-gradient-to-t to-transparent" />
-                        <div className="absolute top-4 left-4">
-                          <span className="text-primary bg-background/80 inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold">
-                            {etapa.number}
+                        <div
+                          className={`${
+                            isEven ? 'lg:order-1 lg:pl-16 lg:text-right' : 'lg:order-2 lg:pr-16'
+                          }`}
+                        >
+                          <span className="text-primary text-xs font-semibold tracking-[0.2em] uppercase">
+                            Passo {etapa.number}
                           </span>
+                          <h3 className="text-foreground mt-2 text-2xl font-bold sm:text-3xl">
+                            {etapa.title}
+                          </h3>
+                          <p className="text-muted-foreground mt-3 leading-relaxed">
+                            {etapa.description}
+                          </p>
+                        </div>
+
+                        <div
+                          className={`relative ${
+                            isEven ? 'lg:order-2 lg:pr-16' : 'lg:order-1 lg:pl-16'
+                          }`}
+                        >
+                          <SafeImage
+                            src={etapa.image || IMAGES.hero.sobre.fallback}
+                            fallbackSrc={IMAGES.hero.sobre.fallback}
+                            alt={etapa.title}
+                            className="aspect-[16/10] w-full rounded-2xl border border-border object-cover shadow-sm"
+                          />
                         </div>
                       </div>
-                      <div className="relative p-8 lg:p-0">
-                        <span className="text-primary text-sm font-semibold tracking-widest uppercase">
-                          Passo {etapa.number}
-                        </span>
-                        <h3 className="text-foreground mb-3 text-2xl font-bold sm:text-3xl">
-                          {etapa.title}
-                        </h3>
-                        <p className="text-muted-foreground leading-relaxed">
-                          {etapa.description}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
           </Container>
         </section>
 
