@@ -1,6 +1,7 @@
 import {
   type ImgHTMLAttributes,
   type ReactNode,
+  type SyntheticEvent,
   useEffect,
   useRef,
   useState,
@@ -48,7 +49,9 @@ export function SafeImage({
   loading = 'lazy',
   objectFit = 'cover',
   children,
-  ...props
+  onLoad,
+  onError,
+  ...imgProps
 }: SafeImageProps) {
   const categoryFallback =
     fallbackType && IMAGE_FALLBACKS[fallbackType]
@@ -118,7 +121,7 @@ export function SafeImage({
     }
   }, [src, finalFallbackSrc]);
 
-  const handleError = () => {
+  const handleError = (e: SyntheticEvent<HTMLImageElement>) => {
     if (import.meta.env.DEV && currentSrc !== finalFallbackSrc) {
       console.warn(
         `[IMAGE MISSING] Imagem real não encontrada: ${currentSrc}\n` +
@@ -146,6 +149,10 @@ export function SafeImage({
 
     setIsLoading(false);
     setHasError(true);
+
+    if (onError) {
+      onError(e);
+    }
   };
 
   return (
@@ -160,14 +167,19 @@ export function SafeImage({
           src={currentSrc}
           alt={alt}
           loading={loading}
-          onLoad={() => setIsLoading(false)}
+          onLoad={(e) => {
+            setIsLoading(false);
+            if (onLoad) {
+              onLoad(e);
+            }
+          }}
           onError={handleError}
           className={cn(
             'h-full w-full transition-opacity duration-300',
             isLoading ? 'opacity-0' : 'opacity-100',
           )}
           style={{ objectFit }}
-          {...props}
+          {...imgProps}
         />
       )}
       {children}
