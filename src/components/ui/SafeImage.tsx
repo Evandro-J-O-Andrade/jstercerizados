@@ -51,6 +51,7 @@ export function SafeImage({
   children,
   onLoad,
   onError,
+  dangerouslySetInnerHTML, // eslint-disable-line @typescript-eslint/no-unused-vars
   ...imgProps
 }: SafeImageProps) {
   const categoryFallback =

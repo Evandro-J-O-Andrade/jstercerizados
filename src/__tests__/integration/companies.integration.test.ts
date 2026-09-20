@@ -25,8 +25,10 @@ loadEnvFile('.env.provision');
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
+const RUN_SUPABASE_INTEGRATION =
+  process.env.RUN_SUPABASE_INTEGRATION === 'true';
 
-if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
+if (!RUN_SUPABASE_INTEGRATION || !SUPABASE_URL || !SUPABASE_SECRET_KEY) {
   describe.skip('Empresas — Integration Tests (Supabase Real)', () => {});
 } else {
   const admin = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, {

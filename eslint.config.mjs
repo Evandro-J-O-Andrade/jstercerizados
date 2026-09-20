@@ -5,7 +5,24 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 
 export default [
   {
-    ignores: ['dist', 'eslint.config.mjs', 'prettier.config.js'],
+    ignores: [
+      '.agents/**',
+      '.kilo/**',
+      '.scripts/**',
+      'dist/**',
+      'e2e/**',
+      'node_modules/**',
+      'playwright-report/**',
+      'scripts/**',
+      'test-results/**',
+      '*.cjs',
+      '*.mjs',
+      'eslint.config.mjs',
+      'prettier.config.js',
+      'postcss.config.js',
+      'server.js',
+      'supabase-extract-core.js',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
