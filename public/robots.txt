@@ -1,17 +1,97 @@
-User-agent: *
-Allow: /
+# 🔒 ROBOTS.TXT — J&S Empregos LTDA
+# Controle de indexação para motores de busca
+
+# Sitemap principal
 Sitemap: https://jsempregos.com.br/sitemap.xml
 
+# ─────────────────────────────────────
+# GOOGLEBOT
+# ─────────────────────────────────────
 User-agent: Googlebot
 Allow: /
+Disallow: /entrar/
+Disallow: /entrar/admin
+Disallow: /entrar/candidato
+Disallow: /entrar/empresa
+Disallow: /cadastro/
+Disallow: /cadastro/candidato
+Disallow: /cadastro/empresa
+Disallow: /login/
+Disallow: /recuperar-senha
+Disallow: /redefinir-senha
+Disallow: /auth/callback
+Disallow: /auth/terms
+Disallow: /auth/welcome
+Disallow: /onboarding
+Disallow: /primeiro-acesso/
+Disallow: /dashboard/
+Disallow: /candidato/
+Disallow: /alterar-senha
 Crawl-delay: 1
 
+# ─────────────────────────────────────
+# BINGBOT
+# ─────────────────────────────────────
 User-agent: Bingbot
 Allow: /
+Disallow: /entrar/
+Disallow: /entrar/admin
+Disallow: /entrar/candidato
+Disallow: /entrar/empresa
+Disallow: /cadastro/
+Disallow: /cadastro/candidato
+Disallow: /cadastro/empresa
+Disallow: /login/
+Disallow: /recuperar-senha
+Disallow: /redefinir-senha
+Disallow: /auth/callback
+Disallow: /auth/terms
+Disallow: /auth/welcome
+Disallow: /onboarding
+Disallow: /primeiro-acesso/
+Disallow: /dashboard/
+Disallow: /candidato/
+Disallow: /alterar-senha
 Crawl-delay: 2
 
-Disallow: /api/
-Disallow: /admin/
-Disallow: /dashboard/
+# ─────────────────────────────────────
+# SLACKBOT (para compartilhamento de links)
+# ─────────────────────────────────────
+User-agent: Slackbot
+Allow: /
+
+# ─────────────────────────────────────
+# DISALLOW PADRÃO PARA TODOS OS ROBOTS
+# ─────────────────────────────────────
+User-agent: *
+Allow: /
+Disallow: /entrar/
+Disallow: /entrar/admin
+Disallow: /entrar/candidato
+Disallow: /entrar/empresa
+Disallow: /cadastro/
+Disallow: /cadastro/candidato
+Disallow: /cadastro/empresa
 Disallow: /login/
+Disallow: /recuperar-senha
+Disallow: /redefinir-senha
+Disallow: /auth/callback
+Disallow: /auth/terms
+Disallow: /auth/welcome
+Disallow: /onboarding
+Disallow: /primeiro-acesso/
+Disallow: /dashboard/
+Disallow: /candidato/
+Disallow: /alterar-senha
+Disallow: /api/
+Disallow: /supabase/
 Disallow: /*?session=*
+Disallow: /*?code=*
+Disallow: /*?token=*
+Disallow: /*?error=*
+Disallow: /*?redirect_to=*
+
+# ─────────────────────────────────────
+# HOST CANÔNICO
+# ─────────────────────────────────────
+Host: jsempregos.com.br

@@ -30,6 +30,8 @@ test-results/
 playwright-report/
 tmp_*.png
 tmp_*.txt
+tmp_*.ts
+*.exe
 supabase_dump_check.sql
 
 

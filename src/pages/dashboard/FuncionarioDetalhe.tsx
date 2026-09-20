@@ -40,7 +40,7 @@ export default function FuncionarioDetalhe() {
       try {
         const [emp, docsData] = await Promise.all([
           employeesRepository.findById(id, currentTenantId),
-          employeeDocumentsRepository.findAll(id),
+          employeeDocumentsRepository.findAll(currentTenantId, id),
         ]);
 
         setEmployee(emp);

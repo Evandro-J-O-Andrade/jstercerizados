@@ -20,6 +20,7 @@ const companySchema = z
   .object({
     full_name: z.string().min(2, 'Nome do responsável é obrigatório'),
     company_name: z.string().min(2, 'Nome da empresa é obrigatório'),
+    cnpj: z.string().min(11, 'CNPJ é obrigatório'),
     email: z.string().email('E-mail inválido'),
     password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
     confirmPassword: z.string().min(6, 'Confirmação de senha é obrigatória'),
@@ -58,6 +59,9 @@ export default function CompanyRegister() {
         email: data.email,
         full_name: data.full_name,
         phone: data.phone,
+        signupContext: 'empresa',
+        companyName: data.company_name,
+        cnpj: data.cnpj,
         emailRedirectTo: '/entrar/empresa',
         turnstileToken: turnstileToken ?? undefined,
       });
@@ -153,6 +157,12 @@ export default function CompanyRegister() {
               label="Nome da empresa"
               error={errors.company_name?.message}
               {...register('company_name')}
+            />
+
+            <Input
+              label="CNPJ"
+              error={errors.cnpj?.message}
+              {...register('cnpj')}
             />
 
             <Input

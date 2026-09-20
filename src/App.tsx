@@ -346,6 +346,7 @@ function App() {
                     'it_operator',
                     'support_agent',
                     'viewer',
+                    'company_representative',
                   ]}
                 >
                   <AppShell />

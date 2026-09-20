@@ -131,10 +131,6 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
 
   const onInvalid = (formErrors: unknown) => {
     console.error('[AUTH:FORM_INVALID]', formErrors);
-    console.error(
-      '[AUTH:FORM_INVALID_JSON]',
-      JSON.stringify(formErrors, null, 2),
-    );
   };
 
   const resetCaptcha = () => {
@@ -182,6 +178,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       const result = await register(data.email, data.password, {
         full_name: data.full_name,
         email: data.email,
+        signupContext: accessFlow === 'empresa' ? 'empresa' : 'candidato',
         emailRedirectTo:
           accessFlow === 'empresa' ? '/entrar/empresa' : '/entrar/candidato',
         turnstileToken: turnstileToken ?? undefined,
@@ -611,14 +608,24 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
 
               {config.allowSignup && authMode === 'signin' && (
                 <div className="mt-4 text-center">
-                  <button
-                    type="button"
-                    onClick={() => setAuthMode('signup')}
-                    className="text-muted-foreground hover:text-primary text-sm transition-colors"
-                    data-testid="toggle-signup"
-                  >
-                    Ainda não tem conta? Cadastre-se
-                  </button>
+                  {accessFlow === 'empresa' ? (
+                    <Link
+                      to="/cadastro/empresa"
+                      className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+                      data-testid="empresa-signup-link"
+                    >
+                      Ainda não tem conta? Cadastre sua empresa
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setAuthMode('signup')}
+                      className="text-muted-foreground hover:text-primary text-sm transition-colors"
+                      data-testid="toggle-signup"
+                    >
+                      Ainda não tem conta? Cadastre-se
+                    </button>
+                  )}
                 </div>
               )}
 

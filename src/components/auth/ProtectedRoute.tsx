@@ -38,6 +38,7 @@ export function ProtectedRoute({
     permissions,
     isAdminMaster,
     isCandidate,
+    isEmpresa,
     authError,
   } = useAuth();
   const location = useLocation();
@@ -88,6 +89,15 @@ export function ProtectedRoute({
     location.pathname.startsWith('/dashboard')
   ) {
     return <Navigate to="/candidato" replace />;
+  }
+
+  // RBAC hardlock: empresa (company_representative) nunca deve entrar em /candidato/*
+  if (
+    !isAdminMaster &&
+    isEmpresa &&
+    location.pathname.startsWith('/candidato')
+  ) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   if (requireAdminMaster && !isAdminMaster) {

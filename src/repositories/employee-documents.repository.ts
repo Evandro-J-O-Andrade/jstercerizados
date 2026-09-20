@@ -11,14 +11,35 @@ type EmployeeDocumentRow =
   Database['public']['Tables']['employee_documents']['Row'];
 
 export class EmployeeDocumentsRepository extends SupabaseRepository {
-  async findAll(employeeId: string): Promise<EmployeeDocument[]> {
+  async findAll(
+    tenantId: string,
+    employeeId?: string,
+  ): Promise<EmployeeDocument[]> {
     if (!this.supabase) return [];
 
-    const { data, error } = await this.supabase
+    let empQuery = this.supabase
+      .from('employees')
+      .select('id')
+      .eq('tenant_id', tenantId);
+
+    if (employeeId) {
+      empQuery = empQuery.eq('id', employeeId);
+    }
+
+    const { data: employees, error: empError } = await empQuery;
+    if (empError) throw empError;
+    if (!employees || employees.length === 0) return [];
+
+    const query = this.supabase
       .from('employee_documents')
       .select('*')
-      .eq('employee_id', employeeId)
+      .in(
+        'employee_id',
+        employees.map((e) => e.id),
+      )
       .order('document_type', { ascending: true });
+
+    const { data, error } = await query;
 
     if (error) throw error;
     return (data || []).map((row) =>
@@ -28,7 +49,7 @@ export class EmployeeDocumentsRepository extends SupabaseRepository {
 
   async findById(
     id: string,
-    employeeId: string,
+    tenantId: string,
   ): Promise<EmployeeDocument | null> {
     if (!this.supabase) return null;
 
@@ -36,18 +57,23 @@ export class EmployeeDocumentsRepository extends SupabaseRepository {
       .from('employee_documents')
       .select('*')
       .eq('id', id)
-      .eq('employee_id', employeeId)
       .maybeSingle();
 
     if (error) throw error;
     if (!data) return null;
+
+    await this.verifyEmployeeInTenant(tenantId, data.employee_id);
+
     return mapEmployeeDocument(data as EmployeeDocumentRow);
   }
 
   async create(
     input: EmployeeDocumentCreateInput,
+    tenantId: string,
   ): Promise<EmployeeDocument | null> {
     if (!this.supabase) return null;
+
+    await this.verifyEmployeeInTenant(tenantId, input.employee_id);
 
     const { data, error } = await this.supabase
       .from('employee_documents')
@@ -68,10 +94,14 @@ export class EmployeeDocumentsRepository extends SupabaseRepository {
 
   async update(
     id: string,
-    employeeId: string,
+    tenantId: string,
     input: EmployeeDocumentUpdateInput,
   ): Promise<EmployeeDocument | null> {
     if (!this.supabase) return null;
+
+    const existing = await this.findById(id, tenantId);
+    if (!existing) return null;
+
     const payload: Record<string, unknown> = {};
     if (input.document_type !== undefined)
       payload.document_type = input.document_type;
@@ -84,7 +114,7 @@ export class EmployeeDocumentsRepository extends SupabaseRepository {
       .from('employee_documents')
       .update(payload)
       .eq('id', id)
-      .eq('employee_id', employeeId)
+      .eq('employee_id', existing.employee_id)
       .select('*')
       .single();
 
@@ -93,16 +123,40 @@ export class EmployeeDocumentsRepository extends SupabaseRepository {
     return mapEmployeeDocument(data as EmployeeDocumentRow);
   }
 
-  async remove(id: string, employeeId: string): Promise<void> {
+  async remove(id: string, tenantId: string): Promise<void> {
     if (!this.supabase) return;
+
+    const existing = await this.findById(id, tenantId);
+    if (!existing) return;
 
     const { error } = await this.supabase
       .from('employee_documents')
       .delete()
       .eq('id', id)
-      .eq('employee_id', employeeId);
+      .eq('employee_id', existing.employee_id);
 
     if (error) throw error;
+  }
+
+  private async verifyEmployeeInTenant(
+    tenantId: string,
+    employeeId: string,
+  ): Promise<void> {
+    if (!this.supabase) return;
+
+    const { data, error } = await this.supabase
+      .from('employees')
+      .select('id')
+      .eq('tenant_id', tenantId)
+      .eq('id', employeeId)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) {
+      throw new Error(
+        'Acesso negado: funcionário não pertence ao tenant atual',
+      );
+    }
   }
 }
 

@@ -29,6 +29,7 @@ function renderWithRoute(
     legalAcceptances: [],
     isAdminMaster: false,
     isCandidate: false,
+    isEmpresa: false,
     authError: null,
     user: null,
     tenantIds: [],

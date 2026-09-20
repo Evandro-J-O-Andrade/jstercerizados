@@ -3,71 +3,23 @@ import { useParams } from 'react-router-dom';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { FileText, ArrowLeft } from 'lucide-react';
-import { getSupabaseClient } from '@/lib/supabase';
+import { applicationsRepository } from '@/repositories/applications.repository';
 import { useAuth } from '@/contexts/AuthContext';
-
-interface ApplicationDetail {
-  id: string;
-  tenant_id: string;
-  job_id: string;
-  candidate_id: string;
-  current_stage: string;
-  applied_at: string;
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-  jobs: any;
-  candidates: any;
-}
+import type { Application } from '@/types/domain/application';
 
 export default function ApplicationDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { isAdminMaster, tenantMemberships, currentTenantId } = useAuth();
-  const [application, setApplication] = useState<ApplicationDetail | null>(
-    null,
-  );
+  const { currentTenantId } = useAuth();
+  const [application, setApplication] = useState<Application | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const supabase = getSupabaseClient();
-    if (!supabase || !id) return;
+    if (!id || !currentTenantId) return;
 
     const fetchApplication = async () => {
       try {
-        const { data, error } = await supabase
-          .from('applications')
-          .select(
-            `
-            id,
-            tenant_id,
-            job_id,
-            candidate_id,
-            current_stage,
-            applied_at,
-            notes,
-            created_at,
-            updated_at,
-            jobs (
-              id,
-              title,
-              status
-            ),
-            candidates (
-              id,
-              headline,
-              people (
-                id,
-                full_name,
-                email
-              )
-            )
-          `,
-          )
-          .eq('id', id)
-          .maybeSingle();
-
-        if (error) throw error;
+        const data = await applicationsRepository.findById(id, currentTenantId);
         setApplication(data || null);
       } catch (err) {
         setError(
@@ -79,7 +31,7 @@ export default function ApplicationDetailPage() {
     };
 
     fetchApplication();
-  }, [id, isAdminMaster, currentTenantId, tenantMemberships]);
+  }, [id, currentTenantId]);
 
   if (loading) {
     return (
@@ -117,13 +69,11 @@ export default function ApplicationDetailPage() {
     );
   }
 
-  const job = Array.isArray(application.jobs)
-    ? application.jobs[0]
-    : application.jobs;
-  const candidate = Array.isArray(application.candidates)
-    ? application.candidates[0]
-    : application.candidates;
-  const person = candidate?.people;
+  const job = application.job;
+  const candidate = application.candidate;
+  const person = (
+    candidate as { person?: { full_name?: string; email?: string } }
+  )?.person;
 
   return (
     <ModuleWorkspace
@@ -200,4 +150,3 @@ export default function ApplicationDetailPage() {
     </ModuleWorkspace>
   );
 }
-

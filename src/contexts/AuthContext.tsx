@@ -36,6 +36,7 @@ interface AuthContextType {
   legalAcceptances: LegalAcceptance[];
   isAdminMaster: boolean;
   isCandidate: boolean;
+  isEmpresa: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (
@@ -58,6 +59,9 @@ interface AuthContextType {
       roleId?: string;
       turnstileToken?: string;
       emailRedirectTo?: string;
+      signupContext?: 'candidato' | 'empresa';
+      companyName?: string;
+      cnpj?: string;
     },
   ) => Promise<{ error?: string; status?: 'success' | 'email_pending' }>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
@@ -114,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
   const [isAdminMaster, setIsAdminMaster] = useState(false);
   const [isCandidate, setIsCandidate] = useState(false);
+  const [isEmpresa, setIsEmpresa] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -203,6 +208,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       let isCandidate = (rolesData || []).some(
         (r: Role) => r.name === 'candidato',
+      );
+
+      const isEmpresa = (rolesData || []).some(
+        (r: Role) => r.name === 'company_representative',
       );
 
       // Fallback: if role_assignments query failed (e.g., due to is_admin_master()
@@ -296,6 +305,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLegalAcceptances((legalAcceptancesData || []) as LegalAcceptance[]);
         setIsAdminMaster(adminMaster);
         setIsCandidate(isCandidate);
+        setIsEmpresa(isEmpresa);
       }
     } catch (error) {
       console.error('[AUTH:IDENTITY] loadAuthData failed', error);
@@ -310,6 +320,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLegalAcceptances([]);
         setIsAdminMaster(false);
         setIsCandidate(false);
+        setIsEmpresa(false);
       }
       throw error;
     }
@@ -409,6 +420,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               setLegalAcceptances([]);
               setIsAdminMaster(false);
               setIsCandidate(false);
+              setIsEmpresa(false);
               setSession(null);
               setUser(null);
               setRecoveryMode(false);
@@ -472,6 +484,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setFirstLoginState(null);
           setLegalAcceptances([]);
           setIsAdminMaster(false);
+          setIsCandidate(false);
+          setIsEmpresa(false);
           setSession(null);
           setUser(null);
         }
@@ -638,6 +652,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setFirstLoginState(null);
           setLegalAcceptances([]);
           setIsAdminMaster(false);
+          setIsCandidate(false);
+          setIsEmpresa(false);
           return {
             error:
               'Identidade nao encontrada. Verifique se seu cadastro esta completo ou solicite acesso ao administrador.',
@@ -712,6 +728,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setFirstLoginState(null);
       setLegalAcceptances([]);
       setIsAdminMaster(false);
+      setIsCandidate(false);
+      setIsEmpresa(false);
       setSession(null);
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
@@ -1097,6 +1115,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       roleId?: string;
       turnstileToken?: string;
       emailRedirectTo?: string;
+      signupContext?: 'candidato' | 'empresa';
+      companyName?: string;
+      cnpj?: string;
     },
   ): Promise<{ error?: string; status?: 'success' | 'email_pending' }> => {
     setAuthError(null);
@@ -1133,6 +1154,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: {
             full_name: profileData.full_name,
             phone: profileData.phone ?? '',
+            ...(profileData.signupContext && {
+              signup_context: profileData.signupContext,
+            }),
+            ...(profileData.companyName && {
+              company_name: profileData.companyName,
+            }),
+            ...(profileData.cnpj && { cnpj: profileData.cnpj }),
           },
           emailRedirectTo: `${import.meta.env?.VITE_SITE_URL || window.location.origin}${profileData.emailRedirectTo || '/entrar/candidato'}`,
         },
@@ -1147,68 +1175,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data.session) {
-        let resolvedTenantId = profileData.tenantId ?? null;
-        let resolvedRoleId = profileData.roleId ?? null;
-
-        if (!resolvedTenantId || !resolvedRoleId) {
-          const { data: tenantData, error: tenantError } = await supabase
-            .from('tenants')
-            .select('id')
-            .eq('slug', 'js-empregos')
-            .maybeSingle();
-
-          if (tenantError || !tenantData?.id) {
-            console.error('[AUTH:REGISTER] tenant resolve failed', tenantError);
-            await supabase.auth.signOut();
-            return {
-              error:
-                'Cadastro indisponível no momento. Contate o administrador.',
-            };
-          }
-
-          resolvedTenantId = tenantData.id;
-
-          if (!resolvedRoleId) {
-            const { data: roleData, error: roleError } = await supabase
-              .from('roles')
-              .select('id')
-              .eq('name', 'candidato')
-              .maybeSingle();
-
-            if (roleError || !roleData?.id) {
-              console.error('[AUTH:REGISTER] role resolve failed', roleError);
-              await supabase.auth.signOut();
-              return {
-                error:
-                  'Cadastro indisponível no momento. Contate o administrador.',
-              };
-            }
-
-            resolvedRoleId = roleData.id;
-          }
-        }
-
-        const { error: bootstrapError } = await supabase.rpc(
-          'bootstrap_candidate_identity',
-          {
-            p_auth_user_id: data.user.id,
-            p_full_name: profileData.full_name,
-            p_email: profileData.email,
-            p_tenant_id: resolvedTenantId,
-            p_role_id: resolvedRoleId,
-          },
-        );
-
-        if (bootstrapError) {
-          console.error('[AUTH:REGISTER] bootstrap failed', bootstrapError);
-          await supabase.auth.signOut();
-          return {
-            error: normalizeError(bootstrapError).userMessage,
-          };
-        }
-
         await loadAuthData(data.user.id);
-
         return { status: 'success' };
       }
 
@@ -1326,6 +1293,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         legalAcceptances,
         isAdminMaster,
         isCandidate,
+        isEmpresa,
         isAuthenticated: !!user && !!session,
         isLoading,
         login,

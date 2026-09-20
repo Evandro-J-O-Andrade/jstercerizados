@@ -85,7 +85,7 @@ describe('Login contextual', () => {
       expect(screen.getByText(/Continuar com Google/i)).toBeInTheDocument();
     });
     expect(screen.getByText(/Continuar com Microsoft/i)).toBeInTheDocument();
-    expect(screen.getByTestId('toggle-signup')).toBeInTheDocument();
+    expect(screen.getByTestId('empresa-signup-link')).toBeInTheDocument();
   });
 
   it('candidato + signup: mostra form de cadastro com nome, email, senha, confirmar', async () => {
