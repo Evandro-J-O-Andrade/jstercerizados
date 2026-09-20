@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: views
+-- STATUS: scaffold
+-- SOURCE: MASTER SPEC
+-- DEPENDENCIES: multiple
+-- ============================================================
+
+-- Views and materialized views
+-- TODO: reconcile with MASTER SPEC

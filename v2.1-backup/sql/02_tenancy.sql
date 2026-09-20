@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: tenancy
+-- STATUS: scaffold
+-- SOURCE: MASTER SPEC
+-- DEPENDENCIES: 01_core.sql
+-- ============================================================
+
+-- Tenancy extensions (functions, views, advanced policies)
+-- Core tenant tables are defined in 01_core.sql

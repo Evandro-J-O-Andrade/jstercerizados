@@ -1,0 +1,8 @@
+-- Testes conceituais para dry-run:
+-- - Tenant A nao acessa Tenant B
+-- - admin_master acessa tenants globalmente
+-- - role_assignments sem roles legadas
+-- - invoices separado de fiscal_documents
+-- - chat_messages separado de ai_messages
+-- - stock_movements alimenta stock_balances
+-- - people.auth_user_id sincroniza com auth.users

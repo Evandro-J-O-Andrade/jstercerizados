@@ -1,0 +1,7 @@
+-- RLS policies são definidas por tabela.
+-- Regra geral:
+-- SELECT  -> membro ativo do tenant ou role global permitida
+-- INSERT  -> role com permissao create no resource
+-- UPDATE  -> role com permissao update no resource
+-- DELETE  -> role com permissao delete no resource
+-- admin_master pode acessar qualquer tenant

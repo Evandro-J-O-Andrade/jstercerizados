@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: fiscal
+-- STATUS: scaffold
+-- SOURCE: docs/sql/08_fiscal.sql
+-- DEPENDENCIES: 01_core.sql, 04_crm.sql, 19_finance.sql
+-- ============================================================
+
+-- Fiscal documents and events
+-- TODO: reconcile with docs/sql/08_fiscal.sql

@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: rls
+-- STATUS: scaffold
+-- SOURCE: docs/sql/21_rls.sql
+-- DEPENDENCIES: multiple
+-- ============================================================
+
+-- RLS policies
+-- TODO: reconcile CONFLICTO-012

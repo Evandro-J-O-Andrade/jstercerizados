@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: indexes
+-- STATUS: scaffold
+-- SOURCE: docs/sql/20_indexes.sql
+-- DEPENDENCIES: multiple
+-- ============================================================
+
+-- Indexes
+-- TODO: reconcile CONFLICTO-012

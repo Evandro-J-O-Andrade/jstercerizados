@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: storage
+-- STATUS: scaffold
+-- SOURCE: docs/sql/14_storage.sql
+-- DEPENDENCIES: 01_core.sql
+-- ============================================================
+
+-- Files and file access logs
+-- TODO: reconcile with docs/sql/14_storage.sql

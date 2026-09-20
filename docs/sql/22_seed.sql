@@ -1,0 +1,13 @@
+-- Seed reproduzivel do zero.
+-- Inclui:
+-- - roles globais
+-- - tenant inicial
+-- - tenant_settings inicial
+-- - people inicial
+-- - tenant_memberships inicial
+-- - role_assignments inicial
+-- - roles tenant-scoped
+-- - permissions
+-- - role_permissions
+-- Nenhuma role legada (admin/empresa/candidato).
+-- Nenhuma senha hardcoded no SQL.

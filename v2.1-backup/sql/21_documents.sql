@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: documents
+-- STATUS: scaffold
+-- SOURCE: docs/sql/06_administrative.sql
+-- DEPENDENCIES: 01_core.sql
+-- ============================================================
+
+-- Administrative documents and links
+-- TODO: reconcile with docs/sql/06_administrative.sql

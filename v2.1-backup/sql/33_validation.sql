@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: validation
+-- STATUS: scaffold
+-- SOURCE: docs/sql/23_validation.sql
+-- DEPENDENCIES: multiple
+-- ============================================================
+
+-- Validation tests
+-- TODO: reconcile CONFLICTO-012

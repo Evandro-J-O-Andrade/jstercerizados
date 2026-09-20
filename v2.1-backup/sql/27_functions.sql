@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: functions
+-- STATUS: scaffold
+-- SOURCE: docs/sql/18_functions.sql
+-- DEPENDENCIES: multiple
+-- ============================================================
+
+-- Business functions
+-- TODO: reconcile CONFLICTO-012

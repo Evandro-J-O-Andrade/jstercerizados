@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: seed
+-- STATUS: scaffold
+-- SOURCE: docs/sql/22_seed.sql
+-- DEPENDENCIES: multiple
+-- ============================================================
+
+-- Seed data
+-- TODO: reconcile CONFLICTO-012

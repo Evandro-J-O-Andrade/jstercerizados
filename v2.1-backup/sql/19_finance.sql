@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: finance
+-- STATUS: scaffold
+-- SOURCE: docs/sql/07_finance.sql
+-- DEPENDENCIES: 01_core.sql, 04_crm.sql
+-- ============================================================
+
+-- Financial accounts, receivables, payables
+-- TODO: reconcile with docs/sql/07_finance.sql

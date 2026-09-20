@@ -1,0 +1,12 @@
+-- ============================================================
+-- J&S EMPREGOS SAAS
+-- DATABASE V2.1 — CANONICAL SQL
+-- ============================================================
+-- DOMAIN: triggers
+-- STATUS: scaffold
+-- SOURCE: docs/sql/19_triggers.sql
+-- DEPENDENCIES: multiple
+-- ============================================================
+
+-- Triggers
+-- TODO: reconcile CONFLICTO-012
