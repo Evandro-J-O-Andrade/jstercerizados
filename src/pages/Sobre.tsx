@@ -1,11 +1,18 @@
 import { motion, useInView } from 'framer-motion';
-import { Shield, Award, Users, Target } from 'lucide-react';
+import {
+  Award,
+  BriefcaseBusiness,
+  HeartHandshake,
+  Leaf,
+  Shield,
+  Target,
+  Users,
+} from 'lucide-react';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { PageTemplateBanner } from '@/components/common/PageTemplateBanner';
 import { SafeImage } from '@/components/ui/SafeImage';
-import { COMPANY_TIMELINE } from '@/mock/company';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config';
 import { HERO_ASSETS, SERVICE_IMAGES } from '@/content/assets';
@@ -15,28 +22,40 @@ import { useRef, useState, useEffect } from 'react';
 
 const valores = [
   {
-    title: 'Excelência em Recrutamento',
+    title: 'Integridade e Honestidade',
     description:
-      'Processos rigorosos de triagem e seleção para encontrar o profissional certo para cada vaga.',
-    icon: Award,
-  },
-  {
-    title: 'Inovação em RH',
-    description:
-      'Investimento constante em tecnologia e metodologias para otimizar o recrutamento.',
+      'Relacionamentos construídos com transparência, ética, responsabilidade e confiança em cada etapa.',
     icon: Shield,
   },
   {
-    title: 'Foco no Resultado',
+    title: 'Excelência',
     description:
-      'Alinhamento total com os objetivos da empresa: encontrar talentos e elevar padrões.',
+      'Busca contínua por qualidade, organização e melhoria dos processos para entregar soluções consistentes.',
+    icon: Award,
+  },
+  {
+    title: 'Equilíbrio',
+    description:
+      'Decisões responsáveis que consideram pessoas, empresas, resultados e a sustentabilidade das relações.',
     icon: Target,
   },
   {
-    title: 'Equipe Qualificada',
+    title: 'Foco no Cliente',
     description:
-      'Especialistas em recrutamento, seleção e gestão de pessoas com certificações reconhecidas.',
+      'Entender necessidades reais para desenvolver soluções alinhadas aos desafios de cada empresa.',
+    icon: HeartHandshake,
+  },
+  {
+    title: 'Sabedoria',
+    description:
+      'Experiência, aprendizado contínuo e conhecimento aplicados à gestão de pessoas e aos processos de RH.',
     icon: Users,
+  },
+  {
+    title: 'Preservação do Meio Ambiente',
+    description:
+      'Responsabilidade e consciência ambiental como parte de uma atuação profissional e sustentável.',
+    icon: Leaf,
   },
 ];
 
@@ -59,64 +78,64 @@ type Chapter = {
 
 const chapters: Chapter[] = [
   {
-    id: 'origem',
-    label: '01 — ORIGEM',
-    year: '2011',
-    title: 'Tudo começou aqui.',
+    id: 'pessoas',
+    label: '01 — PESSOAS',
+    year: '01',
+    title: 'Conectamos pessoas a oportunidades.',
     description:
-      'Início das operações como uma agência focada em recrutamento e seleção de profissionais qualificados.',
+      'Nossa atuação parte de um princípio simples: encontrar e conectar profissionais aptos às oportunidades adequadas, aproximando candidatos e empresas com transparência e atenção às necessidades de cada processo.',
     image: HERO_ASSETS.bannerjs,
     layout: 'hero',
-    quote: '2011',
+    quote: 'PESSOAS NO CENTRO.',
   },
   {
-    id: 'primeiros-passos',
-    label: '02 — PRIMEIROS PASSOS',
-    year: '2015',
-    title: 'Primeiros Passos',
+    id: 'recrutamento',
+    label: '02 — RECRUTAMENTO E SELEÇÃO',
+    year: '02',
+    title: 'Processos pensados para encontrar o perfil certo.',
     description:
-      'Iniciamos os serviços complementares de zeladoria, limpeza e segurança, ampliando nossa atuação em RH.',
-    image: SERVICE_IMAGES.facilities,
+      'Recrutamento e seleção fazem parte do nosso trabalho para apoiar empresas na identificação de profissionais compatíveis com suas necessidades, ao mesmo tempo em que orientamos candidatos em sua jornada profissional.',
+    image: SERVICE_IMAGES.servicosReal,
     layout: 'split-left',
   },
   {
-    id: 'evolucao',
-    label: '03 — EVOLUÇÃO',
-    year: '2018',
-    title: 'Evolução',
+    id: 'solucoes',
+    label: '03 — SOLUÇÕES EM RH',
+    year: '03',
+    title: 'Da contratação à gestão de pessoas.',
     description:
-      'Implementamos sistemas de monitoramento e controle de acesso, integrando tecnologia aos nossos processos.',
-    image: SERVICE_IMAGES.controleAcesso,
+      'Ampliamos nossa atuação com soluções como mão de obra temporária e efetiva, treinamento, projetos em RH e assessoria, criando uma abordagem integrada para diferentes necessidades organizacionais.',
+    image: SERVICE_IMAGES.facilities,
     layout: 'manga-right',
   },
   {
-    id: 'expansao',
-    label: '04 — EXPANSÃO',
-    year: '2020',
-    title: '200 Clientes',
+    id: 'tecnologia',
+    label: '04 — TECNOLOGIA',
+    year: '04',
+    title: 'Tecnologia para tornar os processos mais eficientes.',
     description:
-      'Atingimos a marca de 200 clientes empresariais satisfeitos com nossas soluções de RH.',
+      'A metodologia da J&S combina inovação tecnológica, software de gestão, organização de processos e desenvolvimento de pessoas para dar mais agilidade, controle e qualidade à operação.',
     image: HERO_ASSETS.suporte,
     layout: 'full-bleed',
-    quote: 'NOVOS DESAFIOS.\nNOVAS SOLUÇÕES.',
+    quote: 'TECNOLOGIA + PROCESSOS + PESSOAS.',
   },
   {
-    id: 'plataforma',
-    label: '05 — J&S HOJE',
-    year: '2022',
-    title: 'Plataforma Digital J&S',
+    id: 'qualidade',
+    label: '05 — QUALIDADE',
+    year: '05',
+    title: 'Qualidade que começa nos detalhes.',
     description:
-      'Lançamento da plataforma digital para otimizar a gestão de vagas, candidatos e processos seletivos.',
-    image: SERVICE_IMAGES.servicosReal,
+      'Trabalhamos com foco em qualidade, confiança e comprometimento. Cada etapa do atendimento é uma oportunidade para aprimorar processos, reduzir atritos e construir relações duradouras.',
+    image: SERVICE_IMAGES.controleAcesso,
     layout: 'split-right',
   },
   {
-    id: 'cobertura',
-    label: '06 — O FUTURO',
-    year: '2024',
-    title: '50 Cidades',
+    id: 'complementar',
+    label: '06 — ATUAÇÃO COMPLEMENTAR',
+    year: '06',
+    title: 'Experiência também em soluções operacionais.',
     description:
-      'Expandimos nossa cobertura para 50 cidades do Brasil. A história ainda está sendo escrita.',
+      'Nossa experiência institucional inclui serviços de terceirização e facilities, como limpeza, portaria, zeladoria e outras soluções operacionais. Essas frentes complementam nossa atuação em gestão de pessoas sem perder o foco em RH.',
     image: HERO_ASSETS.trabalheConosco,
     layout: 'manga-left',
   },
@@ -273,19 +292,20 @@ export default function Sobre() {
           { label: 'Home', href: '/' },
           { label: 'Sobre', href: '/sobre' },
         ]}
-        title={`Sobre — ${COMPANY.name}`}
-        description={`Conheça a ${COMPANY.name}: assessoria em RH, recrutamento, mão de obra e facilities com excelência.`}
+        title={`Sobre a J&S Empregos — Assessoria em RH`}
+        description="Conheça a J&S Empregos, empresa de assessoria em Recursos Humanos, recrutamento e seleção, mão de obra temporária e efetiva, treinamento e soluções complementares em terceirização."
         keywords={[
-          'sobre',
-          COMPANY.name,
-          'RH',
-          'recrutamento',
-          'seleção',
+          'J&S Empregos',
+          'sobre a J&S Empregos',
+          'assessoria em RH',
+          'recursos humanos',
+          'recrutamento e seleção',
+          'mão de obra temporária',
+          'mão de obra efetiva',
+          'treinamento',
+          'projetos em RH',
           'terceirização',
           'facilities',
-          'limpeza',
-          'jardinagem',
-          'portaria',
         ]}
         type="Organization"
       />
@@ -309,14 +329,15 @@ export default function Sobre() {
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-3xl text-lg"
             >
-              Somos uma empresa de assessoria em RH, recrutamento, mão de obra,
-              terceirização e facilities que transforma talentos em
-              oportunidades.
+              Mais eficiência em RH. Mais resultados para sua empresa. Atuamos
+              na conexão entre empresas e profissionais, com recrutamento,
+              seleção, mão de obra, treinamento e soluções em gestão de
+              pessoas.
             </motion.p>
             <div className="mx-auto mt-6 max-w-3xl">
               <PageTemplateBanner
                 templateKey="sobre_greeting"
-                fallback="Bem-vindo a J&S Empregos LTDA."
+                fallback="Pessoas, oportunidades e empresas conectadas por soluções em RH."
               />
             </div>
           </motion.div>
@@ -341,26 +362,93 @@ export default function Sobre() {
             </motion.div>
 
             <motion.div variants={staggerItem('right')}>
-              <h2 className="text-foreground mb-4 text-2xl font-bold">
-                Nossa Missão
+              <span className="text-primary text-sm font-semibold uppercase tracking-[0.2em]">
+                Quem somos
+              </span>
+              <h2 className="text-foreground mt-3 mb-4 text-3xl font-bold">
+                Gestão de pessoas com propósito, qualidade e confiança.
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Conectar empresas aos profissionais certos e ajudar candidatos a
-                conquistarem novas oportunidades, por meio de recrutamento,
-                seleção, mão de obra temporária e efetiva e assessoria completa
-                em RH.
+                A J&S atua na gestão de soluções em Recursos Humanos,
+                conectando profissionais a oportunidades de trabalho e
+                empresas a pessoas alinhadas às suas necessidades.
               </p>
-
-              <h3 className="text-foreground mt-8 mb-4 text-2xl font-bold">
-                Nossa Visão
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Ser referência em assessoria em RH, recrutamento, mão de obra,
-                terceirização e facilities, reconhecida pela excelência no
-                recrutamento e pela conexão humanizada entre empresas e
-                talentos.
+              <p className="text-muted-foreground mt-4 leading-relaxed">
+                Nossa atuação combina recrutamento e seleção, mão de obra
+                temporária e efetiva, treinamento, projetos em RH e tecnologia
+                aplicada à gestão. O objetivo é simplificar processos,
+                aproximar pessoas e contribuir para relações profissionais mais
+                eficientes e transparentes.
               </p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                {[
+                  'Recrutamento e seleção',
+                  'Mão de obra temporária e efetiva',
+                  'Treinamento e desenvolvimento',
+                  'Soluções e projetos em RH',
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="bg-muted/40 border-border/50 rounded-xl border p-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <BriefcaseBusiness className="text-primary h-5 w-5 shrink-0" />
+                      <span className="text-foreground text-sm font-medium">
+                        {item}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </motion.div>
+          </motion.div>
+        </Container>
+      </Section>
+
+      <Section className="mt-24">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="grid grid-cols-1 gap-6 lg:grid-cols-2"
+          >
+            <motion.article
+              variants={staggerItem('left')}
+              className="bg-card border-border/50 shadow-glass rounded-3xl border p-8 sm:p-10"
+            >
+              <span className="text-primary text-sm font-semibold uppercase tracking-[0.2em]">
+                Nossa missão
+              </span>
+              <h2 className="text-foreground mt-3 text-2xl font-bold">
+                Conectar profissionais e oportunidades adequadas.
+              </h2>
+              <p className="text-muted-foreground mt-4 leading-relaxed">
+                Otimizar a gestão de soluções eficientes em recrutamento e
+                seleção e em serviços de RH, oferecendo qualidade e confiança,
+                encontrando e conectando profissionais aptos a oportunidades
+                adequadas e contribuindo para o sucesso de clientes e
+                candidatos com mais transparência e resultados.
+              </p>
+            </motion.article>
+
+            <motion.article
+              variants={staggerItem('right')}
+              className="bg-card border-border/50 shadow-glass rounded-3xl border p-8 sm:p-10"
+            >
+              <span className="text-primary text-sm font-semibold uppercase tracking-[0.2em]">
+                Nossa visão
+              </span>
+              <h2 className="text-foreground mt-3 text-2xl font-bold">
+                Construir relações duradouras com empresas e profissionais.
+              </h2>
+              <p className="text-muted-foreground mt-4 leading-relaxed">
+                Ser reconhecida como parceira estratégica em soluções de
+                Recursos Humanos, destacando-nos pela qualidade, confiabilidade
+                e compromisso com a excelência em tudo o que fazemos.
+              </p>
+            </motion.article>
           </motion.div>
         </Container>
       </Section>
@@ -374,32 +462,43 @@ export default function Sobre() {
             variants={staggerReveal(0.2)}
             className="mb-12 text-center"
           >
+            <span className="text-primary text-sm font-semibold uppercase tracking-[0.2em]">
+              Nossos princípios
+            </span>
             <motion.h2
               variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
+              className="text-foreground mt-3 text-3xl font-bold sm:text-4xl"
             >
-              Nossa Trajetória
+              Valores que orientam nosso trabalho
             </motion.h2>
             <motion.p
               variants={revealUp}
               className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
             >
-              Uma história construída com dedicação, inovação e parcerias.
+              Princípios institucionais que orientam nossa forma de trabalhar,
+              atender e construir relacionamentos.
             </motion.p>
           </motion.div>
 
-          <div className="relative">
-            {COMPANY_TIMELINE.map((_item, index) => {
-              const chapter = chapters[index];
-              if (!chapter) return null;
-
-              return (
-                <div key={chapter.id} className="relative">
-                  {index > 0 && <TimelineWebConnector />}
-                  <CinematicChapter chapter={chapter} index={index} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {valores.map((valor) => (
+              <motion.div
+                key={valor.title}
+                variants={staggerItem('up')}
+                whileHover={{ scale: 1.02, y: -4 }}
+                className="bg-card border-border shadow-premium rounded-2xl border p-6 transition-all"
+              >
+                <div className="bg-primary/10 text-primary mb-5 flex h-12 w-12 items-center justify-center rounded-full">
+                  <valor.icon className="h-6 w-6" />
                 </div>
-              );
-            })}
+                <h3 className="text-foreground mb-2 text-lg font-semibold">
+                  {valor.title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {valor.description}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </Container>
       </Section>
@@ -411,41 +510,122 @@ export default function Sobre() {
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerReveal(0.2)}
-            className="text-center"
+            className="mb-12 text-center"
           >
+            <span className="text-primary text-sm font-semibold uppercase tracking-[0.2em]">
+              Nossa forma de trabalhar
+            </span>
             <motion.h2
               variants={revealUp}
-              className="text-foreground mb-4 text-3xl font-bold sm:text-4xl"
+              className="text-foreground mt-3 text-3xl font-bold sm:text-4xl"
             >
-              Nossos Valores
+              Metodologia, tecnologia e pessoas
+            </motion.h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            {[
+              {
+                icon: Target,
+                title: 'Metodologia',
+                text: 'Processos organizados para compreender necessidades, selecionar perfis e acompanhar cada etapa com clareza.',
+              },
+              {
+                icon: Shield,
+                title: 'Tecnologia',
+                text: 'Ferramentas e software de gestão apoiam a organização das informações e a eficiência operacional.',
+              },
+              {
+                icon: Users,
+                title: 'Desenvolvimento',
+                text: 'Treinamento, aprendizado e atenção às pessoas fazem parte da construção de soluções sustentáveis.',
+              },
+            ].map(({ icon: Icon, title, text }) => (
+              <motion.article
+                key={title}
+                variants={staggerItem('up')}
+                className="bg-muted/30 border-border/50 rounded-2xl border p-7"
+              >
+                <Icon className="text-primary h-7 w-7" />
+                <h3 className="text-foreground mt-5 text-xl font-semibold">
+                  {title}
+                </h3>
+                <p className="text-muted-foreground mt-3 leading-relaxed">
+                  {text}
+                </p>
+              </motion.article>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      <Section className="mt-24">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <span className="text-primary text-sm font-semibold uppercase tracking-[0.2em]">
+              Nossa equipe
+            </span>
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground mt-3 text-3xl font-bold sm:text-4xl"
+            >
+              Pessoas que cuidam dos detalhes
             </motion.h2>
             <motion.p
               variants={revealUp}
-              className="text-muted-foreground mx-auto mb-12 max-w-2xl text-lg"
+              className="text-muted-foreground mx-auto mt-4 max-w-3xl text-lg leading-relaxed"
             >
-              Princípios que guiam cada decisão e cada entrega.
+              Nossa equipe é formada por profissionais comprometidos com
+              qualidade, confiança e responsabilidade. Mais do que selecionar
+              candidatos, buscamos cuidar de pessoas e construir conexões que
+              façam sentido para cada oportunidade.
             </motion.p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {valores.map((valor) => (
-                <motion.div
-                  key={valor.title}
-                  variants={staggerItem('up')}
-                  whileHover={{ scale: 1.03, y: -4 }}
-                  className="bg-card border-border shadow-premium rounded-2xl border p-6 text-center transition-all"
-                >
-                  <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                    <valor.icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="text-foreground mb-2 text-lg font-semibold">
-                    {valor.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {valor.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
           </motion.div>
+        </Container>
+      </Section>
+
+      <Section className="mt-8">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.2)}
+            className="mb-12 text-center"
+          >
+            <span className="text-primary text-sm font-semibold uppercase tracking-[0.2em]">
+              Nossa trajetória
+            </span>
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground mt-3 text-3xl font-bold sm:text-4xl"
+            >
+              Uma atuação construída por etapas
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Mantivemos a experiência visual da trajetória, agora organizada
+              em pilares institucionais e sem publicar números históricos não
+              confirmados.
+            </motion.p>
+          </motion.div>
+
+          <div className="relative">
+            {chapters.map((chapter, index) => (
+              <div key={chapter.id} className="relative">
+                {index > 0 && <TimelineWebConnector />}
+                <CinematicChapter chapter={chapter} index={index} />
+              </div>
+            ))}
+          </div>
         </Container>
       </Section>
 
@@ -463,7 +643,7 @@ export default function Sobre() {
                 <SafeImage
                   src={HERO_ASSETS.bannerjs}
                   fallbackSrc={IMAGES.hero.sobre.fallback}
-                  alt={`Missão ${COMPANY.tradingName}`}
+                  alt="Soluções da J&S Empregos"
                   className="h-full w-full object-cover opacity-80"
                 />
                 <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
@@ -471,29 +651,80 @@ export default function Sobre() {
             </motion.div>
 
             <motion.div variants={staggerItem('right')}>
-              <h2 className="text-foreground mb-6 text-3xl font-bold">
-                Cobertura Regional
+              <span className="text-primary text-sm font-semibold uppercase tracking-[0.2em]">
+                Atuação complementar
+              </span>
+              <h2 className="text-foreground mt-3 mb-5 text-3xl font-bold">
+                Soluções que ampliam nossa capacidade de atender empresas.
               </h2>
-              <p className="text-muted-foreground mb-4 leading-relaxed">
-                Atendemos empresas e candidatos em múltiplas cidades, com
-                cobertura completa para garantir agilidade e presença onde você
-                precisa.
+              <p className="text-muted-foreground leading-relaxed">
+                A experiência institucional da J&S também contempla terceirização
+                e facilities, com frentes como limpeza, portaria, zeladoria,
+                segurança e outras necessidades operacionais. Essas soluções
+                complementam nossa experiência em gestão de pessoas e podem ser
+                estruturadas de acordo com a necessidade de cada cliente.
               </p>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Shield className="text-primary h-5 w-5" />
-                  <span className="text-foreground font-medium">
-                    Cobertura nacional
+              <div className="mt-7 flex flex-wrap gap-2">
+                {[
+                  'Limpeza',
+                  'Portaria',
+                  'Zeladoria',
+                  'Segurança',
+                  'Facilities',
+                ].map((item) => (
+                  <span
+                    key={item}
+                    className="bg-primary/10 text-primary rounded-full px-4 py-2 text-sm font-medium"
+                  >
+                    {item}
                   </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Award className="text-primary h-5 w-5" />
-                  <span className="text-foreground font-medium">
-                    Equipe 24/7
-                  </span>
-                </div>
+                ))}
               </div>
             </motion.div>
+          </motion.div>
+        </Container>
+      </Section>
+
+      <Section className="mt-24 pb-28">
+        <Container>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={staggerReveal(0.15)}
+            className="bg-card border-border/50 shadow-glass rounded-3xl border p-8 text-center sm:p-12"
+          >
+            <span className="text-primary text-sm font-semibold uppercase tracking-[0.2em]">
+              Vamos conversar
+            </span>
+            <motion.h2
+              variants={revealUp}
+              className="text-foreground mt-3 text-3xl font-bold sm:text-4xl"
+            >
+              Encontre a solução certa para sua necessidade.
+            </motion.h2>
+            <motion.p
+              variants={revealUp}
+              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+            >
+              Empresas podem contar com a J&S para apoiar seus processos de
+              contratação e gestão de pessoas. Candidatos podem conhecer as
+              oportunidades disponíveis e cadastrar seu currículo.
+            </motion.p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <a
+                href="/empresas"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-xl px-6 py-3 font-semibold transition-colors"
+              >
+                Soluções para empresas
+              </a>
+              <a
+                href="/vagas"
+                className="border-border bg-background text-foreground hover:bg-muted inline-flex items-center justify-center rounded-xl border px-6 py-3 font-semibold transition-colors"
+              >
+                Ver vagas
+              </a>
+            </div>
           </motion.div>
         </Container>
       </Section>
