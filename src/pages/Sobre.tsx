@@ -23,6 +23,9 @@ import { HERO_ASSETS, SERVICE_IMAGES } from '@/content/assets';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { useRef, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
+const MotionLink = motion(Link);
 
 const valores = [
   {
@@ -523,7 +526,7 @@ export default function Sobre() {
             </motion.div>
 
             <motion.div variants={staggerItem('right')}>
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+              <div className="relative aspect-[11/6] w-full overflow-hidden rounded-2xl">
                 <SafeImage
                   src={HERO_ASSETS.bannerjs}
                   fallbackSrc={IMAGES.hero.sobre.fallback}
@@ -1127,22 +1130,22 @@ export default function Sobre() {
               variants={revealUp}
               className="mt-8 flex flex-col justify-center gap-4 sm:flex-row"
             >
-              <motion.a
-                href="/contato"
+              <MotionLink
+                to="/contato"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 className="btn-primary text-primary-foreground inline-flex items-center justify-center rounded-xl px-8 py-3 text-sm font-semibold shadow-lg transition-all"
               >
                 Fale conosco
-              </motion.a>
-              <motion.a
-                href="/vagas"
+              </MotionLink>
+              <MotionLink
+                to="/vagas"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 className="border-primary-foreground/30 text-primary-foreground inline-flex items-center justify-center rounded-xl border bg-transparent px-8 py-3 text-sm font-semibold transition-all"
               >
                 Ver vagas
-              </motion.a>
+              </MotionLink>
             </motion.div>
           </motion.div>
         </Container>
