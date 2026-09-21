@@ -430,7 +430,8 @@ export default function Sobre() {
               src="/images/sobre/bannersobre.jpg"
               fallbackSrc={IMAGES.hero.sobre.fallback}
               alt={`Equipe ${COMPANY.tradingName}`}
-              className="h-[500px] w-full object-cover opacity-80 sm:h-[600px]"
+              objectFit="contain"
+              className="w-full opacity-80"
             />
             <div className="from-background/70 via-background/20 absolute inset-0 bg-gradient-to-t to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
