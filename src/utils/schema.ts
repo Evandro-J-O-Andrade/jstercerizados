@@ -103,36 +103,110 @@ export function buildJobPostingSchema(params: {
 
 export function getOrganizationSchema(): {
   '@context': string;
-  '@type': string;
+  '@type': string | string[];
   name: string;
+  alternateName: string[];
   url: string;
   logo: string;
   description: string;
+  foundingDate: string;
+  address: {
+    '@type': string;
+    streetAddress: string;
+    addressLocality: string;
+    addressRegion: string;
+    postalCode: string;
+    addressCountry: string;
+  };
   contactPoint: {
     '@type': string;
     telephone: string;
     contactType: string;
     availableLanguage: string;
-  };
+  }[];
   sameAs: string[];
+  knowsAbout: string[];
+  areaServed: {
+    '@type': string;
+    name: string;
+  }[];
+  hasOfferCatalog: {
+    '@type': string;
+    name: string;
+    itemListElement: Array<{
+      '@type': string;
+      name: string;
+      description: string;
+    }>;
+  };
 } {
   return {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
+    '@type': ['Organization', 'LocalBusiness', 'EmploymentAgency'],
     name: COMPANY.name,
+    alternateName: ['J&S Terceirizados', 'J&S Empregos', 'JS Terceirizados'],
     url: SITE_URL,
     logo: `${SITE_URL}/images/global/brand/logo-js-empregos.png`,
     description: COMPANY.description,
-    contactPoint: {
-      '@type': 'ContactPoint',
-      telephone: `+55${COMPANY.whatsapp}`,
-      contactType: 'customer service',
-      availableLanguage: 'Portuguese',
+    foundingDate: '2011',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: `${COMPANY.address.street}, ${COMPANY.address.number} ${COMPANY.address.complement}`,
+      addressLocality: COMPANY.address.city,
+      addressRegion: COMPANY.address.state,
+      postalCode: COMPANY.address.zip || '',
+      addressCountry: 'BR',
     },
+    contactPoint: [
+      {
+        '@type': 'ContactPoint',
+        telephone: `+55${COMPANY.whatsapp}`,
+        contactType: 'customer service',
+        availableLanguage: 'Portuguese',
+      },
+      {
+        '@type': 'ContactPoint',
+        telephone: COMPANY.phone,
+        contactType: 'sales',
+        availableLanguage: 'Portuguese',
+      },
+    ],
     sameAs: [
       SOCIAL_LINKS.instagram,
       SOCIAL_LINKS.facebook,
       SOCIAL_LINKS.linkedin,
+      SOCIAL_LINKS.youtube,
+      SOCIAL_LINKS.tiktok,
     ],
+    knowsAbout: [
+      'Recrutamento e Seleção',
+      'Mão de Obra Temporária',
+      'Mão de Obra Efetiva',
+      'Terceirização de Serviços',
+      'Assessoria em RH',
+      'Limpeza Profissional',
+      'Segurança Patrimonial',
+      'Portaria e Recepção',
+      'Jardinagem e Paisagismo',
+      'Zeladoria',
+      'Facilities',
+      'Departamento Pessoal',
+      'Treinamento Corporativo',
+    ],
+    areaServed: [
+      { '@type': 'City', name: 'São Paulo' },
+      { '@type': 'City', name: 'Poá' },
+      { '@type': 'State', name: 'São Paulo' },
+      { '@type': 'Country', name: 'Brasil' },
+    ],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Serviços J&S Empregos',
+      itemListElement: COMPANY.businessAreas.map((area) => ({
+        '@type': 'Offer',
+        name: area,
+        description: `Serviço de ${area} pela J&S Empregos LTDA`,
+      })),
+    },
   };
 }

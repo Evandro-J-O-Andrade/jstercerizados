@@ -1,17 +1,36 @@
+import { IMAGES } from '@/config';
 import { motion } from 'framer-motion';
+
+import { LoadingSpinner } from './LoadingSpinner';
 
 export function RouteLoadingFallback() {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="flex items-center justify-center"
+      initial={{ opacity: 0, scale: 0.98, filter: 'blur(4px)' }}
+      animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, scale: 1.01, filter: 'blur(2px)' }}
+      transition={{ duration: 0.4, ease: [0.25, 0.4, 0.25, 1] }}
+      className="bg-background fixed inset-0 z-[9999] flex min-h-[100dvh] w-screen flex-col items-center justify-center gap-8 overflow-hidden"
     >
-      <div className="relative h-12 w-12">
-        <div className="absolute inset-0 rounded-full border-2 border-gray-800/60" />
-        <div className="border-t-primary border-r-primary absolute inset-0 animate-spin rounded-full border-2 border-transparent shadow-[0_0_15px_rgba(212,160,23,0.35)]" />
-      </div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: [0.25, 0.4, 0.25, 1], delay: 0.1 }}
+        className="flex flex-col items-center gap-4"
+      >
+        <img
+          src={IMAGES.logo.principal}
+          alt="J&S Empregos LTDA"
+          className="h-12 w-auto"
+        />
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, ease: [0.25, 0.4, 0.25, 1], delay: 0.3 }}
+      >
+        <LoadingSpinner size="md" />
+      </motion.div>
     </motion.div>
   );
 }

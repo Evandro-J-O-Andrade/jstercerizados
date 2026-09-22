@@ -4,8 +4,12 @@ export { Textarea } from './Textarea';
 export { Select } from './Select';
 export { Label } from './Label';
 export { Card } from './Card';
+export { PremiumCard } from './PremiumCard';
+export { SectionReveal } from './SectionReveal';
 export { Badge } from './Badge';
 export { PageLoader } from './PageLoader';
+export { RouteLoadingFallback } from './RouteLoadingFallback';
+export { LoadingSpinner, LoadingOverlay } from './LoadingSpinner';
 export { SectionLoader, InlineLoader } from '@/components/feedback';
 export {
   DataState,

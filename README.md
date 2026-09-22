@@ -178,7 +178,7 @@ CNPJ: 63.251.959/0001-10
 
 **Redes sociais:**
 
-- [Instagram](https://www.instagram.com/jsempregos)
+- [Instagram](https://www.instagram.com/jstercerizados/)
 - [Facebook](https://facebook.com/jsempregos)
 - [LinkedIn](https://linkedin.com/company/jsempregos)
 - [YouTube](https://youtube.com/@jsempregos)

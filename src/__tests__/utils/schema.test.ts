@@ -204,11 +204,16 @@ describe('getOrganizationSchema', () => {
   it('creates valid Organization schema', () => {
     const schema = getOrganizationSchema();
     expect(schema['@context']).toBe('https://schema.org');
-    expect(schema['@type']).toBe('Organization');
+    expect(schema['@type']).toEqual([
+      'Organization',
+      'LocalBusiness',
+      'EmploymentAgency',
+    ]);
     expect(schema.name).toBe('J&S Empregos LTDA');
     expect(schema.url).toBe(SITE_URL);
     expect(schema.logo).toContain(SITE_URL);
-    expect(schema.contactPoint).toEqual({
+    expect(schema.contactPoint).toHaveLength(2);
+    expect(schema.contactPoint[0]).toEqual({
       '@type': 'ContactPoint',
       telephone: '+555511968380592',
       contactType: 'customer service',
@@ -218,9 +223,13 @@ describe('getOrganizationSchema', () => {
 
   it('includes sameAs with social links', () => {
     const schema = getOrganizationSchema();
-    expect(schema.sameAs).toHaveLength(3);
-    expect(schema.sameAs).toContain('https://www.instagram.com/jsempregos');
+    expect(schema.sameAs).toHaveLength(5);
+    expect(schema.sameAs).toContain(
+      'https://www.instagram.com/jstercerizados/',
+    );
     expect(schema.sameAs).toContain('https://facebook.com/jsempregos');
     expect(schema.sameAs).toContain('https://linkedin.com/company/jsempregos');
+    expect(schema.sameAs).toContain('https://youtube.com/@jsempregos');
+    expect(schema.sameAs).toContain('https://tiktok.com/@jsempregos');
   });
 });

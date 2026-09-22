@@ -586,4 +586,78 @@
   ::-webkit-scrollbar {
     display: none;
   }
+
+  @keyframes pulse-glow-soft {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .gold-glow-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .gold-glow-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: -1;
+    box-shadow:
+      0 0 2px 2px hsla(43, 74%, 40%, 0.12),
+      0 0 14px 6px hsla(43, 74%, 40%, 0.22),
+      0 0 32px 8px hsla(43, 74%, 40%, 0.12);
+    filter: blur(2px);
+    opacity: 0;
+    transition:
+      opacity 0.5s ease-[0.25,
+      0.4,
+      0.25,
+      1];
+    pointer-events: none;
+  }
+
+  .gold-glow-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    z-index: -2;
+    box-shadow:
+      0 0 4px 2px hsla(43, 74%, 40%, 0.1),
+      0 0 32px 10px hsla(43, 74%, 40%, 0.2),
+      0 0 64px 16px hsla(43, 74%, 40%, 0.1);
+    filter: blur(6px);
+    opacity: 0;
+    transition:
+      opacity 0.5s ease-[0.25,
+      0.4,
+      0.25,
+      1];
+    pointer-events: none;
+  }
+
+  .group\/card:hover::before,
+  .group\/card:focus-within::before {
+    opacity: 1;
+  }
+
+  .group\/card:hover::after,
+  .group\/card:focus-within::after {
+    opacity: 0.85;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .group\/card:hover::before,
+    .group\/card:hover::after,
+    .group\/card:focus-within::before,
+    .group\/card:focus-within::after {
+      opacity: 0;
+    }
+  }
 }

@@ -4,94 +4,35 @@
 # Sitemap principal
 Sitemap: https://jsempregos.com.br/sitemap.xml
 
-# ─────────────────────────────────────
-# GOOGLEBOT
-# ─────────────────────────────────────
-User-agent: Googlebot
-Allow: /
-Disallow: /entrar/
-Disallow: /entrar/admin
-Disallow: /entrar/candidato
-Disallow: /entrar/empresa
-Disallow: /cadastro/
-Disallow: /cadastro/candidato
-Disallow: /cadastro/empresa
-Disallow: /login/
-Disallow: /recuperar-senha
-Disallow: /redefinir-senha
-Disallow: /auth/callback
-Disallow: /auth/terms
-Disallow: /auth/welcome
-Disallow: /onboarding
-Disallow: /primeiro-acesso/
-Disallow: /dashboard/
-Disallow: /candidato/
-Disallow: /alterar-senha
-Crawl-delay: 1
-
-# ─────────────────────────────────────
-# BINGBOT
-# ─────────────────────────────────────
-User-agent: Bingbot
-Allow: /
-Disallow: /entrar/
-Disallow: /entrar/admin
-Disallow: /entrar/candidato
-Disallow: /entrar/empresa
-Disallow: /cadastro/
-Disallow: /cadastro/candidato
-Disallow: /cadastro/empresa
-Disallow: /login/
-Disallow: /recuperar-senha
-Disallow: /redefinir-senha
-Disallow: /auth/callback
-Disallow: /auth/terms
-Disallow: /auth/welcome
-Disallow: /onboarding
-Disallow: /primeiro-acesso/
-Disallow: /dashboard/
-Disallow: /candidato/
-Disallow: /alterar-senha
-Crawl-delay: 2
-
-# ─────────────────────────────────────
-# SLACKBOT (para compartilhamento de links)
-# ─────────────────────────────────────
-User-agent: Slackbot
-Allow: /
-
-# ─────────────────────────────────────
-# DISALLOW PADRÃO PARA TODOS OS ROBOTS
-# ─────────────────────────────────────
+# Regras para todos os robôs
 User-agent: *
 Allow: /
+
+# Áreas privadas / autenticação
+Disallow: /login
 Disallow: /entrar/
-Disallow: /entrar/admin
-Disallow: /entrar/candidato
-Disallow: /entrar/empresa
 Disallow: /cadastro/
-Disallow: /cadastro/candidato
-Disallow: /cadastro/empresa
-Disallow: /login/
 Disallow: /recuperar-senha
 Disallow: /redefinir-senha
-Disallow: /auth/callback
-Disallow: /auth/terms
-Disallow: /auth/welcome
+Disallow: /auth/
 Disallow: /onboarding
 Disallow: /primeiro-acesso/
+
+# Áreas administrativas / dashboard
 Disallow: /dashboard/
 Disallow: /candidato/
-Disallow: /alterar-senha
+Disallow: /admin/
+
+# APIs e internos
 Disallow: /api/
 Disallow: /supabase/
+
+# Parâmetros de sessão/autenticação
 Disallow: /*?session=*
 Disallow: /*?code=*
 Disallow: /*?token=*
 Disallow: /*?error=*
 Disallow: /*?redirect_to=*
 
-# ─────────────────────────────────────
-# HOST CANÔNICO
-# ─────────────────────────────────────
+# Host canônico
 Host: jsempregos.com.br

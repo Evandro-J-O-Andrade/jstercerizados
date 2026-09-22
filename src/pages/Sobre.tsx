@@ -23,7 +23,7 @@ import { IMAGES } from '@/config';
 import { HERO_ASSETS, SERVICE_IMAGES } from '@/content/assets';
 import { revealUp, revealLeft, revealRight } from '@/animations/scroll';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 const MotionLink = motion(Link);
@@ -364,293 +364,519 @@ function CinematicChapter({
   );
 }
 
+function useShouldReduceMotion() {
+  const [reduce, setReduce] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReduce(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReduce(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return reduce;
+}
+
+interface ParticleSpec {
+  id: string;
+  size: number;
+  startPct: { x: number; y: number };
+  blur: string;
+  glowIntensity: [number, number, number];
+  duration: number;
+  delay: number;
+  moveX: number;
+  moveY: number;
+  colorClass: string;
+  depth: 'background' | 'mid' | 'foreground';
+  isHighlight?: boolean;
+}
+
+function generateParticles(count = 70): ParticleSpec[] {
+  const particles: ParticleSpec[] = [];
+
+  const warmColors = [
+    'from-amber-300/24 to-yellow-400/12',
+    'from-yellow-400/28 to-amber-500/16',
+    'from-amber-400/26 to-yellow-300/14',
+    'from-yellow-300/32 to-amber-400/18',
+    'from-amber-300/36 to-yellow-400/20',
+    'from-yellow-400/34 to-amber-500/22',
+  ];
+
+  for (let i = 0; i < count; i++) {
+    const frac = i / count;
+
+    const y = 5 + frac * 88;
+    const x = 5 + ((i * 237.0) % 88);
+
+    const r = (i * 9773437) % 1000;
+    let size: number;
+    let blur: string;
+    let depth: 'background' | 'mid' | 'foreground';
+    let glowBase: number;
+    let isHighlight = false;
+
+    if (r < 600) {
+      size = 2 + (i % 3);
+      blur = 'blur-[1px]';
+      depth = 'background';
+      glowBase = 0.08 + (i % 8) * 0.02;
+    } else if (r < 900) {
+      size = 4 + (i % 4);
+      blur = 'blur-[2px]';
+      depth = 'mid';
+      glowBase = 0.16 + (i % 7) * 0.04;
+    } else if (r < 975) {
+      size = 8 + (i % 4);
+      blur = 'blur-[3px]';
+      depth = 'foreground';
+      glowBase = 0.26 + (i % 5) * 0.06;
+    } else {
+      size = 16 + (i % 3);
+      blur = 'blur-[6px]';
+      depth = 'foreground';
+      isHighlight = true;
+      glowBase = 0.55 + (i % 3) * 0.1;
+    }
+
+    const duration = 18 + (i % 22);
+    const delay = (i % 20) * 0.3;
+    const moveX = -14 + (i % 28);
+    const moveY = -12 + (i % 24);
+    const colorClass = warmColors[i % warmColors.length];
+
+    particles.push({
+      id: `firefly-${i}`,
+      size,
+      startPct: { x, y },
+      blur,
+      glowIntensity: [glowBase * 0.35, glowBase, glowBase * 0.2],
+      duration,
+      delay,
+      moveX,
+      moveY,
+      colorClass,
+      depth,
+      isHighlight,
+    });
+  }
+
+  return particles;
+}
+
+interface AmbientLightProps {
+  particle: ParticleSpec;
+}
+
+const AmbientLight: React.FC<AmbientLightProps> = ({ particle }) => {
+  const shouldReduce = useShouldReduceMotion();
+  if (shouldReduce) return null;
+
+  const depthBlur = {
+    background: 'blur-[1px]',
+    mid: 'blur-[2px]',
+    foreground: 'blur-[3px]',
+  }[particle.depth];
+
+  const depthScale = {
+    background: 0.8,
+    mid: 1,
+    foreground: 1.15,
+  }[particle.depth];
+
+  const zIndexValue = {
+    background: 0,
+    mid: 1,
+    foreground: 2,
+  }[particle.depth];
+
+  return (
+    <motion.div
+      className={`pointer-events-none absolute rounded-full bg-gradient-to-br ${particle.colorClass} ${depthBlur}`}
+      style={{
+        width: `${particle.size}px`,
+        height: `${particle.size}px`,
+        left: `${particle.startPct.x}%`,
+        top: `${particle.startPct.y}%`,
+        zIndex: zIndexValue,
+      }}
+      aria-hidden="true"
+      animate={{
+        x: [0, particle.moveX, 0],
+        y: [0, particle.moveY, 0],
+        opacity: particle.glowIntensity,
+        scale: [depthScale * 0.8, depthScale, depthScale * 0.8],
+      }}
+      transition={{
+        x: {
+          duration: particle.duration,
+          delay: particle.delay,
+          ease: 'easeInOut',
+          repeat: Infinity,
+          repeatType: 'mirror',
+        },
+        y: {
+          duration: particle.duration,
+          delay: particle.delay,
+          ease: 'easeInOut',
+          repeat: Infinity,
+          repeatType: 'mirror',
+        },
+        opacity: {
+          duration: particle.duration * 0.6,
+          delay: particle.delay * 0.5,
+          ease: [0.35, 0, 0.25, 1],
+          repeat: Infinity,
+          repeatType: 'mirror',
+        },
+        scale: {
+          duration: particle.duration * 0.8,
+          delay: particle.delay * 0.3,
+          ease: 'easeInOut',
+          repeat: Infinity,
+          repeatType: 'mirror',
+        },
+      }}
+    />
+  );
+};
+
+const NightSky = ({
+  children,
+  withLights = true,
+  particleCount = 70,
+}: {
+  children: React.ReactNode;
+  withLights?: boolean;
+  particleCount?: number;
+}) => {
+  const shouldReduce = useShouldReduceMotion();
+  const particles = useMemo(() => {
+    if (shouldReduce || !withLights) return [];
+    const all = generateParticles(particleCount);
+
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(max-width: 768px)').matches
+    ) {
+      return all.filter(
+        (p) => !p.isHighlight && p.size <= 8 && p.depth !== 'foreground',
+      );
+    }
+
+    return all;
+  }, [shouldReduce, withLights, particleCount]);
+
+  return (
+    <div className="relative isolate">
+      {particles.map((particle) => (
+        <AmbientLight key={particle.id} particle={particle} />
+      ))}
+      <div className="relative z-10">{children}</div>
+    </div>
+  );
+};
+
 export default function Sobre() {
   return (
-    <div className="pt-20">
-      <SEO
-        breadcrumbs={[
-          { label: 'Home', href: '/' },
-          { label: 'Sobre', href: '/sobre' },
-        ]}
-        title={`Sobre — ${COMPANY.name}`}
-        description={`Conheça a ${COMPANY.name}: assessoria em RH, recrutamento, mão de obra e facilities com excelência.`}
-        keywords={[
-          'sobre',
-          COMPANY.name,
-          'RH',
-          'recrutamento',
-          'seleção',
-          'terceirização',
-          'facilities',
-          'limpeza',
-          'jardinagem',
-          'portaria',
-        ]}
-        type="Organization"
-      />
+    <NightSky>
+      <div className="pt-20">
+        <SEO
+          breadcrumbs={[
+            { label: 'Home', href: '/' },
+            { label: 'Sobre', href: '/sobre' },
+          ]}
+          title={`Sobre a J&S Empregos | Assessoria em RH, Terceirização e Facilities`}
+          description={
+            'Conheça a J&S Empregos LTDA: 15+ anos conectando talentos e empresas. ' +
+            'Assessoria em RH, recrutamento e seleção, mão de obra temporária e efetiva, ' +
+            'terceirização de serviços e facilities (limpeza, portaria, jardinagem, zeladoria). ' +
+            'Atendemos empresas, condomínios, indústrias, hospitais, escolas e comércio em 50 cidades.'
+          }
+          keywords={[
+            'J&S Empregos',
+            'J&S Terceirizados',
+            'assessoria em RH',
+            'recrutamento e seleção',
+            'mão de obra temporária',
+            'mão de obra efetiva',
+            'terceirização de mão de obra',
+            'terceirização de serviços',
+            'facilities',
+            'limpeza profissional',
+            'portaria e recepção',
+            'jardinagem e paisagismo',
+            'zeladoria',
+            'segurança patrimonial',
+            'empresa de RH',
+            'agência de empregos',
+            'vagas de emprego',
+            'contratação de profissionais',
+          ]}
+          type="Organization"
+          image="/images/brand/og-image.svg"
+        />
 
-      <Section className="pb-0">
-        <Container>
-          <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
-            <motion.h1
-              variants={revealUp}
-              className="text-foreground text-4xl font-bold sm:text-5xl"
-            >
-              Sobre a {COMPANY.tradingName}
-            </motion.h1>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-3xl text-lg"
-            >
-              Somos uma empresa de assessoria em RH, recrutamento, mão de obra,
-              terceirização e facilities que transforma talentos em
-              oportunidades.
-            </motion.p>
-            <div className="mx-auto mt-6 max-w-3xl">
-              <PageTemplateBanner
-                templateKey="sobre_greeting"
-                fallback="Bem-vindo a J&amp;S Empregos LTDA."
-              />
-            </div>
-          </SectionReveal>
-
-          <SectionReveal
-            staggerDelay={0.2}
-            className="relative mb-8 overflow-hidden rounded-3xl"
-          >
-            <SafeImage
-              src="/images/sobre/bannersobre.jpg"
-              fallbackSrc={IMAGES.hero.sobre.fallback}
-              alt={`Equipe ${COMPANY.tradingName}`}
-              objectFit="contain"
-              className="w-full opacity-80"
-            />
-            <div className="from-background/70 via-background/20 absolute inset-0 bg-gradient-to-t to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
-            <div className="absolute right-0 bottom-0 left-0 p-8 sm:p-12 lg:p-16">
-              <SectionReveal staggerDelay={0.2}>
-                <motion.span
-                  variants={revealUp}
-                  className="text-primary text-xs font-semibold tracking-widest uppercase"
-                >
-                  Institucional
-                </motion.span>
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground mt-2 text-3xl font-bold sm:text-4xl lg:text-5xl"
-                >
-                  Conectando pessoas e oportunidades desde 2011
-                </motion.h2>
-              </SectionReveal>
-            </div>
-          </SectionReveal>
-        </Container>
-      </Section>
-
-      <Section>
-        <Container>
-          <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Quem Somos
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Uma trajetória construída com dedicação, inovação e parcerias.
-            </motion.p>
-          </SectionReveal>
-
-          <SectionReveal
-            staggerDelay={0.2}
-            className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20"
-          >
-            <motion.div variants={revealLeft}>
-              <div className="space-y-6">
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground text-lg leading-relaxed"
-                >
-                  A J&amp;S Empregos é uma empresa com o foco em otimizar a
-                  gestão de soluções eficientes na terceirização de mão de obras
-                  temporárias, efetiva e facilities, dedicada a oferecer
-                  serviços de alta qualidade.
-                </motion.p>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground text-lg leading-relaxed"
-                >
-                  O nosso objetivo é promover melhorias para a qualidade de vida
-                  das pessoas e de sua produtividade no local de trabalho,
-                  através da terceirização e gestão de facilities de diversos
-                  serviços e atividades necessárias para o bom funcionamento de
-                  uma empresa, condomínios e galpões, planejando e administrando
-                  de forma adequada os serviços de limpeza, materiais de
-                  condomínios, indústrias, recepção, jardinagem, entrega de
-                  correspondências, entre outros.
-                </motion.p>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground text-lg leading-relaxed"
-                >
-                  Aprimoramos os principais processos de suporte à corporação,
-                  garantindo assim a satisfação total de nossos clientes que
-                  passam a ter mais tempo para as atividades finais de suas
-                  empresas.
-                </motion.p>
-              </div>
-            </motion.div>
-
-            <motion.div variants={revealRight}>
-              <div className="relative aspect-[11/6] w-full overflow-hidden rounded-2xl">
-                <SafeImage
-                  src={HERO_ASSETS.bannerjs}
-                  fallbackSrc={IMAGES.hero.sobre.fallback}
-                  alt={`Instalações ${COMPANY.tradingName}`}
-                  className="h-full w-full object-cover"
+        <Section className="pb-0">
+          <Container>
+            <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
+              <motion.h1
+                variants={revealUp}
+                className="text-foreground text-4xl font-bold sm:text-5xl"
+              >
+                Sobre a {COMPANY.tradingName}
+              </motion.h1>
+              <motion.p
+                variants={revealUp}
+                className="text-muted-foreground mx-auto mt-4 max-w-3xl text-lg"
+              >
+                Somos uma empresa de assessoria em RH, recrutamento, mão de
+                obra, terceirização e facilities que transforma talentos em
+                oportunidades.
+              </motion.p>
+              <div className="mx-auto mt-6 max-w-3xl">
+                <PageTemplateBanner
+                  templateKey="sobre_greeting"
+                  fallback="Bem-vindo a J&amp;S Empregos LTDA."
                 />
               </div>
-            </motion.div>
-          </SectionReveal>
-        </Container>
-      </Section>
+            </SectionReveal>
 
-      <Section className="bg-surface-alt/30">
-        <Container>
-          <SectionReveal
-            staggerDelay={0.2}
-            className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20"
-          >
-            <motion.div
-              variants={revealLeft}
-              className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl"
+            <SectionReveal
+              staggerDelay={0.2}
+              className="relative mb-8 overflow-hidden rounded-3xl"
             >
               <SafeImage
-                src="/images/sobre/ceo.png"
+                src="/images/sobre/bannersobre.jpg"
                 fallbackSrc={IMAGES.hero.sobre.fallback}
-                alt="José — CEO"
-                className="h-full w-full object-cover"
+                alt={`Equipe ${COMPANY.tradingName}`}
+                objectFit="contain"
+                className="w-full opacity-80"
               />
-            </motion.div>
+              <div className="from-background/70 via-background/20 absolute inset-0 bg-gradient-to-t to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
+              <div className="absolute right-0 bottom-0 left-0 p-8 sm:p-12 lg:p-16">
+                <SectionReveal staggerDelay={0.2}>
+                  <motion.span
+                    variants={revealUp}
+                    className="text-primary text-xs font-semibold tracking-widest uppercase"
+                  >
+                    Institucional
+                  </motion.span>
+                  <motion.h2
+                    variants={revealUp}
+                    className="text-foreground mt-2 text-3xl font-bold sm:text-4xl lg:text-5xl"
+                  >
+                    Conectando pessoas e oportunidades desde 2011
+                  </motion.h2>
+                </SectionReveal>
+              </div>
+            </SectionReveal>
+          </Container>
+        </Section>
 
-            <motion.div variants={revealRight} className="space-y-6">
-              <motion.div variants={revealUp}>
-                <motion.span
-                  variants={revealUp}
-                  className="text-primary text-xs font-semibold tracking-widest uppercase"
-                >
-                  Palavra do CEO
-                </motion.span>
-                <motion.h2
-                  variants={revealUp}
-                  className="text-foreground mt-2 text-3xl font-bold sm:text-4xl"
-                >
-                  José
-                </motion.h2>
-                <motion.p
-                  variants={revealUp}
-                  className="text-muted-foreground mt-1 text-sm"
-                >
-                  CEO — J&amp;S Empregos LTDA
-                </motion.p>
-              </motion.div>
-
-              <motion.blockquote
+        <Section>
+          <Container>
+            <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
+              <motion.h2
                 variants={revealUp}
-                className="border-primary/20 border-l-4 pl-6"
+                className="text-foreground text-3xl font-bold sm:text-4xl"
               >
-                <motion.p
-                  variants={revealUp}
-                  className="text-foreground text-xl leading-relaxed italic"
-                >
-                  Com a implementação de uma metodologia de trabalho, inovação
-                  tecnológica, software em gestão, treinamento e desenvolvimento
-                  dos colaboradores, recrutamento e seleção assertivos, a
-                  J&amp;S Empregos LTDA é capaz de proporcionar um serviço de
-                  Facilities que oferece boas práticas aos nossos clientes.
-                </motion.p>
-              </motion.blockquote>
-            </motion.div>
-          </SectionReveal>
-        </Container>
-      </Section>
+                Quem Somos
+              </motion.h2>
+              <motion.p
+                variants={revealUp}
+                className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+              >
+                Uma trajetória construída com dedicação, inovação e parcerias.
+              </motion.p>
+            </SectionReveal>
 
-      <Section>
-        <Container>
-          <SectionReveal
-            staggerDelay={0.15}
-            className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2"
-          >
-            <motion.div variants={revealLeft}>
-              <motion.div className="border-border/40 shadow-glass relative overflow-hidden rounded-3xl border">
+            <SectionReveal
+              staggerDelay={0.2}
+              className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20"
+            >
+              <motion.div variants={revealLeft}>
+                <div className="space-y-6">
+                  <motion.p
+                    variants={revealUp}
+                    className="text-muted-foreground text-lg leading-relaxed"
+                  >
+                    A J&amp;S Empregos é uma empresa com o foco em otimizar a
+                    gestão de soluções eficientes na terceirização de mão de
+                    obras temporárias, efetiva e facilities, dedicada a oferecer
+                    serviços de alta qualidade.
+                  </motion.p>
+                  <motion.p
+                    variants={revealUp}
+                    className="text-muted-foreground text-lg leading-relaxed"
+                  >
+                    O nosso objetivo é promover melhorias para a qualidade de
+                    vida das pessoas e de sua produtividade no local de
+                    trabalho, através da terceirização e gestão de facilities de
+                    diversos serviços e atividades necessárias para o bom
+                    funcionamento de uma empresa, condomínios e galpões,
+                    planejando e administrando de forma adequada os serviços de
+                    limpeza, materiais de condomínios, indústrias, recepção,
+                    jardinagem, entrega de correspondências, entre outros.
+                  </motion.p>
+                  <motion.p
+                    variants={revealUp}
+                    className="text-muted-foreground text-lg leading-relaxed"
+                  >
+                    Aprimoramos os principais processos de suporte à corporação,
+                    garantindo assim a satisfação total de nossos clientes que
+                    passam a ter mais tempo para as atividades finais de suas
+                    empresas.
+                  </motion.p>
+                </div>
+              </motion.div>
+
+              <motion.div variants={revealRight}>
+                <div className="relative aspect-[11/6] w-full overflow-hidden rounded-2xl">
+                  <SafeImage
+                    src={HERO_ASSETS.bannerjs}
+                    fallbackSrc={IMAGES.hero.sobre.fallback}
+                    alt={`Instalações ${COMPANY.tradingName}`}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </motion.div>
+            </SectionReveal>
+          </Container>
+        </Section>
+
+        <Section className="bg-surface-alt/30">
+          <Container>
+            <SectionReveal
+              staggerDelay={0.2}
+              className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20"
+            >
+              <motion.div
+                variants={revealLeft}
+                className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl"
+              >
                 <SafeImage
-                  src={SERVICE_IMAGES.controleAcesso}
+                  src="/images/sobre/ceo.png"
                   fallbackSrc={IMAGES.hero.sobre.fallback}
-                  alt={`Missão ${COMPANY.tradingName}`}
-                  className="h-full w-full object-cover opacity-80"
+                  alt="José — CEO"
+                  className="h-full w-full object-cover"
                 />
-                <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
-              </motion.div>
-            </motion.div>
-
-            <motion.div variants={revealRight} className="space-y-12">
-              <motion.div variants={revealUp}>
-                <h2 className="text-foreground mb-4 text-2xl font-bold">
-                  Nossa Missão
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  Otimizar a gestão de soluções eficientes na terceirização de
-                  recrutamento e seleção e serviços de facilities,
-                  proporcionando serviços de alta qualidade e confiança,
-                  encontrando e conectando profissionais aptos com oportunidades
-                  de trabalho adequadas, alavancando o sucesso de nossos
-                  clientes e candidatos ao oferecer mais transparência e
-                  resultados.
-                </p>
               </motion.div>
 
-              <motion.div variants={revealUp}>
-                <h3 className="text-foreground mb-4 text-2xl font-bold">
-                  Nossa Visão
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Ser reconhecida como parceira estratégica no fornecimento de
-                  serviços de Facilities e terceirização de mão de obra
-                  temporária, destacando-nos pela qualidade, confiabilidade e
-                  comprometendo-nos com a excelência em tudo o que fazemos.
-                </p>
-              </motion.div>
-            </motion.div>
-          </SectionReveal>
-        </Container>
-      </Section>
+              <motion.div variants={revealRight} className="space-y-6">
+                <motion.div variants={revealUp}>
+                  <motion.span
+                    variants={revealUp}
+                    className="text-primary text-xs font-semibold tracking-widest uppercase"
+                  >
+                    Palavra do CEO
+                  </motion.span>
+                  <motion.h2
+                    variants={revealUp}
+                    className="text-foreground mt-2 text-3xl font-bold sm:text-4xl"
+                  >
+                    José
+                  </motion.h2>
+                  <motion.p
+                    variants={revealUp}
+                    className="text-muted-foreground mt-1 text-sm"
+                  >
+                    CEO — J&amp;S Empregos LTDA
+                  </motion.p>
+                </motion.div>
 
-      <Section>
-        <Container>
-          <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
+                <motion.blockquote
+                  variants={revealUp}
+                  className="border-primary/20 border-l-4 pl-6"
+                >
+                  <motion.p
+                    variants={revealUp}
+                    className="text-foreground text-xl leading-relaxed italic"
+                  >
+                    Com a implementação de uma metodologia de trabalho, inovação
+                    tecnológica, software em gestão, treinamento e
+                    desenvolvimento dos colaboradores, recrutamento e seleção
+                    assertivos, a J&amp;S Empregos LTDA é capaz de proporcionar
+                    um serviço de Facilities que oferece boas práticas aos
+                    nossos clientes.
+                  </motion.p>
+                </motion.blockquote>
+              </motion.div>
+            </SectionReveal>
+          </Container>
+        </Section>
+
+        <Section>
+          <Container>
+            <SectionReveal
+              staggerDelay={0.15}
+              className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2"
             >
-              Nossos Valores
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Princípios que guiam cada decisão e cada entrega.
-            </motion.p>
-          </SectionReveal>
+              <motion.div variants={revealLeft}>
+                <motion.div className="border-border/40 shadow-glass relative overflow-hidden rounded-3xl border">
+                  <SafeImage
+                    src={SERVICE_IMAGES.controleAcesso}
+                    fallbackSrc={IMAGES.hero.sobre.fallback}
+                    alt={`Missão ${COMPANY.tradingName}`}
+                    className="h-full w-full object-cover opacity-80"
+                  />
+                  <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
+                </motion.div>
+              </motion.div>
 
-          <div className="relative mx-auto max-w-7xl">
-            <div className="absolute -top-24 -left-24 h-96 w-96 animate-pulse rounded-full bg-gradient-to-br from-amber-300/30 to-yellow-400/10 blur-3xl" />
-            <div className="absolute -right-24 -bottom-24 h-80 w-80 animate-pulse rounded-full bg-gradient-to-br from-yellow-400/20 to-amber-500/10 blur-3xl delay-500" />
+              <motion.div variants={revealRight} className="space-y-12">
+                <motion.div variants={revealUp}>
+                  <h2 className="text-foreground mb-4 text-2xl font-bold">
+                    Nossa Missão
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Otimizar a gestão de soluções eficientes na terceirização de
+                    recrutamento e seleção e serviços de facilities,
+                    proporcionando serviços de alta qualidade e confiança,
+                    encontrando e conectando profissionais aptos com
+                    oportunidades de trabalho adequadas, alavancando o sucesso
+                    de nossos clientes e candidatos ao oferecer mais
+                    transparência e resultados.
+                  </p>
+                </motion.div>
+
+                <motion.div variants={revealUp}>
+                  <h3 className="text-foreground mb-4 text-2xl font-bold">
+                    Nossa Visão
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Ser reconhecida como parceira estratégica no fornecimento de
+                    serviços de Facilities e terceirização de mão de obra
+                    temporária, destacando-nos pela qualidade, confiabilidade e
+                    comprometendo-nos com a excelência em tudo o que fazemos.
+                  </p>
+                </motion.div>
+              </motion.div>
+            </SectionReveal>
+          </Container>
+        </Section>
+
+        <Section>
+          <Container>
+            <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
+              <motion.h2
+                variants={revealUp}
+                className="text-foreground text-3xl font-bold sm:text-4xl"
+              >
+                Nossos Valores
+              </motion.h2>
+              <motion.p
+                variants={revealUp}
+                className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+              >
+                Princípios que guiam cada decisão e cada entrega.
+              </motion.p>
+            </SectionReveal>
+
             <SectionReveal
               staggerDelay={0.1}
-              className="relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
             >
               {valores.map((valor) => (
                 <motion.div
@@ -678,449 +904,461 @@ export default function Sobre() {
                 </motion.div>
               ))}
             </SectionReveal>
-          </div>
-        </Container>
-      </Section>
+          </Container>
+        </Section>
 
-      <Section className="bg-surface-alt/30">
-        <Container>
-          <SectionReveal
-            staggerDelay={0.2}
-            className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2"
-          >
-            <motion.div variants={revealLeft} className="space-y-6">
+        <Section className="bg-surface-alt/30">
+          <Container>
+            <SectionReveal
+              staggerDelay={0.2}
+              className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2"
+            >
+              <motion.div variants={revealLeft} className="space-y-6">
+                <motion.span
+                  variants={revealUp}
+                  className="text-primary text-xs font-semibold tracking-widest uppercase"
+                >
+                  Nossa Equipe
+                </motion.span>
+                <motion.h2
+                  variants={revealUp}
+                  className="text-foreground text-3xl font-bold sm:text-4xl"
+                >
+                  Equipe que Cuida de Pessoas
+                </motion.h2>
+                <motion.p
+                  variants={revealUp}
+                  className="text-muted-foreground text-lg leading-relaxed"
+                >
+                  Nossa equipe é formada por profissionais que pegam nos
+                  detalhes, porque sabemos que é neles que mora a excelência.
+                  Somos movidos por qualidade, confiança e comprometimento.
+                </motion.p>
+                <motion.p
+                  variants={revealUp}
+                  className="text-muted-foreground text-lg leading-relaxed"
+                >
+                  Mais do que selecionar candidatos, nós cuidamos de pessoas, e
+                  esse cuidado se reflete em cada serviço prestado, em cada
+                  parceria construída e em cada cliente satisfeito.
+                </motion.p>
+
+                <motion.div
+                  variants={revealUp}
+                  className="flex items-center gap-4 pt-4"
+                >
+                  <div className="flex -space-x-2">
+                    <div className="ring-background overflow-hidden rounded-full ring-2">
+                      <SafeImage
+                        src="/images/sobre/equipe/ricardo-santos.svg"
+                        alt="Ricardo Santos"
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                    </div>
+                    <div className="ring-background overflow-hidden rounded-full ring-2">
+                      <SafeImage
+                        src="/images/sobre/equipe/fernanda-oliveira.svg"
+                        alt="Fernanda Oliveira"
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                    </div>
+                    <div className="ring-background overflow-hidden rounded-full ring-2">
+                      <SafeImage
+                        src="/images/sobre/equipe/thiago-mendes.svg"
+                        alt="Thiago Mendes"
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <motion.span
+                    variants={revealUp}
+                    className="text-muted-foreground text-sm"
+                  >
+                    +500 profissionais
+                  </motion.span>
+                </motion.div>
+              </motion.div>
+
+              <motion.div variants={revealRight}>
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+                  <SafeImage
+                    src={SERVICE_IMAGES.timeRh}
+                    alt="Equipe em ação"
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                </div>
+              </motion.div>
+            </SectionReveal>
+          </Container>
+        </Section>
+
+        <Section>
+          <Container>
+            <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
               <motion.span
                 variants={revealUp}
                 className="text-primary text-xs font-semibold tracking-widest uppercase"
               >
-                Nossa Equipe
+                Soluções
               </motion.span>
               <motion.h2
                 variants={revealUp}
-                className="text-foreground text-3xl font-bold sm:text-4xl"
+                className="text-foreground mt-2 text-3xl font-bold sm:text-4xl"
               >
-                Equipe que Cuida de Pessoas
+                Nossos Serviços
               </motion.h2>
               <motion.p
                 variants={revealUp}
-                className="text-muted-foreground text-lg leading-relaxed"
+                className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
               >
-                Nossa equipe é formada por profissionais que pegam nos detalhes,
-                porque sabemos que é neles que mora a excelência. Somos movidos
-                por qualidade, confiança e comprometimento.
+                Soluções completas para sua gestão de pessoas e operações.
               </motion.p>
-              <motion.p
-                variants={revealUp}
-                className="text-muted-foreground text-lg leading-relaxed"
-              >
-                Mais do que selecionar candidatos, nós cuidamos de pessoas, e
-                esse cuidado se reflete em cada serviço prestado, em cada
-                parceria construída e em cada cliente satisfeito.
-              </motion.p>
+            </SectionReveal>
 
-              <motion.div
-                variants={revealUp}
-                className="flex items-center gap-4 pt-4"
-              >
-                <div className="flex -space-x-2">
-                  <div className="ring-background overflow-hidden rounded-full ring-2">
-                    <SafeImage
-                      src="/images/sobre/equipe/ricardo-santos.svg"
-                      alt="Ricardo Santos"
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
-                  </div>
-                  <div className="ring-background overflow-hidden rounded-full ring-2">
-                    <SafeImage
-                      src="/images/sobre/equipe/fernanda-oliveira.svg"
-                      alt="Fernanda Oliveira"
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
-                  </div>
-                  <div className="ring-background overflow-hidden rounded-full ring-2">
-                    <SafeImage
-                      src="/images/sobre/equipe/thiago-mendes.svg"
-                      alt="Thiago Mendes"
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
-                  </div>
-                </div>
-                <motion.span
-                  variants={revealUp}
-                  className="text-muted-foreground text-sm"
-                >
-                  +500 profissionais
-                </motion.span>
-              </motion.div>
-            </motion.div>
-
-            <motion.div variants={revealRight}>
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
-                <SafeImage
-                  src={SERVICE_IMAGES.timeRh}
-                  alt="Equipe em ação"
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-              </div>
-            </motion.div>
-          </SectionReveal>
-        </Container>
-      </Section>
-
-      <Section>
-        <Container>
-          <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
-            <motion.span
-              variants={revealUp}
-              className="text-primary text-xs font-semibold tracking-widest uppercase"
-            >
-              Soluções
-            </motion.span>
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground mt-2 text-3xl font-bold sm:text-4xl"
-            >
-              Nossos Serviços
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Soluções completas para sua gestão de pessoas e operações.
-            </motion.p>
-          </SectionReveal>
-
-          <SectionReveal staggerDelay={0.1} className="space-y-8">
-            {servicos.map((servico, index) => (
-              <motion.div
-                key={servico.title}
-                variants={revealUp}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
-              >
-                <PremiumCard
-                  rounded="xl"
-                  hover
-                  interactable
-                  className="group relative grid h-full grid-cols-1 items-center gap-8 p-8 md:grid-cols-2"
-                >
-                  <div className={`${index % 2 !== 0 ? 'md:order-2' : ''}`}>
-                    <div className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                      <servico.icon
-                        className="text-primary h-6 w-6"
-                        strokeWidth={1.5}
-                      />
-                    </div>
-                    <h3 className="text-foreground mb-3 text-xl font-semibold">
-                      {servico.title}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {servico.description}
-                    </p>
-                  </div>
-                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
-                    <SafeImage
-                      src={servico.image}
-                      alt={servico.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                  </div>
-                </PremiumCard>
-              </motion.div>
-            ))}
-          </SectionReveal>
-        </Container>
-      </Section>
-
-      <Section>
-        <Container>
-          <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Nossa Trajetória
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Uma história construída com dedicação, inovação e parcerias.
-            </motion.p>
-          </SectionReveal>
-
-          <div className="relative">
-            {COMPANY_TIMELINE.map((_item, index) => {
-              const chapter = chapters[index];
-              if (!chapter) return null;
-
-              return (
-                <div key={chapter.id} className="relative">
-                  {index > 0 && <TimelineWebConnector />}
-                  <CinematicChapter chapter={chapter} index={index} />
-                </div>
-              );
-            })}
-          </div>
-        </Container>
-      </Section>
-
-      <Section className="bg-surface-alt/30">
-        <Container>
-          <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Duas Frentes, Uma Essência
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Juntos, acertamos cada detalhe para conectar pessoas e negócios.
-            </motion.p>
-          </SectionReveal>
-
-          <SectionReveal
-            staggerDelay={0.2}
-            className="grid grid-cols-1 gap-8 lg:grid-cols-2"
-          >
-            <motion.div variants={revealLeft}>
-              <PremiumCard
-                rounded="2xl"
-                hover
-                interactable
-                className="group relative flex h-full flex-col items-center p-10 text-center"
-              >
-                <div className="mb-6">
-                  <SafeImage
-                    src={IMAGES.logo.principal}
-                    alt={COMPANY.name}
-                    className="h-16 w-auto"
-                  />
-                </div>
-                <h3 className="text-foreground mb-4 text-2xl font-bold">
-                  J&amp;S Empregos LTDA
-                </h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  Foco principal em empregos, vagas, candidatos, recrutamento,
-                  seleção e RH — conectando empresas aos profissionais certos.
-                </p>
-                <div className="mt-auto space-y-2">
-                  <div className="flex items-center justify-center gap-2">
-                    <MapPin
-                      className="text-primary h-4 w-4"
-                      strokeWidth={1.5}
-                    />
-                    <span className="text-sm">São Paulo, SP</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <Phone className="text-primary h-4 w-4" strokeWidth={1.5} />
-                    <span className="text-sm">{COMPANY.phone}</span>
-                  </div>
-                </div>
-              </PremiumCard>
-            </motion.div>
-
-            <motion.div variants={revealRight}>
-              <PremiumCard
-                rounded="2xl"
-                hover
-                interactable
-                className="group relative flex h-full flex-col items-center p-10 text-center"
-              >
-                <div className="mb-6">
-                  <SafeImage
-                    src="/images/sobre/bannerjrtercerizado.png"
-                    alt="J&S Empregos LTDA"
-                    className="h-16 w-auto"
-                  />
-                </div>
-                <h3 className="text-foreground mb-4 text-2xl font-bold">
-                  J&amp;S Tercerizados LTDA
-                </h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  Frente complementar especializada em facilities, terceirização
-                  de mão de obra temporária e efetiva, limpeza, jardinagem,
-                  portaria, segurança e zeladoria.
-                </p>
-                <div className="mt-auto space-y-2">
-                  <div className="flex items-center justify-center gap-2">
-                    <Globe className="text-primary h-4 w-4" strokeWidth={1.5} />
-                    <span className="text-sm">Atuação nacional</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <Calendar
-                      className="text-primary h-4 w-4"
-                      strokeWidth={1.5}
-                    />
-                    <span className="text-sm">Ativa desde 2011</span>
-                  </div>
-                </div>
-              </PremiumCard>
-            </motion.div>
-          </SectionReveal>
-        </Container>
-      </Section>
-
-      <Section>
-        <Container>
-          <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
-            <motion.h2
-              variants={revealUp}
-              className="text-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Política da Qualidade
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Compromisso contínuo com a excelência e melhoria.
-            </motion.p>
-          </SectionReveal>
-
-          <div className="relative mx-auto max-w-7xl">
-            <div className="absolute -top-24 -left-24 h-80 w-80 animate-pulse rounded-full bg-gradient-to-br from-amber-300/30 to-yellow-400/10 blur-3xl" />
-            <div className="absolute -right-16 -bottom-16 h-72 w-72 animate-pulse rounded-full bg-gradient-to-br from-yellow-400/20 to-amber-500/10 blur-3xl delay-700" />
-            <SectionReveal
-              staggerDelay={0.1}
-              className="relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            >
-              {qualityPolicies.map((policy) => (
+            <SectionReveal staggerDelay={0.1} className="space-y-8">
+              {servicos.map((servico, index) => (
                 <motion.div
-                  key={policy.label}
+                  key={servico.title}
                   variants={revealUp}
-                  className="group/card h-full"
+                  whileHover={{ y: -4 }}
+                  transition={{ duration: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
                 >
                   <PremiumCard
-                    rounded="2xl"
+                    rounded="xl"
                     hover
                     interactable
-                    className="flex h-full flex-col p-6 text-center"
+                    className="group relative grid h-full grid-cols-1 items-center gap-8 p-8 md:grid-cols-2"
                   >
-                    <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-400/40 to-yellow-300/30 opacity-0 blur transition-opacity duration-500 group-hover/card:opacity-60" />
-                    <div className="bg-primary/10 text-primary group-hover/card:bg-primary/20 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 group-hover/card:scale-110">
-                      <CheckCircle className="h-7 w-7" strokeWidth={1.5} />
+                    <div className={`${index % 2 !== 0 ? 'md:order-2' : ''}`}>
+                      <div className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                        <servico.icon
+                          className="text-primary h-6 w-6"
+                          strokeWidth={1.5}
+                        />
+                      </div>
+                      <h3 className="text-foreground mb-3 text-xl font-semibold">
+                        {servico.title}
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {servico.description}
+                      </p>
                     </div>
-                    <span className="text-primary text-xs font-semibold tracking-widest uppercase">
-                      {policy.label}
-                    </span>
-                    <h3 className="text-foreground group-hover/card:text-primary my-3 text-lg font-semibold transition-colors">
-                      {policy.title}
-                    </h3>
-                    <p className="text-muted-foreground mt-auto text-sm leading-relaxed">
-                      {policy.description}
-                    </p>
+                    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
+                      <SafeImage
+                        src={servico.image}
+                        alt={servico.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    </div>
                   </PremiumCard>
                 </motion.div>
               ))}
             </SectionReveal>
-          </div>
-        </Container>
-      </Section>
+          </Container>
+        </Section>
 
-      <Section>
-        <Container>
-          <SectionReveal
-            staggerDelay={0.15}
-            className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2"
-          >
-            <motion.div variants={revealLeft}>
-              <div className="bg-card shadow-glass border-border/40 relative overflow-hidden rounded-3xl border">
-                <SafeImage
-                  src={SERVICE_IMAGES.facilities}
-                  fallbackSrc={IMAGES.hero.sobre.fallback}
-                  alt="Cobertura Regional"
-                  className="h-full w-full object-cover opacity-80"
-                />
-                <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
-              </div>
-            </motion.div>
-
-            <motion.div variants={revealRight}>
-              <h2 className="text-foreground mb-6 text-3xl font-bold">
-                Cobertura Regional
-              </h2>
-              <p className="text-muted-foreground mb-4 leading-relaxed">
-                Atendemos empresas e candidatos em múltiplas cidades, com
-                cobertura completa para garantir agilidade e presença onde você
-                precisa.
-              </p>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Shield className="text-primary h-5 w-5" strokeWidth={1.5} />
-                  <span className="text-foreground font-medium">
-                    Cobertura nacional
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Award className="text-primary h-5 w-5" strokeWidth={1.5} />
-                  <span className="text-foreground font-medium">
-                    Equipe 24/7
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MapPin className="text-primary h-5 w-5" strokeWidth={1.5} />
-                  <span className="text-foreground font-medium">
-                    {COMPANY.citiesCovered} cidades atendidas
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </SectionReveal>
-        </Container>
-      </Section>
-
-      <Section className="bg-primary">
-        <Container>
-          <SectionReveal staggerDelay={0.2} className="text-center">
-            <motion.h2
-              variants={revealUp}
-              className="text-primary-foreground text-3xl font-bold sm:text-4xl"
-            >
-              Pronto para elevar sua equipe?
-            </motion.h2>
-            <motion.p
-              variants={revealUp}
-              className="text-primary-foreground/80 mx-auto mt-4 max-w-2xl text-lg"
-            >
-              Conectamos empresas e talentos com expertise em recrutamento,
-              seleção e facilities.
-            </motion.p>
-            <motion.div
-              variants={revealUp}
-              className="mt-8 flex flex-col justify-center gap-4 sm:flex-row"
-            >
-              <MotionLink
-                to="/contato"
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: '0 0 30px hsla(43, 74%, 40%, 0.5)',
-                }}
-                whileTap={{ scale: 0.98 }}
-                className="btn-primary text-primary-foreground inline-flex items-center justify-center rounded-xl px-8 py-3 text-sm font-semibold shadow-lg transition-all duration-300"
+        <Section>
+          <Container>
+            <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
+              <motion.h2
+                variants={revealUp}
+                className="text-foreground text-3xl font-bold sm:text-4xl"
               >
-                Fale conosco
-              </MotionLink>
-              <MotionLink
-                to="/vagas"
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: '0 0 20px hsla(43, 74%, 40%, 0.3)',
-                }}
-                whileTap={{ scale: 0.98 }}
-                className="border-primary-foreground/30 text-primary-foreground inline-flex items-center justify-center rounded-xl border bg-transparent px-8 py-3 text-sm font-semibold transition-all duration-300"
+                Nossa Trajetória
+              </motion.h2>
+              <motion.p
+                variants={revealUp}
+                className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
               >
-                Ver vagas
-              </MotionLink>
-            </motion.div>
-          </SectionReveal>
-        </Container>
-      </Section>
-    </div>
+                Uma história construída com dedicação, inovação e parcerias.
+              </motion.p>
+            </SectionReveal>
+
+            <div className="relative">
+              {COMPANY_TIMELINE.map((_item, index) => {
+                const chapter = chapters[index];
+                if (!chapter) return null;
+
+                return (
+                  <div key={chapter.id} className="relative">
+                    {index > 0 && <TimelineWebConnector />}
+                    <CinematicChapter chapter={chapter} index={index} />
+                  </div>
+                );
+              })}
+            </div>
+          </Container>
+        </Section>
+
+        <Section className="bg-surface-alt/30">
+          <Container>
+            <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
+              <motion.h2
+                variants={revealUp}
+                className="text-foreground text-3xl font-bold sm:text-4xl"
+              >
+                Duas Frentes, Uma Essência
+              </motion.h2>
+              <motion.p
+                variants={revealUp}
+                className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+              >
+                Juntos, acertamos cada detalhe para conectar pessoas e negócios.
+              </motion.p>
+            </SectionReveal>
+
+            <SectionReveal
+              staggerDelay={0.2}
+              className="grid grid-cols-1 gap-8 lg:grid-cols-2"
+            >
+              <motion.div variants={revealLeft}>
+                <PremiumCard
+                  rounded="2xl"
+                  hover
+                  interactable
+                  className="group relative flex h-full flex-col items-center p-10 text-center"
+                >
+                  <div className="mb-6">
+                    <SafeImage
+                      src={IMAGES.logo.principal}
+                      alt={COMPANY.name}
+                      className="h-16 w-auto"
+                    />
+                  </div>
+                  <h3 className="text-foreground mb-4 text-2xl font-bold">
+                    J&amp;S Empregos LTDA
+                  </h3>
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                    Foco principal em empregos, vagas, candidatos, recrutamento,
+                    seleção e RH — conectando empresas aos profissionais certos.
+                  </p>
+                  <div className="mt-auto space-y-2">
+                    <div className="flex items-center justify-center gap-2">
+                      <MapPin
+                        className="text-primary h-4 w-4"
+                        strokeWidth={1.5}
+                      />
+                      <span className="text-sm">São Paulo, SP</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                      <Phone
+                        className="text-primary h-4 w-4"
+                        strokeWidth={1.5}
+                      />
+                      <span className="text-sm">{COMPANY.phone}</span>
+                    </div>
+                  </div>
+                </PremiumCard>
+              </motion.div>
+
+              <motion.div variants={revealRight}>
+                <PremiumCard
+                  rounded="2xl"
+                  hover
+                  interactable
+                  className="group relative flex h-full flex-col items-center p-10 text-center"
+                >
+                  <div className="mb-6">
+                    <SafeImage
+                      src="/images/sobre/bannerjrtercerizado.png"
+                      alt="J&amp;S Empregos LTDA"
+                      className="h-16 w-auto"
+                    />
+                  </div>
+                  <h3 className="text-foreground mb-4 text-2xl font-bold">
+                    J&amp;S Tercerizados LTDA
+                  </h3>
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                    Frente complementar especializada em facilities,
+                    terceirização de mão de obra temporária e efetiva, limpeza,
+                    jardinagem, portaria, segurança e zeladoria.
+                  </p>
+                  <div className="mt-auto space-y-2">
+                    <div className="flex items-center justify-center gap-2">
+                      <Globe
+                        className="text-primary h-4 w-4"
+                        strokeWidth={1.5}
+                      />
+                      <span className="text-sm">Atuação nacional</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                      <Calendar
+                        className="text-primary h-4 w-4"
+                        strokeWidth={1.5}
+                      />
+                      <span className="text-sm">Ativa desde 2011</span>
+                    </div>
+                  </div>
+                </PremiumCard>
+              </motion.div>
+            </SectionReveal>
+          </Container>
+        </Section>
+
+        <Section>
+          <Container>
+            <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
+              <motion.h2
+                variants={revealUp}
+                className="text-foreground text-3xl font-bold sm:text-4xl"
+              >
+                Política da Qualidade
+              </motion.h2>
+              <motion.p
+                variants={revealUp}
+                className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg"
+              >
+                Compromisso contínuo com a excelência e melhoria.
+              </motion.p>
+            </SectionReveal>
+
+            <div className="relative mx-auto max-w-7xl">
+              <div className="absolute -top-24 -left-24 h-80 w-80 animate-pulse rounded-full bg-gradient-to-br from-amber-300/30 to-yellow-400/10 blur-3xl" />
+              <div className="absolute -right-16 -bottom-16 h-72 w-72 animate-pulse rounded-full bg-gradient-to-br from-yellow-400/20 to-amber-500/10 blur-3xl delay-700" />
+              <SectionReveal
+                staggerDelay={0.1}
+                className="relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              >
+                {qualityPolicies.map((policy) => (
+                  <motion.div
+                    key={policy.label}
+                    variants={revealUp}
+                    className="group/card h-full"
+                  >
+                    <PremiumCard
+                      rounded="2xl"
+                      hover
+                      interactable
+                      className="flex h-full flex-col p-6 text-center"
+                    >
+                      <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-400/40 to-yellow-300/30 opacity-0 blur transition-opacity duration-500 group-hover/card:opacity-60" />
+                      <div className="bg-primary/10 text-primary group-hover/card:bg-primary/20 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 group-hover/card:scale-110">
+                        <CheckCircle className="h-7 w-7" strokeWidth={1.5} />
+                      </div>
+                      <span className="text-primary text-xs font-semibold tracking-widest uppercase">
+                        {policy.label}
+                      </span>
+                      <h3 className="text-foreground group-hover/card:text-primary my-3 text-lg font-semibold transition-colors">
+                        {policy.title}
+                      </h3>
+                      <p className="text-muted-foreground mt-auto text-sm leading-relaxed">
+                        {policy.description}
+                      </p>
+                    </PremiumCard>
+                  </motion.div>
+                ))}
+              </SectionReveal>
+            </div>
+          </Container>
+        </Section>
+
+        <Section>
+          <Container>
+            <SectionReveal
+              staggerDelay={0.15}
+              className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2"
+            >
+              <motion.div variants={revealLeft}>
+                <div className="bg-card shadow-glass border-border/40 relative overflow-hidden rounded-3xl border">
+                  <SafeImage
+                    src={SERVICE_IMAGES.facilities}
+                    fallbackSrc={IMAGES.hero.sobre.fallback}
+                    alt="Cobertura Regional"
+                    className="h-full w-full object-cover opacity-80"
+                  />
+                  <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
+                </div>
+              </motion.div>
+
+              <motion.div variants={revealRight}>
+                <h2 className="text-foreground mb-6 text-3xl font-bold">
+                  Cobertura Regional
+                </h2>
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Atendemos empresas e candidatos em múltiplas cidades, com
+                  cobertura completa para garantir agilidade e presença onde
+                  você precisa.
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Shield
+                      className="text-primary h-5 w-5"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-foreground font-medium">
+                      Cobertura nacional
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Award className="text-primary h-5 w-5" strokeWidth={1.5} />
+                    <span className="text-foreground font-medium">
+                      Equipe 24/7
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <MapPin
+                      className="text-primary h-5 w-5"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-foreground font-medium">
+                      {COMPANY.citiesCovered} cidades atendidas
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </SectionReveal>
+          </Container>
+        </Section>
+
+        <Section className="bg-primary">
+          <Container>
+            <SectionReveal staggerDelay={0.2} className="text-center">
+              <motion.h2
+                variants={revealUp}
+                className="text-primary-foreground text-3xl font-bold sm:text-4xl"
+              >
+                Pronto para elevar sua equipe?
+              </motion.h2>
+              <motion.p
+                variants={revealUp}
+                className="text-primary-foreground/80 mx-auto mt-4 max-w-2xl text-lg"
+              >
+                Conectamos empresas e talentos com expertise em recrutamento,
+                seleção e facilities.
+              </motion.p>
+              <motion.div
+                variants={revealUp}
+                className="mt-8 flex flex-col justify-center gap-4 sm:flex-row"
+              >
+                <MotionLink
+                  to="/contato"
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: '0 0 30px hsla(43, 74%, 40%, 0.5)',
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  className="btn-primary text-primary-foreground inline-flex items-center justify-center rounded-xl px-8 py-3 text-sm font-semibold shadow-lg transition-all duration-300"
+                >
+                  Fale conosco
+                </MotionLink>
+                <MotionLink
+                  to="/vagas"
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: '0 0 20px hsla(43, 74%, 40%, 0.3)',
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  className="border-primary-foreground/30 text-primary-foreground inline-flex items-center justify-center rounded-xl border bg-transparent px-8 py-3 text-sm font-semibold transition-all duration-300"
+                >
+                  Ver vagas
+                </MotionLink>
+              </motion.div>
+            </SectionReveal>
+          </Container>
+        </Section>
+      </div>
+    </NightSky>
   );
 }
