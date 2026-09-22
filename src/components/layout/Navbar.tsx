@@ -367,7 +367,6 @@ export function Navbar() {
               isOpen
                 ? 'text-foreground hover:bg-muted'
                 : 'text-foreground hover:bg-muted',
-              !scrolled && 'bg-card/70 shadow-sm backdrop-blur-sm',
             )}
             aria-expanded={isOpen}
             aria-label="Abrir menu"
