@@ -391,7 +391,7 @@ interface ParticleSpec {
   isHighlight?: boolean;
 }
 
-function generateParticles(count = 90): ParticleSpec[] {
+function generateParticles(count = 70): ParticleSpec[] {
   const particles: ParticleSpec[] = [];
 
   const warmColors = [
@@ -404,54 +404,53 @@ function generateParticles(count = 90): ParticleSpec[] {
   ];
 
   for (let i = 0; i < count; i++) {
-    const seed = (i * 9773437) % 1000;
-    const seed2 = (i * 3133777) % 1000;
-    const seed3 = (i * 7919) % 1000;
+    const frac = i / count;
 
-    const y = 2 + seed * 0.978;
-    const x = 2 + seed2 * 0.976;
+    const y = 5 + frac * 88;
+    const x = 5 + ((i * 237.0) % 88);
 
+    const r = (i * 9773437) % 1000;
     let size: number;
     let blur: string;
     let depth: 'background' | 'mid' | 'foreground';
     let glowBase: number;
     let isHighlight = false;
 
-    if (seed < 620) {
-      size = 1.5 + (seed % 5) * 0.4;
-      blur = 'blur-[0.5px]';
+    if (r < 600) {
+      size = 2 + (i % 3);
+      blur = 'blur-[1px]';
       depth = 'background';
-      glowBase = 0.05 + (seed % 10) * 0.015;
-    } else if (seed < 880) {
-      size = 3.5 + (seed % 6) * 0.5;
-      blur = 'blur-[1.5px]';
+      glowBase = 0.08 + (i % 8) * 0.02;
+    } else if (r < 900) {
+      size = 4 + (i % 4);
+      blur = 'blur-[2px]';
       depth = 'mid';
-      glowBase = 0.14 + (seed % 8) * 0.03;
-    } else if (seed < 970) {
-      size = 7 + (seed % 5) * 0.6;
-      blur = 'blur-[2.5px]';
+      glowBase = 0.16 + (i % 7) * 0.04;
+    } else if (r < 975) {
+      size = 8 + (i % 4);
+      blur = 'blur-[3px]';
       depth = 'foreground';
-      glowBase = 0.24 + (seed % 6) * 0.05;
+      glowBase = 0.26 + (i % 5) * 0.06;
     } else {
-      size = 14 + (seed % 6) * 0.8;
-      blur = 'blur-[5px]';
+      size = 16 + (i % 3);
+      blur = 'blur-[6px]';
       depth = 'foreground';
       isHighlight = true;
-      glowBase = 0.5 + (seed % 4) * 0.08;
+      glowBase = 0.55 + (i % 3) * 0.1;
     }
 
-    const duration = 16 + (seed % 26);
-    const delay = (seed2 % 22) * 0.4;
-    const moveX = -18 + (seed % 32);
-    const moveY = -16 + (seed2 % 28);
-    const colorClass = warmColors[seed3 % warmColors.length];
+    const duration = 18 + (i % 22);
+    const delay = (i % 20) * 0.3;
+    const moveX = -14 + (i % 28);
+    const moveY = -12 + (i % 24);
+    const colorClass = warmColors[i % warmColors.length];
 
     particles.push({
       id: `firefly-${i}`,
       size,
       startPct: { x, y },
       blur,
-      glowIntensity: [glowBase * 0.3, glowBase, glowBase * 0.15],
+      glowIntensity: [glowBase * 0.35, glowBase, glowBase * 0.2],
       duration,
       delay,
       moveX,
@@ -889,7 +888,6 @@ export default function Sobre() {
                     rounded="2xl"
                     hover
                     interactable
-                    goldGlow
                     className="relative flex h-full flex-col p-8"
                   >
                     <div className="bg-primary/10 group-hover/card:bg-primary/20 text-primary mb-6 flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 group-hover/card:scale-110">
@@ -1216,8 +1214,6 @@ export default function Sobre() {
             </SectionReveal>
 
             <div className="relative mx-auto max-w-7xl">
-              <div className="absolute -top-24 -left-24 h-80 w-80 animate-pulse rounded-full bg-gradient-to-br from-amber-300/30 to-yellow-400/10 blur-3xl" />
-              <div className="absolute -right-16 -bottom-16 h-72 w-72 animate-pulse rounded-full bg-gradient-to-br from-yellow-400/20 to-amber-500/10 blur-3xl delay-700" />
               <SectionReveal
                 staggerDelay={0.1}
                 className="relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -1232,7 +1228,6 @@ export default function Sobre() {
                       rounded="2xl"
                       hover
                       interactable
-                      goldGlow
                       className="flex h-full flex-col p-6 text-center"
                     >
                       <div className="bg-primary/10 text-primary group-hover/card:bg-primary/20 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 group-hover/card:scale-110">
