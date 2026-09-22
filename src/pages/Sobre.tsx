@@ -16,12 +16,13 @@ import { SEO } from '@/components/ui/SEO';
 import { Container } from '@/components/common/Container';
 import { PageTemplateBanner } from '@/components/common/PageTemplateBanner';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { PremiumCard, SectionReveal } from '@/components/ui';
 import { COMPANY_TIMELINE } from '@/mock/company';
 import { COMPANY } from '@/config';
 import { IMAGES } from '@/config';
 import { HERO_ASSETS, SERVICE_IMAGES } from '@/content/assets';
-import { staggerReveal, revealUp } from '@/animations/scroll';
-import { staggerItem } from '@/animations/fade';
+import { revealUp, revealLeft, revealRight } from '@/animations/scroll';
+
 import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -390,13 +391,7 @@ export default function Sobre() {
 
       <Section className="pb-0">
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-16 text-center"
-          >
+          <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
             <motion.h1
               variants={revealUp}
               className="text-foreground text-4xl font-bold sm:text-5xl"
@@ -417,13 +412,10 @@ export default function Sobre() {
                 fallback="Bem-vindo a J&amp;S Empregos LTDA."
               />
             </div>
-          </motion.div>
+          </SectionReveal>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
+          <SectionReveal
+            staggerDelay={0.2}
             className="relative mb-8 overflow-hidden rounded-3xl"
           >
             <SafeImage
@@ -436,12 +428,7 @@ export default function Sobre() {
             <div className="from-background/70 via-background/20 absolute inset-0 bg-gradient-to-t to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
             <div className="absolute right-0 bottom-0 left-0 p-8 sm:p-12 lg:p-16">
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-100px' }}
-                variants={staggerReveal(0.2)}
-              >
+              <SectionReveal staggerDelay={0.2}>
                 <motion.span
                   variants={revealUp}
                   className="text-primary text-xs font-semibold tracking-widest uppercase"
@@ -454,21 +441,15 @@ export default function Sobre() {
                 >
                   Conectando pessoas e oportunidades desde 2011
                 </motion.h2>
-              </motion.div>
+              </SectionReveal>
             </div>
-          </motion.div>
+          </SectionReveal>
         </Container>
       </Section>
 
       <Section>
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-12 text-center"
-          >
+          <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
             <motion.h2
               variants={revealUp}
               className="text-foreground text-3xl font-bold sm:text-4xl"
@@ -481,16 +462,13 @@ export default function Sobre() {
             >
               Uma trajetória construída com dedicação, inovação e parcerias.
             </motion.p>
-          </motion.div>
+          </SectionReveal>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
+          <SectionReveal
+            staggerDelay={0.2}
             className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20"
           >
-            <motion.div variants={staggerItem('left')}>
+            <motion.div variants={revealLeft}>
               <div className="space-y-6">
                 <motion.p
                   variants={revealUp}
@@ -526,7 +504,7 @@ export default function Sobre() {
               </div>
             </motion.div>
 
-            <motion.div variants={staggerItem('right')}>
+            <motion.div variants={revealRight}>
               <div className="relative aspect-[11/6] w-full overflow-hidden rounded-2xl">
                 <SafeImage
                   src={HERO_ASSETS.bannerjs}
@@ -536,21 +514,18 @@ export default function Sobre() {
                 />
               </div>
             </motion.div>
-          </motion.div>
+          </SectionReveal>
         </Container>
       </Section>
 
       <Section className="bg-surface-alt/30">
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
+          <SectionReveal
+            staggerDelay={0.2}
             className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20"
           >
             <motion.div
-              variants={staggerItem('left')}
+              variants={revealLeft}
               className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl"
             >
               <SafeImage
@@ -561,7 +536,7 @@ export default function Sobre() {
               />
             </motion.div>
 
-            <motion.div variants={staggerItem('right')} className="space-y-6">
+            <motion.div variants={revealRight} className="space-y-6">
               <motion.div variants={revealUp}>
                 <motion.span
                   variants={revealUp}
@@ -599,21 +574,18 @@ export default function Sobre() {
                 </motion.p>
               </motion.blockquote>
             </motion.div>
-          </motion.div>
+          </SectionReveal>
         </Container>
       </Section>
 
       <Section>
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
+          <SectionReveal
+            staggerDelay={0.15}
             className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2"
           >
-            <motion.div variants={staggerItem('left')}>
-              <div className="bg-card shadow-glass border-border/40 relative overflow-hidden rounded-3xl border">
+            <motion.div variants={revealLeft}>
+              <motion.div className="border-border/40 shadow-glass relative overflow-hidden rounded-3xl border">
                 <SafeImage
                   src={SERVICE_IMAGES.controleAcesso}
                   fallbackSrc={IMAGES.hero.sobre.fallback}
@@ -621,11 +593,11 @@ export default function Sobre() {
                   className="h-full w-full object-cover opacity-80"
                 />
                 <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
-              </div>
+              </motion.div>
             </motion.div>
 
-            <motion.div variants={staggerItem('right')} className="space-y-12">
-              <div>
+            <motion.div variants={revealRight} className="space-y-12">
+              <motion.div variants={revealUp}>
                 <h2 className="text-foreground mb-4 text-2xl font-bold">
                   Nossa Missão
                 </h2>
@@ -638,9 +610,9 @@ export default function Sobre() {
                   clientes e candidatos ao oferecer mais transparência e
                   resultados.
                 </p>
-              </div>
+              </motion.div>
 
-              <div>
+              <motion.div variants={revealUp}>
                 <h3 className="text-foreground mb-4 text-2xl font-bold">
                   Nossa Visão
                 </h3>
@@ -650,21 +622,15 @@ export default function Sobre() {
                   temporária, destacando-nos pela qualidade, confiabilidade e
                   comprometendo-nos com a excelência em tudo o que fazemos.
                 </p>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </SectionReveal>
         </Container>
       </Section>
 
       <Section>
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-12 text-center"
-          >
+          <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
             <motion.h2
               variants={revealUp}
               className="text-foreground text-3xl font-bold sm:text-4xl"
@@ -677,47 +643,52 @@ export default function Sobre() {
             >
               Princípios que guiam cada decisão e cada entrega.
             </motion.p>
-          </motion.div>
+          </SectionReveal>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {valores.map((valor) => (
-              <motion.div
-                key={valor.title}
-                variants={staggerItem('up')}
-                whileHover={{ scale: 1.02, y: -2 }}
-                className="border-border/50 bg-card shadow-premium group relative flex flex-col rounded-xl border p-8 transition-all"
-              >
-                <div className="bg-primary/10 text-primary mb-6 flex h-12 w-12 items-center justify-center rounded-full">
-                  <valor.icon className="h-6 w-6" />
-                </div>
-                <h3 className="text-foreground mb-3 text-lg font-semibold">
-                  {valor.title}
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {valor.description}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
+          <div className="relative mx-auto max-w-7xl">
+            <div className="absolute -top-24 -left-24 h-96 w-96 animate-pulse rounded-full bg-gradient-to-br from-amber-300/30 to-yellow-400/10 blur-3xl" />
+            <div className="absolute -right-24 -bottom-24 h-80 w-80 animate-pulse rounded-full bg-gradient-to-br from-yellow-400/20 to-amber-500/10 blur-3xl delay-500" />
+            <SectionReveal
+              staggerDelay={0.1}
+              className="relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {valores.map((valor) => (
+                <motion.div
+                  key={valor.title}
+                  variants={revealUp}
+                  className="group/card h-full"
+                >
+                  <PremiumCard
+                    rounded="2xl"
+                    hover
+                    interactable
+                    className="relative flex h-full flex-col p-8"
+                  >
+                    <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-400/40 to-yellow-300/30 opacity-0 blur transition-opacity duration-500 group-hover/card:opacity-60" />
+                    <div className="bg-primary/10 group-hover/card:bg-primary/20 text-primary mb-6 flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 group-hover/card:scale-110">
+                      <valor.icon className="h-7 w-7" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="text-foreground group-hover/card:text-primary mb-3 text-lg font-semibold transition-colors">
+                      {valor.title}
+                    </h3>
+                    <p className="text-muted-foreground mt-auto text-sm leading-relaxed">
+                      {valor.description}
+                    </p>
+                  </PremiumCard>
+                </motion.div>
+              ))}
+            </SectionReveal>
+          </div>
         </Container>
       </Section>
 
       <Section className="bg-surface-alt/30">
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
+          <SectionReveal
+            staggerDelay={0.2}
             className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2"
           >
-            <motion.div variants={staggerItem('left')} className="space-y-6">
+            <motion.div variants={revealLeft} className="space-y-6">
               <motion.span
                 variants={revealUp}
                 className="text-primary text-xs font-semibold tracking-widest uppercase"
@@ -748,7 +719,7 @@ export default function Sobre() {
               </motion.p>
 
               <motion.div
-                variants={staggerItem('left')}
+                variants={revealUp}
                 className="flex items-center gap-4 pt-4"
               >
                 <div className="flex -space-x-2">
@@ -783,7 +754,7 @@ export default function Sobre() {
               </motion.div>
             </motion.div>
 
-            <motion.div variants={staggerItem('right')}>
+            <motion.div variants={revealRight}>
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
                 <SafeImage
                   src={SERVICE_IMAGES.timeRh}
@@ -793,19 +764,13 @@ export default function Sobre() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               </div>
             </motion.div>
-          </motion.div>
+          </SectionReveal>
         </Container>
       </Section>
 
       <Section>
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-16 text-center"
-          >
+          <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
             <motion.span
               variants={revealUp}
               className="text-primary text-xs font-semibold tracking-widest uppercase"
@@ -824,54 +789,54 @@ export default function Sobre() {
             >
               Soluções completas para sua gestão de pessoas e operações.
             </motion.p>
-          </motion.div>
+          </SectionReveal>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.1)}
-            className="space-y-8"
-          >
+          <SectionReveal staggerDelay={0.1} className="space-y-8">
             {servicos.map((servico, index) => (
               <motion.div
                 key={servico.title}
-                variants={staggerItem('up')}
-                className="border-border/50 bg-card shadow-premium grid grid-cols-1 items-center gap-8 rounded-xl border p-8 md:grid-cols-2"
+                variants={revealUp}
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
               >
-                <div className={`${index % 2 !== 0 ? 'md:order-2' : ''}`}>
-                  <div className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                    <servico.icon className="text-primary h-6 w-6" />
+                <PremiumCard
+                  rounded="xl"
+                  hover
+                  interactable
+                  className="group relative grid h-full grid-cols-1 items-center gap-8 p-8 md:grid-cols-2"
+                >
+                  <div className={`${index % 2 !== 0 ? 'md:order-2' : ''}`}>
+                    <div className="bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+                      <servico.icon
+                        className="text-primary h-6 w-6"
+                        strokeWidth={1.5}
+                      />
+                    </div>
+                    <h3 className="text-foreground mb-3 text-xl font-semibold">
+                      {servico.title}
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {servico.description}
+                    </p>
                   </div>
-                  <h3 className="text-foreground mb-3 text-xl font-semibold">
-                    {servico.title}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {servico.description}
-                  </p>
-                </div>
-                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
-                  <SafeImage
-                    src={servico.image}
-                    alt={servico.title}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
+                    <SafeImage
+                      src={servico.image}
+                      alt={servico.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  </div>
+                </PremiumCard>
               </motion.div>
             ))}
-          </motion.div>
+          </SectionReveal>
         </Container>
       </Section>
 
       <Section>
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-12 text-center"
-          >
+          <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
             <motion.h2
               variants={revealUp}
               className="text-foreground text-3xl font-bold sm:text-4xl"
@@ -884,7 +849,7 @@ export default function Sobre() {
             >
               Uma história construída com dedicação, inovação e parcerias.
             </motion.p>
-          </motion.div>
+          </SectionReveal>
 
           <div className="relative">
             {COMPANY_TIMELINE.map((_item, index) => {
@@ -904,13 +869,7 @@ export default function Sobre() {
 
       <Section className="bg-surface-alt/30">
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-16 text-center"
-          >
+          <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
             <motion.h2
               variants={revealUp}
               className="text-foreground text-3xl font-bold sm:text-4xl"
@@ -923,88 +882,93 @@ export default function Sobre() {
             >
               Juntos, acertamos cada detalhe para conectar pessoas e negócios.
             </motion.p>
-          </motion.div>
+          </SectionReveal>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
+          <SectionReveal
+            staggerDelay={0.2}
             className="grid grid-cols-1 gap-8 lg:grid-cols-2"
           >
-            <motion.div
-              variants={staggerItem('left')}
-              className="border-border/50 bg-card shadow-premium relative flex flex-col items-center rounded-xl border p-10 text-center"
-            >
-              <div className="mb-6">
-                <SafeImage
-                  src={IMAGES.logo.principal}
-                  alt={COMPANY.name}
-                  className="h-16 w-auto"
-                />
-              </div>
-              <h3 className="text-foreground mb-4 text-2xl font-bold">
-                J&amp;S Empregos LTDA
-              </h3>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                Foco principal em empregos, vagas, candidatos, recrutamento,
-                seleção e RH — conectando empresas aos profissionais certos.
-              </p>
-              <div className="mt-auto space-y-2">
-                <div className="flex items-center justify-center gap-2">
-                  <MapPin className="text-primary h-4 w-4" />
-                  <span className="text-sm">São Paulo, SP</span>
+            <motion.div variants={revealLeft}>
+              <PremiumCard
+                rounded="2xl"
+                hover
+                interactable
+                className="group relative flex h-full flex-col items-center p-10 text-center"
+              >
+                <div className="mb-6">
+                  <SafeImage
+                    src={IMAGES.logo.principal}
+                    alt={COMPANY.name}
+                    className="h-16 w-auto"
+                  />
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  <Phone className="text-primary h-4 w-4" />
-                  <span className="text-sm">{COMPANY.phone}</span>
+                <h3 className="text-foreground mb-4 text-2xl font-bold">
+                  J&amp;S Empregos LTDA
+                </h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Foco principal em empregos, vagas, candidatos, recrutamento,
+                  seleção e RH — conectando empresas aos profissionais certos.
+                </p>
+                <div className="mt-auto space-y-2">
+                  <div className="flex items-center justify-center gap-2">
+                    <MapPin
+                      className="text-primary h-4 w-4"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-sm">São Paulo, SP</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <Phone className="text-primary h-4 w-4" strokeWidth={1.5} />
+                    <span className="text-sm">{COMPANY.phone}</span>
+                  </div>
                 </div>
-              </div>
+              </PremiumCard>
             </motion.div>
 
-            <motion.div
-              variants={staggerItem('right')}
-              className="border-border/50 bg-card shadow-premium relative flex flex-col items-center rounded-xl border p-10 text-center"
-            >
-              <div className="mb-6">
-                <SafeImage
-                  src="/images/sobre/contrato.webp"
-                  alt="J&S Empregos LTDA"
-                  className="h-16 w-auto"
-                />
-              </div>
-              <h3 className="text-foreground mb-4 text-2xl font-bold">
-                J&amp;S Tercerizados LTDA
-              </h3>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                Frente complementar especializada em facilities, terceirização
-                de mão de obra temporária e efetiva, limpeza, jardinagem,
-                portaria, segurança e zeladoria.
-              </p>
-              <div className="mt-auto space-y-2">
-                <div className="flex items-center justify-center gap-2">
-                  <Globe className="text-primary h-4 w-4" />
-                  <span className="text-sm">Atuação nacional</span>
+            <motion.div variants={revealRight}>
+              <PremiumCard
+                rounded="2xl"
+                hover
+                interactable
+                className="group relative flex h-full flex-col items-center p-10 text-center"
+              >
+                <div className="mb-6">
+                  <SafeImage
+                    src="/images/sobre/bannerjrtercerizado.png"
+                    alt="J&S Empregos LTDA"
+                    className="h-16 w-auto"
+                  />
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  <Calendar className="text-primary h-4 w-4" />
-                  <span className="text-sm">Ativa desde 2011</span>
+                <h3 className="text-foreground mb-4 text-2xl font-bold">
+                  J&amp;S Tercerizados LTDA
+                </h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Frente complementar especializada em facilities, terceirização
+                  de mão de obra temporária e efetiva, limpeza, jardinagem,
+                  portaria, segurança e zeladoria.
+                </p>
+                <div className="mt-auto space-y-2">
+                  <div className="flex items-center justify-center gap-2">
+                    <Globe className="text-primary h-4 w-4" strokeWidth={1.5} />
+                    <span className="text-sm">Atuação nacional</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <Calendar
+                      className="text-primary h-4 w-4"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-sm">Ativa desde 2011</span>
+                  </div>
                 </div>
-              </div>
+              </PremiumCard>
             </motion.div>
-          </motion.div>
+          </SectionReveal>
         </Container>
       </Section>
 
       <Section>
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="mb-16 text-center"
-          >
+          <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
             <motion.h2
               variants={revealUp}
               className="text-foreground text-3xl font-bold sm:text-4xl"
@@ -1017,49 +981,55 @@ export default function Sobre() {
             >
               Compromisso contínuo com a excelência e melhoria.
             </motion.p>
-          </motion.div>
+          </SectionReveal>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-          >
-            {qualityPolicies.map((policy) => (
-              <motion.div
-                key={policy.label}
-                variants={staggerItem('up')}
-                className="border-border/50 bg-card shadow-premium flex flex-col rounded-xl border p-6 text-center transition-all"
-              >
-                <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-                  <CheckCircle className="h-6 w-6" />
-                </div>
-                <span className="text-primary text-xs font-semibold tracking-widest uppercase">
-                  {policy.label}
-                </span>
-                <h3 className="text-foreground my-3 text-lg font-semibold">
-                  {policy.title}
-                </h3>
-                <p className="text-muted-foreground mt-auto text-sm leading-relaxed">
-                  {policy.description}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
+          <div className="relative mx-auto max-w-7xl">
+            <div className="absolute -top-24 -left-24 h-80 w-80 animate-pulse rounded-full bg-gradient-to-br from-amber-300/30 to-yellow-400/10 blur-3xl" />
+            <div className="absolute -right-16 -bottom-16 h-72 w-72 animate-pulse rounded-full bg-gradient-to-br from-yellow-400/20 to-amber-500/10 blur-3xl delay-700" />
+            <SectionReveal
+              staggerDelay={0.1}
+              className="relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            >
+              {qualityPolicies.map((policy) => (
+                <motion.div
+                  key={policy.label}
+                  variants={revealUp}
+                  className="group/card h-full"
+                >
+                  <PremiumCard
+                    rounded="2xl"
+                    hover
+                    interactable
+                    className="flex h-full flex-col p-6 text-center"
+                  >
+                    <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-400/40 to-yellow-300/30 opacity-0 blur transition-opacity duration-500 group-hover/card:opacity-60" />
+                    <div className="bg-primary/10 text-primary group-hover/card:bg-primary/20 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 group-hover/card:scale-110">
+                      <CheckCircle className="h-7 w-7" strokeWidth={1.5} />
+                    </div>
+                    <span className="text-primary text-xs font-semibold tracking-widest uppercase">
+                      {policy.label}
+                    </span>
+                    <h3 className="text-foreground group-hover/card:text-primary my-3 text-lg font-semibold transition-colors">
+                      {policy.title}
+                    </h3>
+                    <p className="text-muted-foreground mt-auto text-sm leading-relaxed">
+                      {policy.description}
+                    </p>
+                  </PremiumCard>
+                </motion.div>
+              ))}
+            </SectionReveal>
+          </div>
         </Container>
       </Section>
 
       <Section>
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.15)}
+          <SectionReveal
+            staggerDelay={0.15}
             className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2"
           >
-            <motion.div variants={staggerItem('left')}>
+            <motion.div variants={revealLeft}>
               <div className="bg-card shadow-glass border-border/40 relative overflow-hidden rounded-3xl border">
                 <SafeImage
                   src={SERVICE_IMAGES.facilities}
@@ -1071,7 +1041,7 @@ export default function Sobre() {
               </div>
             </motion.div>
 
-            <motion.div variants={staggerItem('right')}>
+            <motion.div variants={revealRight}>
               <h2 className="text-foreground mb-6 text-3xl font-bold">
                 Cobertura Regional
               </h2>
@@ -1082,38 +1052,32 @@ export default function Sobre() {
               </p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <Shield className="text-primary h-5 w-5" />
+                  <Shield className="text-primary h-5 w-5" strokeWidth={1.5} />
                   <span className="text-foreground font-medium">
                     Cobertura nacional
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Award className="text-primary h-5 w-5" />
+                  <Award className="text-primary h-5 w-5" strokeWidth={1.5} />
                   <span className="text-foreground font-medium">
                     Equipe 24/7
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <MapPin className="text-primary h-5 w-5" />
+                  <MapPin className="text-primary h-5 w-5" strokeWidth={1.5} />
                   <span className="text-foreground font-medium">
                     {COMPANY.citiesCovered} cidades atendidas
                   </span>
                 </div>
               </div>
             </motion.div>
-          </motion.div>
+          </SectionReveal>
         </Container>
       </Section>
 
       <Section className="bg-primary">
         <Container>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={staggerReveal(0.2)}
-            className="text-center"
-          >
+          <SectionReveal staggerDelay={0.2} className="text-center">
             <motion.h2
               variants={revealUp}
               className="text-primary-foreground text-3xl font-bold sm:text-4xl"
@@ -1133,22 +1097,28 @@ export default function Sobre() {
             >
               <MotionLink
                 to="/contato"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: '0 0 30px hsla(43, 74%, 40%, 0.5)',
+                }}
                 whileTap={{ scale: 0.98 }}
-                className="btn-primary text-primary-foreground inline-flex items-center justify-center rounded-xl px-8 py-3 text-sm font-semibold shadow-lg transition-all"
+                className="btn-primary text-primary-foreground inline-flex items-center justify-center rounded-xl px-8 py-3 text-sm font-semibold shadow-lg transition-all duration-300"
               >
                 Fale conosco
               </MotionLink>
               <MotionLink
                 to="/vagas"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: '0 0 20px hsla(43, 74%, 40%, 0.3)',
+                }}
                 whileTap={{ scale: 0.98 }}
-                className="border-primary-foreground/30 text-primary-foreground inline-flex items-center justify-center rounded-xl border bg-transparent px-8 py-3 text-sm font-semibold transition-all"
+                className="border-primary-foreground/30 text-primary-foreground inline-flex items-center justify-center rounded-xl border bg-transparent px-8 py-3 text-sm font-semibold transition-all duration-300"
               >
                 Ver vagas
               </MotionLink>
             </motion.div>
-          </motion.div>
+          </SectionReveal>
         </Container>
       </Section>
     </div>
