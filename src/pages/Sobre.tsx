@@ -944,7 +944,7 @@ export default function Sobre() {
                 />
               </div>
               <h3 className="text-foreground mb-4 text-2xl font-bold">
-                J&amp;S Empregos
+                J&amp;S Empregos LTDA
               </h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
                 Foco principal em empregos, vagas, candidatos, recrutamento,
@@ -974,7 +974,7 @@ export default function Sobre() {
                 />
               </div>
               <h3 className="text-foreground mb-4 text-2xl font-bold">
-                J&amp;S Empregos LTDA
+                J&amp;S Tercerizados LTDA
               </h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
                 Frente complementar especializada em facilities, terceirização
