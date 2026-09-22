@@ -24,29 +24,45 @@ export function PremiumCard({
   interactable = false,
   hover = true,
   goldGlow = false,
+  tabIndex: tabIndexProp,
+  role: roleProp,
   ...props
 }: PremiumCardProps) {
+  const roundedClass = ROUNDED_VARIANTS[rounded];
+  const interactionClasses =
+    hover && interactable
+      ? [
+          'hover:-translate-y-[3px]',
+          'hover:scale-[1.01]',
+          'hover:shadow-glow-lg',
+          'focus:-translate-y-[3px]',
+          'focus:scale-[1.01]',
+          'focus:shadow-glow-lg',
+          'focus-within:-translate-y-[3px]',
+          'focus-within:scale-[1.01]',
+          'focus-within:shadow-glow-lg',
+          'motion-reduce:hover:translate-y-0',
+          'motion-reduce:hover:scale-100',
+          'motion-reduce:focus:translate-y-0',
+          'motion-reduce:focus:scale-100',
+          'motion-reduce:focus-within:translate-y-0',
+          'motion-reduce:focus-within:scale-100',
+        ]
+      : [];
+
   if (!goldGlow) {
     return (
       <div
         className={cn(
           'bg-card shadow-premium border-border relative overflow-hidden border transition-all duration-300 motion-reduce:transition-none',
-          ROUNDED_VARIANTS[rounded],
-          hover &&
-            interactable && [
-              'hover:translate-y-1',
-              'hover:scale-[1.01]',
-              'hover:shadow-premium',
-              'focus-within:translate-y-1',
-              'focus-within:scale-[1.01]',
-              'focus-within:shadow-premium',
-              'motion-reduce:hover:translate-y-0',
-              'motion-reduce:hover:scale-100',
-            ],
-          hover && !interactable && 'group hover:translate-y-0.5',
+          roundedClass,
+          interactionClasses,
+          hover && !interactable && 'group hover:-translate-y-[3px]',
           className,
         )}
         {...props}
+        tabIndex={tabIndexProp ?? (interactable ? 0 : undefined)}
+        role={roleProp ?? (interactable ? 'group' : undefined)}
       >
         {children}
       </div>
@@ -56,27 +72,20 @@ export function PremiumCard({
   return (
     <div
       className={cn(
-        'gold-glow-wrapper group group/card relative inline-block',
-        hover &&
-          interactable && [
-            'hover:translate-y-1',
-            'hover:scale-[1.01]',
-            'hover:shadow-premium',
-            'focus-within:translate-y-1',
-            'focus-within:scale-[1.01]',
-            'focus-within:shadow-premium',
-            'motion-reduce:hover:translate-y-0',
-            'motion-reduce:hover:scale-100',
-          ],
-        hover && !interactable && 'hover:translate-y-0.5',
-        className,
+        'gold-glow-wrapper group group/card relative block w-full',
+        roundedClass,
+        interactionClasses,
+        hover && !interactable && 'group hover:-translate-y-[3px]',
       )}
       {...props}
+      tabIndex={tabIndexProp ?? (interactable ? 0 : undefined)}
+      role={roleProp ?? (interactable ? 'group' : undefined)}
     >
       <div
         className={cn(
-          'bg-card shadow-premium border-border relative overflow-hidden border transition-all duration-300 motion-reduce:transition-none',
-          ROUNDED_VARIANTS[rounded],
+          'gold-glow-card bg-card shadow-premium border-border relative overflow-hidden border transition-all duration-300 motion-reduce:transition-none',
+          roundedClass,
+          className,
         )}
       >
         {children}
