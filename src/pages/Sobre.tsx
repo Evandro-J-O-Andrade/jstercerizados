@@ -391,7 +391,7 @@ interface ParticleSpec {
   isHighlight?: boolean;
 }
 
-function generateParticles(count = 70): ParticleSpec[] {
+function generateParticles(count = 90): ParticleSpec[] {
   const particles: ParticleSpec[] = [];
 
   const warmColors = [
@@ -404,53 +404,54 @@ function generateParticles(count = 70): ParticleSpec[] {
   ];
 
   for (let i = 0; i < count; i++) {
-    const frac = i / count;
+    const seed = (i * 9773437) % 1000;
+    const seed2 = (i * 3133777) % 1000;
+    const seed3 = (i * 7919) % 1000;
 
-    const y = 5 + frac * 88;
-    const x = 5 + ((i * 237.0) % 88);
+    const y = 2 + seed * 0.978;
+    const x = 2 + seed2 * 0.976;
 
-    const r = (i * 9773437) % 1000;
     let size: number;
     let blur: string;
     let depth: 'background' | 'mid' | 'foreground';
     let glowBase: number;
     let isHighlight = false;
 
-    if (r < 600) {
-      size = 2 + (i % 3);
-      blur = 'blur-[1px]';
+    if (seed < 620) {
+      size = 1.5 + (seed % 5) * 0.4;
+      blur = 'blur-[0.5px]';
       depth = 'background';
-      glowBase = 0.08 + (i % 8) * 0.02;
-    } else if (r < 900) {
-      size = 4 + (i % 4);
-      blur = 'blur-[2px]';
+      glowBase = 0.05 + (seed % 10) * 0.015;
+    } else if (seed < 880) {
+      size = 3.5 + (seed % 6) * 0.5;
+      blur = 'blur-[1.5px]';
       depth = 'mid';
-      glowBase = 0.16 + (i % 7) * 0.04;
-    } else if (r < 975) {
-      size = 8 + (i % 4);
-      blur = 'blur-[3px]';
+      glowBase = 0.14 + (seed % 8) * 0.03;
+    } else if (seed < 970) {
+      size = 7 + (seed % 5) * 0.6;
+      blur = 'blur-[2.5px]';
       depth = 'foreground';
-      glowBase = 0.26 + (i % 5) * 0.06;
+      glowBase = 0.24 + (seed % 6) * 0.05;
     } else {
-      size = 16 + (i % 3);
-      blur = 'blur-[6px]';
+      size = 14 + (seed % 6) * 0.8;
+      blur = 'blur-[5px]';
       depth = 'foreground';
       isHighlight = true;
-      glowBase = 0.55 + (i % 3) * 0.1;
+      glowBase = 0.5 + (seed % 4) * 0.08;
     }
 
-    const duration = 18 + (i % 22);
-    const delay = (i % 20) * 0.3;
-    const moveX = -14 + (i % 28);
-    const moveY = -12 + (i % 24);
-    const colorClass = warmColors[i % warmColors.length];
+    const duration = 16 + (seed % 26);
+    const delay = (seed2 % 22) * 0.4;
+    const moveX = -18 + (seed % 32);
+    const moveY = -16 + (seed2 % 28);
+    const colorClass = warmColors[seed3 % warmColors.length];
 
     particles.push({
       id: `firefly-${i}`,
       size,
       startPct: { x, y },
       blur,
-      glowIntensity: [glowBase * 0.35, glowBase, glowBase * 0.2],
+      glowIntensity: [glowBase * 0.3, glowBase, glowBase * 0.15],
       duration,
       delay,
       moveX,
@@ -888,9 +889,9 @@ export default function Sobre() {
                     rounded="2xl"
                     hover
                     interactable
+                    goldGlow
                     className="relative flex h-full flex-col p-8"
                   >
-                    <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-400/40 to-yellow-300/30 opacity-0 blur transition-opacity duration-500 group-hover/card:opacity-60" />
                     <div className="bg-primary/10 group-hover/card:bg-primary/20 text-primary mb-6 flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 group-hover/card:scale-110">
                       <valor.icon className="h-7 w-7" strokeWidth={1.5} />
                     </div>
@@ -1231,9 +1232,9 @@ export default function Sobre() {
                       rounded="2xl"
                       hover
                       interactable
+                      goldGlow
                       className="flex h-full flex-col p-6 text-center"
                     >
-                      <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-amber-400/40 to-yellow-300/30 opacity-0 blur transition-opacity duration-500 group-hover/card:opacity-60" />
                       <div className="bg-primary/10 text-primary group-hover/card:bg-primary/20 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 group-hover/card:scale-110">
                         <CheckCircle className="h-7 w-7" strokeWidth={1.5} />
                       </div>
