@@ -890,7 +890,7 @@ export default function Sobre() {
                     hover
                     interactable
                     goldGlow
-                    className="relative flex h-full flex-col p-8"
+                    className="relative flex h-full min-h-[280px] flex-col p-8"
                   >
                     <div className="bg-primary/10 group-hover/card:bg-primary/20 text-primary mb-6 flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 group-hover/card:scale-110">
                       <valor.icon className="h-7 w-7" strokeWidth={1.5} />
