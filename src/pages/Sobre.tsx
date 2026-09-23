@@ -408,8 +408,8 @@ function generateParticles(count = 90): ParticleSpec[] {
     const seed2 = (i * 3133777) % 1000;
     const seed3 = (i * 7919) % 1000;
 
-    const y = 2 + seed * 0.978;
-    const x = 2 + seed2 * 0.976;
+    const y = 5 + seed * 0.088;
+    const x = 5 + seed2 * 0.086;
 
     let size: number;
     let blur: string;
@@ -1216,8 +1216,6 @@ export default function Sobre() {
             </SectionReveal>
 
             <div className="relative mx-auto max-w-7xl">
-              <div className="absolute -top-24 -left-24 h-80 w-80 animate-pulse rounded-full bg-gradient-to-br from-amber-300/30 to-yellow-400/10 blur-3xl" />
-              <div className="absolute -right-16 -bottom-16 h-72 w-72 animate-pulse rounded-full bg-gradient-to-br from-yellow-400/20 to-amber-500/10 blur-3xl delay-700" />
               <SectionReveal
                 staggerDelay={0.1}
                 className="relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -1232,7 +1230,6 @@ export default function Sobre() {
                       rounded="2xl"
                       hover
                       interactable
-                      goldGlow
                       className="flex h-full flex-col p-6 text-center"
                     >
                       <div className="bg-primary/10 text-primary group-hover/card:bg-primary/20 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 group-hover/card:scale-110">
