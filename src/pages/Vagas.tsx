@@ -353,18 +353,20 @@ export default function Vagas() {
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-card border-border flex h-64 animate-pulse flex-col rounded-2xl border p-6"
+                  className="gold-glow-wrapper group relative block h-full"
                 >
-                  <div className="mb-4 flex items-start justify-between">
-                    <div className="space-y-2">
-                      <div className="bg-muted h-5 w-40 rounded" />
-                      <div className="bg-muted h-4 w-24 rounded" />
+                  <div className="gold-glow-card card-base flex h-full min-h-[340px] flex-col rounded-2xl p-6 motion-reduce:transition-none">
+                    <div className="mb-4 flex items-start justify-between">
+                      <div className="space-y-2">
+                        <div className="bg-muted h-5 w-40 rounded" />
+                        <div className="bg-muted h-4 w-24 rounded" />
+                      </div>
+                      <div className="bg-muted h-6 w-16 rounded-full" />
                     </div>
-                    <div className="bg-muted h-6 w-16 rounded-full" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="bg-muted h-4 w-full rounded" />
-                    <div className="bg-muted h-4 w-3/4 rounded" />
+                    <div className="space-y-2">
+                      <div className="bg-muted h-4 w-full rounded" />
+                      <div className="bg-muted h-4 w-3/4 rounded" />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -378,11 +380,13 @@ export default function Vagas() {
           ) : vagas.length === 0 ? (
             <motion.div
               variants={staggerItem('up')}
-              className="bg-card shadow-premium col-span-full rounded-2xl p-12 text-center"
+              className="gold-glow-wrapper group relative block w-full"
             >
-              <p className="text-muted-foreground">
-                Nenhuma vaga encontrada com os filtros aplicados.
-              </p>
+              <div className="gold-glow-card card-base rounded-2xl p-12 text-center motion-reduce:transition-none">
+                <p className="text-muted-foreground">
+                  Nenhuma vaga encontrada com os filtros aplicados.
+                </p>
+              </div>
             </motion.div>
           ) : (
             <motion.div
@@ -396,100 +400,111 @@ export default function Vagas() {
                 <motion.div
                   key={vaga.id}
                   variants={staggerItem('up')}
-                  whileHover={{ y: -4 }}
-                  className="bg-card border-border shadow-premium group relative flex flex-col rounded-2xl border p-6 transition-all duration-300"
+                  className="group/card relative h-full"
                 >
-                  <div className="mb-4 flex items-start justify-between">
-                    <div>
-                      <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
-                        {vaga.titulo}
-                      </h3>
-                      {vaga.empresa && (
-                        <p className="text-muted-foreground text-sm">
-                          {vaga.empresa}
-                        </p>
-                      )}
-                    </div>
-                    {vaga.tipoContrato && (
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                          vaga.tipoContrato === 'CLT'
-                            ? 'bg-success/10 text-success'
-                            : 'bg-primary/10 text-primary'
-                        }`}
-                      >
-                        {CONTRATO_LABELS[vaga.tipoContrato] ||
-                          vaga.tipoContrato}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mb-4 space-y-2">
-                    {vaga.cidade && vaga.estado && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="text-muted-foreground h-4 w-4" />
-                        <span className="text-muted-foreground">
-                          {vaga.cidade}, {vaga.estado}
-                        </span>
-                      </div>
-                    )}
-                    {vaga.salarioMin && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="text-muted-foreground">R$</span>
-                        <span className="text-muted-foreground">
-                          {vaga.salarioMin.toLocaleString('pt-BR')}
-                          {' – '}
-                          {vaga.salarioMax
-                            ? vaga.salarioMax.toLocaleString('pt-BR')
-                            : 'a combinar'}
-                        </span>
-                      </div>
-                    )}
-                    {vaga.modalidade && (
-                      <span className="text-muted-foreground inline-block text-xs">
-                        {vaga.modalidade === 'PRESENCIAL'
-                          ? 'Presencial'
-                          : vaga.modalidade === 'HIBRIDO'
-                            ? 'Híbrido'
-                            : 'Remoto'}
-                      </span>
-                    )}
-                    {vaga.area && (
-                      <span className="text-muted-foreground/70 inline-block text-xs">
-                        {vaga.area}
-                      </span>
-                    )}
-                  </div>
-
-                  {vaga.beneficios && vaga.beneficios.length > 0 && (
-                    <div className="mb-4">
-                      <p className="text-muted-foreground mb-2 text-xs font-medium">
-                        Benefícios
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {vaga.beneficios.slice(0, 3).map((beneficio) => (
+                  <div className="gold-glow-wrapper group relative block h-full">
+                    <div className="gold-glow-card card-base card-hover flex h-full min-h-[340px] flex-col rounded-2xl p-6 motion-reduce:transition-none">
+                      <div className="mb-4 flex items-start justify-between">
+                        <div>
+                          <h3 className="text-foreground group-hover/card:text-primary mb-1 text-xl font-bold transition-colors">
+                            {vaga.titulo}
+                          </h3>
+                          {vaga.empresa && (
+                            <p className="text-muted-foreground text-sm">
+                              {vaga.empresa}
+                            </p>
+                          )}
+                        </div>
+                        {vaga.tipoContrato && (
                           <span
-                            key={beneficio}
-                            className="bg-muted rounded-full px-2 py-0.5 text-xs"
+                            className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                              vaga.tipoContrato === 'CLT'
+                                ? 'bg-success/10 text-success'
+                                : 'bg-primary/10 text-primary'
+                            }`}
                           >
-                            {beneficio}
+                            {CONTRATO_LABELS[vaga.tipoContrato] ||
+                              vaga.tipoContrato}
                           </span>
-                        ))}
+                        )}
+                      </div>
+
+                      <div className="mb-4 space-y-2">
+                        {vaga.cidade && vaga.estado && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <MapPin className="text-muted-foreground h-4 w-4" />
+                            <span className="text-muted-foreground">
+                              {vaga.cidade}, {vaga.estado}
+                            </span>
+                          </div>
+                        )}
+                        {vaga.salarioMin && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-muted-foreground">R$</span>
+                            <span className="text-muted-foreground">
+                              {vaga.salarioMin.toLocaleString('pt-BR')}
+                              {' – '}
+                              {vaga.salarioMax
+                                ? vaga.salarioMax.toLocaleString('pt-BR')
+                                : 'a combinar'}
+                            </span>
+                          </div>
+                        )}
+                        {vaga.modalidade && (
+                          <span className="text-muted-foreground inline-block text-xs">
+                            {vaga.modalidade === 'PRESENCIAL'
+                              ? 'Presencial'
+                              : vaga.modalidade === 'HIBRIDO'
+                                ? 'Híbrido'
+                                : 'Remoto'}
+                          </span>
+                        )}
+                        {vaga.area && (
+                          <span className="text-muted-foreground/70 inline-block text-xs">
+                            {vaga.area}
+                          </span>
+                        )}
+                      </div>
+
+                      {vaga.beneficios && vaga.beneficios.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-muted-foreground mb-2 text-xs font-medium">
+                            Benefícios
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {vaga.beneficios.slice(0, 3).map((beneficio) => (
+                              <span
+                                key={beneficio}
+                                className="bg-muted rounded-full px-2 py-0.5 text-xs"
+                              >
+                                {beneficio}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="mt-auto flex gap-2">
+                        <Link to={`/vagas/${vaga.slug}`} className="flex-1">
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            className="w-full"
+                          >
+                            Ver vaga
+                          </Button>
+                        </Link>
+                        <Link to={`/vagas/${vaga.slug}`} className="flex-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                          >
+                            Candidatar-se
+                          </Button>
+                        </Link>
                       </div>
                     </div>
-                  )}
-
-                  <div className="mt-auto flex gap-2">
-                    <Link to={`/vagas/${vaga.slug}`} className="flex-1">
-                      <Button variant="primary" size="sm" className="w-full">
-                        Ver vaga
-                      </Button>
-                    </Link>
-                    <Link to={`/vagas/${vaga.slug}`} className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        Candidatar-se
-                      </Button>
-                    </Link>
                   </div>
                 </motion.div>
               ))}
