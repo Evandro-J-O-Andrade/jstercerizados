@@ -33,7 +33,7 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
         delay: index * 0.08,
       }}
       whileHover={{ y: -6, scale: 1.01 }}
-      className="min-h-[420px]"
+      className="min-h-[320px]"
     >
       <Link
         to={`/servicos/${service.slug}`}
@@ -41,7 +41,7 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
       >
         <div className="bg-primary/10 absolute inset-x-0 top-0 h-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-        <div className="relative h-52 overflow-hidden sm:h-56">
+        <div className="relative h-48 overflow-hidden sm:h-52">
           <SafeImage
             src={service.image}
             alt={service.title}
@@ -56,17 +56,17 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col p-6">
-          <div className="mb-4 flex items-center gap-3">
-            <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl">
-              <Icon className="h-5 w-5" />
+        <div className="flex flex-1 flex-col p-5">
+          <div className="mb-3 flex items-center gap-3">
+            <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-xl">
+              <Icon className="h-4 w-4" />
             </div>
-            <h3 className="text-foreground text-lg font-semibold">
+            <h3 className="text-foreground text-base font-semibold">
               {service.title}
             </h3>
           </div>
 
-          <p className="text-muted-foreground mb-4 line-clamp-3 flex-1 text-sm">
+          <p className="text-muted-foreground mb-3 line-clamp-2 flex-1 text-sm">
             {service.shortDescription || service.description}
           </p>
 
