@@ -418,31 +418,54 @@
     filter: drop-shadow(0 0 8px hsla(43, 74%, 40%, 0.6));
   }
 
+  .shadow-premium {
+    box-shadow:
+      0 2px 8px hsla(215, 35%, 10%, 0.06),
+      0 1px 2px hsla(215, 35%, 10%, 0.04);
+  }
+
+  .dark .shadow-premium {
+    box-shadow:
+      0 4px 16px hsla(215, 40%, 4%, 0.25),
+      0 1px 3px hsla(215, 40%, 4%, 0.2);
+  }
+
   .shadow-glow {
-    box-shadow: 0 0 20px hsla(43, 74%, 40%, 0.4);
+    box-shadow: 0 0 16px hsla(43, 80%, 48%, 0.25);
   }
 
   .shadow-glow-lg {
     box-shadow:
-      0 0 30px hsla(43, 74%, 40%, 0.5),
-      0 4px 20px hsla(215, 35%, 10%, 0.3);
+      0 0 24px hsla(43, 80%, 48%, 0.3),
+      0 4px 16px hsla(215, 35%, 10%, 0.15);
+  }
+
+  .dark .shadow-glow-lg {
+    box-shadow:
+      0 0 24px hsla(43, 80%, 48%, 0.35),
+      0 4px 16px hsla(215, 40%, 4%, 0.3);
   }
 
   .shadow-glass {
-    box-shadow: 0 8px 32px hsla(215, 35%, 10%, 0.2);
+    box-shadow: 0 8px 24px hsla(215, 35%, 10%, 0.12);
+  }
+
+  .dark .shadow-glass {
+    box-shadow: 0 8px 24px hsla(215, 40%, 4%, 0.4);
   }
 
   .shadow-elevated {
     box-shadow:
-      0 20px 60px hsla(215, 35%, 10%, 0.15),
-      0 4px 20px hsla(215, 35%, 10%, 0.1),
-      0 0 0 1px hsla(43, 74%, 40%, 0.1);
+      0 16px 48px hsla(215, 35%, 10%, 0.1),
+      0 4px 16px hsla(215, 35%, 10%, 0.06),
+      0 0 0 1px hsla(43, 74%, 40%, 0.08);
   }
 
-  .shadow-premium {
+  .dark .shadow-elevated {
     box-shadow:
-      0 4px 24px hsla(215, 35%, 10%, 0.08),
-      0 1px 3px hsla(215, 35%, 10%, 0.06);
+      0 16px 48px hsla(215, 40%, 4%, 0.35),
+      0 4px 16px hsla(215, 40%, 4%, 0.25),
+      0 0 0 1px hsla(43, 80%, 48%, 0.12);
   }
 
   .bg-surface-alt {
@@ -453,24 +476,34 @@
     border-radius: 0.75rem;
     border-width: 1px;
     background-color: hsl(var(--card));
+    border-color: hsl(var(--border));
     box-shadow:
-      0 1px 2px hsla(215, 35%, 10%, 0.06),
-      0 4px 16px hsla(215, 35%, 10%, 0.08);
+      0 1px 2px hsla(215, 35%, 10%, 0.05),
+      0 4px 12px hsla(215, 35%, 10%, 0.06);
   }
 
   .card-hover {
     transition:
-      box-shadow 0.2s ease,
-      border-color 0.2s ease,
-      transform 0.2s ease;
+      box-shadow 0.25s ease,
+      border-color 0.25s ease,
+      transform 0.25s ease;
   }
 
   .card-hover:hover {
-    border-color: hsl(var(--border));
+    border-color: hsl(var(--primary) / 0.4);
     box-shadow:
-      0 1px 2px hsla(215, 35%, 10%, 0.08),
-      0 8px 24px hsla(215, 35%, 10%, 0.12);
-    transform: translateY(-1px);
+      0 1px 2px hsla(215, 35%, 10%, 0.06),
+      0 8px 24px hsla(215, 35%, 10%, 0.1),
+      0 0 0 1px hsl(var(--primary) / 0.1);
+    transform: translateY(-2px);
+  }
+
+  .card-hover:focus-within {
+    border-color: hsl(var(--primary) / 0.5);
+    box-shadow:
+      0 1px 2px hsla(215, 35%, 10%, 0.06),
+      0 8px 24px hsla(215, 35%, 10%, 0.1),
+      0 0 0 2px hsl(var(--primary) / 0.15);
   }
 
   .section-heading {
@@ -611,35 +644,40 @@
     opacity: 0;
     pointer-events: none;
     transition:
-      opacity 0.45s ease,
-      transform 0.45s ease;
+      opacity 0.4s ease,
+      transform 0.4s ease;
   }
 
   .gold-glow-wrapper::before {
-    inset: -4px;
+    inset: -2px;
     z-index: 0;
     box-shadow:
-      0 0 0 1px hsl(var(--primary) / 0.22),
-      0 0 14px 3px hsl(var(--primary) / 0.34),
-      0 0 34px 8px hsl(var(--primary) / 0.2);
-    filter: blur(1px);
-    transform: scale(0.96);
+      0 0 0 1px hsl(var(--primary) / 0.35),
+      0 0 10px 2px hsl(var(--primary) / 0.25),
+      0 0 20px 4px hsl(var(--primary) / 0.12);
+    filter: blur(0.5px);
+    transform: scale(0.98);
   }
 
   .gold-glow-wrapper::after {
-    inset: -10px;
+    inset: -6px;
     z-index: 0;
     box-shadow:
-      0 0 18px 4px hsl(var(--primary) / 0.26),
-      0 0 52px 12px hsl(var(--primary) / 0.16),
-      0 0 100px 24px hsl(var(--primary) / 0.08);
-    filter: blur(8px);
-    transform: scale(0.94);
+      0 0 12px 2px hsl(var(--primary) / 0.18),
+      0 0 28px 6px hsl(var(--primary) / 0.1),
+      0 0 48px 12px hsl(var(--primary) / 0.05);
+    filter: blur(4px);
+    transform: scale(0.96);
   }
 
   .gold-glow-card {
     position: relative;
     z-index: 1;
+    border-color: hsl(var(--border));
+    background-color: hsl(var(--card));
+    box-shadow:
+      0 1px 2px hsla(215, 35%, 10%, 0.05),
+      0 4px 12px hsla(215, 35%, 10%, 0.06);
   }
 
   .gold-glow-wrapper:hover::before,
@@ -652,13 +690,13 @@
   .gold-glow-wrapper:hover::after,
   .gold-glow-wrapper:focus::after,
   .gold-glow-wrapper:focus-within::after {
-    opacity: 0.85;
+    opacity: 0.7;
     transform: scale(1);
   }
 
   .gold-glow-wrapper:focus-visible {
-    outline: 2px solid hsl(var(--primary) / 0.9);
-    outline-offset: 4px;
+    outline: 2px solid hsl(var(--primary) / 0.8);
+    outline-offset: 3px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -666,5 +704,42 @@
     .gold-glow-wrapper::after {
       transition: none;
     }
+  }
+
+  /* ─── Refined card border utilities ─── */
+  .card-border-refined {
+    border-width: 1px;
+    border-color: hsl(var(--border));
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .card-border-refined:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      0 4px 16px hsla(215, 35%, 10%, 0.08),
+      0 0 0 1px hsl(var(--primary) / 0.08);
+  }
+
+  .card-border-refined:focus-within {
+    border-color: hsl(var(--primary) / 0.5);
+    box-shadow:
+      0 4px 16px hsla(215, 35%, 10%, 0.08),
+      0 0 0 2px hsl(var(--primary) / 0.12);
+  }
+
+  .dark .card-border-refined:hover {
+    border-color: hsl(var(--primary) / 0.5);
+    box-shadow:
+      0 4px 16px hsla(215, 40%, 4%, 0.3),
+      0 0 0 1px hsl(var(--primary) / 0.15);
+  }
+
+  .dark .card-border-refined:focus-within {
+    border-color: hsl(var(--primary) / 0.6);
+    box-shadow:
+      0 4px 16px hsla(215, 40%, 4%, 0.3),
+      0 0 0 2px hsl(var(--primary) / 0.2);
   }
 }
