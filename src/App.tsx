@@ -265,6 +265,10 @@ function App() {
     );
   }
 
+  return <RoutesAndLayout />;
+}
+
+function RoutesAndLayout() {
   const platformModules = PORTAL_MODULES.filter(
     (module) => module.scope === 'global',
   );
