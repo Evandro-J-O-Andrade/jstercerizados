@@ -706,6 +706,55 @@
     }
   }
 
+  /* ─── Card base surface ─── */
+  .card-base {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow:
+      0 1px 2px hsla(215, 35%, 10%, 0.05),
+      0 4px 12px hsla(215, 35%, 10%, 0.06);
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      transform 0.25s ease,
+      scale 0.25s ease;
+  }
+
+  .dark .card-base {
+    border-color: hsl(var(--primary) / 0.12);
+    box-shadow:
+      0 4px 16px hsla(215, 40%, 4%, 0.25),
+      0 1px 3px hsla(215, 40%, 4%, 0.2),
+      0 0 0 1px hsl(var(--border) / 0.2);
+  }
+
+  /* ─── Card hover (interactive) ─── */
+  .card-hover:hover,
+  .card-hover:focus-within {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      0 4px 16px hsla(215, 35%, 10%, 0.1),
+      0 0 0 1px hsl(var(--primary) / 0.1);
+    transform: translateY(-3px);
+    scale: 1.01;
+  }
+
+  .dark .card-hover:hover,
+  .dark .card-hover:focus-within {
+    border-color: hsl(var(--primary) / 0.5);
+    box-shadow:
+      0 4px 16px hsla(215, 40%, 4%, 0.3),
+      0 0 0 1px hsl(var(--primary) / 0.15);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-hover:hover,
+    .card-hover:focus-within {
+      transform: none;
+      scale: 1;
+    }
+  }
+
   /* ─── Refined card border utilities ─── */
   .card-border-refined {
     border-width: 1px;
@@ -727,6 +776,10 @@
     box-shadow:
       0 4px 16px hsla(215, 35%, 10%, 0.08),
       0 0 0 2px hsl(var(--primary) / 0.12);
+  }
+
+  .dark .card-border-refined {
+    border-color: hsl(var(--primary) / 0.15);
   }
 
   .dark .card-border-refined:hover {

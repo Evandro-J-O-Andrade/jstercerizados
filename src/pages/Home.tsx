@@ -496,44 +496,48 @@ export default function Home() {
               <motion.div
                 key={vaga.id}
                 variants={staggerItem('up')}
-                className="bg-card shadow-premium group relative flex flex-col rounded-2xl p-6 transition-all duration-300"
+                className="group/card relative"
               >
-                <div className="mb-4 flex items-start justify-between">
-                  <div>
-                    <h3 className="text-foreground group-hover:text-primary mb-1 text-xl font-bold transition-colors">
-                      {vaga.titulo}
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      {vaga.empresa}
-                    </p>
-                  </div>
-                  <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium">
-                    {vaga.tipoContrato}
-                  </span>
-                </div>
+                <div className="gold-glow-wrapper group relative block h-full">
+                  <div className="gold-glow-card card-base rounded-2xl p-6 motion-reduce:transition-none">
+                    <div className="mb-4 flex items-start justify-between">
+                      <div>
+                        <h3 className="text-foreground group-hover/card:text-primary mb-1 text-xl font-bold transition-colors">
+                          {vaga.titulo}
+                        </h3>
+                        <p className="text-muted-foreground text-sm">
+                          {vaga.empresa}
+                        </p>
+                      </div>
+                      <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium">
+                        {vaga.tipoContrato}
+                      </span>
+                    </div>
 
-                <div className="text-muted-foreground mb-4 space-y-1 text-sm">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    <span>
-                      {vaga.cidade}, {vaga.estado}
-                    </span>
-                  </div>
-                  <span className="inline-block text-xs">
-                    {vaga.modalidade === 'PRESENCIAL'
-                      ? 'Presencial'
-                      : vaga.modalidade === 'HIBRIDO'
-                        ? 'Híbrido'
-                        : 'Remoto'}
-                  </span>
-                </div>
+                    <div className="text-muted-foreground mb-4 space-y-1 text-sm">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        <span>
+                          {vaga.cidade}, {vaga.estado}
+                        </span>
+                      </div>
+                      <span className="inline-block text-xs">
+                        {vaga.modalidade === 'PRESENCIAL'
+                          ? 'Presencial'
+                          : vaga.modalidade === 'HIBRIDO'
+                            ? 'Híbrido'
+                            : 'Remoto'}
+                      </span>
+                    </div>
 
-                <div className="mt-auto flex gap-2">
-                  <Link to={`/vagas/${vaga.slug}`} className="flex-1">
-                    <Button variant="primary" size="sm" className="w-full">
-                      Ver vaga
-                    </Button>
-                  </Link>
+                    <div className="mt-auto flex gap-2">
+                      <Link to={`/vagas/${vaga.slug}`} className="flex-1">
+                        <Button variant="primary" size="sm" className="w-full">
+                          Ver vaga
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}
