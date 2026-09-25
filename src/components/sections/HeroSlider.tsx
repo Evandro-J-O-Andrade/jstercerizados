@@ -48,7 +48,7 @@ export function HeroSlider({
   const slide = slides[current];
 
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden">
+    <section className="relative flex min-h-dvh items-center overflow-hidden lg:min-h-screen">
       {/* Background images with parallax */}
       <motion.div
         style={{ y: parallaxY, opacity: parallaxOpacity, scale: heroScale }}
@@ -82,7 +82,7 @@ export function HeroSlider({
       </motion.div>
 
       {/* Content */}
-      <div className="relative mx-auto grid w-full max-w-[1600px] grid-cols-1 gap-12 px-4 py-32 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-0">
+      <div className="relative mx-auto grid w-full max-w-[1920px] grid-cols-1 gap-12 px-4 py-32 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-0 xl:max-w-[2200px] xl:px-10">
         <AnimatePresence>
           <motion.div
             key={slide.id}

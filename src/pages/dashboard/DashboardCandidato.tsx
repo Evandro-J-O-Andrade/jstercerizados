@@ -152,7 +152,7 @@ export default function DashboardCandidato() {
         description="Painel do candidato para gerenciar candidaturas, currículo e vagas."
       />
 
-      <div className="mx-auto max-w-7xl p-6">
+      <div className="mx-auto max-w-[1920px] p-6 xl:max-w-[2200px] xl:px-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

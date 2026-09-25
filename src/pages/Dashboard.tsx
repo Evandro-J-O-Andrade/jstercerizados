@@ -335,7 +335,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen">
       {authError && (
-        <div className="bg-warning/10 text-warning mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+        <div className="bg-warning/10 text-warning mx-auto max-w-[1920px] px-4 pt-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
           <div className="rounded-xl p-4 text-sm">
             {normalizeError(authError).userMessage}
           </div>
@@ -343,7 +343,7 @@ export default function Dashboard() {
       )}
       {/* Header */}
       <section className="bg-muted py-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Shield className="text-primary h-8 w-8" />
@@ -373,7 +373,7 @@ export default function Dashboard() {
       </section>
 
       {/* Stats */}
-      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-[1920px] px-4 py-8 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => (
             <motion.div
@@ -403,7 +403,7 @@ export default function Dashboard() {
 
       {/* Tabs */}
       {isAdminMaster && (
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <section className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
           <div className="border-border mb-6 border-b">
             <nav className="flex gap-6 overflow-x-auto" aria-label="Tabs">
               {tabMap.map((tab) => (

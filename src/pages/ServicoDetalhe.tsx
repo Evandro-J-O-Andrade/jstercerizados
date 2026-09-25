@@ -207,7 +207,7 @@ export default function ServicoDetalhe() {
           transition={{ delay: 1, duration: 0.8 }}
         />
 
-        <div className="relative mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-[1920px] px-4 py-32 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

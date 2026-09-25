@@ -1215,7 +1215,7 @@ export default function Sobre() {
               </motion.p>
             </SectionReveal>
 
-            <div className="relative mx-auto max-w-7xl">
+            <div className="relative mx-auto max-w-[1920px] xl:max-w-[2200px]">
               <SectionReveal
                 staggerDelay={0.1}
                 className="relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"

@@ -152,7 +152,7 @@ export function RoleBasedFooter({ className }: { className?: string }) {
       )}
     >
       <div className="via-primary/40 absolute -top-px right-0 left-0 h-px bg-gradient-to-r from-transparent to-transparent" />
-      <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:max-w-7xl lg:px-8">
+      <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:max-w-[1920px] lg:px-8 xl:max-w-[2200px] xl:px-10">
         <div className="mb-6 flex items-center gap-3">
           <Link to="/" className="text-foreground text-sm font-semibold">
             {COMPANY.name}

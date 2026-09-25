@@ -22,7 +22,7 @@ function PortalShellInner({ moduleTitle, children }: PortalShellProps) {
   const content = children ?? <Outlet />;
 
   return (
-    <div className="bg-muted/30 flex h-screen w-full overflow-hidden">
+    <div className="bg-muted/30 flex min-h-dvh w-full overflow-hidden lg:min-h-screen">
       <PortalSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -36,7 +36,7 @@ function PortalShellInner({ moduleTitle, children }: PortalShellProps) {
         />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto h-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto h-full max-w-[1920px] px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
             {content}
           </div>
         </main>

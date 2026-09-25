@@ -402,7 +402,7 @@ export function Navbar() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="overlay-panel fixed top-0 right-0 z-[60] h-full w-[85%] max-w-md lg:hidden"
+              className="overlay-panel bg-background fixed top-0 right-0 z-[60] h-full w-[85%] max-w-md lg:hidden"
               style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
               <div className="flex items-center justify-between p-4">

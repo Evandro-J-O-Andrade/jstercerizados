@@ -36,7 +36,10 @@ export function ModuleWorkspace({
 }: ModuleWorkspaceProps) {
   return (
     <div
-      className={cn('mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8', className)}
+      className={cn(
+        'mx-auto max-w-[1920px] px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10',
+        className,
+      )}
     >
       {breadcrumbItems.length > 0 && (
         <nav aria-label="Breadcrumb" className="mb-6">

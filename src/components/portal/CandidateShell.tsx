@@ -88,8 +88,7 @@ function GlobalNavButton({
   idx: number;
 }) {
   const Icon = resolveIcon(item.icon);
-  const label =
-    item.action === 'site_home' ? 'Voltar para o site' : item.label;
+  const label = item.action === 'site_home' ? 'Voltar para o site' : item.label;
   return (
     <button
       type="button"
@@ -146,7 +145,7 @@ export function CandidateShell({ children }: CandidateShellProps) {
   );
 
   return (
-    <div className="bg-muted/30 flex h-screen w-full overflow-hidden">
+    <div className="bg-muted/30 flex min-h-dvh w-full overflow-hidden lg:min-h-screen">
       {sidebarOpen && (
         <div
           className="bg-background/60 fixed inset-0 z-40 lg:hidden"
@@ -263,7 +262,7 @@ export function CandidateShell({ children }: CandidateShellProps) {
         </header>
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto h-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto h-full max-w-[1920px] px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
             {children ?? <Outlet />}
           </div>
         </main>
