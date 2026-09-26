@@ -19,6 +19,7 @@ import {
 import { COMPANY, SOCIAL_LINKS } from '@/config';
 import { IMAGES } from '@/config/images';
 import { Button } from '@/components/ui/Button';
+import { PalavraDoDia } from '@/components/sections/PalavraDoDia';
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -470,26 +471,38 @@ export function Footer({
             </div>
 
             <div className="border-border/50 bg-primary/5 mt-4 rounded-xl border p-4">
-              <h5 className="text-foreground mb-3 text-sm font-bold">
-                Horário de Atendimento
-              </h5>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="text-primary h-4 w-4" />
-                  <span className="text-muted-foreground">
-                    Seg a Sex, 08h às 18h
-                  </span>
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div className="space-y-2">
+                  <h5 className="text-foreground mb-2 text-sm font-bold tracking-wider uppercase">
+                    Horário de Atendimento
+                  </h5>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Clock className="text-primary h-4 w-4" />
+                      <span className="text-muted-foreground">
+                        Segunda a sexta: 08h às 18h
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Clock className="text-primary h-4 w-4" />
+                      <span className="text-muted-foreground">
+                        Sábados: Fechado
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Clock className="text-muted-foreground h-4 w-4" />
+                      <span className="text-muted-foreground">
+                        Domingos e feriados: Fechado
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="text-primary h-4 w-4" />
-                  <span className="text-muted-foreground">Sáb, 08h às 12h</span>
+                <div className="hidden lg:col-span-1 lg:block">
+                  <PalavraDoDia />
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground">
-                    Domingo — Fechado
-                  </span>
-                </div>
+              </div>
+              <div className="border-border/50 mt-4 border-t pt-4 lg:hidden">
+                <PalavraDoDia />
               </div>
             </div>
 

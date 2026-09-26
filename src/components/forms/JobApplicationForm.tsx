@@ -208,7 +208,7 @@ export function JobApplicationForm({
             </span>
             <span className="flex items-center gap-2">
               <Clock className="h-3.5 w-3.5" />
-              Seg a Sex, 08h às 18h
+              Segunda a sexta: 08h às 18h
             </span>
             <span className="flex items-center gap-2">
               <MapPin className="h-3.5 w-3.5" />

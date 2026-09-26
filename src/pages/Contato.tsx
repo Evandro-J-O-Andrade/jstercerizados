@@ -215,9 +215,9 @@ export default function Contato() {
                   Horário de Atendimento
                 </h3>
                 <div className="text-muted-foreground space-y-2 text-sm">
-                  <p>Segunda a Sexta: 08h às 18h</p>
-                  <p>Sábado: 08h às 12h</p>
-                  <p>Domingo: Fechado</p>
+                  <p>Segunda a sexta: 08h às 18h</p>
+                  <p>Sábados: Fechado</p>
+                  <p>Domingos e feriados: Fechado</p>
                 </div>
               </motion.div>
             </div>

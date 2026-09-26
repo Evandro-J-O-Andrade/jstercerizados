@@ -299,7 +299,7 @@ export default function ServicoDetalhe() {
                   ease: 'easeInOut',
                 }}
               >
-                <div className="bg-card/30 border-border relative aspect-[4/3] overflow-hidden rounded-3xl border backdrop-blur-sm">
+                <div className="bg-card/30 border-border relative mx-auto aspect-[4/3] max-w-[360px] overflow-hidden rounded-3xl border backdrop-blur-sm">
                   <img
                     src={service.image}
                     alt={service.title}
@@ -478,7 +478,7 @@ export default function ServicoDetalhe() {
                 </div>
                 <div className="text-muted-foreground flex items-center gap-3">
                   <Clock className="text-primary h-5 w-5" />
-                  <span>Segunda a Sexta, 08h às 18h</span>
+                  <span>Segunda a sexta: 08h às 18h</span>
                 </div>
                 <div className="text-muted-foreground flex items-center gap-3">
                   <MapPin className="text-primary h-5 w-5" />

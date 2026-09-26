@@ -4,9 +4,9 @@ export const CONTACTS = {
   whatsapp: '5511968380592',
   address: 'São Paulo, SP — Brasil',
   businessHours: {
-    weekday: 'Segunda a Sexta, 08h–18h',
-    saturday: 'Sábado, 08h às 12h',
-    sunday: 'Domingo — Fechado',
+    weekday: 'Segunda a sexta: 08h às 18h',
+    saturday: 'Sábados: Fechado',
+    sunday: 'Domingos e feriados: Fechado',
   },
 } as const;
 
