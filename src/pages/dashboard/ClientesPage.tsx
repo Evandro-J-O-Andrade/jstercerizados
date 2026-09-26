@@ -87,13 +87,13 @@ export default function ClientesPage() {
           {activeTab === 'companies' && (
             <div>
               {companies.length === 0 ? (
-                <div className="bg-card border-border rounded-xl border p-6 shadow-sm">
+                <div className="card-base p-6">
                   <p className="text-muted-foreground text-sm">
                     Nenhuma empresa encontrada.
                   </p>
                 </div>
               ) : (
-                <div className="bg-card border-border overflow-hidden rounded-xl border shadow-sm">
+                <div className="card-base overflow-hidden">
                   <table className="divide-border min-w-full divide-y">
                     <thead className="bg-muted/50">
                       <tr>
@@ -143,7 +143,7 @@ export default function ClientesPage() {
           )}
 
           {activeTab === 'contacts' && (
-            <div className="bg-card border-border rounded-xl border p-6 shadow-sm">
+            <div className="card-base p-6">
               <p className="text-muted-foreground text-sm">
                 Contatos vinculados às empresas aparecerão aqui.
               </p>
@@ -151,7 +151,7 @@ export default function ClientesPage() {
           )}
 
           {activeTab === 'opportunities' && (
-            <div className="bg-card border-border rounded-xl border p-6 shadow-sm">
+            <div className="card-base p-6">
               <p className="text-muted-foreground text-sm">
                 Oportunidades e funis de CRM aparecerão aqui.
               </p>

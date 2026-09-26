@@ -214,7 +214,7 @@ function CompanyContent({ company, onBack }: CompanyContentProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
-              className="bg-card border-border shadow-premium mx-auto flex aspect-square w-40 items-center justify-center overflow-hidden rounded-3xl border p-6 sm:w-48 lg:mx-0"
+              className="card-base mx-auto flex aspect-square w-40 items-center justify-center overflow-hidden rounded-3xl p-6 sm:w-48 lg:mx-0"
             >
               <SafeImage
                 src={company.logo_url ?? undefined}
@@ -310,7 +310,7 @@ function CompanyContent({ company, onBack }: CompanyContentProps) {
               transition={{ duration: 0.6 }}
               className="mx-auto max-w-3xl"
             >
-              <div className="bg-card border-border shadow-premium rounded-2xl border p-8">
+              <div className="card-base rounded-2xl p-8">
                 <h3 className="text-foreground mb-6 text-xl font-semibold">
                   Informações institucionais
                 </h3>
@@ -385,7 +385,7 @@ function CompanyContent({ company, onBack }: CompanyContentProps) {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-card border-border hover:border-primary/40 group flex items-center gap-4 rounded-2xl border p-4 transition-all duration-300"
+                      className="card-base card-hover group flex items-center gap-4 rounded-2xl p-4"
                     >
                       <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground flex h-11 w-11 items-center justify-center rounded-full transition-colors">
                         <Icon className="h-5 w-5" />
@@ -415,7 +415,7 @@ function CompanyContent({ company, onBack }: CompanyContentProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="bg-card border-border shadow-premium mx-auto max-w-3xl rounded-3xl border p-8 text-center sm:p-12"
+            className="card-base mx-auto max-w-3xl rounded-3xl p-8 text-center sm:p-12"
           >
             <CheckCircle2 className="text-primary mx-auto mb-4 h-10 w-10" />
             <h2 className="text-foreground text-2xl font-bold sm:text-3xl">

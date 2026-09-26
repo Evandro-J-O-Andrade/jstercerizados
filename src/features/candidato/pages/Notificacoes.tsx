@@ -80,6 +80,8 @@ export default function CandidateNotificacoes() {
             {items.map((n) => (
               <li key={n.id}>
                 <Card
+                  variant="interactive"
+                  hover
                   className={`p-4 ${!n.read_at ? 'border-primary/40 bg-primary/5' : ''}`}
                 >
                   <div className="flex items-start justify-between gap-4">

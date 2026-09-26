@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
@@ -389,71 +390,88 @@ export function ModulePage<T extends { id: string; created_at?: string }, C>({
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-card border-border w-full max-w-2xl rounded-xl border p-6 shadow-xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-foreground text-lg font-semibold">
-                {editItem ? 'Editar' : 'Novo'}{' '}
-                {title.replace(/s$/, '').replace(/ções$/, 'ção')}
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setModalOpen(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            {formError && (
-              <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
-                <AlertTriangle className="h-4 w-4" />
-                {formError}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="w-full max-w-2xl"
+          >
+            <Card variant="default" className="p-6 shadow-xl">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-foreground text-lg font-semibold">
+                  {editItem ? 'Editar' : 'Novo'}{' '}
+                  {title.replace(/s$/, '').replace(/ções$/, 'ção')}
+                </h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setModalOpen(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-            )}
-            <div className="max-h-[60vh] space-y-4 overflow-y-auto">
-              {renderForm ? (
-                renderForm(form, setForm, !!editItem)
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  Formulário não configurado.
-                </p>
+              {formError && (
+                <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+                  <AlertTriangle className="h-4 w-4" />
+                  {formError}
+                </div>
               )}
-            </div>
-            <div className="mt-6 flex items-center justify-end gap-2">
-              <Button variant="outline" onClick={() => setModalOpen(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={handleSubmit}>
-                {editItem ? 'Salvar' : 'Criar'}
-              </Button>
-            </div>
-          </div>
+              <div className="max-h-[60vh] space-y-4 overflow-y-auto">
+                {renderForm ? (
+                  renderForm(form, setForm, !!editItem)
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    Formulário não configurado.
+                  </p>
+                )}
+              </div>
+              <div className="mt-6 flex items-center justify-end gap-2">
+                <Button variant="outline" onClick={() => setModalOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleSubmit}>
+                  {editItem ? 'Salvar' : 'Criar'}
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
         </div>
       )}
 
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-card border-border w-full max-w-md rounded-xl border p-6 shadow-xl">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300">
-                <AlertTriangle className="h-5 w-5" />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="w-full max-w-md"
+          >
+            <Card variant="default" className="p-6 shadow-xl">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300">
+                  <AlertTriangle className="h-5 w-5" />
+                </div>
+                <h3 className="text-foreground text-lg font-semibold">
+                  Confirmar exclusão
+                </h3>
               </div>
-              <h3 className="text-foreground text-lg font-semibold">
-                Confirmar exclusão
-              </h3>
-            </div>
-            <p className="text-muted-foreground mb-6 text-sm">
-              Tem certeza que deseja excluir este registro? Esta ação não pode
-              ser desfeita.
-            </p>
-            <div className="flex items-center justify-end gap-2">
-              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
-                Cancelar
-              </Button>
-              <Button variant="danger" onClick={handleDelete}>
-                Excluir
-              </Button>
-            </div>
-          </div>
+              <p className="text-muted-foreground mb-6 text-sm">
+                Tem certeza que deseja excluir este registro? Esta ação não pode
+                ser desfeita.
+              </p>
+              <div className="flex items-center justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setDeleteConfirm(null)}
+                >
+                  Cancelar
+                </Button>
+                <Button variant="danger" onClick={handleDelete}>
+                  Excluir
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
         </div>
       )}
     </ModuleWorkspace>

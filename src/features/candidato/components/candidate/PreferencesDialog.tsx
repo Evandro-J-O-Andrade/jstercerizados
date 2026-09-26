@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { FormField } from '@/components/ui/FormField';
 import { useToast } from '@/components/feedback/ToastContext';
@@ -178,156 +179,160 @@ export function PreferencesDialog({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="bg-card border-border w-full max-w-2xl rounded-xl border p-6 shadow-xl"
+            className="w-full max-w-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-foreground mb-4 text-lg font-semibold">
-              {initialData?.id ? 'Editar preferências' : 'Nova preferência'}
-            </h3>
+            <Card variant="default" className="p-6 shadow-xl">
+              <h3 className="text-foreground mb-4 text-lg font-semibold">
+                {initialData?.id ? 'Editar preferências' : 'Nova preferência'}
+              </h3>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <FormField
-                  label="Cargos desejados"
-                  error={errors.desired_roles?.message}
-                  helperText="Separados por vírgula"
-                >
-                  <Input
-                    id="desired_roles"
-                    {...register('desired_roles')}
-                    placeholder="Ex.: Auxiliar, Zelador"
-                  />
-                </FormField>
-
-                <FormField
-                  label="Localizações desejadas"
-                  error={errors.desired_locations?.message}
-                  helperText="Separadas por vírgula"
-                >
-                  <Input
-                    id="desired_locations"
-                    {...register('desired_locations')}
-                    placeholder="Ex.: São Paulo, Guarulhos"
-                  />
-                </FormField>
-
-                <FormField
-                  label="Salário mínimo (R$)"
-                  error={errors.salary_min?.message}
-                >
-                  <Input
-                    id="salary_min"
-                    type="number"
-                    {...register('salary_min')}
-                    placeholder="Ex.: 1500"
-                  />
-                </FormField>
-
-                <FormField
-                  label="Salário máximo (R$)"
-                  error={errors.salary_max?.message}
-                >
-                  <Input
-                    id="salary_max"
-                    type="number"
-                    {...register('salary_max')}
-                    placeholder="Ex.: 2500"
-                  />
-                </FormField>
-
-                <FormField
-                  label="Tipos de contrato"
-                  error={errors.contract_types?.message}
-                  helperText="Separados por vírgula"
-                >
-                  <Input
-                    id="contract_types"
-                    {...register('contract_types')}
-                    placeholder="Ex.: CLT, PJ"
-                  />
-                </FormField>
-
-                <FormField
-                  label="Turnos"
-                  error={errors.shifts?.message}
-                  helperText="Separados por vírgula"
-                >
-                  <Input
-                    id="shifts"
-                    {...register('shifts')}
-                    placeholder="Ex.: Diurno, Noturno"
-                  />
-                </FormField>
-
-                <FormField
-                  label="Modalidades"
-                  error={errors.work_modes?.message}
-                  helperText="Separadas por vírgula"
-                >
-                  <Input
-                    id="work_modes"
-                    {...register('work_modes')}
-                    placeholder="Ex.: Presencial, Híbrido"
-                  />
-                </FormField>
-
-                <FormField
-                  label="Distância máxima (km)"
-                  error={errors.max_distance_km?.message}
-                >
-                  <Input
-                    id="max_distance_km"
-                    type="number"
-                    {...register('max_distance_km')}
-                    placeholder="Ex.: 30"
-                  />
-                </FormField>
-
-                <FormField
-                  label="Disponível a partir"
-                  error={errors.available_from?.message}
-                >
-                  <Input
-                    id="available_from"
-                    type="date"
-                    {...register('available_from')}
-                  />
-                </FormField>
-
-                <div className="flex items-center gap-6 sm:col-span-2">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      {...register('matching_enabled')}
-                      className="rounded border-gray-300"
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField
+                    label="Cargos desejados"
+                    error={errors.desired_roles?.message}
+                    helperText="Separados por vírgula"
+                  >
+                    <Input
+                      id="desired_roles"
+                      {...register('desired_roles')}
+                      placeholder="Ex.: Auxiliar, Zelador"
                     />
-                    <span className="text-sm">Matching ativado</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      {...register('receive_match_alerts')}
-                      className="rounded border-gray-300"
+                  </FormField>
+
+                  <FormField
+                    label="Localizações desejadas"
+                    error={errors.desired_locations?.message}
+                    helperText="Separadas por vírgula"
+                  >
+                    <Input
+                      id="desired_locations"
+                      {...register('desired_locations')}
+                      placeholder="Ex.: São Paulo, Guarulhos"
                     />
-                    <span className="text-sm">Receber alertas de matching</span>
-                  </label>
+                  </FormField>
+
+                  <FormField
+                    label="Salário mínimo (R$)"
+                    error={errors.salary_min?.message}
+                  >
+                    <Input
+                      id="salary_min"
+                      type="number"
+                      {...register('salary_min')}
+                      placeholder="Ex.: 1500"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Salário máximo (R$)"
+                    error={errors.salary_max?.message}
+                  >
+                    <Input
+                      id="salary_max"
+                      type="number"
+                      {...register('salary_max')}
+                      placeholder="Ex.: 2500"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Tipos de contrato"
+                    error={errors.contract_types?.message}
+                    helperText="Separados por vírgula"
+                  >
+                    <Input
+                      id="contract_types"
+                      {...register('contract_types')}
+                      placeholder="Ex.: CLT, PJ"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Turnos"
+                    error={errors.shifts?.message}
+                    helperText="Separados por vírgula"
+                  >
+                    <Input
+                      id="shifts"
+                      {...register('shifts')}
+                      placeholder="Ex.: Diurno, Noturno"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Modalidades"
+                    error={errors.work_modes?.message}
+                    helperText="Separadas por vírgula"
+                  >
+                    <Input
+                      id="work_modes"
+                      {...register('work_modes')}
+                      placeholder="Ex.: Presencial, Híbrido"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Distância máxima (km)"
+                    error={errors.max_distance_km?.message}
+                  >
+                    <Input
+                      id="max_distance_km"
+                      type="number"
+                      {...register('max_distance_km')}
+                      placeholder="Ex.: 30"
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Disponível a partir"
+                    error={errors.available_from?.message}
+                  >
+                    <Input
+                      id="available_from"
+                      type="date"
+                      {...register('available_from')}
+                    />
+                  </FormField>
+
+                  <div className="flex items-center gap-6 sm:col-span-2">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        {...register('matching_enabled')}
+                        className="rounded border-gray-300"
+                      />
+                      <span className="text-sm">Matching ativado</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        {...register('receive_match_alerts')}
+                        className="rounded border-gray-300"
+                      />
+                      <span className="text-sm">
+                        Receber alertas de matching
+                      </span>
+                    </label>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => onOpenChange(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Salvando...' : 'Salvar'}
-                </Button>
-              </div>
-            </form>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => onOpenChange(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Salvando...' : 'Salvar'}
+                  </Button>
+                </div>
+              </form>
+            </Card>
           </motion.div>
         </motion.div>
       )}

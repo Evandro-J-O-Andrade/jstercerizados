@@ -18,6 +18,7 @@ import {
   Handshake,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { Section } from '@/components/sections/Section';
 import { HeroSplit } from '@/components/sections/HeroSplit';
 import { SEO } from '@/components/ui/SEO';
@@ -30,6 +31,9 @@ import { COMPANY } from '@/config';
 import { HERO_SLIDES } from '@/content/homeHero';
 import { CLIENTS_LIST } from '@/mock/clients';
 import { SafeImage } from '@/components/ui/SafeImage';
+import { useCompaniesByType } from '@/hooks/useCompanies';
+import { mapPublicCompanyByTypeToClientVisual } from '@/types/domain/client-visual';
+import type { ClientVisual } from '@/types/domain/client-visual';
 
 const heroSlides = HERO_SLIDES.map((slide) => ({
   id: slide.id,
@@ -199,11 +203,32 @@ const facilitiesSolutions = [
 
 export default function Home() {
   const { jobs: dbJobs } = usePublicJobsAsVagas({ limit: 4 });
+  const { companies } = useCompaniesByType('client');
 
   const destaques = useMemo(
     () => (dbJobs.length > 0 ? dbJobs.slice(0, 4) : mockGetVagas().slice(0, 4)),
     [dbJobs],
   );
+
+  const confirmedClients: ClientVisual[] = useMemo(() => {
+    if (companies.length > 0) {
+      return companies
+        .filter((row) => row.company_name)
+        .map(mapPublicCompanyByTypeToClientVisual)
+        .filter((client) => client.name && client.logo);
+    }
+    return CLIENTS_LIST.filter((client) => client.name && client.logo).map(
+      (client) => ({
+        id: client.id,
+        name: client.name,
+        logo: client.logo,
+        image: client.image ?? null,
+        website: client.website ?? null,
+        description: client.description ?? null,
+        socials: null,
+      }),
+    );
+  }, [companies]);
 
   return (
     <div>
@@ -265,7 +290,7 @@ export default function Home() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            className="3xl:grid-cols-5 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
           >
             {empresaSolutions.map((solution) => (
               <motion.div
@@ -490,55 +515,58 @@ export default function Home() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerReveal(0.1)}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
+            className="3xl:grid-cols-5 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
           >
             {destaques.map((vaga) => (
               <motion.div
                 key={vaga.id}
                 variants={staggerItem('up')}
-                className="group/card relative"
+                className="group/card"
               >
-                <div className="gold-glow-wrapper group relative block h-full">
-                  <div className="gold-glow-card card-base rounded-2xl p-6 motion-reduce:transition-none">
-                    <div className="mb-4 flex items-start justify-between">
-                      <div>
-                        <h3 className="text-foreground group-hover/card:text-primary mb-1 text-xl font-bold transition-colors">
-                          {vaga.titulo}
-                        </h3>
-                        <p className="text-muted-foreground text-sm">
-                          {vaga.empresa}
-                        </p>
-                      </div>
-                      <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium">
-                        {vaga.tipoContrato}
-                      </span>
+                <Card
+                  variant="gold-glow"
+                  hover
+                  padding="lg"
+                  className="flex h-full flex-col rounded-2xl"
+                >
+                  <div className="mb-4 flex items-start justify-between">
+                    <div>
+                      <h3 className="text-foreground group-hover/card:text-primary mb-1 text-xl font-bold transition-colors">
+                        {vaga.titulo}
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        {vaga.empresa}
+                      </p>
                     </div>
-
-                    <div className="text-muted-foreground mb-4 space-y-1 text-sm">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        <span>
-                          {vaga.cidade}, {vaga.estado}
-                        </span>
-                      </div>
-                      <span className="inline-block text-xs">
-                        {vaga.modalidade === 'PRESENCIAL'
-                          ? 'Presencial'
-                          : vaga.modalidade === 'HIBRIDO'
-                            ? 'Híbrido'
-                            : 'Remoto'}
-                      </span>
-                    </div>
-
-                    <div className="mt-auto flex gap-2">
-                      <Link to={`/vagas/${vaga.slug}`} className="flex-1">
-                        <Button variant="primary" size="sm" className="w-full">
-                          Ver vaga
-                        </Button>
-                      </Link>
-                    </div>
+                    <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-xs font-medium">
+                      {vaga.tipoContrato}
+                    </span>
                   </div>
-                </div>
+
+                  <div className="text-muted-foreground mb-4 space-y-1 text-sm">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      <span>
+                        {vaga.cidade}, {vaga.estado}
+                      </span>
+                    </div>
+                    <span className="inline-block text-xs">
+                      {vaga.modalidade === 'PRESENCIAL'
+                        ? 'Presencial'
+                        : vaga.modalidade === 'HIBRIDO'
+                          ? 'Híbrido'
+                          : 'Remoto'}
+                    </span>
+                  </div>
+
+                  <div className="mt-auto flex gap-2">
+                    <Link to={`/vagas/${vaga.slug}`} className="flex-1">
+                      <Button variant="primary" size="sm" className="w-full">
+                        Ver vaga
+                      </Button>
+                    </Link>
+                  </div>
+                </Card>
               </motion.div>
             ))}
           </motion.div>
@@ -748,28 +776,26 @@ export default function Home() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerReveal(0.1)}
-            className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4"
+            className="mx-auto grid w-full max-w-[1400px] grid-cols-2 justify-items-center gap-6 sm:grid-cols-3 lg:grid-cols-4"
           >
-            {CLIENTS_LIST.filter((client) => client.name && client.logo).map(
-              (client) => (
-                <motion.div
-                  key={client.id}
-                  variants={staggerItem('up')}
-                  className="bg-card border-border hover:border-primary/30 flex flex-col items-center justify-center rounded-2xl border p-6 transition-all duration-300"
-                >
-                  <div className="h-16 w-auto">
-                    <SafeImage
-                      src={client.logo!}
-                      alt={client.name!}
-                      className="h-full w-auto object-contain"
-                    />
-                  </div>
-                  <span className="text-foreground mt-3 text-center text-sm font-medium">
-                    {client.name!}
-                  </span>
-                </motion.div>
-              ),
-            )}
+            {confirmedClients.map((client) => (
+              <motion.div
+                key={client.id}
+                variants={staggerItem('up')}
+                className="bg-card border-border hover:border-primary/30 flex w-full max-w-[280px] flex-col items-center justify-center rounded-2xl border p-6 transition-all duration-300"
+              >
+                <div className="h-16 w-auto">
+                  <SafeImage
+                    src={client.logo!}
+                    alt={client.name!}
+                    className="h-full w-auto object-contain"
+                  />
+                </div>
+                <span className="text-foreground mt-3 text-center text-sm font-medium">
+                  {client.name!}
+                </span>
+              </motion.div>
+            ))}
           </motion.div>
         </Container>
       </Section>

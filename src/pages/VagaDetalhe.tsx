@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
+import { Card } from '@/components/ui/Card';
 import { Container } from '@/components/common/Container';
 import { JobApplicationForm } from '@/components/forms/JobApplicationForm';
 import { NotFoundState } from '@/components/fallback/NotFoundState';
@@ -196,13 +197,16 @@ export default function VagaDetalhe() {
             >
               <div className="flex items-start gap-4">
                 {vaga.empresaLogo && (
-                  <div className="bg-card border-border flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border">
+                  <Card
+                    variant="default"
+                    className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl p-0"
+                  >
                     <SafeImage
                       src={vaga.empresaLogo}
                       alt={vaga.empresa ?? 'Logo da empresa'}
                       className="h-full w-full object-contain"
                     />
-                  </div>
+                  </Card>
                 )}
                 <div>
                   <h1 className="text-foreground text-4xl font-extrabold tracking-tight sm:text-5xl">
@@ -354,7 +358,14 @@ export default function VagaDetalhe() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              <JobApplicationForm jobTitle={vaga.titulo} />
+              <JobApplicationForm
+                job={{
+                  id: vaga.id,
+                  title: vaga.titulo,
+                  city: vaga.cidade ?? '',
+                  state: vaga.estado ?? '',
+                }}
+              />
             </motion.div>
           </motion.div>
         </Container>

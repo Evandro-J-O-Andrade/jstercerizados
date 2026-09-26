@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { FormField } from '@/components/ui/FormField';
 import { useToast } from '@/components/feedback/ToastContext';
@@ -119,64 +120,74 @@ export function EducationDialog({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="bg-card border-border w-full max-w-lg rounded-xl border p-6 shadow-xl"
+            className="w-full max-w-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-foreground mb-4 text-lg font-semibold">
-              {initialData?.id ? 'Editar formação' : 'Nova formação'}
-            </h3>
+            <Card variant="default" className="p-6 shadow-xl">
+              <h3 className="text-foreground mb-4 text-lg font-semibold">
+                {initialData?.id ? 'Editar formação' : 'Nova formação'}
+              </h3>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                label="Instituição"
-                error={errors.institution?.message}
-                required
-              >
-                <Input id="institution" {...register('institution')} />
-              </FormField>
-
-              <FormField label="Curso" error={errors.course?.message} required>
-                <Input id="course" {...register('course')} />
-              </FormField>
-
-              <FormField label="Grau" error={errors.degree?.message}>
-                <Input id="degree" {...register('degree')} />
-              </FormField>
-
-              <div className="grid grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
-                  label="Data de início"
-                  error={errors.start_date?.message}
+                  label="Instituição"
+                  error={errors.institution?.message}
+                  required
                 >
-                  <Input
-                    id="start_date"
-                    type="date"
-                    {...register('start_date')}
-                  />
+                  <Input id="institution" {...register('institution')} />
                 </FormField>
 
                 <FormField
-                  label="Data de término"
-                  error={errors.end_date?.message}
+                  label="Curso"
+                  error={errors.course?.message}
+                  required
                 >
-                  <Input id="end_date" type="date" {...register('end_date')} />
+                  <Input id="course" {...register('course')} />
                 </FormField>
-              </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => onOpenChange(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Salvando...' : 'Salvar'}
-                </Button>
-              </div>
-            </form>
+                <FormField label="Grau" error={errors.degree?.message}>
+                  <Input id="degree" {...register('degree')} />
+                </FormField>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    label="Data de início"
+                    error={errors.start_date?.message}
+                  >
+                    <Input
+                      id="start_date"
+                      type="date"
+                      {...register('start_date')}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Data de término"
+                    error={errors.end_date?.message}
+                  >
+                    <Input
+                      id="end_date"
+                      type="date"
+                      {...register('end_date')}
+                    />
+                  </FormField>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => onOpenChange(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Salvando...' : 'Salvar'}
+                  </Button>
+                </div>
+              </form>
+            </Card>
           </motion.div>
         </motion.div>
       )}

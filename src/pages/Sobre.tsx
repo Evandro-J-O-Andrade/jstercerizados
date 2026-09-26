@@ -858,7 +858,7 @@ export default function Sobre() {
           </Container>
         </Section>
 
-        <Section>
+        <Section className="before:from-surface/50 before:via-background before:to-surface/50 relative before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-b">
           <Container>
             <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
               <motion.h2
@@ -994,7 +994,7 @@ export default function Sobre() {
           </Container>
         </Section>
 
-        <Section>
+        <Section className="before:from-surface-alt/20 before:to-surface-alt/20 relative before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-b before:via-transparent">
           <Container>
             <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
               <motion.span
@@ -1060,7 +1060,7 @@ export default function Sobre() {
           </Container>
         </Section>
 
-        <Section>
+        <Section className="before:from-surface/50 before:via-surface-alt/30 before:to-surface/50 relative before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-b">
           <Container>
             <SectionReveal staggerDelay={0.2} className="mb-12 text-center">
               <motion.h2
@@ -1198,7 +1198,7 @@ export default function Sobre() {
           </Container>
         </Section>
 
-        <Section>
+        <Section className="before:from-background before:via-surface/30 before:to-background relative before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-b">
           <Container>
             <SectionReveal staggerDelay={0.2} className="mb-16 text-center">
               <motion.h2
@@ -1252,7 +1252,7 @@ export default function Sobre() {
           </Container>
         </Section>
 
-        <Section>
+        <Section className="before:from-surface-alt/20 before:to-surface-alt/20 relative before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-b before:via-transparent">
           <Container>
             <SectionReveal
               staggerDelay={0.15}

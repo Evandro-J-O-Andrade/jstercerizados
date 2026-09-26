@@ -8,6 +8,7 @@ import {
   Users,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import {
   DashboardCard,
   DashboardErrorState,
@@ -280,7 +281,7 @@ export default function VisaoGeral() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <DashboardSection
             title="Vagas recentes"
-            description="Últimas vagas cadastradas."
+            description="Últimas vagas publicadas."
             icon={BriefcaseBusiness}
             actions={
               <Button
@@ -292,30 +293,31 @@ export default function VisaoGeral() {
               </Button>
             }
           >
-            <div className="space-y-3">
+            <ul className="space-y-3">
               {recentJobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="border-border/50 hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-foreground truncate text-sm font-medium">
-                      {job.title}
-                    </p>
-                    <p className="text-muted-foreground mt-0.5 text-xs">
-                      {job.location || 'Sem localização'}
-                    </p>
-                  </div>
-                  <span className="bg-success/10 text-success ml-3 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium">
-                    {job.status === 'published'
-                      ? 'Publicada'
-                      : job.status === 'draft'
-                        ? 'Rascunho'
-                        : job.status}
-                  </span>
-                </div>
+                <li key={job.id}>
+                  <Card variant="interactive" hover className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-foreground truncate text-sm font-medium">
+                          {job.title}
+                        </p>
+                        <p className="text-muted-foreground mt-0.5 text-xs">
+                          {job.location || 'Sem localização'}
+                        </p>
+                      </div>
+                      <span className="bg-success/10 text-success ml-3 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium">
+                        {job.status === 'published'
+                          ? 'Publicada'
+                          : job.status === 'draft'
+                            ? 'Rascunho'
+                            : job.status}
+                      </span>
+                    </div>
+                  </Card>
+                </li>
               ))}
-            </div>
+            </ul>
           </DashboardSection>
 
           <DashboardSection
@@ -332,38 +334,39 @@ export default function VisaoGeral() {
               </Button>
             }
           >
-            <div className="space-y-3">
+            <ul className="space-y-3">
               {recentCandidates.map((candidate) => (
-                <div
-                  key={candidate.id}
-                  className="border-border/50 hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-foreground truncate text-sm font-medium">
-                      {candidate.person?.full_name || 'Sem nome'}
-                    </p>
-                    <p className="text-muted-foreground mt-0.5 text-xs">
-                      {candidate.person?.email || 'Sem email'}
-                    </p>
-                  </div>
-                  <span
-                    className={`ml-3 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      candidate.status === 'active'
-                        ? 'bg-success/10 text-success'
-                        : candidate.status === 'inactive'
-                          ? 'bg-warning/10 text-warning'
-                          : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {candidate.status === 'active'
-                      ? 'Ativo'
-                      : candidate.status === 'inactive'
-                        ? 'Inativo'
-                        : candidate.status}
-                  </span>
-                </div>
+                <li key={candidate.id}>
+                  <Card variant="interactive" hover className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-foreground truncate text-sm font-medium">
+                          {candidate.person?.full_name || 'Sem nome'}
+                        </p>
+                        <p className="text-muted-foreground mt-0.5 text-xs">
+                          {candidate.person?.email || 'Sem email'}
+                        </p>
+                      </div>
+                      <span
+                        className={`ml-3 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          candidate.status === 'active'
+                            ? 'bg-success/10 text-success'
+                            : candidate.status === 'inactive'
+                              ? 'bg-warning/10 text-warning'
+                              : 'bg-muted text-muted-foreground'
+                        }`}
+                      >
+                        {candidate.status === 'active'
+                          ? 'Ativo'
+                          : candidate.status === 'inactive'
+                            ? 'Inativo'
+                            : candidate.status}
+                      </span>
+                    </div>
+                  </Card>
+                </li>
               ))}
-            </div>
+            </ul>
           </DashboardSection>
         </div>
       )}

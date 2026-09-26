@@ -265,7 +265,7 @@ export default function TrabalheConosco() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                   onSubmit={handleSubmit(onSubmit)}
-                  className="bg-card shadow-premium rounded-2xl p-8"
+                  className="card-base rounded-2xl p-8"
                 >
                   <div className="mb-4">
                     <p className="text-muted-foreground text-sm">
@@ -491,7 +491,7 @@ export default function TrabalheConosco() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-card shadow-premium rounded-2xl p-8 text-center"
+                  className="card-base rounded-2xl p-8 text-center"
                 >
                   <Briefcase className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                   <p className="text-muted-foreground">

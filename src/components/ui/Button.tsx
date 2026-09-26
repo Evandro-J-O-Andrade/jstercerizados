@@ -29,15 +29,15 @@ export function Button({
   const baseClasses = cn(
     'inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
     {
-      'bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary shadow-sm hover:shadow-md':
+      'bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary shadow-sm hover:shadow-md active:bg-primary':
         variant === 'primary',
-      'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-secondary shadow-sm hover:shadow-md':
+      'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-secondary shadow-sm hover:shadow-md active:bg-secondary':
         variant === 'secondary',
-      'border-border text-foreground hover:bg-muted focus-visible:ring-ring border bg-transparent focus-visible:ring-offset-background':
+      'border-border bg-transparent text-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background active:bg-muted':
         variant === 'outline',
-      'text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background':
+      'text-muted-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background active:bg-muted/50':
         variant === 'ghost',
-      'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive shadow-sm focus-visible:ring-offset-background':
+      'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive shadow-sm focus-visible:ring-offset-background active:bg-destructive':
         variant === 'danger',
     },
     {

@@ -118,7 +118,7 @@ export default function Usuarios() {
         )}
 
         {!isLoading && !error && filtered.length > 0 && (
-          <div className="bg-card border-border overflow-hidden rounded-xl border shadow-sm">
+          <div className="card-base overflow-hidden">
             <table className="divide-border min-w-full divide-y">
               <thead className="bg-muted/50">
                 <tr>
@@ -189,4 +189,3 @@ export default function Usuarios() {
     </ModuleWorkspace>
   );
 }
-

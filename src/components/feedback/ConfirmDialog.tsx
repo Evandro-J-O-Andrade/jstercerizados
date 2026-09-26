@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -37,25 +38,31 @@ export function ConfirmDialog({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="bg-card border-border w-full max-w-md rounded-xl border p-6 shadow-xl"
+            className="w-full max-w-md"
           >
-            <div className="mb-4 flex items-center gap-3">
-              <AlertTriangle className="text-warning h-5 w-5" />
-              <h3 className="text-foreground text-lg font-semibold">{title}</h3>
-            </div>
-            <p className="text-muted-foreground mb-6 text-sm">{message}</p>
-            <div className="flex justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={onCancel}>
-                {cancelLabel}
-              </Button>
-              <Button
-                variant={variant === 'danger' ? 'primary' : variant}
-                size="sm"
-                onClick={onConfirm}
-              >
-                {confirmLabel}
-              </Button>
-            </div>
+            <Card variant="elevated" padding="lg">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="bg-warning/10 text-warning flex h-8 w-8 items-center justify-center rounded-full">
+                  <AlertTriangle className="h-5 w-5" />
+                </div>
+                <h3 className="text-foreground text-lg font-semibold">
+                  {title}
+                </h3>
+              </div>
+              <p className="text-muted-foreground mb-6 text-sm">{message}</p>
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" size="sm" onClick={onCancel}>
+                  {cancelLabel}
+                </Button>
+                <Button
+                  variant={variant === 'danger' ? 'primary' : variant}
+                  size="sm"
+                  onClick={onConfirm}
+                >
+                  {confirmLabel}
+                </Button>
+              </div>
+            </Card>
           </motion.div>
         </motion.div>
       )}

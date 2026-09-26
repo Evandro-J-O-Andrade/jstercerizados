@@ -1,5 +1,5 @@
 import { SEO } from '@/components/ui/SEO';
-import { DivulgarVagaForm } from '@/components/forms/DivulgarVagaForm';
+import DivulgarVagaForm from '@/components/forms/DivulgarVagaForm';
 import { COMPANY } from '@/config';
 
 export default function DivulgarVaga() {

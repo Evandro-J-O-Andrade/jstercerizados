@@ -349,7 +349,7 @@ export default function Candidaturas() {
             </p>
           </Card>
         ) : (
-          <div className="bg-card border-border overflow-hidden rounded-xl border shadow-sm">
+          <div className="card-base overflow-hidden">
             <table className="divide-border min-w-full divide-y">
               <thead className="bg-muted/50">
                 <tr>
@@ -643,4 +643,3 @@ export default function Candidaturas() {
     </ModuleWorkspace>
   );
 }
-

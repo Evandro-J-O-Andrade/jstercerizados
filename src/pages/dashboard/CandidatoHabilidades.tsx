@@ -58,7 +58,8 @@ export default function CandidatoHabilidades() {
       setError(null);
 
       try {
-        const candidatesData = await candidatesRepository.findAll(currentTenantId);
+        const candidatesData =
+          await candidatesRepository.findAll(currentTenantId);
 
         if (!cancelled) {
           setCandidates(
@@ -250,7 +251,7 @@ export default function CandidatoHabilidades() {
             </p>
           </Card>
         ) : (
-          <div className="bg-card border-border overflow-hidden rounded-xl border shadow-sm">
+          <div className="card-base overflow-hidden">
             <table className="divide-border min-w-full divide-y">
               <thead className="bg-muted/50">
                 <tr>
@@ -343,9 +344,7 @@ export default function CandidatoHabilidades() {
                     required
                     className="w-full rounded-lg border px-3 py-2 text-sm"
                     value={form.name}
-                    onChange={(e) =>
-                      setForm({ ...form, name: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="Digite o nome da habilidade"
                   />
                 </div>
@@ -397,4 +396,3 @@ export default function CandidatoHabilidades() {
     </ModuleWorkspace>
   );
 }
-

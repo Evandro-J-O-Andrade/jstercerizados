@@ -24,13 +24,15 @@ export function DashboardSection({
 }: DashboardSectionProps) {
   return (
     <Card
+      variant="outline"
+      padding="md"
       data-testid={testId ?? 'dashboard-section'}
-      className={cn('border-border bg-card p-5 shadow-sm sm:p-6', className)}
+      className={cn(className)}
     >
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           {Icon && (
-            <div className="border-border bg-muted flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border">
+            <div className="bg-muted flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
               <Icon
                 aria-hidden="true"
                 className="text-muted-foreground h-4 w-4"

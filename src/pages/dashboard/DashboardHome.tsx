@@ -298,7 +298,7 @@ export default function DashboardHome() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <NavLink
             to="/dashboard/financeiro"
-            className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors"
+            className="card-base card-hover flex items-center gap-4 p-4"
           >
             <CircleDollarSign className="text-success h-6 w-6" />
             <div>
@@ -310,7 +310,7 @@ export default function DashboardHome() {
           </NavLink>
           <NavLink
             to="/dashboard/estoque"
-            className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors"
+            className="card-base card-hover flex items-center gap-4 p-4"
           >
             <Package className="text-primary h-6 w-6" />
             <div>
@@ -322,7 +322,7 @@ export default function DashboardHome() {
           </NavLink>
           <NavLink
             to="/dashboard/relatorios"
-            className="bg-card border-border hover:bg-muted flex items-center gap-4 rounded-xl border p-4 transition-colors"
+            className="card-base card-hover flex items-center gap-4 p-4"
           >
             <FileText className="text-accent h-6 w-6" />
             <div>

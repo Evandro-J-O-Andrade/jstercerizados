@@ -24,6 +24,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
 import {
@@ -588,66 +589,70 @@ export function PortalSidebar({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="bg-card border-border mx-4 w-full max-w-lg rounded-xl border p-6 shadow-xl"
+              className="mx-4 w-full max-w-lg"
             >
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-foreground text-lg font-semibold">
-                  Escolha seu acesso
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSwitchOpen(false)}
-                >
-                  <Globe className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-muted-foreground mb-4 text-sm">
-                Selecione a conta com a qual deseja trabalhar. Sua sessão
-                permanece ativa.
-              </p>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {availableMemberships.map((membership) => {
-                  const role = roles.find((r) => r.id === membership.role_id);
-                  const roleName = role?.name || 'Usuário';
-                  const isActive = membership.tenant_id === activeTenantId;
-                  return (
-                    <button
-                      key={membership.id}
-                      type="button"
-                      onClick={() => handleSwitchAccount(membership.tenant_id)}
-                      className={cn(
-                        'border-border hover:border-primary/50 rounded-xl border p-4 text-left transition-all',
-                        isActive && 'ring-primary/50 ring-2',
-                      )}
-                    >
-                      <div className="mb-2 flex items-center gap-3">
-                        <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
-                          <Shield className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <p className="text-foreground text-sm font-semibold">
-                            Conta
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            {roleName}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground text-xs">
-                          {isActive ? 'Ativo' : 'Selecionar'}
-                        </span>
-                        {isActive && (
-                          <span className="text-primary text-xs font-medium">
-                            Atual
-                          </span>
+              <Card variant="default" className="p-6 shadow-xl">
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="text-foreground text-lg font-semibold">
+                    Escolha seu acesso
+                  </h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSwitchOpen(false)}
+                  >
+                    <Globe className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-muted-foreground mb-4 text-sm">
+                  Selecione a conta com a qual deseja trabalhar. Sua sessão
+                  permanece ativa.
+                </p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {availableMemberships.map((membership) => {
+                    const role = roles.find((r) => r.id === membership.role_id);
+                    const roleName = role?.name || 'Usuário';
+                    const isActive = membership.tenant_id === activeTenantId;
+                    return (
+                      <button
+                        key={membership.id}
+                        type="button"
+                        onClick={() =>
+                          handleSwitchAccount(membership.tenant_id)
+                        }
+                        className={cn(
+                          'border-border hover:border-primary/50 rounded-xl border p-4 text-left transition-all',
+                          isActive && 'ring-primary/50 ring-2',
                         )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+                      >
+                        <div className="mb-2 flex items-center gap-3">
+                          <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                            <Shield className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <p className="text-foreground text-sm font-semibold">
+                              Conta
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                              {roleName}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground text-xs">
+                            {isActive ? 'Ativo' : 'Selecionar'}
+                          </span>
+                          {isActive && (
+                            <span className="text-primary text-xs font-medium">
+                              Atual
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </Card>
             </motion.div>
           </motion.div>
         )}

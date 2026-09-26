@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { FormField } from '@/components/ui/FormField';
@@ -102,47 +103,49 @@ export function LanguageDialog({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="bg-card border-border w-full max-w-lg rounded-xl border p-6 shadow-xl"
+            className="w-full max-w-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-foreground mb-4 text-lg font-semibold">
-              {initialData?.id ? 'Editar idioma' : 'Novo idioma'}
-            </h3>
+            <Card variant="default" className="p-6 shadow-xl">
+              <h3 className="text-foreground mb-4 text-lg font-semibold">
+                {initialData?.id ? 'Editar idioma' : 'Novo idioma'}
+              </h3>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                label="Idioma"
-                error={errors.language?.message}
-                required
-              >
-                <Input id="language" {...register('language')} />
-              </FormField>
-
-              <FormField label="Nível" error={errors.level?.message} required>
-                <Select id="level" {...register('level')}>
-                  <option value="">Selecione</option>
-                  {LEVEL_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => onOpenChange(false)}
-                  disabled={isSubmitting}
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  label="Idioma"
+                  error={errors.language?.message}
+                  required
                 >
-                  Cancelar
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Salvando...' : 'Salvar'}
-                </Button>
-              </div>
-            </form>
+                  <Input id="language" {...register('language')} />
+                </FormField>
+
+                <FormField label="Nível" error={errors.level?.message} required>
+                  <Select id="level" {...register('level')}>
+                    <option value="">Selecione</option>
+                    {LEVEL_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </Select>
+                </FormField>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => onOpenChange(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Salvando...' : 'Salvar'}
+                  </Button>
+                </div>
+              </form>
+            </Card>
           </motion.div>
         </motion.div>
       )}

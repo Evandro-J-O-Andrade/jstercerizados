@@ -179,7 +179,7 @@ export default function Empresas() {
                   {Array.from({ length: 4 }).map((_, i) => (
                     <div
                       key={i}
-                      className="bg-card border-border flex h-32 animate-pulse flex-col items-center justify-center rounded-2xl border p-6"
+                      className="card-base flex h-32 animate-pulse flex-col items-center justify-center rounded-2xl p-6"
                     >
                       <div className="bg-muted h-12 w-24 rounded" />
                     </div>
@@ -192,13 +192,13 @@ export default function Empresas() {
                   onRetry={refetch}
                 />
               ) : clients.length === 0 ? (
-                <div className="bg-card shadow-premium col-span-full rounded-2xl p-12 text-center">
+                <div className="card-base col-span-full rounded-2xl p-12 text-center">
                   <p className="text-muted-foreground">
                     Nenhum cliente disponível no momento.
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4">
+                <div className="mx-auto grid w-full max-w-[1400px] grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
                   {clients
                     .filter((client) => client.name && client.logo)
                     .map((client, index) => (
@@ -260,7 +260,7 @@ export default function Empresas() {
           >
             <motion.div
               variants={revealUp}
-              className="bg-card border-border shadow-premium rounded-3xl border p-8 sm:p-12"
+              className="card-base rounded-3xl p-8 sm:p-12"
             >
               <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
                 <motion.div variants={staggerItem('up')}>
@@ -309,7 +309,7 @@ export default function Empresas() {
 
                 <motion.div
                   variants={staggerItem('up')}
-                  className="bg-muted/50 border-border/50 rounded-2xl border p-6"
+                  className="card-base card-border-refined p-6"
                 >
                   <h3 className="text-foreground mb-4 text-lg font-semibold">
                     Nossas soluções

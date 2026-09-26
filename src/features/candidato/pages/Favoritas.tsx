@@ -84,7 +84,7 @@ export default function CandidateFavoritas() {
               if (!job) return null;
               return (
                 <li key={fav.id}>
-                  <Card className="p-5">
+                  <Card variant="interactive" hover className="p-5">
                     <div className="flex items-start gap-4">
                       <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
                         <Building2 className="h-5 w-5" />

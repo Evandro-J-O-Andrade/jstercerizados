@@ -164,15 +164,12 @@ export default function Funcionarios() {
       });
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : 'Erro ao remover funcionário',
+        err instanceof Error ? err.message : 'Erro ao remover funcionário',
       );
       addToast({
         type: 'error',
-        message: err instanceof Error
-          ? err.message
-          : 'Erro ao remover funcionário',
+        message:
+          err instanceof Error ? err.message : 'Erro ao remover funcionário',
       });
     } finally {
       setDeleteConfirm(null);
@@ -182,8 +179,12 @@ export default function Funcionarios() {
   const filtered = employees.filter((employee) => {
     const matchesSearch =
       !search ||
-      (employee.employee_code || '').toLowerCase().includes(search.toLowerCase()) ||
-      (employee.person?.full_name || '').toLowerCase().includes(search.toLowerCase());
+      (employee.employee_code || '')
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      (employee.person?.full_name || '')
+        .toLowerCase()
+        .includes(search.toLowerCase());
     const matchesStatus =
       statusFilter === 'all' || employee.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -252,7 +253,7 @@ export default function Funcionarios() {
             </p>
           </Card>
         ) : (
-          <div className="bg-card border-border overflow-hidden rounded-xl border shadow-sm">
+          <div className="card-base overflow-hidden">
             <table className="divide-border min-w-full divide-y">
               <thead className="bg-muted/50">
                 <tr>
@@ -445,4 +446,3 @@ export default function Funcionarios() {
     </ModuleWorkspace>
   );
 }
-

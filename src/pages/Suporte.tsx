@@ -22,6 +22,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
@@ -304,12 +305,15 @@ export default function Suporte() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="bg-card/80 border-border/50 shadow-elevated relative overflow-hidden rounded-2xl border backdrop-blur-sm">
+                <Card
+                  variant="default"
+                  className="shadow-elevated relative overflow-hidden rounded-2xl p-8 sm:p-10"
+                >
                   {/* Gradient accent */}
                   <div className="bg-primary/5 absolute -top-20 -right-20 h-60 w-60 rounded-full blur-3xl" />
                   <div className="bg-primary/5 absolute -bottom-20 -left-20 h-60 w-60 rounded-full blur-3xl" />
 
-                  <div className="relative p-8 sm:p-10">
+                  <div className="relative">
                     <h3 className="text-foreground text-2xl font-bold sm:text-3xl">
                       Solicitar Atendimento
                     </h3>
@@ -565,7 +569,7 @@ export default function Suporte() {
                       </form>
                     )}
                   </div>
-                </div>
+                </Card>
               </motion.div>
             </div>
 
@@ -618,7 +622,7 @@ export default function Suporte() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="bg-card border-border rounded-2xl border p-6"
+                className="card-base rounded-2xl p-6"
               >
                 <h4 className="text-foreground text-lg font-bold">
                   Como deseja continuar?
@@ -633,8 +637,7 @@ export default function Suporte() {
                     onClick={() =>
                       addToast({
                         type: 'info',
-                        message:
-                          'Em breve: Assistente J&S disponível aqui.',
+                        message: 'Em breve: Assistente J&S disponível aqui.',
                       })
                     }
                     className="bg-primary/10 text-primary hover:bg-primary/20 flex items-center gap-3 rounded-xl p-4 transition-colors"
@@ -692,7 +695,7 @@ export default function Suporte() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="bg-card border-border rounded-2xl border p-6"
+                className="card-base rounded-2xl p-6"
               >
                 <h4 className="text-foreground text-lg font-bold">
                   Contato Direto
@@ -756,7 +759,7 @@ export default function Suporte() {
               <motion.div
                 key={card.title}
                 variants={staggerItem('up')}
-                className="bg-card border-border hover:border-primary/30 group relative overflow-hidden rounded-2xl border p-8 transition-all duration-300"
+                className="card-base card-hover group relative overflow-hidden rounded-2xl p-8 transition-all duration-300"
               >
                 <div className="bg-primary/5 animate-float-slow absolute -top-10 -right-10 h-32 w-32 rounded-full blur-2xl" />
                 <div className="bg-primary/5 animate-float-medium absolute -bottom-10 -left-10 h-32 w-32 rounded-full blur-2xl" />
@@ -843,7 +846,7 @@ export default function Suporte() {
               <motion.div
                 key={item.title}
                 variants={staggerItem('up')}
-                className="bg-card border-border hover:border-primary/30 group rounded-2xl border p-6 transition-all duration-300"
+                className="card-base card-hover group rounded-2xl p-6"
               >
                 <span className="text-2xl">{item.icon}</span>
                 <h4 className="text-foreground mt-3 text-lg font-bold">
@@ -873,7 +876,7 @@ export default function Suporte() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="bg-card border-border rounded-2xl p-8 sm:p-12"
+            className="card-base rounded-2xl p-8 sm:p-12"
           >
             <h3 className="text-foreground text-2xl font-bold sm:text-3xl">
               Ainda precisa de ajuda?

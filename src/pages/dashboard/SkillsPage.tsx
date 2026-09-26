@@ -62,13 +62,13 @@ export default function SkillsPage() {
       ) : error ? (
         <div className="text-destructive text-sm">{error}</div>
       ) : skills.length === 0 ? (
-        <div className="bg-card border-border rounded-xl border p-6 shadow-sm">
+        <div className="card-base p-6">
           <p className="text-muted-foreground text-sm">
             Nenhuma habilidade cadastrada no momento.
           </p>
         </div>
       ) : (
-        <div className="bg-card border-border overflow-hidden rounded-xl border shadow-sm">
+        <div className="card-base overflow-hidden">
           <table className="divide-border min-w-full divide-y">
             <thead className="bg-muted/50">
               <tr>
@@ -104,4 +104,3 @@ export default function SkillsPage() {
     </ModuleWorkspace>
   );
 }
-

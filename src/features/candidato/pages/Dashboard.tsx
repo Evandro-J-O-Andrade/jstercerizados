@@ -241,7 +241,7 @@ export default function CandidateDashboard() {
         </header>
 
         {!candidate && (
-          <Card className="border-border/40 bg-card shadow-glass p-6">
+          <Card className="card-base p-6">
             <div className="flex items-center gap-4">
               <div className="bg-warning/10 flex h-12 w-12 items-center justify-center rounded-xl">
                 <AlertCircle className="text-warning h-6 w-6" />
@@ -265,7 +265,7 @@ export default function CandidateDashboard() {
 
         {candidate && (
           <>
-            <Card className="border-border/40 bg-card shadow-glass p-6">
+            <Card className="card-base p-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <div className="text-primary inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
@@ -349,7 +349,7 @@ export default function CandidateDashboard() {
               )}
             </Card>
 
-            <Card className="border-border/40 bg-card shadow-glass p-6">
+            <Card className="card-base p-6">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="text-primary inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
@@ -388,7 +388,7 @@ export default function CandidateDashboard() {
               </div>
             </Card>
 
-            <Card className="border-border/40 bg-card shadow-glass p-6">
+            <Card className="card-base p-6">
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <h2 className="text-foreground text-lg font-semibold">
@@ -428,7 +428,7 @@ export default function CandidateDashboard() {
                       <li key={j.id}>
                         <Link
                           to={`/vagas/${j.slug}`}
-                          className="border-border/40 hover:bg-muted/5 flex items-start gap-4 rounded-xl border p-4 transition-colors"
+                          className="card-base card-hover flex items-start gap-4 p-4"
                         >
                           <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
                             <Building2 className="h-5 w-5" />
@@ -484,7 +484,7 @@ export default function CandidateDashboard() {
               </div>
             </Card>
 
-            <Card className="border-border/40 bg-card shadow-glass p-6">
+            <Card className="card-base p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-foreground text-lg font-semibold">
                   Minhas candidaturas
@@ -511,36 +511,35 @@ export default function CandidateDashboard() {
                   </Link>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <ul className="space-y-3">
                   {recentApps.map((app) => (
-                    <div
-                      key={app.id}
-                      className="border-border/40 hover:bg-muted/5 rounded-xl border p-4 transition-colors"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="text-foreground font-medium">
-                            {app.job?.title || 'Vaga sem título'}
-                          </h3>
-                          {app.job?.city && (
-                            <p className="text-muted-foreground text-sm">
-                              {app.job.city}
-                              {app.job.state ? `/${app.job.state}` : ''}
-                            </p>
-                          )}
+                    <li key={app.id}>
+                      <Card variant="interactive" hover className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="text-foreground font-medium">
+                              {app.job?.title || 'Vaga sem título'}
+                            </h3>
+                            {app.job?.city && (
+                              <p className="text-muted-foreground text-sm">
+                                {app.job.city}
+                                {app.job.state ? `/${app.job.state}` : ''}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <div className="text-muted-foreground mt-2 text-xs">
-                        Candidatou-se em{' '}
-                        {new Date(app.applied_at).toLocaleDateString('pt-BR')}
-                      </div>
-                    </div>
+                        <div className="text-muted-foreground mt-2 text-xs">
+                          Candidatou-se em{' '}
+                          {new Date(app.applied_at).toLocaleDateString('pt-BR')}
+                        </div>
+                      </Card>
+                    </li>
                   ))}
-                </div>
+                </ul>
               )}
             </Card>
 
-            <Card className="border-border/40 bg-card shadow-glass p-6">
+            <Card className="card-base p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-foreground text-lg font-semibold">
                   Vagas favoritas
@@ -567,30 +566,29 @@ export default function CandidateDashboard() {
                 <ul className="space-y-2">
                   {favorites.slice(0, 3).map((fav) => (
                     <li key={fav.id}>
-                      <Link
-                        to={`/vagas/${fav.job?.slug ?? ''}`}
-                        className="border-border/40 hover:bg-muted/5 flex items-center gap-3 rounded-xl border p-3 transition-colors"
-                      >
-                        <Heart className="fill-destructive text-destructive h-4 w-4 shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <div className="text-foreground truncate font-medium">
-                            {fav.job?.title ?? 'Vaga'}
-                          </div>
-                          {fav.job?.city && (
-                            <div className="text-muted-foreground text-xs">
-                              {fav.job.city}
-                              {fav.job.state ? `/${fav.job.state}` : ''}
+                      <Card variant="interactive" hover className="p-3">
+                        <Link to={`/vagas/${fav.job?.slug ?? ''}`}>
+                          <Heart className="fill-destructive text-destructive h-4 w-4 shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <div className="text-foreground truncate font-medium">
+                              {fav.job?.title ?? 'Vaga'}
                             </div>
-                          )}
-                        </div>
-                      </Link>
+                            {fav.job?.city && (
+                              <div className="text-muted-foreground text-xs">
+                                {fav.job.city}
+                                {fav.job.state ? `/${fav.job.state}` : ''}
+                              </div>
+                            )}
+                          </div>
+                        </Link>
+                      </Card>
                     </li>
                   ))}
                 </ul>
               )}
             </Card>
 
-            <Card className="border-border/40 bg-card shadow-glass p-6">
+            <Card className="card-base p-6">
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <h2 className="text-foreground text-lg font-semibold">
@@ -623,30 +621,29 @@ export default function CandidateDashboard() {
               ) : (
                 <ul className="space-y-2">
                   {jobAlerts.slice(0, 3).map((alert) => (
-                    <li
-                      key={alert.id}
-                      className="border-border/40 flex items-center gap-3 rounded-xl border p-3"
-                    >
-                      <Bell
-                        className={
-                          alert.is_active
-                            ? 'text-primary h-4 w-4 shrink-0'
-                            : 'text-muted-foreground h-4 w-4 shrink-0'
-                        }
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="text-foreground truncate font-medium">
-                          {alert.name}
+                    <li key={alert.id}>
+                      <Card variant="interactive" hover className="p-3">
+                        <Bell
+                          className={
+                            alert.is_active
+                              ? 'text-primary h-4 w-4 shrink-0'
+                              : 'text-muted-foreground h-4 w-4 shrink-0'
+                          }
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-foreground truncate font-medium">
+                            {alert.name}
+                          </div>
+                          <div className="text-muted-foreground text-xs">
+                            {alert.is_active ? 'Ativo' : 'Pausado'} ·{' '}
+                            {alert.frequency === 'instant'
+                              ? 'Imediato'
+                              : alert.frequency === 'daily'
+                                ? 'Diário'
+                                : 'Semanal'}
+                          </div>
                         </div>
-                        <div className="text-muted-foreground text-xs">
-                          {alert.is_active ? 'Ativo' : 'Pausado'} ·{' '}
-                          {alert.frequency === 'instant'
-                            ? 'Imediato'
-                            : alert.frequency === 'daily'
-                              ? 'Diário'
-                              : 'Semanal'}
-                        </div>
-                      </div>
+                      </Card>
                     </li>
                   ))}
                   {jobAlerts.length > 3 && (
@@ -666,36 +663,32 @@ export default function CandidateDashboard() {
                 Ações rápidas
               </h2>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                <Link
-                  to="/candidato/vagas"
-                  className="border-border/40 hover:bg-muted/5 rounded-xl border p-4 text-center transition-colors"
-                >
-                  <Briefcase className="text-primary mx-auto mb-1 h-5 w-5" />
-                  <span className="block text-sm font-medium">Vagas</span>
-                </Link>
-                <Link
-                  to="/candidato/curriculo"
-                  className="border-border/40 hover:bg-muted/5 rounded-xl border p-4 text-center transition-colors"
-                >
-                  <FileText className="text-primary mx-auto mb-1 h-5 w-5" />
-                  <span className="block text-sm font-medium">Currículo</span>
-                </Link>
-                <Link
-                  to="/candidato/candidaturas"
-                  className="border-border/40 hover:bg-muted/5 rounded-xl border p-4 text-center transition-colors"
-                >
-                  <Briefcase className="text-primary mx-auto mb-1 h-5 w-5" />
-                  <span className="block text-sm font-medium">
-                    Candidaturas
-                  </span>
-                </Link>
-                <Link
-                  to="/candidato/favoritas"
-                  className="border-border/40 hover:bg-muted/5 rounded-xl border p-4 text-center transition-colors"
-                >
-                  <Heart className="text-primary mx-auto mb-1 h-5 w-5" />
-                  <span className="block text-sm font-medium">Favoritos</span>
-                </Link>
+                <Card variant="interactive" hover className="p-4 text-center">
+                  <Link to="/candidato/vagas">
+                    <Briefcase className="text-primary mx-auto mb-1 h-5 w-5" />
+                    <span className="block text-sm font-medium">Vagas</span>
+                  </Link>
+                </Card>
+                <Card variant="interactive" hover className="p-4 text-center">
+                  <Link to="/candidato/curriculo">
+                    <FileText className="text-primary mx-auto mb-1 h-5 w-5" />
+                    <span className="block text-sm font-medium">Currículo</span>
+                  </Link>
+                </Card>
+                <Card variant="interactive" hover className="p-4 text-center">
+                  <Link to="/candidato/candidaturas">
+                    <Briefcase className="text-primary mx-auto mb-1 h-5 w-5" />
+                    <span className="block text-sm font-medium">
+                      Candidaturas
+                    </span>
+                  </Link>
+                </Card>
+                <Card variant="interactive" hover className="p-4 text-center">
+                  <Link to="/candidato/favoritas">
+                    <Heart className="text-primary mx-auto mb-1 h-5 w-5" />
+                    <span className="block text-sm font-medium">Favoritos</span>
+                  </Link>
+                </Card>
               </div>
             </div>
           </>

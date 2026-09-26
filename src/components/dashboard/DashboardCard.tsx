@@ -33,12 +33,12 @@ export function DashboardCard({
 
   const card = (
     <Card
+      variant="interactive"
+      hover
+      padding="md"
       data-testid={loading ? `dashboard-card-skeleton-${metric.id}` : testId}
       aria-busy={loading || undefined}
-      className={cn(
-        'border-border bg-card hover:border-primary/40 p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md',
-        className,
-      )}
+      className={cn(className)}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
@@ -61,7 +61,7 @@ export function DashboardCard({
         <div
           data-testid={loading ? undefined : `dashboard-icon-${metric.id}`}
           className={cn(
-            'bg-card flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border',
+            'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border',
             toneClasses[metric.tone ?? 'neutral'],
           )}
         >

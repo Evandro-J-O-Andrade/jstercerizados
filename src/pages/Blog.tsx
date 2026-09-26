@@ -117,7 +117,7 @@ export default function Blog() {
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0 },
                 }}
-                className="bg-card border-border hover:border-primary/30 rounded-3xl border p-6 transition-all duration-300"
+                className="card-base card-hover card-border-refined rounded-3xl p-6"
               >
                 <div className="text-muted-foreground flex items-center gap-3 text-xs">
                   <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 font-medium">

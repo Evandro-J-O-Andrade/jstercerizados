@@ -385,7 +385,7 @@ export default function Clientes() {
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <div className="bg-card border-border shadow-premium rounded-3xl border p-8 sm:p-12">
+            <div className="card-base rounded-3xl p-8 sm:p-12">
               <Users className="text-primary mx-auto mb-4 h-12 w-12" />
               <h2 className="text-foreground text-2xl font-bold sm:text-3xl">
                 Grandes empresas possuem grandes desafios.

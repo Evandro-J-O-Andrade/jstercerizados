@@ -54,7 +54,7 @@ export function PremiumCard({
     return (
       <div
         className={cn(
-          'bg-card shadow-premium border-border relative overflow-hidden border transition-all duration-300 motion-reduce:transition-none',
+          'card-base rounded-xl motion-reduce:transition-none',
           roundedClass,
           interactionClasses,
           hover && !interactable && 'group hover:-translate-y-[3px]',
@@ -83,7 +83,7 @@ export function PremiumCard({
     >
       <div
         className={cn(
-          'gold-glow-card bg-card shadow-premium border-border relative overflow-hidden border transition-all duration-300 motion-reduce:transition-none',
+          'gold-glow-card card-base motion-reduce:transition-none',
           roundedClass,
           className,
         )}

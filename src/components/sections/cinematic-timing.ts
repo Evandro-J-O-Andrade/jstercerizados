@@ -1,7 +1,7 @@
 export const CINEMATIC_TIMING = {
-  ENTER_MS: 3500,
-  HOLD_MS: 5000,
-  EXIT_MS: 1400,
+  ENTER_MS: 2200,
+  HOLD_MS: 2500,
+  EXIT_MS: 1200,
 } as const;
 
 export const CINEMATIC_EASING = [0.25, 0.4, 0.25, 1] as const;

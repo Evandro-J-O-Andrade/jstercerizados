@@ -13,9 +13,11 @@ interface FormAlertProps {
 }
 
 const VARIANT_STYLES: Record<FormAlertVariant, string> = {
-  error: 'border-destructive/30 bg-destructive/5 text-destructive',
-  success: 'border-success/30 bg-success/5 text-success',
-  info: 'border-primary/30 bg-primary/5 text-primary',
+  error:
+    'border-destructive/30 bg-destructive/5 text-destructive dark:border-destructive/40 dark:bg-destructive/10',
+  success:
+    'border-success/30 bg-success/5 text-success dark:border-success/40 dark:bg-success/10',
+  info: 'border-primary/30 bg-primary/5 text-primary dark:border-primary/40 dark:bg-primary/10',
 };
 
 const VARIANT_ICONS: Record<

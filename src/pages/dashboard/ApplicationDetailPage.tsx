@@ -91,7 +91,7 @@ export default function ApplicationDetailPage() {
         </Button>
       }
     >
-      <div className="bg-card border-border space-y-6 rounded-xl border p-6 shadow-sm">
+      <div className="card-base space-y-6 p-6">
         <div>
           <h3 className="text-foreground mb-2 text-lg font-semibold">
             Candidato

@@ -4,6 +4,7 @@ import { cn } from '@/utils';
 import type { ModuleDefinition } from './ModuleRegistry';
 import type { Permission } from '@/types/auth';
 import { ICON_MAP } from './PortalSidebar';
+import { Card } from '@/components/ui/Card';
 
 interface ModuleCardLegacyProps {
   title: string;
@@ -38,7 +39,6 @@ export function ModuleCard(props: ModuleCardProps) {
   let title = '';
   let description = '';
   let Icon: React.ComponentType<{ className?: string }> = Home;
-  let className = '';
 
   if (isLegacyProps(props)) {
     const legacy = props;
@@ -47,7 +47,6 @@ export function ModuleCard(props: ModuleCardProps) {
     title = legacy.title;
     description = legacy.description;
     Icon = legacy.icon;
-    className = legacy.className || '';
   } else {
     const next = props;
     const permissions = next.permissions;
@@ -62,16 +61,13 @@ export function ModuleCard(props: ModuleCardProps) {
     title = module.title;
     description = module.description;
     Icon = ICON_MAP[module.icon] || Home;
-    className = next.className || '';
   }
 
-  const content = (
-    <div
-      className={cn(
-        'bg-card border-border flex h-full flex-col rounded-xl border p-6 shadow-sm transition-all duration-200',
-        disabled ? 'opacity-60' : 'hover:border-primary/30 hover:shadow-md',
-        className,
-      )}
+  const cardContent = (
+    <Card
+      variant={disabled ? 'default' : 'interactive'}
+      hover={!disabled}
+      className="h-full"
     >
       <div className="flex items-start justify-between">
         <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-xl">
@@ -89,23 +85,18 @@ export function ModuleCard(props: ModuleCardProps) {
           {disabled ? 'Sem permissão' : 'Acessar módulo →'}
         </span>
       </div>
-    </div>
+    </Card>
   );
 
   if (disabled) {
-    return content;
+    return cardContent;
   }
 
   return (
     <NavLink to={route}>
       {({ isActive }) => (
-        <div
-          className={cn(
-            'relative',
-            isActive && 'ring-primary/50 rounded-xl ring-2',
-          )}
-        >
-          {content}
+        <div className={cn('relative', isActive && 'ring-primary/50 ring-2')}>
+          {cardContent}
         </div>
       )}
     </NavLink>

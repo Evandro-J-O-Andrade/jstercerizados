@@ -179,9 +179,8 @@ export default function Candidatos() {
       );
       addToast({
         type: 'error',
-        message: err instanceof Error
-          ? err.message
-          : 'Erro ao remover candidato',
+        message:
+          err instanceof Error ? err.message : 'Erro ao remover candidato',
       });
     } finally {
       setDeleteConfirm(null);
@@ -213,7 +212,7 @@ export default function Candidatos() {
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Total
             </p>
-            <p className="text-2xl font-semibold text-foreground">
+            <p className="text-foreground text-2xl font-semibold">
               {candidates.length}
             </p>
           </Card>
@@ -221,7 +220,7 @@ export default function Candidatos() {
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Ativos
             </p>
-            <p className="text-2xl font-semibold text-foreground">
+            <p className="text-foreground text-2xl font-semibold">
               {statusCounts['active'] || 0}
             </p>
           </Card>
@@ -229,7 +228,7 @@ export default function Candidatos() {
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Arquivados
             </p>
-            <p className="text-2xl font-semibold text-foreground">
+            <p className="text-foreground text-2xl font-semibold">
               {statusCounts['archived'] || 0}
             </p>
           </Card>
@@ -237,7 +236,7 @@ export default function Candidatos() {
             <p className="text-muted-foreground text-xs font-semibold uppercase">
               Bloqueados
             </p>
-            <p className="text-2xl font-semibold text-foreground">
+            <p className="text-foreground text-2xl font-semibold">
               {statusCounts['blacklisted'] || 0}
             </p>
           </Card>
@@ -285,7 +284,7 @@ export default function Candidatos() {
             </p>
           </Card>
         ) : (
-          <div className="bg-card border-border overflow-hidden rounded-xl border shadow-sm">
+          <div className="card-base overflow-hidden">
             <table className="divide-border min-w-full divide-y">
               <thead className="bg-muted/50">
                 <tr>
@@ -528,4 +527,3 @@ export default function Candidatos() {
     </ModuleWorkspace>
   );
 }
-

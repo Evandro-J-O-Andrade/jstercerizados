@@ -462,7 +462,7 @@ export default function ServicoDetalhe() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-card shadow-premium rounded-3xl p-8"
+              className="card-base rounded-3xl p-8"
             >
               <h3 className="text-foreground mb-6 text-xl font-semibold">
                 Informações de Contato
@@ -620,7 +620,7 @@ export default function ServicoDetalhe() {
                 key={item.title}
                 variants={staggerItem('up')}
                 whileHover={{ y: -6, scale: 1.02 }}
-                className="bg-card shadow-premium group relative rounded-3xl p-8 pt-14 text-center transition-all duration-300"
+                className="card-base card-hover group relative rounded-3xl p-8 pt-14 text-center transition-all duration-300"
               >
                 <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground absolute -top-8 left-1/2 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-full transition-all duration-300">
                   <item.icon className="h-8 w-8 transition-transform group-hover:scale-110" />
@@ -736,7 +736,7 @@ export default function ServicoDetalhe() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.4 }}
-                className="bg-card shadow-premium overflow-hidden rounded-2xl"
+                className="card-base overflow-hidden rounded-2xl"
               >
                 <button
                   className="flex w-full items-center justify-between p-6 text-left"
@@ -799,10 +799,7 @@ export default function ServicoDetalhe() {
               </p>
 
               <div className="mt-8">
-                <ServiceRequestForm
-                  serviceSlug={service.slug}
-                  serviceName={service.title}
-                />
+                <ServiceRequestForm serviceSlug={service.slug} />
               </div>
             </motion.div>
           </motion.div>

@@ -91,7 +91,7 @@ export function HeroSplit({
   const slideCta = slide.cta ?? cta;
 
   return (
-    <section className="relative flex min-h-[100dvh] items-center overflow-hidden pt-16 lg:pt-20">
+    <section className="relative flex min-h-[calc(100dvh-88px)] items-center overflow-hidden pt-8 lg:pt-12">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,hsla(215,35%,25%,0.3),transparent_70%)]" />
 
       <AnimatePresence mode="wait">
@@ -129,7 +129,7 @@ export function HeroSplit({
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto grid w-full max-w-[1920px] grid-cols-1 gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24 xl:max-w-[2200px] xl:px-10">
+      <div className="relative mx-auto grid w-full max-w-[1920px] grid-cols-1 gap-6 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:gap-10 lg:py-12 xl:max-w-[2200px] xl:px-10">
         <div className="flex flex-col justify-center">
           {slideEyebrow && (
             <motion.div
@@ -197,11 +197,12 @@ export function HeroSplit({
                 scale: 0.98,
               }}
               transition={{ duration: 0.9, ease: [0.25, 0.4, 0.25, 1] }}
+              className="w-full"
             >
               <HeroImage
                 src={slide.image}
                 alt={slide.alt}
-                className="aspect-[4/3] w-full sm:aspect-[3/2] lg:aspect-[4/3]"
+                className="mx-auto aspect-[4/3] w-full max-w-[640px] sm:aspect-[3/2] lg:aspect-[4/3] lg:max-w-[560px] xl:max-w-[640px]"
               />
             </motion.div>
           </AnimatePresence>

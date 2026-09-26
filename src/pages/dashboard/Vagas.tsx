@@ -25,8 +25,8 @@ const JOB_STATUS = [
 
 const CONTRACT_TYPE_OPTIONS = [
   { value: 'clt', label: 'CLT' },
-  { value: 'internship', label: 'Estágio' },
-  { value: 'temporary', label: 'Temporário' },
+  { value: 'internship', label: 'Estï¿½gio' },
+  { value: 'temporary', label: 'Temporï¿½rio' },
   { value: 'freelance', label: 'Freelance' },
   { value: 'contracted', label: 'Contratado' },
   { value: 'cd', label: 'CD' },
@@ -34,12 +34,12 @@ const CONTRACT_TYPE_OPTIONS = [
 
 const WORK_MODE_OPTIONS = [
   { value: 'onsite', label: 'Presencial' },
-  { value: 'hybrid', label: 'Híbrido' },
+  { value: 'hybrid', label: 'Hï¿½brido' },
   { value: 'remote', label: 'Remoto' },
 ] as const;
 
 const SALARY_TYPE_OPTIONS = [
-  { value: 'negotiate', label: 'Negociável' },
+  { value: 'negotiate', label: 'Negociï¿½vel' },
   { value: 'range', label: 'Faixa' },
   { value: 'monthly', label: 'Mensal' },
 ] as const;
@@ -255,9 +255,7 @@ export default function Vagas() {
       setJobs((prev) => prev.filter((j) => j.id !== deleteConfirm));
       addToast({ type: 'success', message: 'Vaga removida com sucesso.' });
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Erro ao remover vaga',
-      );
+      setError(err instanceof Error ? err.message : 'Erro ao remover vaga');
       addToast({
         type: 'error',
         message: err instanceof Error ? err.message : 'Erro ao remover vaga',
@@ -288,7 +286,7 @@ export default function Vagas() {
             <Search className="text-muted-foreground h-4 w-4" />
             <input
               type="text"
-              placeholder="Buscar por título ou descrição..."
+              placeholder="Buscar por tï¿½tulo ou descriï¿½ï¿½o..."
               className="bg-transparent text-sm outline-none"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -349,12 +347,12 @@ export default function Vagas() {
             <p className="text-muted-foreground">Nenhuma vaga encontrada.</p>
           </Card>
         ) : (
-          <div className="bg-card border-border overflow-hidden rounded-xl border shadow-sm">
+          <div className="card-base overflow-hidden">
             <table className="divide-border min-w-full divide-y">
               <thead className="bg-muted/50">
                 <tr>
                   <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Título
+                    Tï¿½tulo
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
                     Tipo
@@ -369,7 +367,7 @@ export default function Vagas() {
                     Status
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-right text-xs font-semibold tracking-wider uppercase">
-                    Ações
+                    Aï¿½ï¿½es
                   </th>
                 </tr>
               </thead>
@@ -387,17 +385,17 @@ export default function Vagas() {
                         (opt) => opt.value === job.contract_type,
                       )?.label ||
                         job.contract_type ||
-                        '—'}
+                        'ï¿½'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
                       {WORK_MODE_OPTIONS.find(
                         (opt) => opt.value === job.work_mode,
                       )?.label ||
                         job.work_mode ||
-                        '—'}
+                        'ï¿½'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {[job.city, job.state].filter(Boolean).join('/') || '—'}
+                      {[job.city, job.state].filter(Boolean).join('/') || 'ï¿½'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span
@@ -453,7 +451,7 @@ export default function Vagas() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Título
+                    Tï¿½tulo
                   </label>
                   <input
                     type="text"
@@ -479,7 +477,7 @@ export default function Vagas() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Descrição
+                    Descriï¿½ï¿½o
                   </label>
                   <textarea
                     className="w-full rounded-lg border px-3 py-2 text-sm"
@@ -531,7 +529,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Salário mínimo
+                    Salï¿½rio mï¿½nimo
                   </label>
                   <input
                     type="number"
@@ -544,7 +542,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Salário máximo
+                    Salï¿½rio mï¿½ximo
                   </label>
                   <input
                     type="number"
@@ -557,7 +555,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Tipo de salário
+                    Tipo de salï¿½rio
                   </label>
                   <select
                     className="w-full rounded-lg border px-3 py-2 text-sm"
@@ -612,7 +610,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Publicação
+                    Publicaï¿½ï¿½o
                   </label>
                   <input
                     type="datetime-local"
@@ -625,7 +623,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Expiração
+                    Expiraï¿½ï¿½o
                   </label>
                   <input
                     type="datetime-local"
@@ -704,7 +702,7 @@ export default function Vagas() {
       <ConfirmDialog
         open={!!deleteConfirm}
         title="Remover vaga?"
-        message="Tem certeza que deseja remover esta vaga? Essa ação não pode ser desfeita."
+        message="Tem certeza que deseja remover esta vaga? Essa aï¿½ï¿½o nï¿½o pode ser desfeita."
         confirmLabel="Remover"
         variant="danger"
         onConfirm={handleDelete}
@@ -713,4 +711,3 @@ export default function Vagas() {
     </ModuleWorkspace>
   );
 }
-
