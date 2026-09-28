@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -14,9 +14,9 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { SEO } from '@/components/ui/SEO';
+import { useAccount } from '@/contexts/AccountContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { COMPANY } from '@/config';
-import { normalizeRoleScope } from '@/utils/rbac-normalize';
 
 type AreaInfo = {
   title: string;
@@ -147,13 +147,6 @@ function getAreaInfo(
   };
 }
 
-function formatRoleName(name: string): string {
-  return name
-    .split('_')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
-}
-
 export default function AuthWelcome() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -163,9 +156,8 @@ export default function AuthWelcome() {
     isAdminMaster,
     updateFirstLoginState,
     firstLoginState,
-    currentTenantId,
-    tenants,
   } = useAuth();
+  const { identity, userIdentity } = useAccount();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -175,40 +167,6 @@ export default function AuthWelcome() {
   }, [person, navigate]);
 
   const isReturning = Boolean(firstLoginState?.welcome_completed_at);
-
-  const identity = useMemo(() => {
-    const fullName = person?.full_name?.trim() || 'Usuário';
-    const firstName = fullName.split(/\s+/)[0] || 'Usuário';
-    const email = person?.email || '';
-    const primaryRole = roles[0];
-    const roleName = primaryRole ? formatRoleName(primaryRole.name) : 'Usuário';
-    const roleScope = primaryRole?.scope
-      ? normalizeRoleScope(primaryRole.scope)
-      : 'tenant';
-
-    const activeTenant = tenants.find((t) => t.id === currentTenantId);
-    const tenantName =
-      activeTenant?.name || (currentTenantId ? 'Tenant' : 'Plataforma');
-    const contextLabel =
-      roleScope === 'global' ? 'Gestão da Plataforma' : tenantName;
-
-    const now = new Date();
-    const dateTime = now.toLocaleString('pt-BR', {
-      dateStyle: 'long',
-      timeStyle: 'short',
-    });
-
-    return {
-      fullName,
-      firstName,
-      email,
-      roleName,
-      roleScope,
-      tenantName,
-      contextLabel,
-      dateTime,
-    };
-  }, [person, roles, currentTenantId, tenants]);
 
   const area = getAreaInfo(roles, isAdminMaster);
   const AreaIcon = area.icon;
@@ -289,7 +247,7 @@ export default function AuthWelcome() {
                     Usuário
                   </p>
                   <p className="text-foreground mt-1 text-sm font-medium">
-                    {identity.fullName}
+                    {identity.displayName}
                   </p>
                   <p className="text-muted-foreground text-xs">
                     {identity.email}
@@ -300,10 +258,10 @@ export default function AuthWelcome() {
                     Perfil
                   </p>
                   <p className="text-foreground mt-1 text-sm font-medium">
-                    {area.profileLabel}
+                    {userIdentity.roleLabel}
                   </p>
                   <p className="text-muted-foreground text-xs">
-                    {identity.roleName}
+                    {identity.tenantLabel}
                   </p>
                 </div>
                 <div>
@@ -314,7 +272,7 @@ export default function AuthWelcome() {
                     {identity.contextLabel}
                   </p>
                   <p className="text-muted-foreground text-xs">
-                    {identity.tenantName}
+                    {identity.tenantLabel}
                   </p>
                 </div>
                 <div>

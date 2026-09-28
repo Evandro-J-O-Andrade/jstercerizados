@@ -8,7 +8,6 @@ import {
   ChevronDown,
   User,
   Shield,
-  Search,
   Globe,
   Sun,
   Moon,
@@ -18,10 +17,9 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { COMPANY } from '@/config';
 import { cn } from '@/utils';
-import { normalizeRoleScope } from '@/utils/rbac-normalize';
 
 interface PortalHeaderProps {
   onMenuClick: () => void;
@@ -34,13 +32,17 @@ export function PortalHeader({
   moduleTitle,
   className,
 }: PortalHeaderProps) {
-  const { person, roles, logout } = useAuth();
-  const { activeTenantId, availableMemberships, switchAccount, activeRole } =
-    useAccount();
-  const { theme, toggleTheme } = useTheme();
+  const { logout, roles } = useAuth();
+  const {
+    identity,
+    userIdentity,
+    activeTenantId,
+    availableMemberships,
+    switchAccount,
+  } = useAccount();
+  const { resolvedTheme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -48,26 +50,10 @@ export function PortalHeader({
     navigate('/entrar');
   };
 
-  const primaryRole = roles[0];
-  const roleLabel = primaryRole?.name || primaryRole?.name || 'Usuário';
-  const displayName = person?.full_name?.trim() || 'Usuário';
-
-  const contextLabel = activeRole
-    ? normalizeRoleScope(activeRole.scope) === 'global'
-      ? 'Painel Administrativo'
-      : 'Área do Usuário'
-    : 'Área do Usuário';
-
-  const currentMembership = availableMemberships.find(
-    (m) => m.tenant_id === activeTenantId,
-  );
-  const tenantLabel = currentMembership
-    ? 'Tenant selecionado'
-    : activeRole
-      ? normalizeRoleScope(activeRole.scope) === 'global'
-        ? 'Plataforma'
-        : ''
-      : '';
+  const displayName = identity.displayName;
+  const roleLabel = userIdentity.roleLabel;
+  const tenantLabel = userIdentity.tenantLabel;
+  const contextLabel = identity.contextLabel;
 
   const now = new Date();
   const dateLabel = now.toLocaleDateString('pt-BR', {
@@ -83,7 +69,7 @@ export function PortalHeader({
   return (
     <header
       className={cn(
-        'bg-background/95 border-border flex h-16 items-center justify-between border-b backdrop-blur-xl lg:h-20',
+        'bg-background/95 border-border sticky top-0 z-40 flex items-center justify-between border-b backdrop-blur-xl',
         className,
       )}
     >
@@ -105,7 +91,7 @@ export function PortalHeader({
             Seja bem-vindo, {displayName}
           </h1>
           <p className="text-muted-foreground text-xs">
-            {tenantLabel || roleLabel} • {dateLabel} • {timeLabel}
+            {tenantLabel} • {dateLabel} • {timeLabel}
           </p>
         </div>
         <div className="lg:hidden">
@@ -125,27 +111,6 @@ export function PortalHeader({
           <Globe className="h-4 w-4" />
           <span className="text-sm">Voltar para o site</span>
         </Button>
-
-        <div
-          className={cn(
-            'hidden items-center gap-2 rounded-lg border px-3 py-1.5 transition-colors md:flex',
-            searchFocused
-              ? 'border-primary/50 bg-background'
-              : 'border-border bg-muted/50',
-          )}
-        >
-          <Search className="text-muted-foreground h-4 w-4" />
-          <input
-            type="text"
-            placeholder="Buscar..."
-            className="placeholder:text-muted-foreground bg-transparent text-sm outline-none"
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
-          />
-          <kbd className="text-muted-foreground hidden text-xs lg:inline-block">
-            ⌘K
-          </kbd>
-        </div>
 
         <Button
           variant="ghost"
@@ -174,7 +139,7 @@ export function PortalHeader({
                 {displayName}
               </p>
               <p className="text-muted-foreground text-xs leading-tight">
-                {tenantLabel || roleLabel}
+                {roleLabel}
               </p>
             </div>
             <ChevronDown className="text-muted-foreground h-4 w-4" />
@@ -194,9 +159,7 @@ export function PortalHeader({
                     {displayName}
                   </p>
                   <p className="text-muted-foreground text-xs">{roleLabel}</p>
-                  <p className="text-muted-foreground text-xs">
-                    {tenantLabel || contextLabel}
-                  </p>
+                  <p className="text-muted-foreground text-xs">{tenantLabel}</p>
                 </div>
                 <button
                   type="button"
@@ -239,12 +202,12 @@ export function PortalHeader({
                   }}
                   className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
                 >
-                  {theme === 'light' ? (
+                  {resolvedTheme === 'light' ? (
                     <Moon className="h-4 w-4" />
                   ) : (
                     <Sun className="h-4 w-4" />
                   )}
-                  {theme === 'light' ? 'Tema escuro' : 'Tema claro'}
+                  {resolvedTheme === 'light' ? 'Tema escuro' : 'Tema claro'}
                 </button>
                 <div className="border-border/60 border-t pt-1">
                   <button
@@ -332,7 +295,9 @@ export function PortalHeader({
                               Conta
                             </p>
                             <p className="text-muted-foreground text-xs">
-                              {roleName}
+                              {membershipRoles[0]
+                                ? formatRoleLabel(membershipRoles[0].name)
+                                : roleName}
                             </p>
                           </div>
                         </div>
@@ -357,4 +322,37 @@ export function PortalHeader({
       </AnimatePresence>
     </header>
   );
+}
+
+function formatRoleLabel(technicalName: string): string {
+  const normalized = technicalName.toLowerCase().trim();
+  const ROLE_LABEL_MAP: Record<string, string> = {
+    admin_master: 'Administrador Master',
+    admin: 'Administrador',
+    administrador: 'Administrador',
+    gestor: 'Gestor',
+    manager: 'Gestor',
+    recrutador: 'Recrutador',
+    recruiter: 'Recrutador',
+    financeiro: 'Financeiro',
+    financial: 'Financeiro',
+    candidato: 'Candidato',
+    candidate: 'Candidato',
+    cliente: 'Cliente',
+    empresa: 'Empresa',
+    fornecedor: 'Fornecedor',
+    prestador: 'Prestador de Serviços',
+    rh: 'Recursos Humanos',
+    analista_rh: 'Analista de RH',
+    supervisor: 'Supervisor',
+    operador: 'Operador',
+    atendente: 'Atendente',
+  };
+  if (ROLE_LABEL_MAP[normalized]) {
+    return ROLE_LABEL_MAP[normalized];
+  }
+  return technicalName
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
 }

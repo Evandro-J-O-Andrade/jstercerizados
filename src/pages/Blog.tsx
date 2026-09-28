@@ -108,7 +108,7 @@ export default function Blog() {
               hidden: {},
               visible: { transition: { staggerChildren: 0.08 } },
             }}
-            className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+            className="3xl:grid-cols-5 mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           >
             {articles.map((article) => (
               <motion.article

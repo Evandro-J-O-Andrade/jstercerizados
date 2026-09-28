@@ -91,7 +91,7 @@ export function HeroSplit({
   const slideCta = slide.cta ?? cta;
 
   return (
-    <section className="relative flex min-h-[calc(100dvh-88px)] items-center overflow-hidden pt-8 lg:pt-12">
+    <section className="relative flex min-h-[760px] items-center overflow-hidden pt-8 lg:pt-12">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,hsla(215,35%,25%,0.3),transparent_70%)]" />
 
       <AnimatePresence mode="wait">

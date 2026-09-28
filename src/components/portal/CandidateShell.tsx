@@ -1,4 +1,4 @@
-import { type ReactNode, useState, useCallback } from 'react';
+import { type ReactNode, useState, useCallback, useLayoutEffect } from 'react';
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/hooks/useNavigation';
@@ -110,6 +110,19 @@ export function CandidateShell({ children }: CandidateShellProps) {
   const { sidebarItems, bottomNavItems, loading } = useNavigation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  useLayoutEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, []);
+
   const displayName = person?.full_name?.split(' ')[0] || 'Candidato';
 
   const onAccessibility = useCallback(() => {
@@ -145,17 +158,17 @@ export function CandidateShell({ children }: CandidateShellProps) {
   );
 
   return (
-    <div className="bg-muted/30 flex min-h-dvh w-full overflow-hidden lg:min-h-screen">
+    <div className="bg-muted/30 flex min-h-screen w-full flex-col overflow-hidden">
       {sidebarOpen && (
         <div
-          className="bg-background/60 fixed inset-0 z-40 lg:hidden"
+          className="bg-background/60 fixed inset-0 z-30 lg:hidden"
           onClick={closeSidebar}
         />
       )}
 
       <aside
         className={[
-          'bg-card border-border fixed top-0 left-0 z-50 h-full transform border-r transition-all duration-200 lg:static lg:z-0 lg:translate-x-0',
+          'bg-card border-border fixed top-0 left-0 z-40 h-full transform border-r transition-all duration-200',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
           'w-72',
         ].join(' ')}
@@ -236,8 +249,8 @@ export function CandidateShell({ children }: CandidateShellProps) {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="bg-card border-border flex h-14 items-center justify-between border-b px-4 lg:hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <header className="bg-card border-border sticky top-0 z-40 flex h-14 items-center justify-between border-b px-4 lg:hidden">
           <Button
             variant="ghost"
             size="sm"
@@ -262,10 +275,36 @@ export function CandidateShell({ children }: CandidateShellProps) {
         </header>
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto h-full max-w-[1920px] px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
+          <div className="mx-auto max-w-[1920px] px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
             {children ?? <Outlet />}
           </div>
         </main>
+
+        <footer className="border-border/50 bg-background/50 shrink-0 border-t lg:hidden">
+          <div className="mx-auto max-w-[1920px] px-4 py-4 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
+            <p className="text-muted-foreground text-center text-xs">
+              © {new Date().getFullYear()} {COMPANY.name}. Todos os direitos
+              reservados.{' '}
+              <span className="text-primary font-medium">
+                Desenvolvido por New Wave Sistemas
+              </span>
+            </p>
+          </div>
+        </footer>
+
+        <footer className="border-border/50 bg-background/50 hidden shrink-0 border-t lg:block">
+          <div className="mx-auto max-w-[1920px] px-4 py-4 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
+            <div className="flex items-center justify-between">
+              <p className="text-muted-foreground text-xs">
+                © {new Date().getFullYear()} {COMPANY.name}. Todos os direitos
+                reservados.
+              </p>
+              <span className="text-primary text-xs font-medium">
+                Desenvolvido por New Wave Sistemas
+              </span>
+            </div>
+          </div>
+        </footer>
       </div>
 
       <CandidateBottomNavigation items={bottomNavItems} />

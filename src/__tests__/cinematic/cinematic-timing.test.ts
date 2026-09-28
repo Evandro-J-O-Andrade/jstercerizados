@@ -6,17 +6,17 @@ import {
 } from '@/components/sections/cinematic-timing';
 
 describe('CINEMATIC_TIMING', () => {
-  it('EXIT_MS esta entre 1300 e 1500 ms', () => {
-    expect(CINEMATIC_TIMING.EXIT_MS).toBeGreaterThanOrEqual(1300);
-    expect(CINEMATIC_TIMING.EXIT_MS).toBeLessThanOrEqual(1500);
+  it('EXIT_MS esta entre 1100 e 1300 ms', () => {
+    expect(CINEMATIC_TIMING.EXIT_MS).toBeGreaterThanOrEqual(1100);
+    expect(CINEMATIC_TIMING.EXIT_MS).toBeLessThanOrEqual(1300);
   });
 
-  it('ENTER_MS continua sendo 3500 ms (preserva timing cinematico existente)', () => {
-    expect(CINEMATIC_TIMING.ENTER_MS).toBe(3500);
+  it('ENTER_MS continua sendo 2200 ms (preserva timing cinematico existente)', () => {
+    expect(CINEMATIC_TIMING.ENTER_MS).toBe(2200);
   });
 
-  it('HOLD_MS continua sendo 5000 ms (preserva timing cinematico existente)', () => {
-    expect(CINEMATIC_TIMING.HOLD_MS).toBe(5000);
+  it('HOLD_MS continua sendo 2500 ms (preserva timing cinematico existente)', () => {
+    expect(CINEMATIC_TIMING.HOLD_MS).toBe(2500);
   });
 
   it('todas as duracoes sao positivas', () => {
@@ -43,13 +43,13 @@ describe('CINEMATIC_TEXT_TIMING', () => {
     );
   });
 
-  it('delays de entrada cabem no ENTER_MS total (3500ms = 3.5s)', () => {
+  it('delays de entrada cabem no ENTER_MS total (2200ms = 2.2s)', () => {
     expect(CINEMATIC_TEXT_TIMING.SUBTITLE_DELAY_ENTER_S).toBeLessThanOrEqual(
-      3.5,
+      2.2,
     );
   });
 
-  it('duracao de saida do texto e menor que EXIT_MS (1400ms = 1.4s)', () => {
+  it('duracao de saida do texto e menor que EXIT_MS (1200ms = 1.2s)', () => {
     expect(
       CINEMATIC_TEXT_TIMING.TEXT_EXIT_DURATION_S * 1000,
     ).toBeLessThanOrEqual(CINEMATIC_TIMING.EXIT_MS);

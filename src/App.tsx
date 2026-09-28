@@ -12,6 +12,7 @@ import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
 import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 import { PublicLayout } from '@/components/layout/PublicLayout';
 import { AppShell } from '@/components/layout/AppShell';
+import { ModuleProvider } from '@/contexts/ModuleContext';
 import { FloatingHelpWidgets } from '@/components/layout/FloatingHelpWidgets';
 import NotFound from '@/pages/NotFound';
 import DashboardHome from '@/pages/dashboard/DashboardHome';
@@ -353,7 +354,9 @@ function RoutesAndLayout() {
                     'company_representative',
                   ]}
                 >
-                  <AppShell />
+                  <ModuleProvider>
+                    <AppShell />
+                  </ModuleProvider>
                 </ProtectedRoute>
               </AuthRoute>
             }

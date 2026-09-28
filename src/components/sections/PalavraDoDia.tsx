@@ -22,6 +22,84 @@ const VERSION = 'nvi';
 const CACHE_KEY = 'js-palavra-do-dia';
 const TIMEOUT_MS = 3000;
 
+// Mapeamento de slugs/nomes de livros da Bíblia (inglês -> português)
+const BOOK_NAMES_PT: Record<string, string> = {
+  genesis: 'Gênesis',
+  exodus: 'Êxodo',
+  leviticus: 'Levítico',
+  numbers: 'Números',
+  deuteronomy: 'Deuteronômio',
+  joshua: 'Josué',
+  judges: 'Juízes',
+  ruth: 'Rute',
+  '1samuel': '1 Samuel',
+  '2samuel': '2 Samuel',
+  '1kings': '1 Reis',
+  '2kings': '2 Reis',
+  '1chronicles': '1 Crônicas',
+  '2chronicles': '2 Crônicas',
+  ezra: 'Esdras',
+  nehemiah: 'Neemias',
+  esther: 'Ester',
+  job: 'Jó',
+  psalms: 'Salmos',
+  proverbs: 'Provérbios',
+  ecclesiastes: 'Eclesiastes',
+  songofsolomon: 'Cânticos',
+  isaiah: 'Isaías',
+  jeremiah: 'Jeremias',
+  lamentations: 'Lamentações',
+  ezekiel: 'Ezequiel',
+  daniel: 'Daniel',
+  hosea: 'Oséias',
+  joel: 'Joel',
+  amos: 'Amós',
+  obadiah: 'Obadias',
+  jonah: 'Jonas',
+  micah: 'Miquéias',
+  nahum: 'Naum',
+  habakkuk: 'Habacuque',
+  zephaniah: 'Sofonias',
+  haggai: 'Ageu',
+  zechariah: 'Zacarias',
+  malachi: 'Malaquias',
+  matthew: 'Mateus',
+  mark: 'Marcos',
+  luke: 'Lucas',
+  john: 'João',
+  acts: 'Atos',
+  romans: 'Romanos',
+  '1corinthians': '1 Coríntios',
+  '2corinthians': '2 Coríntios',
+  galatians: 'Gálatas',
+  ephesians: 'Efésios',
+  philippians: 'Filipenses',
+  colossians: 'Colossenses',
+  '1thessalonians': '1 Tessalonicenses',
+  '2thessalonians': '2 Tessalonicenses',
+  '1timothy': '1 Timóteo',
+  '2timothy': '2 Timóteo',
+  titus: 'Tito',
+  philemon: 'Filemom',
+  hebrews: 'Hebreus',
+  james: 'Tiago',
+  '1peter': '1 Pedro',
+  '2peter': '2 Pedro',
+  '1john': '1 João',
+  '2john': '2 João',
+  '3john': '3 João',
+  jude: 'Judas',
+  revelation: 'Apocalipse',
+};
+
+function translateReference(reference: string, bookSlug: string): string {
+  const ptName = BOOK_NAMES_PT[bookSlug.toLowerCase()];
+  if (!ptName) return reference;
+  // Substituir o nome do livro em inglês pelo português
+  // O formato da API é "BookName Chapter:Verse" ou "BookName Chapter:Verse-Verse"
+  return reference.replace(/^[A-Za-z0-9\s]+/, ptName);
+}
+
 const FALLBACK_VERSES: Verse[] = [
   {
     reference: 'Salmos 23:1',
@@ -208,7 +286,8 @@ export function PalavraDoDia() {
         &ldquo;{verse.text}&rdquo;
       </blockquote>
       <cite className="text-muted-foreground/80 text-xs font-normal not-italic">
-        {verse.reference} — {verse.version.toUpperCase()}
+        {translateReference(verse.reference, verse.book_slug)} —{' '}
+        {verse.version.toUpperCase()}
       </cite>
     </motion.div>
   );

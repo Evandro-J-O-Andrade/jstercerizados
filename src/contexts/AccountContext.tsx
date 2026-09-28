@@ -9,7 +9,7 @@ import {
   type ModuleFeature,
   type ModuleCategory,
 } from '@/components/portal/ModuleRegistry';
-import { normalizeRoleScope } from '@/utils/rbac-normalize';
+import { deriveUserIdentity, type UserIdentity } from './UserIdentity';
 import type { Permission } from '@/types/auth';
 
 export interface AccountIdentity {
@@ -18,15 +18,19 @@ export interface AccountIdentity {
   email: string;
   personId: string;
   roleName: string;
+  roleLabel: string;
   roleScope: 'global' | 'tenant';
   tenantName: string;
+  tenantLabel: string;
   contextLabel: string;
   greeting: string;
+  dateTime: string;
   isAdminMaster: boolean;
 }
 
 export interface AccountContextType {
   identity: AccountIdentity;
+  userIdentity: UserIdentity;
   activeRole: { id: string; name: string; scope: 'global' | 'tenant' } | null;
   activePermissions: Permission[];
   availableModules: ModuleDefinition[];
@@ -35,6 +39,7 @@ export interface AccountContextType {
   categoryMeta: typeof CATEGORY_META;
   activeTenantId: string | null;
   effectiveScopes: ('global' | 'tenant')[];
+  permissions: Permission[];
   availableMemberships: {
     id: string;
     tenant_id: string;
@@ -55,68 +60,44 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
     tenants,
     permissions,
     isAdminMaster,
+    isCandidate,
+    isEmpresa,
+    firstLoginState,
+    legalAcceptances,
     switchTenant,
   } = useAuth();
 
-  const identity = useMemo<AccountIdentity>(() => {
-    const fullName = person?.full_name?.trim() || 'Usuário';
-    const firstName = fullName.split(/\s+/)[0] || 'Usuário';
-    const email = person?.email || '';
-    const personId = person?.id || '';
-    const primaryRole = roles[0];
-    const roleName = primaryRole
-      ? primaryRole.name
-          .split('_')
-          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-          .join(' ')
-      : 'Usuário';
-    const roleScope = primaryRole?.scope
-      ? normalizeRoleScope(primaryRole.scope)
-      : 'tenant';
-
-    const activeTenant = tenants.find((t) => t.id === currentTenantId);
-    const tenantName =
-      activeTenant?.name || (currentTenantId ? 'Tenant' : 'Plataforma');
-
-    const contextLabel =
-      roleScope === 'global' ? 'Gestão da Plataforma' : tenantName;
-
-    const hour = new Date().getHours();
-    let greeting = 'Boa noite';
-    if (hour >= 5 && hour < 12) greeting = 'Bom dia';
-    else if (hour >= 12 && hour < 18) greeting = 'Boa tarde';
-
-    return {
-      personId,
-      firstName,
-      displayName: fullName,
-      email,
-      roleName,
-      roleScope,
-      tenantName,
-      contextLabel,
-      greeting,
+  const identity = useMemo<UserIdentity>(() => {
+    return deriveUserIdentity(
+      person,
+      roles,
+      currentTenantId,
+      tenants,
+      tenantMemberships,
+      permissions,
       isAdminMaster,
-    };
-  }, [person, roles, currentTenantId, tenants, isAdminMaster]);
+      isCandidate,
+      isEmpresa,
+      firstLoginState,
+      legalAcceptances,
+    );
+  }, [
+    person,
+    roles,
+    currentTenantId,
+    tenants,
+    tenantMemberships,
+    permissions,
+    isAdminMaster,
+    isCandidate,
+    isEmpresa,
+    firstLoginState,
+    legalAcceptances,
+  ]);
 
   const effectiveScopes = useMemo<('global' | 'tenant')[]>(() => {
-    const roleScopes = new Set(roles.map((r) => r.scope));
-    const scopes: ('global' | 'tenant')[] = [];
-
-    if (roleScopes.has('global')) {
-      scopes.push('global');
-      const hasAdminMaster = roles.some(
-        (r) => r.scope === 'global' && r.name === 'admin_master',
-      );
-      if (hasAdminMaster) {
-        scopes.push('tenant');
-      }
-    }
-
-    if (roleScopes.has('tenant')) scopes.push('tenant');
-    return scopes;
-  }, [roles]);
+    return identity.effectiveScopes;
+  }, [identity.effectiveScopes]);
 
   const availableModules = useMemo<ModuleDefinition[]>(() => {
     return getAvailableModules(permissions, effectiveScopes);
@@ -151,7 +132,22 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<AccountContextType>(
     () => ({
-      identity,
+      identity: {
+        firstName: identity.firstName,
+        displayName: identity.displayName,
+        email: identity.email,
+        personId: identity.id,
+        roleName: identity.role?.name || 'Usuário',
+        roleLabel: identity.roleLabel,
+        roleScope: identity.role?.scope || 'tenant',
+        tenantName: identity.tenant?.name || 'Plataforma',
+        tenantLabel: identity.tenantLabel,
+        contextLabel: identity.contextLabel,
+        greeting: identity.greeting,
+        dateTime: identity.dateTime,
+        isAdminMaster: identity.isAdminMaster,
+      },
+      userIdentity: identity,
       activeRole,
       activePermissions: permissions,
       availableModules,
@@ -160,6 +156,7 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
       categoryMeta: CATEGORY_META,
       activeTenantId: currentTenantId,
       effectiveScopes,
+      permissions,
       availableMemberships: tenantMemberships.map((m) => ({
         id: m.id,
         tenant_id: m.tenant_id,

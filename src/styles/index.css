@@ -472,38 +472,22 @@
     background-color: hsl(var(--surface-alt));
   }
 
-  .card-base {
-    border-radius: 0.75rem;
-    border-width: 1px;
-    background-color: hsl(var(--card));
-    border-color: hsl(var(--border));
-    box-shadow:
-      0 1px 2px hsla(215, 35%, 10%, 0.05),
-      0 4px 12px hsla(215, 35%, 10%, 0.06);
-  }
-
   .card-hover {
     transition:
       box-shadow 0.25s ease,
       border-color 0.25s ease,
-      transform 0.25s ease;
+      transform 0.25s ease,
+      scale 0.25s ease;
   }
 
-  .card-hover:hover {
+  .card-hover:hover,
+  .card-hover:focus-within {
     border-color: hsl(var(--primary) / 0.4);
     box-shadow:
-      0 1px 2px hsla(215, 35%, 10%, 0.06),
-      0 8px 24px hsla(215, 35%, 10%, 0.1),
+      0 4px 16px hsla(215, 35%, 10%, 0.1),
       0 0 0 1px hsl(var(--primary) / 0.1);
-    transform: translateY(-2px);
-  }
-
-  .card-hover:focus-within {
-    border-color: hsl(var(--primary) / 0.5);
-    box-shadow:
-      0 1px 2px hsla(215, 35%, 10%, 0.06),
-      0 8px 24px hsla(215, 35%, 10%, 0.1),
-      0 0 0 2px hsl(var(--primary) / 0.15);
+    transform: translateY(-3px);
+    scale: 1.01;
   }
 
   .section-heading {
@@ -721,7 +705,7 @@
   }
 
   .dark .card-base {
-    border-color: hsl(var(--primary) / 0.12);
+    border-color: hsl(var(--primary) / 0.15);
     box-shadow:
       0 4px 16px hsla(215, 40%, 4%, 0.25),
       0 1px 3px hsla(215, 40%, 4%, 0.2),
@@ -761,7 +745,9 @@
     border-color: hsl(var(--border));
     transition:
       border-color 0.25s ease,
-      box-shadow 0.25s ease;
+      box-shadow 0.25s ease,
+      transform 0.25s ease,
+      scale 0.25s ease;
   }
 
   .card-border-refined:hover {
@@ -769,6 +755,8 @@
     box-shadow:
       0 4px 16px hsla(215, 35%, 10%, 0.08),
       0 0 0 1px hsl(var(--primary) / 0.08);
+    transform: translateY(-3px);
+    scale: 1.01;
   }
 
   .card-border-refined:focus-within {
@@ -776,6 +764,8 @@
     box-shadow:
       0 4px 16px hsla(215, 35%, 10%, 0.08),
       0 0 0 2px hsl(var(--primary) / 0.12);
+    transform: translateY(-3px);
+    scale: 1.01;
   }
 
   .dark .card-border-refined {
@@ -787,6 +777,8 @@
     box-shadow:
       0 4px 16px hsla(215, 40%, 4%, 0.3),
       0 0 0 1px hsl(var(--primary) / 0.15);
+    transform: translateY(-3px);
+    scale: 1.01;
   }
 
   .dark .card-border-refined:focus-within {
@@ -794,5 +786,152 @@
     box-shadow:
       0 4px 16px hsla(215, 40%, 4%, 0.3),
       0 0 0 2px hsl(var(--primary) / 0.2);
+    transform: translateY(-3px);
+    scale: 1.01;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-border-refined:hover,
+  .card-border-refined:focus-within {
+    transform: none;
+    scale: 1;
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-slow-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 1.5s linear infinite;
+}
+
+.animate-spin-slow-reverse {
+  animation: spin-slow-reverse 2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin-slow {
+    animation-duration: 3s;
+  }
+  .animate-spin-slow-reverse {
+    animation-duration: 4s;
+  }
+}
+
+/* ─── Metro tile elevations ─── */
+.tile-elevation-1 {
+  box-shadow:
+    0 1px 2px hsla(215, 35%, 10%, 0.05),
+    0 4px 8px hsla(215, 35%, 10%, 0.06);
+}
+
+.dark .tile-elevation-1 {
+  box-shadow:
+    0 2px 6px hsla(215, 40%, 4%, 0.2),
+    0 1px 2px hsla(215, 40%, 4%, 0.15),
+    0 0 0 1px hsl(var(--border) / 0.15);
+}
+
+.tile-elevation-2 {
+  box-shadow:
+    0 2px 4px hsla(215, 35%, 10%, 0.06),
+    0 8px 16px hsla(215, 35%, 10%, 0.08);
+}
+
+.dark .tile-elevation-2 {
+  box-shadow:
+    0 4px 12px hsla(215, 40%, 4%, 0.25),
+    0 2px 6px hsla(215, 40%, 4%, 0.2),
+    0 0 0 1px hsl(var(--border) / 0.2);
+}
+
+.tile-elevation-3 {
+  box-shadow:
+    0 4px 8px hsla(215, 35%, 10%, 0.08),
+    0 16px 32px hsla(215, 35%, 10%, 0.1);
+}
+
+.dark .tile-elevation-3 {
+  box-shadow:
+    0 8px 24px hsla(215, 40%, 4%, 0.3),
+    0 4px 12px hsla(215, 40%, 4%, 0.25),
+    0 0 0 1px hsl(var(--border) / 0.25);
+}
+
+/* ─── Metro tile responsive grid ─── */
+@media (max-width: 1024px) {
+  .metro-grid-responsive {
+    grid-template-columns: repeat(8, 1fr) !important;
+    grid-auto-rows: 160px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .metro-grid-responsive {
+    grid-template-columns: repeat(4, 1fr) !important;
+    grid-auto-rows: 150px !important;
+    gap: 3px !important;
+  }
+
+  .metro-grid-responsive > * {
+    min-width: 0 !important;
+    min-height: 150px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .metro-grid-responsive {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-rows: 140px !important;
+    gap: 2px !important;
+  }
+
+  .metro-grid-responsive > * {
+    min-width: 0 !important;
+    min-height: 140px !important;
+  }
+}
+
+/* ─── Drag preview improvements ─── */
+.metro-tile-dragging {
+  opacity: 0.5;
+  transform: rotate(2deg) scale(1.05);
+  z-index: 50;
+  box-shadow:
+    0 24px 64px hsla(43, 80%, 48%, 0.35),
+    0 8px 24px hsla(215, 35%, 10%, 0.2) !important;
+}
+
+.dark .metro-tile-dragging {
+  box-shadow:
+    0 24px 64px hsla(43, 80%, 48%, 0.4),
+    0 8px 24px hsla(215, 40%, 4%, 0.35) !important;
+}
+
+.metro-tile-drag-over {
+  border: 2px dashed hsl(var(--primary) / 0.5) !important;
+  background: hsl(var(--primary) / 0.05) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metro-tile-dragging {
+    transform: none;
+    opacity: 0.7;
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
@@ -20,6 +20,8 @@ import {
   Activity,
   SlidersHorizontal,
   Lock,
+  LayoutDashboard,
+  ArrowLeft,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/utils';
@@ -27,10 +29,11 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
+import { useModuleContext } from '@/contexts/ModuleContext';
 import {
-  type ModuleCategory,
-  type ModuleDefinition,
   type ModuleFeature,
+  getAvailableModuleFeatures,
+  getAvailableFeatures,
 } from './ModuleRegistry';
 import { COMPANY } from '@/config';
 
@@ -83,16 +86,6 @@ export function ModuleIcon({
   return <Icon className={cn('h-5 w-5 shrink-0', className)} />;
 }
 
-const CATEGORY_LABELS: Record<ModuleCategory, string> = {
-  inicio: 'INÍCIO',
-  plataforma: 'PLATAFORMA',
-  negocio: 'OPERAÇÃO',
-  ia: 'IA & AUTOMAÇÃO',
-  seguranca: 'SEGURANÇA',
-  documentos: 'DOCUMENTOS',
-  conta: 'CONTA',
-};
-
 export function PortalSidebar({
   isOpen,
   onClose,
@@ -106,54 +99,92 @@ export function PortalSidebar({
     availableMemberships,
     activeTenantId,
     switchAccount,
-    availableModules,
+    permissions,
+    effectiveScopes,
   } = useAccount();
+  const { currentModule, currentFeature, isModuleLauncher } =
+    useModuleContext();
 
   const [collapsed, setCollapsed] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
-  const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [expandedFeatures, setExpandedFeatures] = useState<string[]>([]);
   const [collapsedNodes, setCollapsedNodes] = useState<string[]>([]);
 
-  const activeRoute = location.pathname;
+  const isInModule = !isModuleLauncher;
 
-  const ensureExpandedForRoute = useCallback(
-    (route: string) => {
-      setExpandedModules((prev) => {
-        const next = new Set(prev);
+  // Determine navigation context:
+  // - If at module launcher (/dashboard): show minimal
+  // - If in a feature with sub-features: show sub-features
+  // - If in a feature without sub-features: show feature itself + siblings
+  // - If in a module without specific feature: show module features
+  const { navItems, navTitle, navIcon } = useMemo(() => {
+    if (isModuleLauncher || !currentModule) {
+      return {
+        navItems: [] as ModuleFeature[],
+        navTitle: 'Portal SaaS',
+        navIcon: 'home',
+      };
+    }
 
-        for (const module of availableModules) {
-          if (!module.features?.length) continue;
+    // Helper to check if user has permission for a feature
+    const hasFeaturePermission = (feature: ModuleFeature): boolean => {
+      if (
+        !feature.requiredPermissions ||
+        feature.requiredPermissions.length === 0
+      )
+        return true;
+      return feature.requiredPermissions.some((p) =>
+        permissions.some((perm) => `${perm.resource}.${perm.action}` === p),
+      );
+    };
 
-          const moduleMatches =
-            route === module.route || route.startsWith(`${module.route}/`);
+    // If we're in a specific feature (e.g., /dashboard/empresas)
+    // But NOT if the feature route equals the module route (default feature)
+    const isDefaultFeature =
+      currentFeature && currentFeature.route === currentModule.route;
+    if (currentFeature && !isDefaultFeature) {
+      // If feature has sub-features, show those (filtered by permissions)
+      if (currentFeature.features && currentFeature.features.length > 0) {
+        const filteredSubFeatures =
+          currentFeature.features.filter(hasFeaturePermission);
+        return {
+          navItems: filteredSubFeatures,
+          navTitle: currentFeature.title,
+          navIcon: currentFeature.icon || currentModule.icon,
+        };
+      }
 
-          if (moduleMatches) {
-            next.add(module.id);
-          }
+      // Feature without sub-features: show siblings (other features of the same module)
+      const siblingFeatures = getAvailableFeatures(
+        permissions,
+        currentModule,
+        effectiveScopes,
+      );
+      return {
+        navItems: siblingFeatures,
+        navTitle: currentFeature.title,
+        navIcon: currentFeature.icon || currentModule.icon,
+      };
+    }
 
-          for (const feature of module.features) {
-            if (!feature.features?.length) continue;
-
-            const featureMatches =
-              route === feature.route || route.startsWith(`${feature.route}/`);
-
-            if (featureMatches) {
-              next.add(module.id);
-              next.add(feature.id);
-            }
-          }
-        }
-
-        return Array.from(next);
-      });
-    },
-    [availableModules],
-  );
-
-  useEffect(() => {
-    ensureExpandedForRoute(activeRoute);
-  }, [activeRoute, ensureExpandedForRoute]);
+    // In a module but no specific feature matched (e.g., /dashboard/crm)
+    const moduleFeatures = getAvailableModuleFeatures(
+      permissions,
+      currentModule,
+      effectiveScopes,
+    );
+    return {
+      navItems: moduleFeatures,
+      navTitle: currentModule.title,
+      navIcon: currentModule.icon,
+    };
+  }, [
+    currentModule,
+    currentFeature,
+    isModuleLauncher,
+    permissions,
+    effectiveScopes,
+  ]);
 
   const now = new Date();
   const dateLabel = now.toLocaleDateString('pt-BR', {
@@ -168,55 +199,9 @@ export function PortalSidebar({
   const displayName = identity.displayName;
   const roleLabel = identity.roleName;
 
-  const grouped = availableModules.reduce<
-    Record<ModuleCategory, typeof availableModules>
-  >(
-    (acc, module) => {
-      const key = module.category;
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(module);
-      return acc;
-    },
-    {} as Record<ModuleCategory, typeof availableModules>,
-  );
-
-  const categoryOrder: ModuleCategory[] = [
-    'inicio',
-    'plataforma',
-    'negocio',
-    'ia',
-    'seguranca',
-    'documentos',
-    'conta',
-  ];
-
   const isExactMatch = (route: string, pathname: string) => pathname === route;
   const isChildOf = (parentRoute: string, pathname: string) =>
     pathname !== parentRoute && pathname.startsWith(`${parentRoute}/`);
-
-  const isModuleSelected = (module: ModuleDefinition) =>
-    isExactMatch(module.route, location.pathname);
-
-  const isModuleRouteExpanded = (module: ModuleDefinition) => {
-    if (isExactMatch(module.route, location.pathname)) return true;
-    return Boolean(
-      module.features?.some((feature) => {
-        if (isExactMatch(feature.route, location.pathname)) return true;
-        if (feature.features) {
-          return feature.features.some(
-            (sub) =>
-              isExactMatch(sub.route, location.pathname) ||
-              isChildOf(sub.route, location.pathname),
-          );
-        }
-        return isChildOf(feature.route, location.pathname);
-      }) || isChildOf(module.route, location.pathname),
-    );
-  };
-
-  const isModuleExpanded = (module: ModuleDefinition) =>
-    !collapsedNodes.includes(module.id) &&
-    (isModuleRouteExpanded(module) || expandedModules.includes(module.id));
 
   const isFeatureSelected = (feature: ModuleFeature) =>
     isExactMatch(feature.route, location.pathname);
@@ -236,21 +221,6 @@ export function PortalSidebar({
     !collapsedNodes.includes(feature.id) &&
     (isFeatureRouteExpanded(feature) || expandedFeatures.includes(feature.id));
 
-  const toggleModule = (moduleId: string, routeExpanded: boolean) => {
-    const currentlyExpanded =
-      !collapsedNodes.includes(moduleId) &&
-      (routeExpanded || expandedModules.includes(moduleId));
-    if (currentlyExpanded) {
-      setExpandedModules((prev) => prev.filter((id) => id !== moduleId));
-      setCollapsedNodes((prev) =>
-        prev.includes(moduleId) ? prev : [...prev, moduleId],
-      );
-      return;
-    }
-    setExpandedModules([moduleId]);
-    setCollapsedNodes((prev) => prev.filter((id) => id !== moduleId));
-  };
-
   const toggleFeature = (featureId: string, routeExpanded: boolean) => {
     const currentlyExpanded =
       !collapsedNodes.includes(featureId) &&
@@ -267,7 +237,6 @@ export function PortalSidebar({
   };
 
   const handleNavigate = (href: string) => {
-    setExpandedModules([]);
     setExpandedFeatures([]);
     setCollapsedNodes([]);
     navigate(href);
@@ -287,13 +256,13 @@ export function PortalSidebar({
     <>
       {isOpen && (
         <div
-          className="bg-background/60 fixed inset-0 z-40 lg:hidden"
+          className="bg-background/60 fixed inset-0 z-30 lg:hidden"
           onClick={onClose}
         />
       )}
       <aside
         className={cn(
-          'bg-card border-border fixed top-0 left-0 z-50 h-full transform border-r transition-all duration-200 lg:static lg:z-0 lg:translate-x-0',
+          'bg-card border-border fixed top-0 left-0 z-40 h-full transform border-r transition-all duration-200',
           sidebarWidth,
           isOpen ? 'translate-x-0' : '-translate-x-full',
         )}
@@ -308,7 +277,7 @@ export function PortalSidebar({
                     {COMPANY.name}
                   </p>
                   <p className="text-muted-foreground truncate text-xs">
-                    Portal SaaS
+                    {isInModule ? navTitle : 'Portal SaaS'}
                   </p>
                 </div>
               </div>
@@ -346,188 +315,185 @@ export function PortalSidebar({
 
           <nav
             className="flex-1 space-y-1 overflow-y-auto p-2"
-            aria-label="Portal"
+            aria-label={isInModule ? navTitle : 'Portal'}
           >
-            {categoryOrder.map((category) => {
-              const modules = grouped[category];
-              if (!modules || modules.length === 0) return null;
-              return (
-                <div key={category} className="mb-3">
-                  {!collapsed && (
-                    <p className="text-muted-foreground mb-2 px-3 text-xs font-semibold tracking-wider uppercase">
-                      {CATEGORY_LABELS[category]}
-                    </p>
+            {isModuleLauncher ? (
+              // Module launcher view - minimal, just "Voltar para o site"
+              <div className="space-y-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleNavigate('/')}
+                  className={cn(
+                    'text-muted-foreground hover:text-foreground w-full justify-start gap-2',
+                    collapsed && 'justify-center',
                   )}
-                  <div className="space-y-0.5">
-                    {modules.map((module) => {
-                      const moduleSelected = isModuleSelected(module);
-                      const moduleExpanded = isModuleExpanded(module);
-                      const hasFeatures = Boolean(module.features?.length);
+                >
+                  <Globe className="h-4 w-4" />
+                  {!collapsed && <span>Voltar para o site</span>}
+                </Button>
+              </div>
+            ) : // Inside a module - show contextual features
+            navItems.length > 0 ? (
+              <div className="space-y-3">
+                {/* "← Início do sistema" button at top of sidebar when in a module */}
+                {!collapsed && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleNavigate('/dashboard')}
+                    className={cn(
+                      'text-muted-foreground hover:text-foreground hover:bg-primary/10 w-full justify-start gap-2 rounded-lg px-3 py-2 transition-all duration-200',
+                      'group',
+                    )}
+                  >
+                    <ArrowLeft className="h-4 w-4 transition-transform group-hover:translate-x-[-2px]" />
+                    <span className="font-medium">Início do sistema</span>
+                  </Button>
+                )}
+                {collapsed && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleNavigate('/dashboard')}
+                    className={cn(
+                      'text-muted-foreground hover:text-foreground hover:bg-primary/10 w-full justify-center gap-2 rounded-lg px-2 py-2 transition-all duration-200',
+                      'group',
+                    )}
+                    title="Início do sistema"
+                  >
+                    <ArrowLeft className="h-4 w-4 transition-transform group-hover:translate-x-[-2px]" />
+                  </Button>
+                )}
 
-                      if (collapsed) {
-                        return (
-                          <NavLink
-                            key={module.id}
-                            to={module.route}
-                            end
-                            onClick={() => handleNavigate(module.route)}
+                {!collapsed && (
+                  <div className="flex items-center gap-2 px-2 py-2">
+                    <span className="bg-primary/10 text-primary rounded-lg p-1.5">
+                      <ModuleIcon name={navIcon} className="h-4 w-4" />
+                    </span>
+                    <span className="text-muted-foreground flex-1 truncate text-xs font-semibold tracking-wider uppercase">
+                      {navTitle}
+                    </span>
+                  </div>
+                )}
+                <div className="space-y-1">
+                  {navItems.map((feature) => {
+                    const featureSelected = isFeatureSelected(feature);
+                    const featureExpanded = isFeatureExpanded(feature);
+                    const hasSubFeatures = Boolean(feature.features?.length);
+
+                    if (hasSubFeatures) {
+                      return (
+                        <div key={feature.id}>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              toggleFeature(
+                                feature.id,
+                                isFeatureRouteExpanded(feature),
+                              )
+                            }
+                            aria-expanded={featureExpanded}
                             className={cn(
-                              'flex items-center justify-center rounded-lg px-2 py-2 text-sm font-medium transition-colors',
-                              moduleSelected
+                              'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                              featureSelected
                                 ? 'bg-primary/10 text-primary'
                                 : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                              collapsed && 'justify-center px-2',
                             )}
-                            title={module.title}
                           >
-                            <ModuleIcon name={module.icon} />
-                          </NavLink>
-                        );
-                      }
-
-                      return (
-                        <div key={module.id}>
-                          <div className="flex items-center gap-1">
-                            {hasFeatures ? (
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  toggleModule(
-                                    module.id,
-                                    isModuleRouteExpanded(module),
-                                  )
-                                }
-                                className={cn(
-                                  'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                                  moduleSelected
-                                    ? 'bg-primary/10 text-primary'
-                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                                )}
-                              >
-                                <ModuleIcon name={module.icon} />
-                                <span className="flex-1 text-left">
-                                  {module.title}
-                                </span>
-                                <span className="text-xs">
-                                  {moduleExpanded ? '▼' : '▶'}
-                                </span>
-                              </button>
-                            ) : (
-                              <NavLink
-                                to={module.route}
-                                end
-                                onClick={() => handleNavigate(module.route)}
-                                className={cn(
-                                  'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                                  moduleSelected
-                                    ? 'bg-primary/10 text-primary'
-                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                                )}
-                              >
-                                <ModuleIcon name={module.icon} />
-                                <span className="flex-1 text-left">
-                                  {module.title}
-                                </span>
-                              </NavLink>
+                            {!collapsed && (
+                              <span className="flex-1 truncate text-left">
+                                {feature.title}
+                              </span>
                             )}
-                          </div>
-                          {hasFeatures && moduleExpanded && (
+                            {!collapsed && (
+                              <span className="text-xs">
+                                {featureExpanded ? '▼' : '▶'}
+                              </span>
+                            )}
+                          </button>
+                          {featureExpanded && (
                             <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">
-                              {module.features!.map((feature) => {
-                                const featureSelected =
-                                  isFeatureSelected(feature);
-                                const featureExpanded =
-                                  isFeatureExpanded(feature);
-                                const hasSubFeatures = Boolean(
-                                  feature.features?.length,
-                                );
-
-                                if (hasSubFeatures) {
-                                  return (
-                                    <div key={feature.id}>
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          toggleFeature(
-                                            feature.id,
-                                            isFeatureRouteExpanded(feature),
-                                          )
-                                        }
-                                        aria-expanded={featureExpanded}
-                                        className={cn(
-                                          'flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
-                                          featureSelected
-                                            ? 'text-primary'
-                                            : 'text-muted-foreground hover:text-foreground',
-                                        )}
-                                      >
-                                        <span className="flex-1 text-left">
-                                          {feature.title}
-                                        </span>
-                                        <span className="text-xs">
-                                          {featureExpanded ? '▼' : '▶'}
-                                        </span>
-                                      </button>
-                                      {featureExpanded && (
-                                        <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">
-                                          {feature.features!.map(
-                                            (subFeature) => (
-                                              <NavLink
-                                                key={subFeature.id}
-                                                to={subFeature.route}
-                                                end
-                                                onClick={() =>
-                                                  handleNavigate(
-                                                    subFeature.route,
-                                                  )
-                                                }
-                                                className={cn(
-                                                  'block rounded-lg px-3 py-1.5 text-sm transition-colors',
-                                                  isExactMatch(
-                                                    subFeature.route,
-                                                    location.pathname,
-                                                  )
-                                                    ? 'bg-primary/10 text-primary'
-                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                                                )}
-                                              >
-                                                {subFeature.title}
-                                              </NavLink>
-                                            ),
-                                          )}
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                }
-
-                                return (
-                                  <NavLink
-                                    key={feature.id}
-                                    to={feature.route}
-                                    end
-                                    onClick={() =>
-                                      handleNavigate(feature.route)
-                                    }
-                                    className={cn(
-                                      'block rounded-lg px-3 py-1.5 text-sm transition-colors',
-                                      featureSelected
-                                        ? 'bg-primary/10 text-primary'
-                                        : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                                    )}
-                                  >
-                                    {feature.title}
-                                  </NavLink>
-                                );
-                              })}
+                              {feature.features!.map((subFeature) => (
+                                <NavLink
+                                  key={subFeature.id}
+                                  to={subFeature.route}
+                                  end
+                                  onClick={() =>
+                                    handleNavigate(subFeature.route)
+                                  }
+                                  className={cn(
+                                    'block rounded-lg px-3 py-1.5 text-sm transition-colors',
+                                    collapsed && 'px-2',
+                                    isExactMatch(
+                                      subFeature.route,
+                                      location.pathname,
+                                    )
+                                      ? 'bg-primary/10 text-primary'
+                                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                  )}
+                                >
+                                  {!collapsed && subFeature.title}
+                                </NavLink>
+                              ))}
                             </div>
                           )}
                         </div>
                       );
-                    })}
-                  </div>
+                    }
+
+                    return (
+                      <NavLink
+                        key={feature.id}
+                        to={feature.route}
+                        end
+                        onClick={() => handleNavigate(feature.route)}
+                        className={cn(
+                          'block rounded-lg px-3 py-2 text-sm transition-colors',
+                          collapsed && 'px-2 text-center',
+                          featureSelected
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                        )}
+                      >
+                        {!collapsed ? (
+                          <>
+                            <ModuleIcon
+                              name={feature.icon ?? 'layout-dashboard'}
+                              className="mr-3 shrink-0"
+                            />
+                            <span className="flex-1 truncate">
+                              {feature.title}
+                            </span>
+                          </>
+                        ) : (
+                          <ModuleIcon
+                            name={feature.icon ?? 'layout-dashboard'}
+                          />
+                        )}
+                      </NavLink>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            ) : (
+              // Module has no features - show back to portal
+              <div className="space-y-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleNavigate('/dashboard')}
+                  className={cn(
+                    'text-muted-foreground hover:text-foreground w-full justify-start gap-2',
+                    collapsed && 'justify-center',
+                  )}
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  {!collapsed && <span>Voltar aos módulos</span>}
+                </Button>
+              </div>
+            )}
           </nav>
 
           <div className="border-border border-t p-2">

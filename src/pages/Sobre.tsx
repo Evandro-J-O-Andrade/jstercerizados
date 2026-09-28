@@ -290,7 +290,7 @@ function CinematicChapter({
               ? { duration: 0 }
               : { duration: 1.1, ease: [0.25, 0.4, 0.25, 1], delay: 0.1 }
           }
-          className={`relative aspect-[16/10] w-full overflow-hidden rounded-3xl lg:w-1/2 ${
+          className={`relative mx-auto aspect-[16/10] w-full max-w-[720px] overflow-hidden rounded-3xl lg:w-1/2 ${
             chapter.layout.includes('right') ? 'lg:order-2' : 'lg:order-1'
           }`}
         >
@@ -734,7 +734,7 @@ export default function Sobre() {
               </motion.div>
 
               <motion.div variants={revealRight}>
-                <div className="relative aspect-[11/6] w-full overflow-hidden rounded-2xl">
+                <div className="relative mx-auto aspect-[11/6] w-full max-w-[1600px] overflow-hidden rounded-2xl">
                   <SafeImage
                     src={HERO_ASSETS.bannerjs}
                     fallbackSrc={IMAGES.hero.sobre.fallback}

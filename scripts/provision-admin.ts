@@ -71,7 +71,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, {
 });
 
 const ADMIN_NAME = 'Evandro Andrade';
-const TENANT_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'; // J&S Empregos LTDA
+const TENANT_ID = 'd480af07-ab6b-4561-ac3a-2a0b0c1267b5'; // J&S Empregos LTDA
 const ADMIN_ROLE_NAME = 'admin_master'; // resolved dynamically via select
 
 async function provision() {

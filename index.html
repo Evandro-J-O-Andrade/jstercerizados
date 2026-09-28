@@ -15,6 +15,24 @@
       })(window, document, 'script', 'dataLayer', 'GTM-WFS38MNK');
     </script>
     <!-- End Google Tag Manager -->
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem('jst-theme');
+          var html = document.documentElement;
+          if (theme === 'light' || theme === 'dark') {
+            html.classList.remove('light', 'dark');
+            html.classList.add(theme);
+          } else if (!theme) {
+            // Default to dark if no preference stored
+            html.classList.add('dark');
+          }
+        } catch (e) {
+          // Ignore localStorage errors (e.g., private browsing)
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link

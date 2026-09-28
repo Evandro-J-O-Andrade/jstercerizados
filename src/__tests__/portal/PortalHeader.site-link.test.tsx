@@ -26,6 +26,26 @@ vi.mock('@/contexts/AccountContext', () => ({
       greeting: '',
       isAdminMaster: true,
     },
+    userIdentity: {
+      id: 'p1',
+      authUserId: 'u1',
+      email: 'm@x.com',
+      firstName: 'Maria',
+      displayName: 'Maria Souza',
+      role: { id: 'r1', name: 'admin_master', scope: 'global' },
+      tenant: null,
+      memberships: [],
+      permissions: [],
+      effectiveScopes: ['global'],
+      isAdminMaster: true,
+      isCandidate: false,
+      isEmpresa: false,
+      firstLoginState: null,
+      legalAcceptances: [],
+      contextLabel: 'Painel Administrativo',
+      greeting: 'Olá',
+      dateTime: '2024-01-01 00:00:00',
+    },
     activeRole: { id: 'r1', name: 'admin_master', scope: 'global' },
     activeTenantId: null,
     availableMemberships: [],
@@ -33,8 +53,12 @@ vi.mock('@/contexts/AccountContext', () => ({
   }),
 }));
 
-vi.mock('@/hooks/useTheme', () => ({
-  useTheme: () => ({ theme: 'light', toggleTheme: vi.fn(), setTheme: vi.fn() }),
+vi.mock('@/contexts/ThemeContext', () => ({
+  useTheme: () => ({
+    resolvedTheme: 'light',
+    toggleTheme: vi.fn(),
+    setTheme: vi.fn(),
+  }),
 }));
 
 import { PortalHeader } from '@/components/portal/PortalHeader';
