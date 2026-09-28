@@ -349,7 +349,7 @@ export default function Vagas() {
 
           {/* Estados de loading, erro e vazio */}
           {isLoading ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="3xl:grid-cols-5 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
@@ -394,7 +394,7 @@ export default function Vagas() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={staggerReveal(0.1)}
-              className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+              className="3xl:grid-cols-5 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
               {vagas.map((vaga) => (
                 <motion.div
