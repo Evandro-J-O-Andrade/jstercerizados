@@ -27,7 +27,6 @@ export function PermissionGuard({
     isAuthenticated,
     isLoading,
     person,
-    isAdminMaster,
     permissions: userPermissions,
     authError,
   } = useAuth();
@@ -70,10 +69,6 @@ export function PermissionGuard({
 
   if (!isAuthenticated || !person) {
     return <Navigate to="/entrar" state={{ from: location }} replace />;
-  }
-
-  if (isAdminMaster) {
-    return <>{children}</>;
   }
 
   const requiredPermissions = permission
