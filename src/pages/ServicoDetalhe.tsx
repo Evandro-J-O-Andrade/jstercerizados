@@ -194,12 +194,14 @@ export default function ServicoDetalhe() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
         />
+
         <motion.div
           className="bg-primary/10 animate-pulse-glow absolute top-1/3 right-1/4 hidden h-3 w-3 rounded-full md:block"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.8 }}
         />
+
         <motion.div
           className="bg-primary/15 animate-float-slow absolute right-1/3 bottom-1/3 hidden h-5 w-5 rounded-full opacity-70 md:block"
           initial={{ opacity: 0 }}
@@ -207,7 +209,8 @@ export default function ServicoDetalhe() {
           transition={{ delay: 1, duration: 0.8 }}
         />
 
-        <div className="relative mx-auto max-w-[1920px] px-4 py-32 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
+        {/* Conteúdo da Hero */}
+        <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-5rem)] w-full max-w-[1920px] flex-col px-4 py-24 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -222,7 +225,10 @@ export default function ServicoDetalhe() {
             </Link>
           </motion.div>
 
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+          {/* Área principal da Hero.
+              A altura disponível pertence à Hero, não ao conteúdo textual. */}
+          <div className="grid flex-1 grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            {/* Texto */}
             <motion.div
               initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
@@ -276,6 +282,7 @@ export default function ServicoDetalhe() {
                     Solicitar Orçamento
                   </Button>
                 </motion.a>
+
                 <Link to="/contato">
                   <Button variant="outline" size="lg">
                     Fale Conosco
@@ -285,11 +292,12 @@ export default function ServicoDetalhe() {
               </motion.div>
             </motion.div>
 
+            {/* Card visual — permanece dentro do grid */}
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="relative hidden lg:block"
+              className="relative hidden items-center lg:flex lg:-translate-y-14 xl:-translate-y-16"
             >
               <motion.div
                 animate={{ y: [0, -6, 0] }}
@@ -299,7 +307,7 @@ export default function ServicoDetalhe() {
                   ease: 'easeInOut',
                 }}
               >
-                <div className="bg-card/30 border-border relative mx-auto aspect-[4/3] max-w-[360px] overflow-hidden rounded-3xl border backdrop-blur-sm">
+                <div className="bg-card/30 border-border relative mx-auto aspect-[4/3] w-full max-w-[640px] overflow-hidden rounded-3xl border backdrop-blur-sm sm:aspect-[3/2] lg:aspect-[4/3] lg:max-w-[560px] xl:max-w-[640px]">
                   <img
                     src={service.image}
                     alt={service.title}
@@ -308,6 +316,7 @@ export default function ServicoDetalhe() {
                     width={600}
                     height={450}
                   />
+
                   <div className="from-background/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
                 </div>
               </motion.div>
@@ -322,6 +331,7 @@ export default function ServicoDetalhe() {
                   <div className="bg-primary shadow-glow flex h-11 w-11 items-center justify-center rounded-full">
                     <Zap className="text-primary-foreground h-5 w-5" />
                   </div>
+
                   <div>
                     <p className="text-foreground text-sm font-semibold">
                       Excelência Operacional
@@ -345,6 +355,7 @@ export default function ServicoDetalhe() {
           <span className="text-muted-foreground mb-2 text-xs font-medium">
             Role para descer
           </span>
+
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}

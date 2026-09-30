@@ -208,7 +208,6 @@ export function HeroImage({
       <SafeImage
         src={src}
         alt={alt}
-        fallbackSrc={src}
         className="h-full w-full object-cover motion-safe:duration-300"
         loading="eager"
         onError={() => setImageError(true)}
