@@ -28,6 +28,18 @@ export interface AccountIdentity {
   isAdminMaster: boolean;
 }
 
+/**
+ * AccountContextType properties:
+ * switchAccount: (tenantId: string) => Promise<void>;
+ * refreshPermissions: () => Promise<void>;
+ * logout: () => Promise<void>;
+ * availableMemberships: membership list (active only);
+ * activeRole: resolved from roleAssignments for currentTenantId.
+ * activePermissions: merged role permissions (admin_master adds all global permissions).
+ * availableModules: filtered by permission + scope. Modules without user permission are hidden (not 403).
+ * 403 is reserved for direct URL access to a route without permission — a security boundary, not navigation.
+ * @security admin_master is global scope; switching tenants must revalidate membership status and reload permissions.
+ */
 export interface AccountContextType {
   identity: AccountIdentity;
   userIdentity: UserIdentity;
@@ -47,12 +59,15 @@ export interface AccountContextType {
     status: string;
   }[];
   switchAccount: (tenantId: string) => Promise<void>;
+  refreshPermissions: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AccountContext = createContext<AccountContextType | undefined>(undefined);
 
 export function AccountProvider({ children }: { children: React.ReactNode }) {
   const {
+    user,
     person,
     roles,
     currentTenantId,
@@ -65,6 +80,8 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
     firstLoginState,
     legalAcceptances,
     switchTenant,
+    logout,
+    refreshAuthData,
   } = useAuth();
 
   const identity = useMemo<UserIdentity>(() => {
@@ -120,6 +137,16 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
     [switchTenant],
   );
 
+  const handleLogout = useCallback(async () => {
+    await logout();
+  }, [logout]);
+
+  const handleRefreshPermissions = useCallback(async () => {
+    if (user) {
+      await refreshAuthData(user.id);
+    }
+  }, [user, refreshAuthData]);
+
   const activeRole = useMemo(() => {
     if (!roles.length) return null;
     const primaryRole = roles[0];
@@ -164,6 +191,8 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
         status: m.status,
       })),
       switchAccount: handleSwitchAccount,
+      refreshPermissions: handleRefreshPermissions,
+      logout: handleLogout,
     }),
     [
       identity,
@@ -176,6 +205,8 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
       effectiveScopes,
       tenantMemberships,
       handleSwitchAccount,
+      handleRefreshPermissions,
+      handleLogout,
     ],
   );
 

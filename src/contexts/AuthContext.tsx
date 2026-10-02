@@ -83,6 +83,7 @@ interface AuthContextType {
   hasAnyPermission: (permissionKeys: string[]) => boolean;
   hasAllPermissions: (permissionKeys: string[]) => boolean;
   switchTenant: (tenantId: string | null) => Promise<void>;
+  refreshAuthData: (authUserId?: string) => Promise<void>;
   resolvePostLoginDestination: () => string;
   authError: string | null;
   recoveryMode: boolean;
@@ -127,7 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isMountedRef = useRef(true);
   const authLoadInFlightRef = useRef(false);
 
-  const loadAuthData = useCallback(async (authUserId: string) => {
+  const loadAuthData = useCallback(async (authUserId?: string) => {
     try {
       const supabase = getSupabaseClient();
       if (!supabase || !isMountedRef.current) {
@@ -1044,10 +1045,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const switchTenant = useCallback(
     async (tenantId: string | null) => {
       if (!user) return;
+
+      const supabase = getSupabaseClient();
+      if (!supabase) return;
+
+      if (tenantId !== null) {
+        const { data: targetMembership, error: membershipError } =
+          await supabase
+            .from('tenant_memberships')
+            .select('*')
+            .eq('person_id', person?.id || '')
+            .eq('tenant_id', tenantId)
+            .eq('status', 'active')
+            .maybeSingle();
+
+        if (membershipError) {
+          console.error(
+            '[AUTH:switchTenant] membership check failed',
+            membershipError,
+          );
+          throw new Error('Não foi possível validar a tenant de destino.');
+        }
+
+        if (!targetMembership) {
+          console.error(
+            '[AUTH:switchTenant] no active membership for target tenant',
+          );
+          throw new Error(
+            'Você não possui acesso ativo a este tenant. Solicite acesso ao administrador.',
+          );
+        }
+      }
+
       setCurrentTenantId(tenantId);
       await loadAuthData(user.id);
     },
-    [user, loadAuthData],
+    [user, person, loadAuthData],
   );
 
   const resolvePostLoginDestination = useCallback((): string => {
@@ -1309,6 +1342,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         hasAnyPermission,
         hasAllPermissions,
         switchTenant,
+        refreshAuthData: loadAuthData,
         resolvePostLoginDestination,
         authError,
         recoveryMode,

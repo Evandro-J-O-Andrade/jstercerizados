@@ -38,7 +38,10 @@ import { cn } from '@/utils';
 import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
 import type { ModuleStats } from '@/lib/module-stats';
 
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+export const ICON_MAP: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
   home: Home,
   users: Users,
   briefcase: Briefcase,

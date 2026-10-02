@@ -2481,6 +2481,8 @@ export const MODULE_PERMISSION_MAP: Record<string, string> = {
   servicos: 'service_orders.read',
   estoque: 'stock.read',
   almoxarifado: 'stock.read',
+  operacoes: 'work_orders.read',
+  pos: 'pos_sales.read',
   suporte: 'support_tickets.read',
   relatorios: 'reports.read',
   ia: '',

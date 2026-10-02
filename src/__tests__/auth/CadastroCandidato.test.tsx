@@ -59,6 +59,7 @@ describe('CadastroCandidato — candidate registration E2E', () => {
       hasAnyPermission: vi.fn(),
       hasAllPermissions: vi.fn(),
       switchTenant: vi.fn(),
+      refreshAuthData: vi.fn(),
       resolvePostLoginDestination: vi.fn(),
       authError: null,
       recoveryMode: false,
