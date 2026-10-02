@@ -1,7 +1,7 @@
 # SaaS Portal Architecture — Final (v1.0)
 
 > **Status:** Aprovado para implementação (2026-10-02)
-> **Baseado em:** Supabase real (`okxqfyoqbhcmflpurfrw`), 221 tabelas, RBAC existente
+> **Baseado em:** Supabase real (`okxqfyoqbhcmflpurfrw`) — 221 tabelas, 233 funções, 600 policies, 34 SECURITY DEFINER functions, 221/221 tabelas com RLS
 > **Zona protegida:** Site público (`/`, `/vagas`, `/servicos`, etc.) — NÃO será alterado
 
 ---
@@ -57,7 +57,137 @@
 
 ## 3. Estado atual do código
 
-### Estrutura existente
+### Inventário completo do banco (read-only query, 2026-10-02)
+
+```text
+Supabase (okxqfyoqbhcmflpurfrw)
+│
+├── Schemas: public, auth, realtime, storage
+├── 221 tabelas public
+├── 5 views public
+├── 713 indexes public
+├── 233 public functions
+├── 600 policies
+├── 1 enum
+├── 0 sequences
+├── 66 triggers não-internos
+├── 53 application roles
+├── 230 permissions
+├── 739 role_permissions
+├── 23 auth.users
+├── 41 people
+├── 3 tenants
+├── 43 tenant_memberships
+├── 37 role_assignments
+├── admin_master: 96/230 permissions (NÃO "todas")
+├── 34 functions SECURITY DEFINER
+├── 7 SECURITY DEFINER sem search_path explícito
+└── RLS: 221/221 tabelas public ativo
+```
+
+### Domínios confirmados no banco
+
+```text
+Identity/Platform
+  people, tenants, tenant_memberships, tenant_settings
+  roles, permissions, role_permissions, role_assignments
+
+RH (3 subdomínios)
+  Candidate: candidates, candidate_documents, candidate_experiences, candidate_education,
+    candidate_courses, candidate_languages, candidate_skills, candidate_processes,
+    candidate_job_alerts, candidate_profile_views, favorite_jobs
+  Recruitment: jobs, applications, application_status_history, application_profile_snapshots,
+    recruitment_demands, recruitment_processes, recruitment_stages, stage_templates,
+    interviews, interview_participants, interview_feedback, interview_followups,
+    skills, job_skills, job_matches, talent_pool_memberships
+  Employee: employees, employee_positions, employee_contracts, employee_documents,
+    employee_status_history, positions, departments
+
+Comercial/CRM
+  companies, company_relationships, company_relationship_types, company_contacts,
+    company_locations, company_social_links, company_services, leads, customers,
+    interactions, quotes, quote_items, sales, sale_items, contracts, contract_status_history
+
+Serviços
+  services, service_sla, company_services, service_orders, service_order_items,
+    service_order_status_history, service_acceptances, service_executions,
+    service_attachments, service_occurrences, customer_feedback, customer_ratings,
+    feedback
+
+Operações
+  work_orders, work_order_assignments, work_order_materials, work_order_checklists,
+    work_order_attachments, work_order_occurrences, work_order_acceptances
+
+Estoque/Supply Chain
+  products, product_categories, warehouses, warehouse_locations, stock_balances,
+    stock_entries, stock_movements, stock_lots, stock_inventory, stock_inventory_items,
+    purchase_orders, purchase_order_items, purchase_requests, purchase_request_items,
+    purchase_quotations, purchase_quotation_items, purchase_status_history,
+    purchase_receipts, purchase_receipt_items, purchase_receipt_divergences,
+    suppliers, third_party_custody, third_party_custody_items, material_issues,
+    material_issue_items, material_returns, material_return_items, epi_deliveries,
+    epi_delivery_items, epi_returns, epi_return_items
+
+Financeiro
+  financial_categories, cost_centers, financial_accounts, financial_transactions,
+    accounts_receivable, accounts_payable, financial_installments,
+    financial_installment_payments, financial_installment_cancellations,
+    payments, receipts, bank_reconciliations, invoices, invoice_items
+
+Fiscal
+  fiscal_configurations, tax_rates, tax_calculations, fiscal_documents,
+    fiscal_document_items, fiscal_document_status_history, fiscal_document_events,
+    fiscal_api_requests, fiscal_api_responses, fiscal_integrations
+
+POS
+  pos_terminals, pos_cashiers, pos_operators, pos_cashier_sessions,
+    pos_sales, pos_sale_items, pos_payments, pos_cancellations, pos_returns,
+    pos_cash_movements, pos_daily_closures
+
+Suporte/Atendimento
+  support_ticket_categories, support_tickets, support_ticket_messages,
+    support_ticket_assignments, support_ticket_status_history, tasks,
+    task_comments, task_attachments, task_status_history
+
+Comunicação (transversal)
+  chat_rooms, chat_participants, chat_messages, chat_handoffs, notifications,
+    notification_deliveries, notification_preferences, email_templates, email_messages
+
+Calendário (transversal)
+  calendar_integrations, calendars, calendar_events, event_participants,
+    meeting_rooms, meeting_room_reservations
+
+Documentos (DUAS gerações — reconciliar)
+  files, file_access_logs, document_versions, document_links
+  file_uploads, media_assets
+  candidate_documents, employee_documents, administrative_documents
+
+LGPD/Privacidade (transversal)
+  consents, privacy_requests, data_export_requests, data_deletion_requests,
+    data_retention_policies, legal_acceptances, first_login_state,
+    security_events, audit_logs, activity_logs
+
+Eventos/Automação (transversal)
+  domain_events, event_outbox, event_deliveries, webhook_deliveries,
+    automation_jobs, automation_executions, automation_templates
+
+Relatórios/Dashboards
+  report_definitions, report_executions, report_schedules, dashboard_widgets,
+    dashboard_layouts
+
+IA
+  ai_conversations, ai_messages, ai_usage
+
+Integrações
+  providers, provider_configs, integration_connections, integration_credentials,
+    integration_events, integration_webhooks, integration_sync_runs,
+    integration_errors, integration_sync_jobs
+
+CMS (site público — PROTEGIDO)
+  blog_categories, blog_posts, faqs, page_templates, services, media_assets,
+    company_social_links, footer_configs, candidate_portal_modules,
+    global_navigation_links
+```
 
 ```text
 src/
@@ -116,13 +246,55 @@ App.tsx usa padrão híbrido:
 - `ModuleContext` → `ModuleProvider` detecta módulo/feature da URL
 - App.tsx envolve tudo com `AuthRoute → ProtectedRoute → ModuleProvider → AppShell`
 
-### Problemas conhecidos
+### Problemas conhecidos — Status
 
-1. **Permissões literais espalhados** — App.tsx ainda tem 20+ `PermissionGuard permission="string"` literais
-2. **AppShell fixo** — ainda não filtra sidebar por feature
-3. **Module façade não autossuficiente** — `src/modules/rh/` re-exporta de `src/pages/dashboard/`
-4. **Module routes incompleto** — `rhRoutes` tem apenas um stub
-5. **CRUD não unificado** — `src/shared/crud/` existe mas não é usado por todos os módulos
+1. ✅ **Permissões literais espalhados** — RESOLVIDO via `ModuleRouter` + `MODULE_PERMISSION_MAP`
+2. ✅ **AppShell fixo** — em transição via `ModuleProvider` (detecta módulo da URL)
+3. ⏳ **Module façade não autossuficiente** — `src/modules/rh/` re-exporta de `src/pages/dashboard/` (façade de transição)
+4. ✅ **Module routes incompleto** — `rhRoutes` tem 20 rotas lazy-load criadas
+5. ⏳ **CRUD não unificado** — `src/shared/crud/` existe, adotar em cada módulo
+6. ⏳ **Reconciliação DB ↔ Frontend** — 221 tabelas precisam ser mapeadas vs pages/repositories existentes
+
+## 22b. Reconciliation Matrix (gerar)
+
+Precisamos produzir um mapa completo:
+
+```text
+DATABASE (221 tabelas)
+│
+├── table → repository (existe?)
+├── table → frontend page (existe?)
+├── table → permission (qual?)
+├── table → module (qual domínio?)
+├── table → tenant_id column? (RLS scope)
+└── table → person_id column? (owner)
+
+FRONTEND
+│
+├── page → table (fonte de dados)
+├── repository → table ( Supabase client)
+├── route → permission (guard)
+├── module → tables (domínio)
+└── form → table (target)
+```
+
+### Gaps identificados (tabelas sem frontend)
+
+```text
+12 tabelas documentadas como GAP (não inventar no frontend):
+- accounting_entries
+- bank_accounts
+- candidate_preferences
+- cash_flows
+- chart_of_accounts
+- curriculos
+- epis
+- support_faqs
+- warehouse_custodies
+- warehouse_entries
+- warehouse_issues
+- warehouse_returns
+```
 
 ## 4. Identity model
 
@@ -489,21 +661,33 @@ Frontend precisa consumir estas tabelas para construir dashboards dinâmicos.
 
 ## 22. Security hardening
 
-### Security Definer functions expostas
+### Security Definer functions
 
-| Function                           | Concedido a         | Risco |
-| ---------------------------------- | ------------------- | ----- |
-| `bootstrap_candidate_identity`     | anon, authenticated | Médio |
-| `bootstrap_company_from_auth_user` | anon, authenticated | Alto  |
-| `repair_candidate_chain`           | anon, authenticated | Alto  |
-| `set_primary_media`                | anon, authenticated | Médio |
-| `is_admin_master`                  | anon, authenticated | Baixo |
-| `user_has_permission`              | anon, authenticated | Baixo |
+```text
+public functions ............... 233
+SECURITY DEFINER ............... 34
+SECURITY DEFINER sem search_path  7
+SECURITY DEFINER anon/authenticated  18
+```
+
+#### Matrix de exposição (precisa de análise pós-fato)
+
+| Function                           | SECURITY DEFINER | search_path | Exposição           | Risco  |
+| ---------------------------------- | ---------------- | ----------- | ------------------- | ------ |
+| `bootstrap_candidate_identity`     | yes              | (check)     | anon, authenticated | Médio  |
+| `bootstrap_company_from_auth_user` | yes              | (check)     | anon, authenticated | Alto   |
+| `repair_candidate_chain`           | yes              | (check)     | anon, authenticated | Alto   |
+| `set_primary_media`                | yes              | (check)     | anon, authenticated | Médio  |
+| `is_admin_master`                  | yes              | (check)     | anon, authenticated | Baixo  |
+| `user_has_permission`              | yes              | (check)     | anon, authenticated | Baixo  |
+| ... (28 more SD functions)         | yes              | vary        | vary                | varies |
 
 ### Ações necessárias
 
-1. Restringir funções de write a `service_role` apenas
-2. `search_path` correto em todas as funções SECURITY DEFINER
+1. Auditar as 34 SECURITY DEFINER functions — quais realmente precisam de definer
+2. Restringir write functions a `service_role` apenas
+3. Garantir `search_path = public, pg_temp` em todas as SD functions
+4. Revista de admin_master: 96/230 permissions (NÃO "todas")
 
 ## 23. Migration rules
 
@@ -521,16 +705,31 @@ Frontend precisa consumir estas tabelas para construir dashboards dinâmicos.
 
 ## 25. Migration order
 
-1. ✅ **Checkpoint Git** — salvar estado atual
-2. ✅ **Fixes críticos** — candidate trigger, signupContext, permission contract
-3. ✅ **ARCHITECTURE-03-SAAS-SPINE** — documento esta sendo criado
-4. **Phase 2-A: Platform Spine** — `src/platform/*`
-5. **Phase 2-B: Router modular** — module-specific routes
-6. **Phase 2-C: RH como célula piloto** — migrar pages → modules/rh/pages
-7. **Phase 2-D: Candidate portal** — migrar features → modules
-8. **Phase 2-E: Security hardening** — Supabase functions
-9. **Phase 2-F: Dashboard Builder** — consumir dashboard_widgets
-10. **Phase 2-G: Serviços, Estoque, Suporte** — novos módulos
+1. ✅ **Checkpoint Git 1** (`bb02e33`) — 115 arquivos, lint/prettier/build/tests passando
+2. ✅ **Checkpoint Git 2** (`4dfe335`) — Platform spine + modular router, 11 arquivos novos
+3. ✅ **Checkpoint Git 3** (`346cb9b`) — Testes E2E cadastro candidato (4 testes)
+4. ✅ **Checkpoint Git 4** (`6fdd598`) — Security hardening migration
+5. ✅ **Fix trigger candidato** — Migration `20260925000001`
+6. ✅ **Fix signupContext** — `signupContext: 'candidato'`
+7. ✅ **Permission contract unified** — 6 permissões corrigidas
+8. ✅ **PermissionGuard bypass removido** — commit `8482111`
+9. ✅ **ARCHITECTURE-03-SAAS-SPINE** — documento aprovado
+10. ✅ **Inventário completo banco** — 221 tabelas, 233 funções, 600 policies, 34 SD functions
+11. ✅ **Platform Spine** — `src/platform/*` criado e integrado ao App.tsx
+12. ✅ **Router modular** — ModuleRouter integrado ao App.tsx (28 linhas removidas)
+13. ✅ **RH routes registry** — 20 rotas lazy-load criadas
+14. ✅ **Serviços module** — rotas expandidas (8 routes), cell criada
+15. ✅ **Estoque module** — cell completa criada (routes, types, permissions, dashboard, sidebar)
+16. ✅ **Fiscal module** — cell criada (6 routes)
+17. ✅ **Suporte module** — cell criada (5 routes)
+18. ✅ **Financeiro module** — cell criada (7 routes)
+19. ✅ **Operações module** — cell criada (7 routes)
+20. ✅ **Empresas/Comercial module** — cell criada (8 routes)
+21. ✅ **POS module** — cell criada (6 routes)
+22. ✅ **Reconciliação DB↔Frontend** — `ARCHITECTURE-04-RECONCILIATION.md` criado (221 tabelas mapeadas)
+23. ⏳ **Dashboard Builder** — consumir `dashboard_widgets`
+24. ⏳ **Security hardening** — auditoria das 34 SD functions
+25. ⏳ **IDOR test** — validar 3 barreiras
 
 ## 26. Definition of Done
 
