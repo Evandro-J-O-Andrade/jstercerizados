@@ -10,7 +10,7 @@
 
 1. [Princípios](#1-princípios)
 2. [Zonas protegidas](#2-zonas-protegidas)
-3. [Banco como source of truth](#3-banco-como-source-of-truth)
+3. [Estado atual do código](#3-estado-atual-do-código)
 4. [Identity model](#4-identity-model)
 5. [Tenant/account model](#5-tenantaccount-model)
 6. [RBAC](#6-rbac)
@@ -42,7 +42,7 @@
 - **Banco é fonte de verdade.** Frontend consome, não recria.
 - **Cada módulo é uma célula independente.** Chack Bouer 24H.
 - **Um Portal global.** Não há PortalRH, PortalEstoque, etc.
-- **Permissão única.** MODULE_PERMISSION_MAP é a fonte única.
+- **Permissão única.** `MODULE_PERMISSION_MAP` é a fonte única.
 - **Frontend não é segurança.** RBAC + RLS são as barreiras reais.
 - **Site público é zona protegida.** Não tocar.
 
@@ -55,63 +55,119 @@
 | Módulos      | `src/modules/*` ou `src/features/*` | Sim (nova estrutura)         |
 | Banco        | `supabase/migrations/*.sql`         | Só com autorização explícita |
 
-## 3. Banco como source of truth
+## 3. Estado atual do código
+
+### Estrutura existente
 
 ```text
-Supabase (okxqfyoqbhcmflpurfrw)
-├── 221 tabelas public
-├── 5 views
-├── 66 triggers não internos
-├── 53 roles
-├── 230 permissions
-├── 739 role_permissions
-└── RLS: 221/221 tabelas
+src/
+├── App.tsx                    # Router principal (926 lines)
+├── components/
+│   ├── auth/                  # ProtectedRoute, AuthRoute, PermissionGuard
+│   ├── layout/                # AppShell, PublicLayout, Footer
+│   ├── portal/                # ModuleRegistry, ModuleWorkspace, PortalShell, etc.
+│   ├── sections/              # CinematicShowcase, HeroImage, etc.
+│   ├── shared/crud/           # DataTable, CrudFilters, ModulePage (8 componentes)
+│   ├── feedback/              # ToastProvider
+│   └── fallback/              # EmptyState, RouteLoadingFallback
+├── contexts/
+│   ├── AuthContext.tsx        # Fonte de verdade: auth.users, people, roles, permissions
+│   ├── AccountContext.tsx     # Consolida identidade, tenant, módulos, permissões
+│   ├── ModuleContext.tsx      # Detecta módulo/feature da URL atual
+│   ├── CandidateContext.tsx   # Contexto específico de candidato
+│   ├── UserIdentity.ts        # Derivador de identidade (people + roles + tenant)
+│   └── IntroContext.tsx       # Intro cinematográfico
+├── modules/rh/                # Façade de transição (não autossuficiente ainda)
+│   ├── dashboard/             # RHDashboardPage.tsx (reativa para src/pages/dashboard/DashboardRh)
+│   ├── candidates/            # Re-exporta páginas existentes
+│   ├── types/                 # Tipos de domínio
+│   ├── repositories/          # Re-exporta repositórios existentes
+│   ├── services/              # Re-exporta services existentes
+│   └── routes/                # Definição de rotas (incompleta: apenas dashboard stub)
+├── features/candidato/        # Portal de candidato (separado do módulo principal)
+│   └── pages/                 # CandidateMetroDashboard, Vagas, Candidaturas, etc.
+├── pages/
+│   ├── dashboard/             # ~50 páginas de dashboard (Candidatos, Funcionarios, etc.)
+│   ├── auth/                  # Login, Cadastro, Callback, Termos, BoasVindas
+│   └── [públicas]             # Home, Sobre, Vagas, Servicos, etc. (PROTETIDAS)
+├── repositories/              # ~30 repositórios Supabase
+├── services/                  # Services de negócio
+├── hooks/                     # Hooks React
+└── types/                     # Tipos globais
 ```
 
-Domínios reais no banco:
+### Router
 
-- RH (candidates, jobs, applications, interviews, employees, people)
-- Empresas (companies, company_relationships)
-- Comercial (crm/candidates)
-- Serviços (service_orders, services)
-- Operações (recruitment_processes)
-- Estoque (products, stock_movements, warehouses)
-- Financeiro (finance.*, accounting_entries)
-- Fiscal (fiscal.*)
-- POS
-- Dashboard (dashboard_widgets, dashboard_layouts)
-- Eventos (domain_events)
-- Integrações (integration_*)
-- Comunicação (notifications, messages)
+App.tsx usa padrão híbrido:
+
+- **Rotas fixas:** DashboardHome, analitico, global, rbac-auditoria, etc. (hardcoded)
+- **Rotas dinâmicas:** `launcherRoutes` geram rotas a partir de `PORTAL_MODULES.filter()` + `createModuleDashboardPage()` — mas ainda faltam as sub-rotas dos features.
+
+### ModuleRegistry (2498 lines)
+
+- `PORTAL_MODULES`: 26 módulos com `ModuleFeature[]` aninhados, `requiredPermissions`, `implementationStatus`
+- `MODULE_PERMISSION_MAP`: 30 entradas mapeando module ID → permissão top-level
+- Funções helper: `hasModulePermission`, `getAvailableModules`, `getAvailableFeatures`, `getModuleById`, `groupModulesByCategory`
+
+### Contextos
+
+- `AuthContext` → fonte de verdade (person, roles, permissions, tenant, switchTenant)
+- `AccountContext` → `AccountProvider` consolida identidade + availableModules + switchAccount
+- `ModuleContext` → `ModuleProvider` detecta módulo/feature da URL
+- App.tsx envolve tudo com `AuthRoute → ProtectedRoute → ModuleProvider → AppShell`
+
+### Problemas conhecidos
+
+1. **Permissões literais espalhados** — App.tsx ainda tem 20+ `PermissionGuard permission="string"` literais
+2. **AppShell fixo** — ainda não filtra sidebar por feature
+3. **Module façade não autossuficiente** — `src/modules/rh/` re-exporta de `src/pages/dashboard/`
+4. **Module routes incompleto** — `rhRoutes` tem apenas um stub
+5. **CRUD não unificado** — `src/shared/crud/` existe mas não é usado por todos os módulos
 
 ## 4. Identity model
 
 ```text
 auth.users
-   ↓ (1:1)
+   ↓ (1:1 via auth.uid())
 people
-   ↓ (1:N)
-tenant_memberships
-   ↓ (1:N)
-role_assignments
-   ↓ (N:1)
+   ↓ (1:N via tenant_memberships)
+tenants
+   ↓ (N:1 via role_assignments)
 roles
-   ↓ (N:N)
-permissions (via role_permissions)
+   ↓ (N:N via role_permissions)
+permissions
+```
+
+### Flow de boot
+
+```text
+Supabase client
+  ↓
+AuthContext (on_auth_state_change)
+  ↓
+fetchPerson() → people via auth.uid()
+  ↓
+fetchRoles() → role_assignments join roles
+  ↓
+fetchPermissions() → role_permissions join permissions
+  ↓
+switchTenant() → atualiza currentTenantId
+  ↓
+RLS usa auth.uid() + current_setting('app.tenant_id')
 ```
 
 ## 5. Tenant/account model
 
-- `tenant_id` no `people` ou resolvido via `tenant_memberships`
-- `currentTenantId` gerenciado por `AuthContext.switchTenant()`
-- Account switcher revalida tudo ao trocar de tenant
+- `tenant_id` resolvido via `tenant_memberships`
+- `currentTenantId` em `AuthContext`
+- Account switcher via `AccountContext.switchAccount()` → `AuthContext.switchTenant()`
 
 ## 6. RBAC
 
 - `admin_master` (scope: global) — 96 permissões reais
 - `company_representative` (scope: tenant) — empresa
-- `candidato` (scope: tenant) — portais de candidato
-- Outros roles: RH, financeiro, fiscal, estoque, suporte, etc.
+- `candidato` (scope: tenant) — portal de candidato
+- Outros: RH, financeiro, fiscal, estoque, suporte, etc.
 
 ## 7. Permission Contract
 
@@ -120,9 +176,10 @@ permissions (via role_permissions)
 ```typescript
 export const MODULE_PERMISSION_MAP: Record<string, string> = {
   inicio: '',
+  'admin-master': 'domain_events.read',
+  tenants: 'tenants.read',
   rh: 'people.read',
   recrutamento: 'jobs.read',
-  empresas: 'companies.read',
   servicos: 'service_orders.read',
   estoque: 'stock.read',
   fiscal: 'fiscal.read',
@@ -133,11 +190,11 @@ export const MODULE_PERMISSION_MAP: Record<string, string> = {
 };
 ```
 
-**Nenhuma permissão hardcoded em App.tsx ou components.**
+**Nenhuma permissão hardcoded em App.tsx.** Todas as rotas novas usam `MODULE_PERMISSION_MAP[moduleId]`.
 
 ## 8. Module Registry
 
-`ModuleRegistry.ts` contém:
+O `ModuleRegistry.ts` já define:
 
 ```typescript
 export interface ModuleDefinition {
@@ -148,7 +205,7 @@ export interface ModuleDefinition {
   route: string; // /dashboard/<id>
   category: ModuleCategory;
   scope: 'global' | 'tenant';
-  requiredPermissions?: string[]; // from MODULE_PERMISSION_MAP
+  requiredPermissions?: string[]; // do banco
   features?: ModuleFeature[];
 }
 
@@ -156,11 +213,22 @@ export interface ModuleFeature {
   id: string;
   title: string;
   description: string;
+  icon?: string;
   route: string;
   requiredPermissions?: string[];
   actions?: ModuleAction[];
+  features?: ModuleFeature[]; // sub-features aninhadas
+  implementationStatus?:
+    'implemented' | 'coming_soon' | 'beta' | 'disabled' | 'deprecated';
 }
 ```
+
+**Funcionalidades helper existentes:**
+
+- `getAvailableModules(permissions, scope)` — filtra módulos por permissão
+- `getAvailableFeatures(permissions, module, scope)` — filtra features de um módulo
+- `getModuleById(id)` — lookup O(1)
+- `groupModulesByCategory(modules)` — agrupa para o Portal
 
 ## 9. Portal
 
@@ -178,89 +246,123 @@ O Portal é **um só lugar**. Ele consulta `getAvailableModules()` e mostra os t
 
 ```text
 Sidebar global (PortalSidebar)
+├── Início
 ├── Módulos disponíveis (baseado em perfil)
 ├── Notificações
-├── Configurações
-└── Conta
+├── Minha Conta
+└── Sair
 ```
 
 Apenas módulos que o usuário tem permissão.
 
 ## 11. Contextual Sidebar
 
-Ao entrar em um módulo, o sidebar muda:
+Ao entrar em um módulo, o sidebar muda para:
 
 ```text
 Sidebar contextual (ModuleSidebar)
 ├── Dashboard (módulo)
+├── Feature 1
+├── Feature 2
 ├── Entity 1
 ├── Entity 2
-├── Entity 3
 └── Relatórios
 ```
 
+Filtrado por: `getAvailableFeatures(permissions, module, scope)`
+
+**Sidebar nunca é segurança.** É UX filtering apenas.
+
 ## 12. Router
 
-App.tsx é minimalista:
+### Estado atual
+
+App.tsx é o router principal:
 
 ```text
 App
-├── / (public routes)
-├── /dashboard/* (protected + ModuleProvider + AppShell)
+├── / (public routes) — PROTEGIDO
+├── /dashboard/* (AuthRoute → ProtectedRoute → ModuleProvider → AppShell)
 ├── /auth/callback
-├── /candidato/* (candidate portal)
+├── /onboarding
+├── /candidato/* (CandidateRoute → CandidateProvider → CandidatePortal)
+├── /auth/* (login, cadastro, etc.)
 └── catch-all
 ```
 
-Roteamento:
+### Roteamento dinâmico
 
-```text
-App
-  ↓
-PermissionGuard
-  ↓
-ModuleProvider
-  ↓
-AppShell (Header + Sidebar + Main + Footer)
-  ↓
-ModuleWorkspace + ModulePage
-  ↓
-Module routes (lazy)
+```tsx
+const launcherRoutes = PORTAL_MODULES.filter(
+  (module) =>
+    module.route !== '/dashboard' &&
+    (MODULE_PERMISSION_MAP[module.id] || !module.requiredPermissions?.length),
+).map((module) => ({
+  key: module.id,
+  path: module.route.replace('/dashboard/', ''),
+  moduleId: module.id,
+  permission: MODULE_PERMISSION_MAP[module.id],
+}));
 ```
+
+### Objetivo Phase 2
+
+Migrar para **module-specific routes** — cada módulo define suas próprias rotas via `ModuleRoute[]`. O App.tsx consome dinamicamente.
 
 ## 13. Module Cell
 
-Estrutura por módulo:
+Estrutura alvo:
 
 ```text
 src/modules/<domain>/
+├── routes/              # ModuleRoute[] — rotas do módulo
+├── dashboard/           # Dashboard gerencial (Level 2)
+├── sidebar/             # Sidebar contextual do módulo
+├── pages/               # Páginas do módulo
+├── components/          # Componentes específicos do módulo
+├── forms/               # Forms com Zod validation
+├── crud/                # CRUD operations
+├── repositories/        # Repository wrapper (Supabase)
+├── hooks/               # React hooks
+├── services/            # Business logic
+├── types/               # Domain types
+├── permissions.ts       # Permissões específicas do módulo
+└── index.ts             # Public API do módulo
+```
+
+### Módulo piloto: RH
+
+```text
+src/modules/rh/
+├── routes/index.ts      # rhRoutes: ModuleRoute[]
 ├── dashboard/
-│   ├── <Domain>Dashboard.tsx
-│   └── widgets/
+│   ├── RHDashboardPage.tsx
+│   └── index.ts
 ├── sidebar/
-│   └── <Domain>Sidebar.tsx
-├── routes/
-│   └── <domain>.routes.ts
+│   └── RHSidebar.tsx
 ├── pages/
-├── components/
-├── forms/
+│   ├── CandidatosPage.tsx
+│   ├── VagasPage.tsx
+│   ├── FuncionariosPage.tsx
+│   └── ...
 ├── crud/
-├── repositories/
-├── hooks/
-├── services/
-├── permissions.ts
+├── forms/
+├── repositories/        # (exists - re-exports)
+├── services/            # (exists - re-exports)
+├── types/               # (exists - domain types)
+├── permissions.ts       # RH-specific permissions
 └── index.ts
 ```
 
 ## 14. Dashboard hierarchy
 
-### Nível 1 — Portal (Metro/Bento)
+### Nível 1 — Portal
 
 ```text
 /dashboard
 ```
 
-Launcher visual. Tiles clicáveis.
+Launcher visual (Metro/Bento). Tiles clicáveis.
 
 ### Nível 2 — Dashboard gerencial
 
@@ -280,7 +382,7 @@ Tabela, formulário, CRUD. Foco em densidade e legibilidade.
 
 ## 15. CRUD architecture
 
-Global components:
+Shared components em `src/shared/crud/`:
 
 ```text
 src/shared/crud/
@@ -288,8 +390,8 @@ src/shared/crud/
 ├── CrudFilters.tsx
 ├── CrudDialog.tsx
 ├── CrudStates.tsx
-├── FormShell.tsx
-├── EntityDrawer.tsx
+├── ModulePage.tsx
+├── CrudAlerts.tsx
 ├── types.ts
 └── index.ts
 ```
@@ -306,7 +408,7 @@ Cada módulo instancia o CRUD com seus próprios repositórios e schemas.
 ## 17. Repository/Service/Hook
 
 ```text
-Repository
+Repository (Supabase wrapper)
   ↓
 Service (business logic)
   ↓
@@ -325,11 +427,11 @@ Hook é o ponto de entrada no React.
 
 3 barreiras:
 
-1. **Frontend** — PermissionGuard / RouteGuard
-2. **Backend** — RPC com validação de tenant
-3. **Database** — RLS + tenant_id filter
+1. **Frontend** — PermissionGuard / RouteGuard / ProtectedRoute
+2. **Backend** — Repository queries filtered by tenant_id
+3. **Database** — RLS com `current_setting('app.tenant_id')` + `auth.uid()`
 
-Nunca confiar em parâmetros da URL/query sem validar.
+Exemplo: candidate 123 não pode ser acessado sem validação de tenant + person_id.
 
 ## 19. Chack Bouer 24H
 
@@ -337,11 +439,11 @@ Nunca confiar em parâmetros da URL/query sem validar.
 
 ### Checklist de isolamento
 
-- [ ] Module tem seu próprio index.ts
-- [ ] Module não importa de outros modules
-- [ ] Module não importa de `src/pages/*`
+- [ ] Module tem seu próprio `index.ts`
+- [ ] Module não importa de outros modules (exceto platform/shared)
+- [ ] Module não importa de `src/pages/*` (exceto durante migração)
 - [ ] Repository é autossuficiente
-- [ ] Permissions são declaradas, não hardcodidas
+- [ ] Permissions são declaradas no `permissions.ts`, não hardcodidas
 - [ ] Module test suite passa independentemente dos outros
 - [ ] Module build chunk é independente
 
@@ -354,7 +456,7 @@ AuthContext.register({ signupContext: 'candidato' })
   ↓
 supabase.auth.signUp()
   ↓
-auth.users INSERT (trigger)
+auth.users INSERT (trigger AFTER INSERT)
   ↓
 handle_new_auth_user() → people
   ↓
@@ -389,19 +491,19 @@ Frontend precisa consumir estas tabelas para construir dashboards dinâmicos.
 
 ### Security Definer functions expostas
 
-| Function                           | Concedido a         | Risco                                         |
-| ---------------------------------- | ------------------- | --------------------------------------------- |
-| `bootstrap_candidate_identity`     | anon, authenticated | Médio — aceita parâmetros arbitrários         |
-| `bootstrap_company_from_auth_user` | anon, authenticated | Alto — cria empresas                          |
-| `repair_candidate_chain`           | anon, authenticated | Alto — recebe person_id, tenant_id, role_code |
-| `is_admin_master`                  | anon, authenticated | Baixo — read only                             |
-| `user_has_permission`              | anon, authenticated | Baixo — read only                             |
+| Function                           | Concedido a         | Risco |
+| ---------------------------------- | ------------------- | ----- |
+| `bootstrap_candidate_identity`     | anon, authenticated | Médio |
+| `bootstrap_company_from_auth_user` | anon, authenticated | Alto  |
+| `repair_candidate_chain`           | anon, authenticated | Alto  |
+| `set_primary_media`                | anon, authenticated | Médio |
+| `is_admin_master`                  | anon, authenticated | Baixo |
+| `user_has_permission`              | anon, authenticated | Baixo |
 
 ### Ações necessárias
 
-1. Restringir `repair_candidate_chain` a `service_role` apenas
-2. Restringir `bootstrap_company_from_auth_user` a `service_role` apenas
-3. `search_path` correto em todas as funções
+1. Restringir funções de write a `service_role` apenas
+2. `search_path` correto em todas as funções SECURITY DEFINER
 
 ## 23. Migration rules
 
@@ -412,39 +514,32 @@ Frontend precisa consumir estas tabelas para construir dashboards dinâmicos.
 
 ## 24. Git checkpoint rules
 
-- Commit checkpoint antes de mudanças arquitetiais grandes
+- Commit checkpoint antes de mudanças arquитектurais grandes
 - Separar arquivos válidos de temporários/gerados
 - Tag: `checkpoint/architecture-<versão>`
 - Branch: `arch/<versão>`
 
 ## 25. Migration order
 
-1. **Checkpoint Git** — salvar estado atual (148 arquivos)
-2. **Permission Contract** — unificar todas as permissões
-3. **Platform Spine** — criar `src/platform/*`
-4. **RH como módulo-piloto** — migrar tudo para `src/modules/rh/`
-5. **Router modular** — module-specific routes
-6. **Serviços** — `src/modules/servicos/`
-7. **Estoque** — `src/modules/estoque/`
-8. **Suporte** — `src/modules/suporte/`
-9. **Financeiro** — `src/modules/financeiro/`
-10. **Dashboard Builder** — consumir `dashboard_widgets`
-11. **Candidate registration E2E test**
-12. **Security hardening**
+1. ✅ **Checkpoint Git** — salvar estado atual
+2. ✅ **Fixes críticos** — candidate trigger, signupContext, permission contract
+3. ✅ **ARCHITECTURE-03-SAAS-SPINE** — documento esta sendo criado
+4. **Phase 2-A: Platform Spine** — `src/platform/*`
+5. **Phase 2-B: Router modular** — module-specific routes
+6. **Phase 2-C: RH como célula piloto** — migrar pages → modules/rh/pages
+7. **Phase 2-D: Candidate portal** — migrar features → modules
+8. **Phase 2-E: Security hardening** — Supabase functions
+9. **Phase 2-F: Dashboard Builder** — consumir dashboard_widgets
+10. **Phase 2-G: Serviços, Estoque, Suporte** — novos módulos
 
 ## 26. Definition of Done
 
 Para cada módulo:
 
-- [ ] Module cell completa
-- [ ] Repository autossuficiente
-- [ ] Dashboard gerencial implementado
-- [ ] CRUD operacional implementado
-- [ ] Forms validados (Zod)
-- [ ] Permissions declaradas no ModuleRegistry
-- [ ] Sidebar contextual filtrando por feature
-- [ ] Rota lazy-loadable
-- [ ] Tests unitários + integração
+- [ ] Module cell completa (routes, dashboard, sidebar, pages, crud, forms, repositories, hooks, services, types)
+- [ ] Permissions declaradas no `permissions.ts`
+- [ ] Router modular integrado
+- [ ] Tests unitários + integração passam
 - [ ] Lint, typecheck, build passam
 - [ ] IDOR test passa
 - [ ] Chack Bouer 24H verificado (isolamento)

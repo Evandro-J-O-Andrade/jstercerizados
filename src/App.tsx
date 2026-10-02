@@ -9,8 +9,6 @@ import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ToastProvider } from '@/components/feedback';
 import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
-import { EmptyState } from '@/components/fallback';
-import { Clock } from 'lucide-react';
 import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 import { PublicLayout } from '@/components/layout/PublicLayout';
 import { AppShell } from '@/components/layout/AppShell';
@@ -28,11 +26,9 @@ import ClientesPage from '@/pages/dashboard/ClientesPage';
 import IaPage from '@/pages/dashboard/IaPage';
 import IntegracoesPage from '@/pages/dashboard/IntegracoesPage';
 import SegurancaPage from '@/pages/dashboard/SegurancaPage';
-import { createModuleDashboardPage } from '@/pages/dashboard/ModuleDashboardPage';
-import {
-  MODULE_PERMISSION_MAP,
-  PORTAL_MODULES,
-} from '@/components/portal/ModuleRegistry';
+import { ModuleRouter } from '@/platform/router';
+import { moduleRouteRegistries } from '@/platform/router/module-routes';
+import { MODULE_PERMISSION_MAP } from '@/components/portal/ModuleRegistry';
 import FiscalPage from '@/pages/dashboard/FiscalPage';
 import ContabilidadePage from '@/pages/dashboard/ContabilidadePage';
 import Estoque from '@/pages/dashboard/Estoque';
@@ -183,19 +179,6 @@ function App() {
 }
 
 function RoutesAndLayout() {
-  const launcherRoutes = PORTAL_MODULES.filter(
-    (module) =>
-      module.route !== '/dashboard' &&
-      (MODULE_PERMISSION_MAP[module.id] || !module.requiredPermissions?.length),
-  ).map((module) => {
-    return {
-      key: module.id,
-      path: module.route.replace('/dashboard/', ''),
-      moduleId: module.id,
-      permission: MODULE_PERMISSION_MAP[module.id],
-    };
-  });
-
   return (
     <ErrorBoundary>
       <ToastProvider>
@@ -768,34 +751,7 @@ function RoutesAndLayout() {
                 </PermissionGuard>
               }
             />
-            {launcherRoutes.map((route) => {
-              const ModuleLauncher = createModuleDashboardPage(route.moduleId);
-              return (
-                <Route
-                  key={route.key}
-                  path={route.path}
-                  element={
-                    <PermissionGuard permission={route.permission}>
-                      <ModuleLauncher />
-                    </PermissionGuard>
-                  }
-                >
-                  <Route index element={null} />
-                  <Route
-                    path="*"
-                    element={
-                      <div className="min-w-0 flex-1 py-8">
-                        <EmptyState
-                          title="Em breve"
-                          description="Esta funcionalidade está em desenvolvimento e estará disponível em breve."
-                          icon={Clock}
-                        />
-                      </div>
-                    }
-                  />
-                </Route>
-              );
-            })}
+            <ModuleRouter moduleRegistries={moduleRouteRegistries} />
             <Route path="*" element={<ComingSoonPage />} />
           </Route>
           <Route path="/auth/callback" element={<AuthCallback />} />
