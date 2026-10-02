@@ -17,6 +17,7 @@ import type {
   ServiceExecutionCreateInput,
 } from '@/types/domain/service';
 import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+import { getModuleById } from '@/components/portal/ModuleRegistry';
 
 type Tab = 'services' | 'orders' | 'executions';
 
@@ -317,15 +318,7 @@ export default function Servicos() {
   const { currentTenantId } = useAuth();
   const [tab, setTab] = useState<Tab>('services');
 
-  const moduleDef: ModuleDefinition = {
-    id: 'servicos',
-    title: 'Serviços',
-    description: 'Catálogo, ordens e execuções.',
-    icon: 'briefcase',
-    route: '/servicos',
-    category: 'negocio',
-    scope: 'tenant',
-  };
+  const moduleDef: ModuleDefinition | undefined = getModuleById('servicos');
 
   const serviceDefaultForm: ServiceCreateInput = {
     tenant_id: currentTenantId || '',

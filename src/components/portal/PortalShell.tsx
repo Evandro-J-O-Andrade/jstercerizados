@@ -3,7 +3,8 @@ import { Outlet } from 'react-router-dom';
 import { PortalSidebar } from '@/components/portal/PortalSidebar';
 import { PortalHeader } from '@/components/portal/PortalHeader';
 import { AccountProvider } from '@/contexts/AccountContext';
-import { COMPANY } from '@/config';
+import { ModuleProvider } from '@/contexts/ModuleContext';
+import { COMPANY, NEW_WAVE_URL } from '@/config';
 
 interface PortalShellProps {
   moduleTitle?: string;
@@ -30,7 +31,7 @@ function PortalShellInner({ moduleTitle, children }: PortalShellProps) {
   const content = children ?? <Outlet />;
 
   return (
-    <div className="bg-muted/30 flex h-screen w-full flex-col overflow-hidden">
+    <div className="bg-muted/30 flex h-dvh w-full flex-col overflow-hidden">
       <PortalSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -44,36 +45,29 @@ function PortalShellInner({ moduleTitle, children }: PortalShellProps) {
           className="shrink-0"
         />
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <main>
-            <div className="mx-auto max-w-[1920px] px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <main className="flex min-h-0 flex-col">
+            <div className="mx-auto flex min-h-0 max-w-[1920px] flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
               {content}
             </div>
           </main>
         </div>
 
-        <footer className="border-border/50 bg-background/50 shrink-0 border-t lg:hidden">
+        <footer className="border-border/50 bg-background/50 shrink-0 border-t">
           <div className="mx-auto max-w-[1920px] px-4 py-4 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
-            <p className="text-muted-foreground text-center text-xs">
-              © {new Date().getFullYear()} {COMPANY.name}. Todos os direitos
-              reservados.{' '}
-              <span className="text-primary font-medium">
-                Desenvolvido por New Wave Sistemas
-              </span>
-            </p>
-          </div>
-        </footer>
-
-        <footer className="border-border/50 bg-background/50 hidden shrink-0 border-t lg:block">
-          <div className="mx-auto max-w-[1920px] px-4 py-4 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:justify-between sm:text-left">
               <p className="text-muted-foreground text-xs">
                 © {new Date().getFullYear()} {COMPANY.name}. Todos os direitos
                 reservados.
               </p>
-              <span className="text-primary text-xs font-medium">
-                Desenvolvido por New Wave Sistemas
-              </span>
+              <a
+                href={NEW_WAVE_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="text-primary text-xs font-medium transition-colors hover:underline"
+              >
+                Desenvolvido por New Wave Sistemas Digital Solutions
+              </a>
             </div>
           </div>
         </footer>
@@ -85,7 +79,9 @@ function PortalShellInner({ moduleTitle, children }: PortalShellProps) {
 export function PortalShell({ moduleTitle, children }: PortalShellProps) {
   return (
     <AccountProvider>
-      <PortalShellInner moduleTitle={moduleTitle} children={children} />
+      <ModuleProvider>
+        <PortalShellInner moduleTitle={moduleTitle} children={children} />
+      </ModuleProvider>
     </AccountProvider>
   );
 }

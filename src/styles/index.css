@@ -877,34 +877,34 @@
 /* ─── Metro tile responsive grid ─── */
 @media (max-width: 1024px) {
   .metro-grid-responsive {
-    grid-template-columns: repeat(8, 1fr) !important;
-    grid-auto-rows: 160px !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    grid-auto-rows: 220px !important;
   }
 }
 
 @media (max-width: 768px) {
   .metro-grid-responsive {
     grid-template-columns: repeat(4, 1fr) !important;
-    grid-auto-rows: 150px !important;
+    grid-auto-rows: 180px !important;
     gap: 3px !important;
   }
 
   .metro-grid-responsive > * {
     min-width: 0 !important;
-    min-height: 150px !important;
+    min-height: 180px !important;
   }
 }
 
 @media (max-width: 480px) {
   .metro-grid-responsive {
     grid-template-columns: repeat(2, 1fr) !important;
-    grid-auto-rows: 140px !important;
+    grid-auto-rows: 200px !important;
     gap: 2px !important;
   }
 
   .metro-grid-responsive > * {
     min-width: 0 !important;
-    min-height: 140px !important;
+    min-height: 200px !important;
   }
 }
 

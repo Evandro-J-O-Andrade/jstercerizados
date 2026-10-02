@@ -16,7 +16,7 @@ import {
   Accessibility,
   MessageCircle,
 } from 'lucide-react';
-import { COMPANY, SOCIAL_LINKS } from '@/config';
+import { COMPANY, NEW_WAVE_URL, SOCIAL_LINKS } from '@/config';
 import { IMAGES } from '@/config/images';
 import { Button } from '@/components/ui/Button';
 import { PalavraDoDia } from '@/components/sections/PalavraDoDia';
@@ -540,12 +540,14 @@ export function Footer({
               reservados.
             </span>
           </div>
-          <p className="text-muted-foreground text-xs">
-            Desenvolvido por{' '}
-            <span className="text-foreground font-medium">
-              New Wave Sistemas Digital Solutions
-            </span>
-          </p>
+          <a
+            href={NEW_WAVE_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="text-foreground hover:text-primary text-xs font-medium transition-colors"
+          >
+            Desenvolvido por New Wave Sistemas Digital Solutions
+          </a>
         </div>
       </div>
     </footer>

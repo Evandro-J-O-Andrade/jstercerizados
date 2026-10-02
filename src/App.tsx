@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useCallback } from 'react';
+import { Suspense, lazy, useCallback } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useIntro } from '@/contexts/IntroContext';
@@ -9,6 +9,8 @@ import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ToastProvider } from '@/components/feedback';
 import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
+import { EmptyState } from '@/components/fallback';
+import { Clock } from 'lucide-react';
 import { CinematicShowcase } from '@/components/sections/CinematicShowcase';
 import { PublicLayout } from '@/components/layout/PublicLayout';
 import { AppShell } from '@/components/layout/AppShell';
@@ -16,20 +18,21 @@ import { ModuleProvider } from '@/contexts/ModuleContext';
 import { FloatingHelpWidgets } from '@/components/layout/FloatingHelpWidgets';
 import NotFound from '@/pages/NotFound';
 import DashboardHome from '@/pages/dashboard/DashboardHome';
-
 import TenantsPage from '@/pages/dashboard/TenantsPage';
-import ClientesPage from '@/pages/dashboard/ClientesPage';
 import OnboardingPage from '@/pages/dashboard/OnboardingPage';
 import AssinaturasPage from '@/pages/dashboard/AssinaturasPage';
 import GestaoSaaSPage from '@/pages/dashboard/GestaoSaaSPage';
-import CatalogoPage from '@/pages/dashboard/CatalogoPage';
-import DocumentosPage from '@/pages/dashboard/DocumentosPage';
-import ContratosPage from '@/pages/dashboard/ContratosPage';
-import TermosPage from '@/pages/dashboard/TermosPage';
-import LgpdPage from '@/pages/dashboard/LgpdPage';
-import SegurancaPage from '@/pages/dashboard/SegurancaPage';
-import MonitoramentoPage from '@/pages/dashboard/MonitoramentoPage';
+import RolesPermissoesPage from '@/pages/dashboard/RolesPermissoesPage';
+import AuditoriaPage from '@/pages/dashboard/AuditoriaPage';
+import ClientesPage from '@/pages/dashboard/ClientesPage';
+import IaPage from '@/pages/dashboard/IaPage';
 import IntegracoesPage from '@/pages/dashboard/IntegracoesPage';
+import SegurancaPage from '@/pages/dashboard/SegurancaPage';
+import { createModuleDashboardPage } from '@/pages/dashboard/ModuleDashboardPage';
+import {
+  MODULE_PERMISSION_MAP,
+  PORTAL_MODULES,
+} from '@/components/portal/ModuleRegistry';
 import FiscalPage from '@/pages/dashboard/FiscalPage';
 import ContabilidadePage from '@/pages/dashboard/ContabilidadePage';
 import Estoque from '@/pages/dashboard/Estoque';
@@ -37,15 +40,8 @@ import Almoxarifado from '@/pages/dashboard/Almoxarifado';
 import Servicos from '@/pages/dashboard/Servicos';
 import Suporte from '@/pages/dashboard/Suporte';
 import FaturamentoPage from '@/pages/dashboard/FaturamentoPage';
-import AuditoriaPage from '@/pages/dashboard/AuditoriaPage';
-import IaPage from '@/pages/dashboard/IaPage';
-import GestaoPage from '@/pages/dashboard/GestaoPage';
 import GlobalDashboardPage from '@/pages/dashboard/GlobalDashboardPage';
-import {
-  MODULE_PAGE_MAP,
-  MODULE_PERMISSION_MAP,
-  PORTAL_MODULES,
-} from '@/components/portal/ModuleRegistry';
+import VisaoGeral from '@/pages/dashboard/VisaoGeral';
 import AuthTerms from '@/pages/auth/Termos';
 import AuthWelcome from '@/pages/auth/BoasVindas';
 import AuthCallback from '@/pages/auth/AuthCallback';
@@ -99,7 +95,7 @@ const PrimeiroAcessoTermos = lazy(
 );
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
 const CandidateDashboard = lazy(
-  () => import('@/features/candidato/pages/Dashboard'),
+  () => import('@/features/candidato/pages/CandidateMetroDashboard'),
 );
 const CandidateVagas = lazy(() => import('@/features/candidato/pages/Vagas'));
 const CandidateCandidaturas = lazy(
@@ -121,11 +117,10 @@ const CandidateConfiguracoes = lazy(
 const CandidateAlertas = lazy(
   () => import('@/features/candidato/pages/Alertas'),
 );
-import { CandidateShell } from '@/components/portal/CandidateShell';
+import { CandidatePortal } from '@/components/portal/CandidatePortal';
 import { CandidateProvider } from '@/contexts/CandidateContext';
 import { CandidateRoute } from '@/components/auth/CandidateRoute';
 import ComingSoonPage from '@/pages/dashboard/ComingSoonPage';
-import VisaoGeralPage from '@/pages/dashboard/VisaoGeral';
 import VagasPage from '@/pages/dashboard/Vagas';
 import CandidaturasPage from '@/pages/dashboard/Candidaturas';
 import CandidatosPage from '@/pages/dashboard/Candidatos';
@@ -139,24 +134,16 @@ import CandidatoPreferencias from '@/pages/dashboard/CandidatoPreferencias';
 import CandidatoVisualizacoes from '@/pages/dashboard/CandidatoVisualizacoes';
 import JobMatches from '@/pages/dashboard/JobMatches';
 import EmpresasPage from '@/pages/dashboard/Empresas';
-import ParceirosPage from '@/pages/dashboard/Parceiros';
-import FornecedoresPage from '@/pages/dashboard/Fornecedores';
-import UsuariosPage from '@/pages/dashboard/Usuarios';
 import ProcessosSeletivosPage from '@/pages/dashboard/ProcessosSeletivos';
 import EtapasPage from '@/pages/dashboard/Etapas';
 import FuncionariosPage from '@/pages/dashboard/Funcionarios';
 import FuncionarioDetalhe from '@/pages/dashboard/FuncionarioDetalhe';
 import DocumentosRhPage from '@/pages/dashboard/DocumentosRh';
 import BancoDeTalentosPage from '@/pages/dashboard/BancoDeTalentos';
-import DashboardRhPage from '@/pages/dashboard/DashboardRh';
 import FinanceiroPage from '@/pages/dashboard/FinanceiroPage';
-import EstoquePage from '@/pages/dashboard/Estoque';
 import RelatoriosPage from '@/pages/dashboard/Relatorios';
-import ConfiguracoesPage from '@/pages/dashboard/Configuracoes';
 import RbacAuditPage from '@/pages/dashboard/RbacAuditPage';
-import RolesPermissoesPage from '@/pages/dashboard/RolesPermissoesPage';
 import CompanyRelationshipsPage from '@/pages/dashboard/CompanyRelationshipsPage';
-import SkillsPage from '@/pages/dashboard/SkillsPage';
 import NotificationsPage from '@/pages/dashboard/NotificationsPage';
 import ApplicationDetailPage from '@/pages/dashboard/ApplicationDetailPage';
 import SessoesPage from '@/pages/dashboard/SessoesPage';
@@ -175,81 +162,7 @@ import RelatorioEstoquePage from '@/pages/dashboard/relatorios/RelatorioEstoqueP
 import RelatorioAlmoxarifadoPage from '@/pages/dashboard/relatorios/RelatorioAlmoxarifadoPage';
 import RelatorioServicosPage from '@/pages/dashboard/relatorios/RelatorioServicosPage';
 import RelatorioSuportePage from '@/pages/dashboard/relatorios/RelatorioSuportePage';
-
-const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
-  DashboardHome,
-  TenantsPage,
-  ClientesPage,
-  OnboardingPage,
-  AssinaturasPage,
-  GestaoSaaSPage,
-  CatalogoPage,
-  DocumentosPage,
-  ContratosPage,
-  TermosPage,
-  LgpdPage,
-  SegurancaPage,
-  MonitoramentoPage,
-  IntegracoesPage,
-  FiscalPage,
-  ContabilidadePage,
-  AuditoriaPage,
-  IaPage,
-  GestaoPage,
-  RbacAuditPage,
-  RolesPermissoesPage,
-  VisaoGeralPage,
-  VagasPage,
-  CandidaturasPage,
-  CandidatosPage,
-  CandidatoDetalhe,
-  CandidatoHabilidades,
-  CandidatoFormacao,
-  CandidatoExperiencias,
-  CandidatoIdiomas,
-  CandidatoDocumentos,
-  CandidatoPreferencias,
-  CandidatoVisualizacoes,
-  JobMatches,
-  EmpresasPage,
-  ParceirosPage,
-  FornecedoresPage,
-  UsuariosPage,
-  ProcessosSeletivosPage,
-  EtapasPage,
-  FuncionariosPage,
-  DocumentosRhPage,
-  BancoDeTalentosPage,
-  DashboardRhPage,
-  FinanceiroPage,
-  FaturamentoPage,
-  EstoquePage,
-  Almoxarifado,
-  Servicos,
-  Suporte,
-  RelatoriosPage,
-  BancosPage,
-  CentroCustosPage,
-  ConfiguracoesPage,
-  CompanyRelationshipsPage,
-  SkillsPage,
-  NotificationsPage,
-  ApplicationDetailPage,
-  SessoesPage,
-  FluxoDeCaixaPage,
-  ContasReceberPage,
-  RelatorioFinanceiroPage,
-  RelatorioRhPage,
-  RelatorioRecrutamentoPage,
-  RelatorioCrmPage,
-  RelatorioFaturamentoPage,
-  RelatorioFiscalPage,
-  RelatorioContabilidadePage,
-  RelatorioEstoquePage,
-  RelatorioAlmoxarifadoPage,
-  RelatorioServicosPage,
-  RelatorioSuportePage,
-};
+import { RHDashboardPage } from '@/modules/rh/dashboard';
 
 function App() {
   const { introComplete, setIntroComplete } = useIntro();
@@ -270,60 +183,18 @@ function App() {
 }
 
 function RoutesAndLayout() {
-  const platformModules = PORTAL_MODULES.filter(
-    (module) => module.scope === 'global',
-  );
-  const tenantModules = PORTAL_MODULES.filter(
-    (module) => module.scope === 'tenant',
-  );
-
-  const dashboardRoutes = [
-    { path: '', element: <DashboardHome />, exact: true },
-    ...(platformModules.length ? platformModules : [])
-      .filter(
-        (module) =>
-          MODULE_PAGE_MAP[module.id] &&
-          (MODULE_PERMISSION_MAP[module.id] ||
-            !module.requiredPermissions?.length),
-      )
-      .map((module) => ({
-        path:
-          module.route === '/dashboard'
-            ? ''
-            : module.route.replace('/dashboard/', ''),
-        element: (
-          <PermissionGuard permission={MODULE_PERMISSION_MAP[module.id]}>
-            {PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]] ? (
-              React.createElement(PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]])
-            ) : (
-              <ComingSoonPage title={module.title} />
-            )}
-          </PermissionGuard>
-        ),
-      })),
-    ...(tenantModules.length ? tenantModules : [])
-      .filter(
-        (module) =>
-          MODULE_PAGE_MAP[module.id] &&
-          (MODULE_PERMISSION_MAP[module.id] ||
-            !module.requiredPermissions?.length),
-      )
-      .map((module) => ({
-        path:
-          module.route === '/dashboard'
-            ? ''
-            : module.route.replace('/dashboard/', ''),
-        element: (
-          <PermissionGuard permission={MODULE_PERMISSION_MAP[module.id]}>
-            {PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]] ? (
-              React.createElement(PAGE_COMPONENTS[MODULE_PAGE_MAP[module.id]])
-            ) : (
-              <ComingSoonPage title={module.title} />
-            )}
-          </PermissionGuard>
-        ),
-      })),
-  ];
+  const launcherRoutes = PORTAL_MODULES.filter(
+    (module) =>
+      module.route !== '/dashboard' &&
+      (MODULE_PERMISSION_MAP[module.id] || !module.requiredPermissions?.length),
+  ).map((module) => {
+    return {
+      key: module.id,
+      path: module.route.replace('/dashboard/', ''),
+      moduleId: module.id,
+      permission: MODULE_PERMISSION_MAP[module.id],
+    };
+  });
 
   return (
     <ErrorBoundary>
@@ -361,13 +232,15 @@ function RoutesAndLayout() {
               </AuthRoute>
             }
           >
-            {dashboardRoutes.map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={route.element}
-              />
-            ))}
+            <Route path="" element={<DashboardHome />} />
+            <Route
+              path="analitico"
+              element={
+                <PermissionGuard permission="domain_events.read">
+                  <VisaoGeral />
+                </PermissionGuard>
+              }
+            />
             <Route
               path="global"
               element={
@@ -388,15 +261,25 @@ function RoutesAndLayout() {
             <Route
               path="relacionamentos"
               element={
-                <PermissionGuard permission="companies.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.empresas}>
                   <CompanyRelationshipsPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="rh"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.rh}>
+                  <RHDashboardPage />
                 </PermissionGuard>
               }
             />
             <Route
               path="notificacoes"
               element={
-                <PermissionGuard permission="notifications.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.notificacoes}
+                >
                   <NotificationsPage />
                 </PermissionGuard>
               }
@@ -468,7 +351,9 @@ function RoutesAndLayout() {
             <Route
               path="processos-seletivos/:id"
               element={
-                <PermissionGuard permission="applications.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <ApplicationDetailPage />
                 </PermissionGuard>
               }
@@ -476,7 +361,9 @@ function RoutesAndLayout() {
             <Route
               path="candidatos"
               element={
-                <PermissionGuard permission="candidates.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <CandidatosPage />
                 </PermissionGuard>
               }
@@ -484,7 +371,9 @@ function RoutesAndLayout() {
             <Route
               path="candidatos/:id"
               element={
-                <PermissionGuard permission="candidates.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <CandidatoDetalhe />
                 </PermissionGuard>
               }
@@ -492,7 +381,9 @@ function RoutesAndLayout() {
             <Route
               path="candidatos/habilidades"
               element={
-                <PermissionGuard permission="candidates.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <CandidatoHabilidades />
                 </PermissionGuard>
               }
@@ -500,7 +391,9 @@ function RoutesAndLayout() {
             <Route
               path="candidatos/formacao"
               element={
-                <PermissionGuard permission="candidates.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <CandidatoFormacao />
                 </PermissionGuard>
               }
@@ -508,7 +401,9 @@ function RoutesAndLayout() {
             <Route
               path="candidatos/experiencias"
               element={
-                <PermissionGuard permission="candidates.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <CandidatoExperiencias />
                 </PermissionGuard>
               }
@@ -516,7 +411,9 @@ function RoutesAndLayout() {
             <Route
               path="candidatos/idiomas"
               element={
-                <PermissionGuard permission="candidates.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <CandidatoIdiomas />
                 </PermissionGuard>
               }
@@ -524,7 +421,9 @@ function RoutesAndLayout() {
             <Route
               path="candidatos/documentos"
               element={
-                <PermissionGuard permission="candidates.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <CandidatoDocumentos />
                 </PermissionGuard>
               }
@@ -532,7 +431,9 @@ function RoutesAndLayout() {
             <Route
               path="candidatos/preferencias"
               element={
-                <PermissionGuard permission="candidates.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <CandidatoPreferencias />
                 </PermissionGuard>
               }
@@ -540,7 +441,9 @@ function RoutesAndLayout() {
             <Route
               path="candidatos/visualizacoes"
               element={
-                <PermissionGuard permission="candidates.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <CandidatoVisualizacoes />
                 </PermissionGuard>
               }
@@ -548,7 +451,9 @@ function RoutesAndLayout() {
             <Route
               path="matches"
               element={
-                <PermissionGuard permission="jobs.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <JobMatches />
                 </PermissionGuard>
               }
@@ -556,7 +461,9 @@ function RoutesAndLayout() {
             <Route
               path="vagas"
               element={
-                <PermissionGuard permission="jobs.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <VagasPage />
                 </PermissionGuard>
               }
@@ -564,7 +471,9 @@ function RoutesAndLayout() {
             <Route
               path="candidaturas"
               element={
-                <PermissionGuard permission="applications.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.recrutamento}
+                >
                   <CandidaturasPage />
                 </PermissionGuard>
               }
@@ -572,7 +481,7 @@ function RoutesAndLayout() {
             <Route
               path="financeiro/contas-pagar"
               element={
-                <PermissionGuard permission="finance.accounts_payable.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.financeiro}>
                   <FinanceiroPage />
                 </PermissionGuard>
               }
@@ -580,7 +489,7 @@ function RoutesAndLayout() {
             <Route
               path="financeiro/contas-receber"
               element={
-                <PermissionGuard permission="finance.accounts_receivable.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.financeiro}>
                   <ContasReceberPage />
                 </PermissionGuard>
               }
@@ -588,7 +497,7 @@ function RoutesAndLayout() {
             <Route
               path="financeiro/fluxo-caixa"
               element={
-                <PermissionGuard permission="finance.cashflow.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.financeiro}>
                   <FluxoDeCaixaPage />
                 </PermissionGuard>
               }
@@ -596,7 +505,7 @@ function RoutesAndLayout() {
             <Route
               path="financeiro/bancos"
               element={
-                <PermissionGuard permission="finance.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.financeiro}>
                   <BancosPage />
                 </PermissionGuard>
               }
@@ -604,7 +513,7 @@ function RoutesAndLayout() {
             <Route
               path="financeiro/centro-custos"
               element={
-                <PermissionGuard permission="finance.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.financeiro}>
                   <CentroCustosPage />
                 </PermissionGuard>
               }
@@ -612,7 +521,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatoriosPage />
                 </PermissionGuard>
               }
@@ -620,7 +529,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/financeiro"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioFinanceiroPage />
                 </PermissionGuard>
               }
@@ -628,7 +537,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/rh"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioRhPage />
                 </PermissionGuard>
               }
@@ -636,7 +545,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/recrutamento"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioRecrutamentoPage />
                 </PermissionGuard>
               }
@@ -644,7 +553,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/crm"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioCrmPage />
                 </PermissionGuard>
               }
@@ -652,7 +561,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/faturamento"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioFaturamentoPage />
                 </PermissionGuard>
               }
@@ -660,7 +569,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/fiscal"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioFiscalPage />
                 </PermissionGuard>
               }
@@ -668,7 +577,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/contabilidade"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioContabilidadePage />
                 </PermissionGuard>
               }
@@ -676,7 +585,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/estoque"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioEstoquePage />
                 </PermissionGuard>
               }
@@ -684,7 +593,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/almoxarifado"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioAlmoxarifadoPage />
                 </PermissionGuard>
               }
@@ -692,7 +601,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/servicos"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioServicosPage />
                 </PermissionGuard>
               }
@@ -700,7 +609,7 @@ function RoutesAndLayout() {
             <Route
               path="relatorios/suporte"
               element={
-                <PermissionGuard permission="reports.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.relatorios}>
                   <RelatorioSuportePage />
                 </PermissionGuard>
               }
@@ -708,7 +617,7 @@ function RoutesAndLayout() {
             <Route
               path="faturamento"
               element={
-                <PermissionGuard permission="finance.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.financeiro}>
                   <FaturamentoPage />
                 </PermissionGuard>
               }
@@ -716,7 +625,7 @@ function RoutesAndLayout() {
             <Route
               path="fiscal"
               element={
-                <PermissionGuard permission="fiscal.dashboard.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.fiscal}>
                   <FiscalPage />
                 </PermissionGuard>
               }
@@ -724,7 +633,9 @@ function RoutesAndLayout() {
             <Route
               path="contabilidade"
               element={
-                <PermissionGuard permission="accounting.dashboard.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.contabilidade}
+                >
                   <ContabilidadePage />
                 </PermissionGuard>
               }
@@ -732,7 +643,7 @@ function RoutesAndLayout() {
             <Route
               path="estoque"
               element={
-                <PermissionGuard permission="stock.dashboard.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.estoque}>
                   <Estoque />
                 </PermissionGuard>
               }
@@ -740,7 +651,9 @@ function RoutesAndLayout() {
             <Route
               path="almoxarifado"
               element={
-                <PermissionGuard permission="warehouse.dashboard.read">
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP.almoxarifado}
+                >
                   <Almoxarifado />
                 </PermissionGuard>
               }
@@ -748,7 +661,7 @@ function RoutesAndLayout() {
             <Route
               path="servicos"
               element={
-                <PermissionGuard permission="service_orders.dashboard.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.servicos}>
                   <Servicos />
                 </PermissionGuard>
               }
@@ -756,11 +669,133 @@ function RoutesAndLayout() {
             <Route
               path="suporte"
               element={
-                <PermissionGuard permission="support.dashboard.read">
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.suporte}>
                   <Suporte />
                 </PermissionGuard>
               }
             />
+            <Route
+              path="tenants"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.tenants}>
+                  <TenantsPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="onboarding"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.onboarding}>
+                  <OnboardingPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="assinaturas"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.assinaturas}>
+                  <AssinaturasPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="gestao-saas"
+              element={
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP['gestao-saas']}
+                >
+                  <GestaoSaaSPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="roles-permissoes"
+              element={
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP['roles-permissoes']}
+                >
+                  <RolesPermissoesPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="auditoria"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.auditoria}>
+                  <AuditoriaPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="crm"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.crm}>
+                  <ClientesPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="financeiro"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.financeiro}>
+                  <FinanceiroPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="ia"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.ia}>
+                  <IaPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="integracoes"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.integracoes}>
+                  <IntegracoesPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="configuracoes/seguranca"
+              element={
+                <PermissionGuard
+                  permission={MODULE_PERMISSION_MAP['seguranca-conta']}
+                >
+                  <SegurancaPage />
+                </PermissionGuard>
+              }
+            />
+            {launcherRoutes.map((route) => {
+              const ModuleLauncher = createModuleDashboardPage(route.moduleId);
+              return (
+                <Route
+                  key={route.key}
+                  path={route.path}
+                  element={
+                    <PermissionGuard permission={route.permission}>
+                      <ModuleLauncher />
+                    </PermissionGuard>
+                  }
+                >
+                  <Route index element={null} />
+                  <Route
+                    path="*"
+                    element={
+                      <div className="min-w-0 flex-1 py-8">
+                        <EmptyState
+                          title="Em breve"
+                          description="Esta funcionalidade está em desenvolvimento e estará disponível em breve."
+                          icon={Clock}
+                        />
+                      </div>
+                    }
+                  />
+                </Route>
+              );
+            })}
             <Route path="*" element={<ComingSoonPage />} />
           </Route>
           <Route path="/auth/callback" element={<AuthCallback />} />
@@ -796,7 +831,7 @@ function RoutesAndLayout() {
             element={
               <CandidateRoute>
                 <CandidateProvider>
-                  <CandidateShell />
+                  <CandidatePortal />
                 </CandidateProvider>
               </CandidateRoute>
             }

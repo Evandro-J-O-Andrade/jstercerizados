@@ -57,6 +57,7 @@ export default function CandidateRegister() {
         email: data.email,
         full_name: data.full_name,
         phone: data.phone,
+        signupContext: 'candidato',
         emailRedirectTo: '/entrar/candidato',
         turnstileToken: turnstileToken ?? undefined,
       });

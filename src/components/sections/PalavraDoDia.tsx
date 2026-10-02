@@ -97,7 +97,8 @@ function translateReference(reference: string, bookSlug: string): string {
   if (!ptName) return reference;
   // Substituir o nome do livro em inglês pelo português
   // O formato da API é "BookName Chapter:Verse" ou "BookName Chapter:Verse-Verse"
-  return reference.replace(/^[A-Za-z0-9\s]+/, ptName);
+  // Regex: apenas letras e espaços (NÃO números) para preservar capítulo:versículo
+  return reference.replace(/^[A-Za-z\s]+/, ptName);
 }
 
 const FALLBACK_VERSES: Verse[] = [

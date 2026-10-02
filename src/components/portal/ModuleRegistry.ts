@@ -2395,6 +2395,19 @@ export function getAvailableFeatures(
   );
 }
 
+export function getAvailableModuleFeatures(
+  permissions: Permission[],
+  module: ModuleDefinition,
+  scope: 'global' | 'tenant' | ('global' | 'tenant')[] = 'tenant',
+): ModuleFeature[] {
+  const scopes = Array.isArray(scope) ? scope : [scope];
+  if (!module.features) return [];
+  if (!scopes.includes(module.scope)) return [];
+  return module.features.filter((feature) =>
+    hasModulePermission(permissions, feature.requiredPermissions),
+  );
+}
+
 export function getModuleActions(
   permissions: Permission[],
   module: ModuleDefinition,
@@ -2447,38 +2460,6 @@ export function groupModulesByCategory(
 
 export { CATEGORY_META };
 
-export const MODULE_PAGE_MAP: Record<string, string> = {
-  inicio: 'DashboardHome',
-  'admin-master': 'GlobalDashboardPage',
-  tenants: 'TenantsPage',
-  onboarding: 'OnboardingPage',
-  assinaturas: 'AssinaturasPage',
-  'gestao-saas': 'GestaoSaaSPage',
-  usuarios: 'Usuarios',
-  'roles-permissoes': 'RolesPermissoesPage',
-  auditoria: 'AuditoriaPage',
-  rh: 'RhPage',
-  recrutamento: 'Vagas',
-  empresas: 'EmpresasPage',
-  crm: 'ClientesPage',
-  financeiro: 'FinanceiroPage',
-  faturamento: 'FaturamentoPage',
-  fiscal: 'FiscalPage',
-  contabilidade: 'ContabilidadePage',
-  servicos: 'Servicos',
-  estoque: 'Estoque',
-  almoxarifado: 'Almoxarifado',
-  suporte: 'Suporte',
-  relatorios: 'Relatorios',
-  ia: 'IaPage',
-  'configuracoes-saas': 'Configuracoes',
-  integracoes: 'IntegracoesPage',
-  preferencias: 'Configuracoes',
-  'minha-conta': 'Configuracoes',
-  'seguranca-conta': 'SegurancaPage',
-  sessoes: 'SessoesPage',
-};
-
 export const MODULE_PERMISSION_MAP: Record<string, string> = {
   inicio: '',
   'admin-master': 'domain_events.read',
@@ -2493,15 +2474,15 @@ export const MODULE_PERMISSION_MAP: Record<string, string> = {
   recrutamento: 'jobs.read',
   empresas: 'companies.read',
   crm: 'companies.read',
-  financeiro: 'finance.dashboard.read',
+  financeiro: 'finance.read',
   faturamento: 'finance.read',
-  fiscal: 'fiscal.dashboard.read',
-  contabilidade: 'accounting.dashboard.read',
-  servicos: '',
-  estoque: 'stock_movements.read',
-  almoxarifado: 'stock_movements.read',
+  fiscal: 'fiscal.read',
+  contabilidade: 'accounting.read',
+  servicos: 'service_orders.read',
+  estoque: 'stock.read',
+  almoxarifado: 'stock.read',
   suporte: 'support_tickets.read',
-  relatorios: 'domain_events.read',
+  relatorios: 'reports.read',
   ia: '',
   'configuracoes-saas': 'tenant.manage',
   integracoes: 'integrations.manage',
@@ -2509,4 +2490,9 @@ export const MODULE_PERMISSION_MAP: Record<string, string> = {
   'minha-conta': '',
   'seguranca-conta': '',
   sessoes: 'sessions.read',
+  notificacoes: '',
 };
+
+export function getModuleById(id: string): ModuleDefinition | undefined {
+  return PORTAL_MODULES.find((module) => module.id === id);
+}

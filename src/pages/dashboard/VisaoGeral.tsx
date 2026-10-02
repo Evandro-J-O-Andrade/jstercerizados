@@ -30,8 +30,8 @@ import { companiesRepository } from '@/repositories/companies.repository';
 import type { Job, Candidate, Company } from '@/types/domain';
 
 export default function VisaoGeral() {
-  const { currentTenantId, roles, isAdminMaster, person } = useAuth();
-  const { activePermissions } = useAccount();
+  const { currentTenantId, isAdminMaster, person } = useAuth();
+  const { identity, activePermissions } = useAccount();
   const navigate = useNavigate();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -84,8 +84,7 @@ export default function VisaoGeral() {
   const firstName = displayName?.split(' ')[0] || null;
   const greeting = firstName || displayName || null;
 
-  const primaryRole = roles[0];
-  const roleLabel = primaryRole?.name || null;
+  const roleLabel = identity.roleLabel;
 
   const subtitle = useMemo(() => {
     if (isAdminMaster) {
@@ -99,8 +98,11 @@ export default function VisaoGeral() {
       if (lower.includes('candidato')) {
         return 'Confira suas oportunidades e candidaturas.';
       }
-      if (lower.includes('empresa')) {
+      if (lower.includes('comercial') || lower.includes('empresa')) {
         return 'Acompanhe suas vagas e processos de contratação.';
+      }
+      if (lower.includes('financeir') || lower.includes('finance')) {
+        return 'Acompanhe suas contas e movimentações.';
       }
     }
     return 'Aqui está o resumo da sua operação.';

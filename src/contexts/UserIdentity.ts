@@ -41,16 +41,30 @@ export interface UserIdentity {
 
 const ROLE_LABEL_MAP: Record<string, string> = {
   admin_master: 'Administrador Master',
+  platform_admin: 'Administrador da Plataforma',
+  support_engineer: 'Engenheiro de Suporte',
+  tenant_admin: 'Administrador do Tenant',
+  rh_manager: 'Gestor de RH',
+  recruiter: 'Recrutador',
+  finance_manager: 'Gestor Financeiro',
+  finance: 'Financeiro',
+  support_agent: 'Agente de Suporte',
+  commercial: 'Comercial',
+  candidato: 'Candidato',
+  stock_manager: 'Gestor de Estoque',
+  security_manager: 'Gestor de Segurança',
+  facilities_manager: 'Gestor de Instalações',
+  lawyer: 'Jurídico',
+  it_operator: 'Operador de TI',
+  operations_operator: 'Operador de Operações',
+  viewer: 'Visualizador',
   admin: 'Administrador',
   administrador: 'Administrador',
   gestor: 'Gestor',
   manager: 'Gestor',
   recrutador: 'Recrutador',
-  recruiter: 'Recrutador',
-  financeiro: 'Financeiro',
-  financial: 'Financeiro',
-  candidato: 'Candidato',
   candidate: 'Candidato',
+  financial: 'Financeiro',
   cliente: 'Cliente',
   empresa: 'Empresa',
   fornecedor: 'Fornecedor',
@@ -62,7 +76,7 @@ const ROLE_LABEL_MAP: Record<string, string> = {
   atendente: 'Atendente',
 };
 
-function formatRoleLabel(technicalName: string): string {
+export function formatRoleLabel(technicalName: string): string {
   const normalized = technicalName.toLowerCase().trim();
   if (ROLE_LABEL_MAP[normalized]) {
     return ROLE_LABEL_MAP[normalized];
@@ -144,6 +158,7 @@ export function deriveUserIdentity(
   const tenantLabel = tenant?.name || 'Plataforma';
 
   const roleScopes = new Set(roles.map((r) => r.scope));
+  const hasTenantMembership = memberships.some((m) => m.status === 'active');
   const scopes: ('global' | 'tenant')[] = [];
   if (roleScopes.has('global')) {
     scopes.push('global');
@@ -154,7 +169,7 @@ export function deriveUserIdentity(
       scopes.push('tenant');
     }
   }
-  if (roleScopes.has('tenant')) scopes.push('tenant');
+  if (roleScopes.has('tenant') || hasTenantMembership) scopes.push('tenant');
 
   return {
     id: personId,

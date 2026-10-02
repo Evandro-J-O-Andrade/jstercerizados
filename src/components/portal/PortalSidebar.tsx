@@ -30,6 +30,7 @@ import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
 import { useModuleContext } from '@/contexts/ModuleContext';
+import { formatRoleLabel } from '@/contexts/UserIdentity';
 import {
   type ModuleFeature,
   getAvailableModuleFeatures,
@@ -197,7 +198,7 @@ export function PortalSidebar({
     minute: '2-digit',
   });
   const displayName = identity.displayName;
-  const roleLabel = identity.roleName;
+  const roleLabel = identity.roleLabel;
 
   const isExactMatch = (route: string, pathname: string) => pathname === route;
   const isChildOf = (parentRoute: string, pathname: string) =>
@@ -577,7 +578,7 @@ export function PortalSidebar({
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {availableMemberships.map((membership) => {
                     const role = roles.find((r) => r.id === membership.role_id);
-                    const roleName = role?.name || 'Usuário';
+                    const roleName = formatRoleLabel(role?.name || 'Usuário');
                     const isActive = membership.tenant_id === activeTenantId;
                     return (
                       <button

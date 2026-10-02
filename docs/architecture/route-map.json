@@ -1,0 +1,656 @@
+{
+  "generated_at": "2026-09-30T16:40:22.913Z",
+  "total": 89,
+  "routes": [
+    {
+      "path": "/dashboard/analitico",
+      "component": "VisaoGeral",
+      "file": "pages/dashboard/VisaoGeral.tsx",
+      "permission": "domain_events.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/global",
+      "component": "GlobalDashboardPage",
+      "file": "pages/dashboard/GlobalDashboardPage.tsx",
+      "permission": "domain_events.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/rbac-auditoria",
+      "component": "RbacAuditPage",
+      "file": "pages/dashboard/RbacAuditPage.tsx",
+      "permission": "audit.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relacionamentos",
+      "component": "CompanyRelationshipsPage",
+      "file": "pages/dashboard/CompanyRelationshipsPage.tsx",
+      "permission": "companies.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/rh",
+      "component": null,
+      "file": null,
+      "permission": "people.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/notificacoes",
+      "component": "NotificationsPage",
+      "file": "pages/dashboard/NotificationsPage.tsx",
+      "permission": "notifications.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/configuracoes/seguranca/sessoes",
+      "component": "SessoesPage",
+      "file": "pages/dashboard/SessoesPage.tsx",
+      "permission": "sessions.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/empresas",
+      "component": "EmpresasPage",
+      "file": "pages/dashboard/Empresas.tsx",
+      "permission": "companies.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/processos-seletivos",
+      "component": "ProcessosSeletivosPage",
+      "file": "pages/dashboard/ProcessosSeletivos.tsx",
+      "permission": "recruitment.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/etapas",
+      "component": "EtapasPage",
+      "file": "pages/dashboard/Etapas.tsx",
+      "permission": "recruitment.stage.manage",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/funcionarios",
+      "component": "FuncionariosPage",
+      "file": "pages/dashboard/Funcionarios.tsx",
+      "permission": "employees.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/funcionarios/:id",
+      "component": "FuncionarioDetalhe",
+      "file": "pages/dashboard/FuncionarioDetalhe.tsx",
+      "permission": "employees.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/documentos-rh",
+      "component": "DocumentosRhPage",
+      "file": "pages/dashboard/DocumentosRh.tsx",
+      "permission": "employees.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/banco-de-talentos",
+      "component": "BancoDeTalentosPage",
+      "file": "pages/dashboard/BancoDeTalentos.tsx",
+      "permission": "candidates.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/processos-seletivos/:id",
+      "component": "ApplicationDetailPage",
+      "file": "pages/dashboard/ApplicationDetailPage.tsx",
+      "permission": "applications.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/candidatos",
+      "component": "CandidatosPage",
+      "file": "pages/dashboard/Candidatos.tsx",
+      "permission": "candidates.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/candidatos/:id",
+      "component": "CandidatoDetalhe",
+      "file": "pages/dashboard/CandidatoDetalhe.tsx",
+      "permission": "candidates.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/candidatos/habilidades",
+      "component": "CandidatoHabilidades",
+      "file": "pages/dashboard/CandidatoHabilidades.tsx",
+      "permission": "candidates.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/candidatos/formacao",
+      "component": "CandidatoFormacao",
+      "file": "pages/dashboard/CandidatoFormacao.tsx",
+      "permission": "candidates.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/candidatos/experiencias",
+      "component": "CandidatoExperiencias",
+      "file": "pages/dashboard/CandidatoExperiencias.tsx",
+      "permission": "candidates.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/candidatos/idiomas",
+      "component": "CandidatoIdiomas",
+      "file": "pages/dashboard/CandidatoIdiomas.tsx",
+      "permission": "candidates.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/candidatos/documentos",
+      "component": "CandidatoDocumentos",
+      "file": "pages/dashboard/CandidatoDocumentos.tsx",
+      "permission": "candidates.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/candidatos/preferencias",
+      "component": "CandidatoPreferencias",
+      "file": "pages/dashboard/CandidatoPreferencias.tsx",
+      "permission": "candidates.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/candidatos/visualizacoes",
+      "component": "CandidatoVisualizacoes",
+      "file": "pages/dashboard/CandidatoVisualizacoes.tsx",
+      "permission": "candidates.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/matches",
+      "component": "JobMatches",
+      "file": "pages/dashboard/JobMatches.tsx",
+      "permission": "jobs.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/vagas",
+      "component": "VagasPage",
+      "file": "pages/dashboard/Vagas.tsx",
+      "permission": "jobs.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/candidaturas",
+      "component": "CandidaturasPage",
+      "file": "pages/dashboard/Candidaturas.tsx",
+      "permission": "applications.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/financeiro/contas-pagar",
+      "component": "FinanceiroPage",
+      "file": "pages/dashboard/FinanceiroPage.tsx",
+      "permission": "finance.accounts_payable.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/financeiro/contas-receber",
+      "component": "ContasReceberPage",
+      "file": "pages/dashboard/ContasReceberPage.tsx",
+      "permission": "finance.accounts_receivable.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/financeiro/fluxo-caixa",
+      "component": "FluxoDeCaixaPage",
+      "file": "pages/dashboard/FluxoDeCaixaPage.tsx",
+      "permission": "finance.cashflow.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/financeiro/bancos",
+      "component": "BancosPage",
+      "file": "pages/dashboard/BancosPage.tsx",
+      "permission": "finance.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/financeiro/centro-custos",
+      "component": "CentroCustosPage",
+      "file": "pages/dashboard/CentroCustosPage.tsx",
+      "permission": "finance.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios",
+      "component": "RelatoriosPage",
+      "file": "pages/dashboard/Relatorios.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/financeiro",
+      "component": "RelatorioFinanceiroPage",
+      "file": "pages/dashboard/relatorios/RelatorioFinanceiroPage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/rh",
+      "component": "RelatorioRhPage",
+      "file": "pages/dashboard/relatorios/RelatorioRhPage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/recrutamento",
+      "component": "RelatorioRecrutamentoPage",
+      "file": "pages/dashboard/relatorios/RelatorioRecrutamentoPage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/crm",
+      "component": "RelatorioCrmPage",
+      "file": "pages/dashboard/relatorios/RelatorioCrmPage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/faturamento",
+      "component": "RelatorioFaturamentoPage",
+      "file": "pages/dashboard/relatorios/RelatorioFaturamentoPage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/fiscal",
+      "component": "RelatorioFiscalPage",
+      "file": "pages/dashboard/relatorios/RelatorioFiscalPage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/contabilidade",
+      "component": "RelatorioContabilidadePage",
+      "file": "pages/dashboard/relatorios/RelatorioContabilidadePage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/estoque",
+      "component": "RelatorioEstoquePage",
+      "file": "pages/dashboard/relatorios/RelatorioEstoquePage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/almoxarifado",
+      "component": "RelatorioAlmoxarifadoPage",
+      "file": "pages/dashboard/relatorios/RelatorioAlmoxarifadoPage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/servicos",
+      "component": "RelatorioServicosPage",
+      "file": "pages/dashboard/relatorios/RelatorioServicosPage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/relatorios/suporte",
+      "component": "RelatorioSuportePage",
+      "file": "pages/dashboard/relatorios/RelatorioSuportePage.tsx",
+      "permission": "reports.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/faturamento",
+      "component": "FaturamentoPage",
+      "file": "pages/dashboard/FaturamentoPage.tsx",
+      "permission": "finance.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/fiscal",
+      "component": "FiscalPage",
+      "file": "pages/dashboard/FiscalPage.tsx",
+      "permission": "fiscal.dashboard.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/contabilidade",
+      "component": "ContabilidadePage",
+      "file": "pages/dashboard/ContabilidadePage.tsx",
+      "permission": "accounting.dashboard.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/estoque",
+      "component": "Estoque",
+      "file": "pages/dashboard/Estoque.tsx",
+      "permission": "stock.dashboard.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/almoxarifado",
+      "component": "Almoxarifado",
+      "file": "pages/dashboard/Almoxarifado.tsx",
+      "permission": "warehouse.dashboard.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/servicos",
+      "component": "Servicos",
+      "file": "pages/dashboard/Servicos.tsx",
+      "permission": "service_orders.dashboard.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/suporte",
+      "component": "Suporte",
+      "file": "pages/dashboard/Suporte.tsx",
+      "permission": "support.dashboard.read",
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/tenants",
+      "component": "TenantsPage",
+      "file": "pages/dashboard/TenantsPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/onboarding",
+      "component": "OnboardingPage",
+      "file": "pages/dashboard/OnboardingPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/assinaturas",
+      "component": "AssinaturasPage",
+      "file": "pages/dashboard/AssinaturasPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/gestao-saas",
+      "component": "GestaoSaaSPage",
+      "file": "pages/dashboard/GestaoSaaSPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/roles-permissoes",
+      "component": "RolesPermissoesPage",
+      "file": "pages/dashboard/RolesPermissoesPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/auditoria",
+      "component": "AuditoriaPage",
+      "file": "pages/dashboard/AuditoriaPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/crm",
+      "component": "ClientesPage",
+      "file": "pages/dashboard/ClientesPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/financeiro",
+      "component": "FinanceiroPage",
+      "file": "pages/dashboard/FinanceiroPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/ia",
+      "component": "IaPage",
+      "file": "pages/dashboard/IaPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/integracoes",
+      "component": "IntegracoesPage",
+      "file": "pages/dashboard/IntegracoesPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/configuracoes/seguranca",
+      "component": "SegurancaPage",
+      "file": "pages/dashboard/SegurancaPage.tsx",
+      "permission": null,
+      "kind": "explicit"
+    },
+    {
+      "path": "/dashboard/global",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "domain_events.read",
+      "kind": "launcher",
+      "module": "admin-master"
+    },
+    {
+      "path": "/dashboard/tenants",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "tenants.read",
+      "kind": "launcher",
+      "module": "tenants"
+    },
+    {
+      "path": "/dashboard/onboarding",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "tenants.read",
+      "kind": "launcher",
+      "module": "onboarding"
+    },
+    {
+      "path": "/dashboard/assinaturas",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "finance.read",
+      "kind": "launcher",
+      "module": "assinaturas"
+    },
+    {
+      "path": "/dashboard/gestao-saas",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "domain_events.read",
+      "kind": "launcher",
+      "module": "gestao-saas"
+    },
+    {
+      "path": "/dashboard/usuarios",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "people.read",
+      "kind": "launcher",
+      "module": "usuarios"
+    },
+    {
+      "path": "/dashboard/roles-permissoes",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "roles.read",
+      "kind": "launcher",
+      "module": "roles-permissoes"
+    },
+    {
+      "path": "/dashboard/auditoria",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "audit.read",
+      "kind": "launcher",
+      "module": "auditoria"
+    },
+    {
+      "path": "/dashboard/contratos",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": null,
+      "kind": "launcher",
+      "module": "contratos"
+    },
+    {
+      "path": "/dashboard/rh",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "people.read",
+      "kind": "launcher",
+      "module": "rh"
+    },
+    {
+      "path": "/dashboard/recrutamento",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "jobs.read",
+      "kind": "launcher",
+      "module": "recrutamento"
+    },
+    {
+      "path": "/dashboard/crm",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "companies.read",
+      "kind": "launcher",
+      "module": "crm"
+    },
+    {
+      "path": "/dashboard/financeiro",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "finance.dashboard.read",
+      "kind": "launcher",
+      "module": "financeiro"
+    },
+    {
+      "path": "/dashboard/faturamento",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "finance.read",
+      "kind": "launcher",
+      "module": "faturamento"
+    },
+    {
+      "path": "/dashboard/fiscal",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "fiscal.dashboard.read",
+      "kind": "launcher",
+      "module": "fiscal"
+    },
+    {
+      "path": "/dashboard/contabilidade",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "accounting.dashboard.read",
+      "kind": "launcher",
+      "module": "contabilidade"
+    },
+    {
+      "path": "/dashboard/estoque",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "stock_movements.read",
+      "kind": "launcher",
+      "module": "estoque"
+    },
+    {
+      "path": "/dashboard/servicos",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "",
+      "kind": "launcher",
+      "module": "servicos"
+    },
+    {
+      "path": "/dashboard/almoxarifado",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "stock_movements.read",
+      "kind": "launcher",
+      "module": "almoxarifado"
+    },
+    {
+      "path": "/dashboard/suporte",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "support_tickets.read",
+      "kind": "launcher",
+      "module": "suporte"
+    },
+    {
+      "path": "/dashboard/relatorios",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "domain_events.read",
+      "kind": "launcher",
+      "module": "relatorios"
+    },
+    {
+      "path": "/dashboard/ia",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "",
+      "kind": "launcher",
+      "module": "ia"
+    },
+    {
+      "path": "/dashboard/integracoes",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "integrations.manage",
+      "kind": "launcher",
+      "module": "integracoes"
+    },
+    {
+      "path": "/dashboard/configuracoes",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "tenant.manage",
+      "kind": "launcher",
+      "module": "configuracoes-saas"
+    },
+    {
+      "path": "/dashboard/configuracoes/preferencias",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "",
+      "kind": "launcher",
+      "module": "preferencias"
+    },
+    {
+      "path": "/dashboard/configuracoes/conta",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "",
+      "kind": "launcher",
+      "module": "minha-conta"
+    },
+    {
+      "path": "/dashboard/configuracoes/seguranca",
+      "component": "ModuleDashboardPage (launcher)",
+      "file": "pages/dashboard/ModuleDashboardPage.tsx",
+      "permission": "",
+      "kind": "launcher",
+      "module": "seguranca-conta"
+    }
+  ]
+}

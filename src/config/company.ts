@@ -38,6 +38,8 @@ export const COMPANY = {
   citiesCovered: 50,
 } as const;
 
+export const NEW_WAVE_URL = 'https://newwavesistemasdigital.netlify.app/';
+
 export const SOCIAL_LINKS = {
   instagram: 'https://www.instagram.com/jstercerizados/',
   facebook: 'https://facebook.com/jsempregos',

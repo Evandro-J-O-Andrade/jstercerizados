@@ -1,14 +1,14 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAccount } from '@/contexts/AccountContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import {
   MetroTileGrid,
-  type TileStats,
   computePuzzleLayout,
 } from '@/components/portal/MetroTiles';
 import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+import { fetchAllModuleStats, type ModuleStats } from '@/lib/module-stats';
 import { LayoutDashboard } from 'lucide-react';
 
 export default function DashboardHome() {
@@ -20,14 +20,46 @@ export default function DashboardHome() {
   const [tileLayout, setTileLayout] = useState<
     Record<string, { x: number; y: number; w: number; h: number }>
   >(() => computePuzzleLayout(allModules));
+  const [moduleStats, setModuleStats] = useState<Record<string, ModuleStats>>(
+    {},
+  );
+  const [statsLoading, setStatsLoading] = useState(true);
 
-  const statsMap = useMemo(() => {
-    const map: Record<string, TileStats> = {};
-    allModules.forEach((module) => {
-      map[module.id] = {};
-    });
-    return map;
-  }, [allModules]);
+  const tenantId = userIdentity.tenant?.id || activeTenantId;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadStats() {
+      if (!tenantId || allModules.length === 0) {
+        setStatsLoading(false);
+        return;
+      }
+
+      setStatsLoading(true);
+      try {
+        const stats = await fetchAllModuleStats(allModules, tenantId);
+        if (!cancelled) {
+          setModuleStats(stats);
+        }
+      } catch (error) {
+        console.warn('Failed to load module stats:', error);
+        if (!cancelled) {
+          setModuleStats({});
+        }
+      } finally {
+        if (!cancelled) {
+          setStatsLoading(false);
+        }
+      }
+    }
+
+    loadStats();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [allModules, tenantId]);
 
   const handleReorder = useCallback((modules: ModuleDefinition[]) => {
     const newLayout = computePuzzleLayout(modules);
@@ -67,9 +99,10 @@ export default function DashboardHome() {
       description="Acesse os módulos disponíveis para sua conta."
       icon={LayoutDashboard}
       breadcrumbItems={[]}
+      className="flex h-full flex-col"
     >
-      <div className="space-y-6">
-        <section className="from-primary/10 via-card to-card border-border relative overflow-hidden rounded-2xl border bg-gradient-to-br p-6 shadow-sm">
+      <div className="flex min-h-0 flex-1 flex-col" data-test-wrapper="true">
+        <section className="from-primary/10 via-card to-card border-border relative shrink-0 overflow-hidden rounded-2xl border bg-gradient-to-br p-6 shadow-sm">
           <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <div className="text-primary mb-2 flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
@@ -97,14 +130,17 @@ export default function DashboardHome() {
           </div>
         </section>
 
-        <MetroTileGrid
-          modules={allModules}
-          onReorder={handleReorder}
-          tileLayout={tileLayout}
-          statsMap={statsMap}
-          userId={userIdentity.id}
-          tenantId={userIdentity.tenant?.id || activeTenantId}
-        />
+        <div className="flex min-h-0 flex-1 flex-col">
+          <MetroTileGrid
+            modules={allModules}
+            onReorder={handleReorder}
+            tileLayout={tileLayout}
+            moduleStats={moduleStats}
+            statsLoading={statsLoading}
+            userId={userIdentity.id}
+            tenantId={tenantId}
+          />
+        </div>
       </div>
     </ModuleWorkspace>
   );

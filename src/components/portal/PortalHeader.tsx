@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import {
   LogOut,
   Menu,
@@ -20,11 +21,122 @@ import { useAccount } from '@/contexts/AccountContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { COMPANY } from '@/config';
 import { cn } from '@/utils';
+import { formatRoleLabel } from '@/contexts/UserIdentity';
 
 interface PortalHeaderProps {
   onMenuClick: () => void;
   moduleTitle?: string;
   className?: string;
+}
+
+function AccountSwitcherModal({
+  isOpen,
+  onClose,
+  availableMemberships,
+  roles,
+  activeTenantId,
+  switchAccount,
+  navigate,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  availableMemberships: {
+    id: string;
+    tenant_id: string;
+    role_id: string;
+    status: string;
+  }[];
+  roles: { id: string; name: string; scope: 'global' | 'tenant' }[];
+  activeTenantId: string | null;
+  switchAccount: (tenantId: string) => Promise<void>;
+  navigate: (to: string) => void;
+}) {
+  if (!isOpen) return null;
+
+  return createPortal(
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="bg-background/60 fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        className="mx-4 w-full max-w-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Card variant="default" className="p-6 shadow-xl">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-foreground text-lg font-semibold">
+              Escolha seu acesso
+            </h2>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <Globe className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="text-muted-foreground mb-4 text-sm">
+            Selecione a conta com a qual deseja trabalhar. Sua sessão permanece
+            ativa.
+          </p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {availableMemberships.map((membership) => {
+              const membershipRoles = roles.filter(
+                (r) => r.id === membership.role_id,
+              );
+              const roleName = membershipRoles[0]?.name ?? 'Usuário';
+              const isActive = membership.tenant_id === activeTenantId;
+
+              return (
+                <button
+                  key={membership.id}
+                  type="button"
+                  onClick={() => {
+                    switchAccount(membership.tenant_id);
+                    onClose();
+                    navigate('/dashboard');
+                  }}
+                  className={cn(
+                    'border-border hover:border-primary/50 rounded-xl border p-4 text-left transition-all',
+                    isActive && 'ring-primary/50 ring-2',
+                  )}
+                >
+                  <div className="mb-2 flex items-center gap-3">
+                    <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                      <Shield className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-foreground text-sm font-semibold">
+                        Conta
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {membershipRoles[0]
+                          ? formatRoleLabel(membershipRoles[0].name)
+                          : roleName}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground text-xs">
+                      {isActive ? 'Ativo' : 'Selecionar'}
+                    </span>
+                    {isActive && (
+                      <span className="text-primary text-xs font-medium">
+                        Atual
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </Card>
+      </motion.div>
+    </motion.div>,
+    document.body,
+  );
 }
 
 export function PortalHeader({
@@ -69,7 +181,7 @@ export function PortalHeader({
   return (
     <header
       className={cn(
-        'bg-background/95 border-border sticky top-0 z-40 flex items-center justify-between border-b backdrop-blur-xl',
+        'border-border/50 bg-background/70 sticky top-0 z-40 flex items-center justify-between border-b shadow-sm backdrop-blur-xl',
         className,
       )}
     >
@@ -106,20 +218,20 @@ export function PortalHeader({
           variant="ghost"
           size="sm"
           onClick={() => navigate('/')}
-          className="hidden items-center gap-2 md:flex"
+          className="text-muted-foreground hover:text-foreground hidden items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors md:flex"
         >
           <Globe className="h-4 w-4" />
-          <span className="text-sm">Voltar para o site</span>
+          <span>Voltar para o site</span>
         </Button>
 
         <Button
           variant="ghost"
           size="sm"
           aria-label="Notificações"
-          className="relative hidden sm:flex"
+          className="text-muted-foreground hover:text-foreground relative hidden items-center justify-center rounded-lg px-2.5 py-2 sm:flex"
         >
           <Bell className="h-5 w-5" />
-          <span className="bg-primary absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full" />
+          <span className="bg-primary absolute top-1 right-1 h-2 w-2 rounded-full" />
         </Button>
 
         <div className="relative">
@@ -129,7 +241,7 @@ export function PortalHeader({
             onClick={() => setUserMenuOpen((prev) => !prev)}
             aria-expanded={userMenuOpen}
             aria-haspopup="true"
-            className="flex items-center gap-2"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-2 rounded-xl px-2 py-1.5 transition-colors"
           >
             <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold">
               {displayName.charAt(0).toUpperCase()}
@@ -152,7 +264,7 @@ export function PortalHeader({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 8 }}
                 transition={{ duration: 0.2 }}
-                className="border-border bg-background/95 absolute right-0 z-50 mt-2 w-64 rounded-xl border p-1 shadow-xl backdrop-blur-xl"
+                className="border-border bg-background/95 shadow-elevated absolute right-0 z-50 mt-2 w-64 rounded-xl border p-1 backdrop-blur-xl"
               >
                 <div className="border-border/60 border-b px-3 py-2">
                   <p className="text-foreground text-sm font-medium">
@@ -228,131 +340,15 @@ export function PortalHeader({
         </div>
       </div>
 
-      <AnimatePresence>
-        {switchOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="bg-background/60 fixed inset-0 z-[60] flex items-center justify-center backdrop-blur-sm"
-            onClick={() => setSwitchOpen(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="mx-4 w-full max-w-lg"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Card variant="default" className="p-6 shadow-xl">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-foreground text-lg font-semibold">
-                    Escolha seu acesso
-                  </h2>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSwitchOpen(false)}
-                  >
-                    <Globe className="h-4 w-4" />
-                  </Button>
-                </div>
-                <p className="text-muted-foreground mb-4 text-sm">
-                  Selecione a conta com a qual deseja trabalhar. Sua sessão
-                  permanece ativa.
-                </p>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {availableMemberships.map((membership) => {
-                    const membershipRoles = roles.filter(
-                      (r) => r.id === membership.role_id,
-                    );
-                    const roleName =
-                      membershipRoles[0]?.name ||
-                      membershipRoles[0]?.name ||
-                      'Usuário';
-                    const isActive = membership.tenant_id === activeTenantId;
-
-                    return (
-                      <button
-                        key={membership.id}
-                        type="button"
-                        onClick={() => {
-                          switchAccount(membership.tenant_id);
-                          setSwitchOpen(false);
-                          navigate('/dashboard');
-                        }}
-                        className={cn(
-                          'border-border hover:border-primary/50 rounded-xl border p-4 text-left transition-all',
-                          isActive && 'ring-primary/50 ring-2',
-                        )}
-                      >
-                        <div className="mb-2 flex items-center gap-3">
-                          <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
-                            <Shield className="h-5 w-5" />
-                          </div>
-                          <div>
-                            <p className="text-foreground text-sm font-semibold">
-                              Conta
-                            </p>
-                            <p className="text-muted-foreground text-xs">
-                              {membershipRoles[0]
-                                ? formatRoleLabel(membershipRoles[0].name)
-                                : roleName}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-xs">
-                            {isActive ? 'Ativo' : 'Selecionar'}
-                          </span>
-                          {isActive && (
-                            <span className="text-primary text-xs font-medium">
-                              Atual
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </Card>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <AccountSwitcherModal
+        isOpen={switchOpen}
+        onClose={() => setSwitchOpen(false)}
+        availableMemberships={availableMemberships}
+        roles={roles}
+        activeTenantId={activeTenantId}
+        switchAccount={switchAccount}
+        navigate={navigate}
+      />
     </header>
   );
-}
-
-function formatRoleLabel(technicalName: string): string {
-  const normalized = technicalName.toLowerCase().trim();
-  const ROLE_LABEL_MAP: Record<string, string> = {
-    admin_master: 'Administrador Master',
-    admin: 'Administrador',
-    administrador: 'Administrador',
-    gestor: 'Gestor',
-    manager: 'Gestor',
-    recrutador: 'Recrutador',
-    recruiter: 'Recrutador',
-    financeiro: 'Financeiro',
-    financial: 'Financeiro',
-    candidato: 'Candidato',
-    candidate: 'Candidato',
-    cliente: 'Cliente',
-    empresa: 'Empresa',
-    fornecedor: 'Fornecedor',
-    prestador: 'Prestador de Serviços',
-    rh: 'Recursos Humanos',
-    analista_rh: 'Analista de RH',
-    supervisor: 'Supervisor',
-    operador: 'Operador',
-    atendente: 'Atendente',
-  };
-  if (ROLE_LABEL_MAP[normalized]) {
-    return ROLE_LABEL_MAP[normalized];
-  }
-  return technicalName
-    .split('_')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
 }

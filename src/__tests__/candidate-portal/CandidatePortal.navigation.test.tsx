@@ -23,9 +23,14 @@ vi.mock('@/contexts/CandidateContext', () => ({
   }),
 }));
 
+vi.mock('@/components/portal/CandidateMetroDashboard', () => ({
+  __esModule: true,
+  default: () => <div data-testid="candidate-dashboard">Dashboard</div>,
+}));
+
 import { useAuth } from '@/contexts/AuthContext';
 import { navigationRepository } from '@/repositories/navigation.repository';
-import { CandidateShell } from '@/components/portal/CandidateShell';
+import { CandidatePortal } from '@/components/portal/CandidatePortal';
 import type {
   CandidatePortalModule,
   GlobalNavigationLink,
@@ -39,8 +44,8 @@ function withRouter(initial: string) {
   return render(
     <MemoryRouter initialEntries={[initial]}>
       <Routes>
-        <Route path="/candidato/*" element={<CandidateShell />}>
-          <Route index element={<div>home-page</div>} />
+        <Route path="/candidato/*" element={<CandidatePortal />}>
+          <Route index element={<div data-testid="home-page">home</div>} />
           <Route path="vagas" element={<div>vagas-page</div>} />
           <Route path="perfil" element={<div>perfil-page</div>} />
           <Route path="configuracoes" element={<div>cfg-page</div>} />
@@ -183,7 +188,7 @@ const baseGlobals: GlobalNavigationLink[] = [
   },
 ];
 
-describe('CandidateShell com navegação dinâmica', () => {
+describe('CandidatePortal navigation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockListAll.mockResolvedValue({
@@ -192,7 +197,23 @@ describe('CandidateShell com navegação dinâmica', () => {
     });
   });
 
-  it('renderiza apenas itens permitidos para candidato com permissões básicas', async () => {
+  it('renders content slot (children/outlet) when no route matches index', async () => {
+    mockUseAuth.mockReturnValue({
+      person: { id: 'p1', full_name: 'João Silva', email: 'j@x.com' } as never,
+      permissions: [],
+      roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as never],
+      isAdminMaster: false,
+      isCandidate: true,
+      logout: vi.fn(),
+    } as never);
+
+    withRouter('/candidato');
+    await waitFor(() => {
+      expect(screen.getByTestId('home-page')).toBeInTheDocument();
+    });
+  });
+
+  it('renders only sidebar items permitted for candidate with basic permissions', async () => {
     mockUseAuth.mockReturnValue({
       person: { id: 'p1', full_name: 'João Silva', email: 'j@x.com' } as never,
       permissions: [
@@ -215,12 +236,10 @@ describe('CandidateShell com navegação dinâmica', () => {
     expect(screen.getByText('Meu perfil')).toBeInTheDocument();
     expect(screen.getByText('Configurações')).toBeInTheDocument();
     expect(screen.getAllByText('Suporte').length).toBeGreaterThan(0);
-    expect(
-      screen.getAllByText('Voltar para o site').length,
-    ).toBeGreaterThan(0);
+    expect(screen.getAllByText('Voltar para o site').length).toBeGreaterThan(0);
   });
 
-  it('omite itens cuja permission_key não está nas permissões do usuário', async () => {
+  it('omits sidebar items whose permission_key is not in user permissions', async () => {
     mockUseAuth.mockReturnValue({
       person: { id: 'p1', full_name: 'Maria', email: 'm@x.com' } as never,
       permissions: [
@@ -241,7 +260,7 @@ describe('CandidateShell com navegação dinâmica', () => {
     expect(screen.queryByText('Configurações')).not.toBeInTheDocument();
   });
 
-  it('link global sem permission_key aparece para qualquer candidato', async () => {
+  it('renders global links without permission_key for any candidate', async () => {
     mockUseAuth.mockReturnValue({
       person: { id: 'p1', full_name: 'Ana', email: 'a@x.com' } as never,
       permissions: [],
@@ -255,13 +274,10 @@ describe('CandidateShell com navegação dinâmica', () => {
     await waitFor(() => {
       expect(screen.getAllByText('Suporte').length).toBeGreaterThan(0);
     });
-    expect(
-      screen.getAllByText('Voltar para o site').length,
-    ).toBeGreaterThan(0);
-    expect(screen.getByText('Acessibilidade')).toBeInTheDocument();
+    expect(screen.getAllByText('Voltar para o site').length).toBeGreaterThan(0);
   });
 
-  it('admin_master vê todos os itens do candidato mesmo sem permissão específica', async () => {
+  it('admin_master sees all items even without specific permissions', async () => {
     mockUseAuth.mockReturnValue({
       person: { id: 'p1', full_name: 'Root', email: 'root@x.com' } as never,
       permissions: [],
@@ -279,30 +295,7 @@ describe('CandidateShell com navegação dinâmica', () => {
     expect(screen.getByText('Configurações')).toBeInTheDocument();
   });
 
-  it('sobrescreve a label do item site_home para "Voltar para o site" na sidebar (override client-side)', async () => {
-    mockUseAuth.mockReturnValue({
-      person: { id: 'p1', full_name: 'Carla', email: 'c@x.com' } as never,
-      permissions: [
-        { resource: 'jobs', action: 'read' } as Permission,
-        { resource: 'notifications', action: 'read' } as Permission,
-      ],
-      roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as never],
-      isAdminMaster: false,
-      isCandidate: true,
-      logout: vi.fn(),
-    } as never);
-
-    withRouter('/candidato');
-    await waitFor(() => {
-      expect(screen.getAllByText('Suporte').length).toBeGreaterThan(0);
-    });
-    expect(
-      screen.getAllByText('Voltar para o site').length,
-    ).toBeGreaterThan(0);
-    expect(screen.queryByText('Site público')).not.toBeInTheDocument();
-  });
-
-  it('renderiza link "Voltar para o site" no header mobile (fora da sidebar)', async () => {
+  it('renders "Voltar para o site" link in mobile header with correct href', async () => {
     mockUseAuth.mockReturnValue({
       person: { id: 'p1', full_name: 'Pedro', email: 'p@x.com' } as never,
       permissions: [
@@ -328,5 +321,103 @@ describe('CandidateShell com navegação dinâmica', () => {
     );
     expect(headerLink).toBeDefined();
     expect(headerLink).toHaveAttribute('href', '/');
+  });
+
+  it('renders footer copyright with company name', async () => {
+    mockUseAuth.mockReturnValue({
+      person: { id: 'p1', full_name: 'Pedro', email: 'p@x.com' } as never,
+      permissions: [],
+      roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as never],
+      isAdminMaster: false,
+      isCandidate: true,
+      logout: vi.fn(),
+    } as never);
+
+    withRouter('/candidato');
+    await waitFor(() => {
+      expect(screen.getAllByText(/Suporte/).length).toBeGreaterThan(0);
+    });
+
+    const footer = screen.getAllByText(/Todos os direitos reservados/i);
+    expect(footer.length).toBeGreaterThan(0);
+  });
+
+  it('overrides the site_home label to "Voltar para o site" in the sidebar', async () => {
+    mockUseAuth.mockReturnValue({
+      person: { id: 'p1', full_name: 'Carla', email: 'c@x.com' } as never,
+      permissions: [
+        { resource: 'jobs', action: 'read' } as Permission,
+        { resource: 'notifications', action: 'read' } as Permission,
+      ],
+      roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as never],
+      isAdminMaster: false,
+      isCandidate: true,
+      logout: vi.fn(),
+    } as never);
+
+    withRouter('/candidato');
+    await waitFor(() => {
+      expect(screen.getAllByText('Suporte').length).toBeGreaterThan(0);
+    });
+    expect(screen.getAllByText('Voltar para o site').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Site público')).not.toBeInTheDocument();
+  });
+
+  it('renders the Acessibilidade button in the sidebar and dispatches CustomEvent on click', async () => {
+    mockUseAuth.mockReturnValue({
+      person: { id: 'p1', full_name: 'Ana', email: 'a@x.com' } as never,
+      permissions: [],
+      roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as never],
+      isAdminMaster: false,
+      isCandidate: true,
+      logout: vi.fn(),
+    } as never);
+
+    const eventSpy = vi.fn();
+    window.addEventListener('app:open-accessibility', eventSpy);
+
+    withRouter('/candidato');
+    await waitFor(() => {
+      expect(screen.getAllByText('Suporte').length).toBeGreaterThan(0);
+    });
+
+    const accessibilityButton = screen
+      .getByText('Acessibilidade')
+      .closest('button');
+    expect(accessibilityButton).toBeInTheDocument();
+    expect(accessibilityButton).toHaveAttribute('data-key', 'accessibility');
+    expect(accessibilityButton).toHaveAttribute('data-action', 'accessibility');
+
+    accessibilityButton?.click();
+    await waitFor(() => {
+      expect(eventSpy).toHaveBeenCalledTimes(1);
+    });
+
+    window.removeEventListener('app:open-accessibility', eventSpy);
+  });
+
+  it('renders the Sair (logout) button in the sidebar and calls logout on click', async () => {
+    const mockLogout = vi.fn();
+    mockUseAuth.mockReturnValue({
+      person: { id: 'p1', full_name: 'João', email: 'j@x.com' } as never,
+      permissions: [],
+      roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as never],
+      isAdminMaster: false,
+      isCandidate: true,
+      logout: mockLogout,
+    } as never);
+
+    withRouter('/candidato');
+    await waitFor(() => {
+      expect(screen.getAllByText('Suporte').length).toBeGreaterThan(0);
+    });
+    const logoutButton = screen.getByRole('button', { name: 'Sair' });
+    expect(logoutButton).toBeInTheDocument();
+    expect(logoutButton).toHaveAttribute('data-action', 'logout');
+
+    logoutButton.click();
+    await waitFor(() => {
+      expect(mockLogout).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -44,3 +44,36 @@ env_*.txt
 .env*.txt
 secrets/
 *.local.txt
+
+# Local auth artifacts (NEVER commit) — P0.6 2026-09-30
+temp-auth.json
+temp-auth*.json
+auth-session*.json
+*.session.json
+
+# Temporary scripts and artifacts
+check-*.mjs
+check-*.cjs
+test-*.mjs
+test-*.cjs
+test-page*.mjs
+test-hero*.mjs
+test-preview.mjs
+validate-*.mjs
+visual-review*.mjs
+grid-audit.ps1
+hero-*.png
+dashboard-*.png
+*-before_fix.png
+after-cinema.png
+cinema-entry.png
+post-login-state.png
+sobre-full-page-*.png
+validation-*.png
+welcome-snapshot.yml
+hero-*-snapshot.yml
+
+# Audit reports (generated, not source)
+*-AUDIT*.md
+AUDIT_REPORT.md
+PORTAL_AUDIT_P0.md

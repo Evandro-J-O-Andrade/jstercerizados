@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useCallback } from 'react';
 import { ChevronDown, Heart } from 'lucide-react';
-import { COMPANY } from '@/config';
+import { COMPANY, NEW_WAVE_URL } from '@/config';
 import { useFooterConfig } from '@/hooks/useFooterConfig';
 import {
   filterActiveLinks,
@@ -116,12 +116,15 @@ function BottomBar({ scope }: { scope: string }) {
           © {currentYear} {COMPANY.tradingName}. Todos os direitos reservados.
         </span>
       </div>
-      <p className="text-muted-foreground text-xs" data-scope={scope}>
-        Desenvolvido por{' '}
-        <span className="text-foreground font-medium">
-          New Wave Sistemas Digital Solutions
-        </span>
-      </p>
+      <a
+        href={NEW_WAVE_URL}
+        target="_blank"
+        rel="noreferrer"
+        data-scope={scope}
+        className="text-foreground hover:text-primary text-xs font-medium transition-colors"
+      >
+        Desenvolvido por New Wave Sistemas Digital Solutions
+      </a>
     </div>
   );
 }

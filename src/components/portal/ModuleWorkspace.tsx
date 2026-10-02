@@ -2,9 +2,6 @@ import { type ReactNode } from 'react';
 import { ChevronRight, Home } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/utils';
-import type { Permission } from '@/types/auth';
-import type { ModuleDefinition } from './ModuleRegistry';
-import { ModuleSidebar } from './ModuleSidebar';
 
 interface BreadcrumbItem {
   label: string;
@@ -17,10 +14,9 @@ interface ModuleWorkspaceProps {
   icon?: React.ComponentType<{ className?: string }>;
   breadcrumbItems?: BreadcrumbItem[];
   actions?: ReactNode;
+  sidebar?: ReactNode;
   children: ReactNode;
   className?: string;
-  module?: ModuleDefinition;
-  permissions?: Permission[];
 }
 
 export function ModuleWorkspace({
@@ -29,18 +25,18 @@ export function ModuleWorkspace({
   icon: Icon,
   breadcrumbItems = [],
   actions,
+  sidebar,
   children,
   className,
-  module,
-  permissions = [],
 }: ModuleWorkspaceProps) {
+  const baseClasses =
+    'mx-auto max-w-[1920px] px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10';
+  const cnResult = cn(baseClasses, className);
+  const flexClasses = 'flex flex-col';
+  const combinedClassName = cn(cnResult, flexClasses);
+
   return (
-    <div
-      className={cn(
-        'mx-auto max-w-[1920px] px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10',
-        className,
-      )}
-    >
+    <div className={combinedClassName}>
       {breadcrumbItems.length > 0 && (
         <nav aria-label="Breadcrumb" className="mb-6">
           <ol className="text-muted-foreground flex items-center gap-2 text-sm">
@@ -73,37 +69,32 @@ export function ModuleWorkspace({
         </nav>
       )}
 
-      <div className="flex gap-6">
-        {module && permissions.length > 0 && (
-          <ModuleSidebar module={module} permissions={permissions} />
-        )}
-
-        <div className="flex-1">
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex items-start gap-4">
-              {Icon && (
-                <div className="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
-                  <Icon className="h-6 w-6" />
-                </div>
-              )}
-              <div>
-                <h1 className="text-foreground text-2xl font-bold sm:text-3xl">
-                  {title}
-                </h1>
-                {description && (
-                  <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-                    {description}
-                  </p>
-                )}
-              </div>
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-4">
+          {Icon && (
+            <div className="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
+              <Icon className="h-6 w-6" />
             </div>
-            {actions && (
-              <div className="flex shrink-0 items-center gap-2">{actions}</div>
+          )}
+          <div>
+            <h1 className="text-foreground text-2xl font-bold sm:text-3xl">
+              {title}
+            </h1>
+            {description && (
+              <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+                {description}
+              </p>
             )}
           </div>
-
-          <div className="space-y-6">{children}</div>
         </div>
+        {actions && (
+          <div className="flex shrink-0 items-center gap-2">{actions}</div>
+        )}
+      </div>
+
+      <div className="flex min-h-0 flex-1 gap-6">
+        {sidebar}
+        {children}
       </div>
     </div>
   );

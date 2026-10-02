@@ -1,0 +1,7239 @@
+{
+  "generated_at": "2026-09-30T16:40:22.913Z",
+  "totals": {
+    "tables": 221,
+    "views": 5,
+    "columns": 2358,
+    "pks": 221,
+    "fks": 535,
+    "policies": 600,
+    "triggers": 84,
+    "functions": 233,
+    "enums": 15,
+    "indexes": 713,
+    "rbac": {
+      "roles": 53,
+      "permissions": 230,
+      "role_permissions": 739,
+      "role_assignments": 37,
+      "people": 41,
+      "tenants": 3,
+      "memberships": 43
+    }
+  },
+  "objects": [
+    {
+      "name": "accounts_payable",
+      "kind": "table",
+      "rls": true,
+      "columns": 20,
+      "policies": [
+        {
+          "name": "accounts_payable_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "accounts_payable_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "accounts_payable_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [
+        "tenants",
+        "companies",
+        "suppliers",
+        "purchase_orders",
+        "purchase_receipts",
+        "people"
+      ],
+      "fk_in_count": 2
+    },
+    {
+      "name": "accounts_receivable",
+      "kind": "table",
+      "rls": true,
+      "columns": 20,
+      "policies": [
+        {
+          "name": "accounts_receivable_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "accounts_receivable_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "accounts_receivable_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [
+        "tenants",
+        "companies",
+        "contracts",
+        "service_orders",
+        "invoices",
+        "people"
+      ],
+      "fk_in_count": 2
+    },
+    {
+      "name": "activity_logs",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "activity_logs_insert",
+          "cmd": "INSERT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "activity_logs_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "administrative_approvals",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "administrative_approvals_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "administrative_approvals_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "administrative_tasks", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "administrative_documents",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "administrative_documents_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "administrative_documents_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "administrative_requests", "files"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "administrative_requests",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "administrative_requests_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "administrative_requests_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "administrative_requests_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "administrative_tasks",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "administrative_tasks_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "administrative_tasks_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "administrative_requests", "people"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "ai_conversations",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "ai_conversations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "ai_conversations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "ai_conversations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "ai_messages",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "ai_messages_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "ai_messages_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["ai_conversations"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "ai_usage",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "ai_usage_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "ai_usage_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "ai_usage_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "application_profile_snapshots",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "application_profile_snapshots_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "application_profile_snapshots_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "applications", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "application_status_history",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "application_status_history_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "application_status_history_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["applications", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "applications",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "applications_self_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "applications_self_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "applications_self_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["candidates", "jobs"],
+      "fk_in_count": 3
+    },
+    {
+      "name": "audit_logs",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "audit_logs_admin_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["people", "tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "automation_executions",
+      "kind": "table",
+      "rls": true,
+      "columns": 14,
+      "policies": [
+        {
+          "name": "automation_executions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "automation_executions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "automation_jobs", "domain_events", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "automation_jobs",
+      "kind": "table",
+      "rls": true,
+      "columns": 16,
+      "policies": [
+        {
+          "name": "automation_jobs_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "automation_jobs_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "automation_jobs_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "automation_templates",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "automation_templates_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "automation_templates_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "automation_templates_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "bank_reconciliations",
+      "kind": "table",
+      "rls": true,
+      "columns": 13,
+      "policies": [
+        {
+          "name": "bank_reconciliations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "bank_reconciliations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "bank_reconciliations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "blog_categories",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "blog_categories_public_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "blog_posts",
+      "kind": "table",
+      "rls": true,
+      "columns": 15,
+      "policies": [
+        {
+          "name": "blog_posts_public_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people", "blog_categories"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "calendar_events",
+      "kind": "table",
+      "rls": true,
+      "columns": 13,
+      "policies": [
+        {
+          "name": "calendar_events_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "calendar_events_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "calendar_events_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "calendars", "people"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "calendar_integrations",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "calendar_integrations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "calendar_integrations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "calendar_integrations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "calendars",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "calendars_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "calendars_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "calendars_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "calendar_integrations"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "candidate_courses",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "candidate_courses_self_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_courses_self_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_courses_self_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "candidates"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "candidate_documents",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "candidate_documents_self_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_documents_self_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_documents_self_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "candidates", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "candidate_education",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "candidate_education_self_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_education_self_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_education_self_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "candidates"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "candidate_experiences",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "candidate_experiences_self_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_experiences_self_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_experiences_self_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "candidates"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "candidate_job_alerts",
+      "kind": "table",
+      "rls": true,
+      "columns": 16,
+      "policies": [
+        {
+          "name": "candidate_job_alerts_self_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_job_alerts_self_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_job_alerts_self_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_job_alerts_self_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "candidate_languages",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "candidate_languages_self_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_languages_self_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_languages_self_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "candidates"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "candidate_portal_modules",
+      "kind": "table",
+      "rls": true,
+      "columns": 13,
+      "policies": [
+        {
+          "name": "cpm_admin_write",
+          "cmd": "ALL",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "cpm_public_read",
+          "cmd": "SELECT",
+          "roles": "{anon,authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "candidate_processes",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "candidate_processes_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_processes_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_processes_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "candidates", "recruitment_processes"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "candidate_profile_views",
+      "kind": "table",
+      "rls": true,
+      "columns": 5,
+      "policies": [
+        {
+          "name": "candidate_profile_views_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_profile_views_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_profile_views_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "candidate_skills",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "candidate_skills_self_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_skills_self_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidate_skills_self_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "candidates"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "candidates",
+      "kind": "table",
+      "rls": true,
+      "columns": 14,
+      "policies": [
+        {
+          "name": "candidates_self_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidates_self_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "candidates_self_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["people", "tenants"],
+      "fk_in_count": 10
+    },
+    {
+      "name": "chat_handoffs",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "chat_handoffs_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "chat_handoffs_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["chat_rooms", "people", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "chat_messages",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "chat_messages_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "chat_messages_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["chat_rooms", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "chat_participants",
+      "kind": "table",
+      "rls": true,
+      "columns": 5,
+      "policies": [
+        {
+          "name": "chat_participants_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "chat_participants_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["chat_rooms", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "chat_rooms",
+      "kind": "table",
+      "rls": true,
+      "columns": 5,
+      "policies": [
+        {
+          "name": "chat_rooms_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "chat_rooms_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "chat_rooms_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 3
+    },
+    {
+      "name": "companies",
+      "kind": "table",
+      "rls": true,
+      "columns": 27,
+      "policies": [
+        {
+          "name": "companies_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "companies_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "companies_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "companies_public_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 20
+    },
+    {
+      "name": "company_contacts",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "company_contacts_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_contacts_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_contacts_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["companies"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "company_locations",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "company_locations_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_locations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_locations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_locations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "company_relationship_types",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "company_relationship_types_authenticated_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "company_relationships",
+      "kind": "table",
+      "rls": true,
+      "columns": 14,
+      "policies": [
+        {
+          "name": "company_relationships_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_relationships_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_relationships_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["companies"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "company_services",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "company_services_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_services_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_services_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["services", "tenants", "companies"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "company_social_links",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "company_social_links_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_social_links_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_social_links_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "company_social_links_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "consents",
+      "kind": "table",
+      "rls": true,
+      "columns": 15,
+      "policies": [
+        {
+          "name": "consents_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "consents_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "consents_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "contract_status_history",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "contract_status_history_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "contract_status_history_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "contracts", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "contracts",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "contracts_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "contracts_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "contracts_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies"],
+      "fk_in_count": 3
+    },
+    {
+      "name": "cost_centers",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "cost_centers_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "cost_centers_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "cost_centers_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "customer_feedback",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "customer_feedback_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "customer_feedback_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "customer_feedback_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "customer_feedback_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "customers", "service_orders", "work_orders"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "customer_ratings",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "customer_ratings_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "customer_ratings_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "customer_ratings_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "customer_ratings_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "customers", "service_orders", "work_orders"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "customers",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "customers_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "customers_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "customers_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies", "people"],
+      "fk_in_count": 6
+    },
+    {
+      "name": "dashboard_layouts",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "dashboard_layouts_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "dashboard_layouts_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "dashboard_layouts_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people", "dashboard_widgets"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "dashboard_widgets",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "dashboard_widgets_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "dashboard_widgets_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "dashboard_widgets_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "data_deletion_requests",
+      "kind": "table",
+      "rls": true,
+      "columns": 16,
+      "policies": [
+        {
+          "name": "data_deletion_requests_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "data_deletion_requests_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "data_export_requests",
+      "kind": "table",
+      "rls": true,
+      "columns": 14,
+      "policies": [
+        {
+          "name": "data_export_requests_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "data_export_requests_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "data_retention_policies",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "data_retention_policies_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "data_retention_policies_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "departments",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "departments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "departments_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "departments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "departments"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "document_links",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "document_links_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "document_links_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "files"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "document_versions",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "document_versions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "document_versions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "domain_events",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "domain_events_admin_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 4
+    },
+    {
+      "name": "email_messages",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "email_messages_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "email_messages_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "email_templates"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "email_templates",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "email_templates_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "email_templates_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "email_templates_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "employee_contracts",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "employee_contracts_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "employee_contracts_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "employee_contracts_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["employees"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "employee_documents",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "employee_documents_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "employee_documents_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "employee_documents_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["employees"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "employee_positions",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "employee_positions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "employee_positions_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "employee_positions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["employees", "positions"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "employee_status_history",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "employee_status_history_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "employee_status_history_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "employee_status_history_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["employees"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "employees",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "employees_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "employees_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "employees_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["people", "tenants"],
+      "fk_in_count": 10
+    },
+    {
+      "name": "epi_deliveries",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "epi_deliveries_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_deliveries_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_deliveries_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_deliveries_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "employees", "work_orders", "people"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "epi_delivery_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 17,
+      "policies": [
+        {
+          "name": "epi_delivery_items_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_delivery_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_delivery_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_delivery_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "epi_deliveries", "products", "stock_lots"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "epi_return_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "epi_return_items_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_return_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_return_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_return_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "epi_returns", "products", "stock_lots"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "epi_returns",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "epi_returns_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_returns_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_returns_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "epi_returns_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "employees", "work_orders", "people"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "event_deliveries",
+      "kind": "table",
+      "rls": true,
+      "columns": 16,
+      "policies": [
+        {
+          "name": "event_deliveries_admin_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "event_outbox", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "event_outbox",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "event_outbox_admin_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "domain_events"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "event_participants",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "event_participants_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "event_participants_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "event_participants_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["calendar_events", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "faqs",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "faqs_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "faqs_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "faqs_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "faqs_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "favorite_jobs",
+      "kind": "table",
+      "rls": true,
+      "columns": 5,
+      "policies": [
+        {
+          "name": "favorite_jobs_self_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "favorite_jobs_self_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "favorite_jobs_self_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people", "jobs"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "feedback",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "feedback_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "feedback_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "feedback_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "feedback_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["people", "tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "file_access_logs",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "file_access_logs_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "file_access_logs_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "files", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "file_uploads",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "file_uploads_insert",
+          "cmd": "INSERT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "file_uploads_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "files",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "files_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "files_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 3
+    },
+    {
+      "name": "financial_accounts",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "financial_accounts_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "financial_accounts_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "financial_accounts_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "financial_categories",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "financial_categories_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "financial_categories_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "financial_categories_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "financial_categories"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "financial_installment_cancellations",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "financial_installment_cancellations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "financial_installment_cancellations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "financial_installments", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "financial_installment_payments",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "financial_installment_payments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "financial_installment_payments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "financial_installments", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "financial_installments",
+      "kind": "table",
+      "rls": true,
+      "columns": 14,
+      "policies": [
+        {
+          "name": "financial_installments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "financial_installments_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "financial_installments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [
+        "tenants",
+        "accounts_receivable",
+        "accounts_payable",
+        "people"
+      ],
+      "fk_in_count": 2
+    },
+    {
+      "name": "financial_kpis",
+      "kind": "view",
+      "rls": false,
+      "columns": 4,
+      "policies": [],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "financial_transactions",
+      "kind": "table",
+      "rls": true,
+      "columns": 17,
+      "policies": [
+        {
+          "name": "financial_transactions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "financial_transactions_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "financial_transactions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "cost_centers", "financial_categories", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "first_login_state",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "first_login_state_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "first_login_state_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "first_login_state_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "fiscal_api_requests",
+      "kind": "table",
+      "rls": true,
+      "columns": 15,
+      "policies": [
+        {
+          "name": "fiscal_api_requests_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_api_requests_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_api_requests_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "fiscal_documents", "people"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "fiscal_api_responses",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "fiscal_api_responses_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_api_responses_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "fiscal_api_requests"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "fiscal_configurations",
+      "kind": "table",
+      "rls": true,
+      "columns": 16,
+      "policies": [
+        {
+          "name": "fiscal_configurations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_configurations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_configurations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "fiscal_document_events",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "fiscal_document_events_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_document_events_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "fiscal_documents", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "fiscal_document_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 16,
+      "policies": [
+        {
+          "name": "fiscal_document_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_document_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_document_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "fiscal_documents", "products"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "fiscal_document_status_history",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "fiscal_document_status_history_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_document_status_history_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "fiscal_documents", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "fiscal_documents",
+      "kind": "table",
+      "rls": true,
+      "columns": 19,
+      "policies": [
+        {
+          "name": "fiscal_documents_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_documents_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_documents_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 4
+    },
+    {
+      "name": "fiscal_integrations",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "fiscal_integrations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_integrations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "fiscal_integrations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "footer_configs",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "footer_configs_admin_write",
+          "cmd": "ALL",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "footer_configs_public_read",
+          "cmd": "SELECT",
+          "roles": "{anon,authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "global_navigation_links",
+      "kind": "table",
+      "rls": true,
+      "columns": 15,
+      "policies": [
+        {
+          "name": "gnl_admin_write",
+          "cmd": "ALL",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "gnl_public_read",
+          "cmd": "SELECT",
+          "roles": "{anon,authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "integration_connections",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "integration_connections_tenant_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "integration_connections_tenant_write",
+          "cmd": "ALL",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 6
+    },
+    {
+      "name": "integration_credentials",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "integration_credentials_deny_all",
+          "cmd": "ALL",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["integration_connections"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "integration_errors",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "integration_errors_tenant_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["integration_connections"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "integration_events",
+      "kind": "table",
+      "rls": true,
+      "columns": 15,
+      "policies": [
+        {
+          "name": "integration_events_tenant_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["integration_connections", "domain_events"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "integration_sync_jobs",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "integration_sync_jobs_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "integration_sync_jobs_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "integration_sync_runs",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "integration_sync_runs_tenant_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["integration_connections"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "integration_webhooks",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "integration_webhooks_tenant_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["integration_connections"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "interactions",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "interactions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "interactions_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "interactions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "interview_feedback",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "interview_feedback_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "interview_feedback_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "interview_feedback_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "interviews", "interview_participants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "interview_followups",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "interview_followups_admin",
+          "cmd": "ALL",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "interview_followups_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["candidates", "jobs"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "interview_participants",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "interview_participants_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "interview_participants_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "interview_participants_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "interviews", "people"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "interviews",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "interviews_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "interviews_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "interviews_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["applications"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "invoice_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "invoice_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "invoice_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "invoice_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "invoices"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "invoices",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "invoices_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "invoices_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "invoices_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies", "companies"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "job_matches",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "job_matches_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "job_matches_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "job_matches_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people", "recruitment_demands"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "job_skills",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "Job skills for published jobs visible to public",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "job_skills_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "job_skills_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "job_skills_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "jobs", "skills"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "jobs",
+      "kind": "table",
+      "rls": true,
+      "columns": 33,
+      "policies": [
+        {
+          "name": "Published jobs visible to public",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "jobs_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "jobs_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "jobs_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies"],
+      "fk_in_count": 5
+    },
+    {
+      "name": "leads",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "leads_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "leads_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "leads_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "legal_acceptances",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "legal_acceptances_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "legal_acceptances_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["people", "tenants", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "material_issue_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "material_issue_items_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_issue_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_issue_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_issue_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [
+        "tenants",
+        "material_issues",
+        "products",
+        "stock_lots",
+        "warehouse_locations"
+      ],
+      "fk_in_count": 0
+    },
+    {
+      "name": "material_issues",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "material_issues_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_issues_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_issues_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_issues_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "work_orders", "employees", "warehouses", "people"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "material_return_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "material_return_items_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_return_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_return_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_return_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [
+        "warehouse_locations",
+        "tenants",
+        "material_returns",
+        "products",
+        "stock_lots"
+      ],
+      "fk_in_count": 0
+    },
+    {
+      "name": "material_returns",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "material_returns_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_returns_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_returns_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "material_returns_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "work_orders", "employees", "warehouses", "people"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "media_assets",
+      "kind": "table",
+      "rls": true,
+      "columns": 21,
+      "policies": [
+        {
+          "name": "media_assets_tenant_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "media_assets_tenant_insert",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "media_assets_tenant_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "media_assets_tenant_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "meeting_room_reservations",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "meeting_room_reservations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "meeting_room_reservations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "meeting_room_reservations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "meeting_rooms", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "meeting_rooms",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "meeting_rooms_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "meeting_rooms_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "meeting_rooms_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "notification_deliveries",
+      "kind": "table",
+      "rls": true,
+      "columns": 14,
+      "policies": [
+        {
+          "name": "notification_deliveries_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "notifications", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "notification_preferences",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "notification_preferences_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "notification_preferences_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "notification_preferences_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "notifications",
+      "kind": "table",
+      "rls": true,
+      "columns": 14,
+      "policies": [
+        {
+          "name": "notifications_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "notifications_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "page_templates",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "page_templates_admin_write",
+          "cmd": "ALL",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "page_templates_public_read",
+          "cmd": "SELECT",
+          "roles": "{anon,authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "password_policies",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "password_policies_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "password_policies_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "password_policies_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "payments",
+      "kind": "table",
+      "rls": true,
+      "columns": 13,
+      "policies": [
+        {
+          "name": "payments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "payments_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "payments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "accounts_payable", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "people",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "people_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 117
+    },
+    {
+      "name": "permissions",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "permissions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 1
+    },
+    {
+      "name": "pos_cancellations",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "pos_cancellations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_cancellations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_cancellations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "pos_sales", "people", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "pos_cash_movements",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "pos_cash_movements_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_cash_movements_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_cash_movements_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["pos_cashier_sessions", "people", "people", "tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "pos_cashier_sessions",
+      "kind": "table",
+      "rls": true,
+      "columns": 15,
+      "policies": [
+        {
+          "name": "pos_cashier_sessions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_cashier_sessions_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_cashier_sessions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "pos_cashiers", "pos_operators", "people"],
+      "fk_in_count": 3
+    },
+    {
+      "name": "pos_cashiers",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "pos_cashiers_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_cashiers_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_cashiers_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "pos_terminals"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "pos_daily_closures",
+      "kind": "table",
+      "rls": true,
+      "columns": 13,
+      "policies": [
+        {
+          "name": "pos_daily_closures_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_daily_closures_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_daily_closures_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "pos_cashier_sessions", "people", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "pos_operators",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "pos_operators_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_operators_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_operators_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people", "pos_cashiers"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "pos_payments",
+      "kind": "table",
+      "rls": true,
+      "columns": 13,
+      "policies": [
+        {
+          "name": "pos_payments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_payments_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_payments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "pos_sales", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "pos_returns",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "pos_returns_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_returns_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_returns_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "pos_sales", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "pos_sale_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "pos_sale_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_sale_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_sale_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "pos_sales", "products"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "pos_sales",
+      "kind": "table",
+      "rls": true,
+      "columns": 16,
+      "policies": [
+        {
+          "name": "pos_sales_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_sales_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_sales_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "pos_cashier_sessions", "pos_operators", "people"],
+      "fk_in_count": 4
+    },
+    {
+      "name": "pos_terminals",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "pos_terminals_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_terminals_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "pos_terminals_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "positions",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "positions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "positions_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "positions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "departments"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "privacy_requests",
+      "kind": "table",
+      "rls": true,
+      "columns": 14,
+      "policies": [
+        {
+          "name": "privacy_requests_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "privacy_requests_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "privacy_requests_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "product_categories",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "product_categories_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "product_categories_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "product_categories_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "product_categories"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "products",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "products_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "products_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "products_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 19
+    },
+    {
+      "name": "provider_configs",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "provider_configs_tenant_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "providers", "integration_connections"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "providers",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "providers_authenticated_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 1
+    },
+    {
+      "name": "public_companies_by_type",
+      "kind": "view",
+      "rls": false,
+      "columns": 18,
+      "policies": [],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "public_jobs_v1",
+      "kind": "view",
+      "rls": false,
+      "columns": 31,
+      "policies": [],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "public_services_v1",
+      "kind": "view",
+      "rls": false,
+      "columns": 24,
+      "policies": [],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "purchase_order_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "purchase_order_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_order_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "purchase_orders", "products"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "purchase_orders",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "purchase_orders_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_orders_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_orders_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "suppliers"],
+      "fk_in_count": 4
+    },
+    {
+      "name": "purchase_quotation_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "purchase_quotation_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_quotation_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "purchase_quotations", "products"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "purchase_quotations",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "purchase_quotations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_quotations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_quotations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "purchase_requests", "suppliers"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "purchase_receipt_divergences",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "purchase_receipt_divergences_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_receipt_divergences_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "purchase_receipts", "purchase_order_items"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "purchase_receipt_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "purchase_receipt_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_receipt_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [
+        "tenants",
+        "purchase_receipts",
+        "purchase_order_items",
+        "products"
+      ],
+      "fk_in_count": 0
+    },
+    {
+      "name": "purchase_receipts",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "purchase_receipts_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_receipts_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "purchase_orders", "suppliers", "people"],
+      "fk_in_count": 3
+    },
+    {
+      "name": "purchase_request_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "purchase_request_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_request_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_request_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "purchase_requests", "products"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "purchase_requests",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "purchase_requests_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_requests_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_requests_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies", "people"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "purchase_status_history",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "purchase_status_history_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "purchase_status_history_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "purchase_orders", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "quote_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 13,
+      "policies": [
+        {
+          "name": "quote_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "quote_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "quote_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "quotes", "services", "products"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "quotes",
+      "kind": "table",
+      "rls": true,
+      "columns": 17,
+      "policies": [
+        {
+          "name": "quotes_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "quotes_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "quotes_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "customers", "companies", "people", "quotes"],
+      "fk_in_count": 3
+    },
+    {
+      "name": "receipts",
+      "kind": "table",
+      "rls": true,
+      "columns": 13,
+      "policies": [
+        {
+          "name": "receipts_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "receipts_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "receipts_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "accounts_receivable", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "recruitment_demands",
+      "kind": "table",
+      "rls": true,
+      "columns": 16,
+      "policies": [
+        {
+          "name": "recruitment_demands_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "recruitment_demands_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "recruitment_demands_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["services", "tenants", "companies"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "recruitment_kpis",
+      "kind": "view",
+      "rls": false,
+      "columns": 4,
+      "policies": [],
+      "fk_out": [],
+      "fk_in_count": 0
+    },
+    {
+      "name": "recruitment_processes",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "recruitment_processes_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "recruitment_processes_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "recruitment_processes_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "jobs", "candidates", "people"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "recruitment_stages",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "recruitment_stages_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "recruitment_stages_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "recruitment_stages_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [
+        "tenants",
+        "recruitment_processes",
+        "stage_templates",
+        "people"
+      ],
+      "fk_in_count": 0
+    },
+    {
+      "name": "report_definitions",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "report_definitions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "report_definitions_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "report_definitions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 2
+    },
+    {
+      "name": "report_executions",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "report_executions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "report_executions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "report_definitions", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "report_schedules",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "report_schedules_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "report_schedules_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "report_schedules_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "report_definitions"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "role_assignments",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "role_assignments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "role_assignments_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "role_assignments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["people", "roles", "tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "role_permissions",
+      "kind": "table",
+      "rls": true,
+      "columns": 4,
+      "policies": [
+        {
+          "name": "role_permissions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["roles", "permissions"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "roles",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "roles_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "roles_select",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 2
+    },
+    {
+      "name": "sale_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 14,
+      "policies": [
+        {
+          "name": "sale_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "sale_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "sale_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "sales", "quote_items", "services", "products"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "sales",
+      "kind": "table",
+      "rls": true,
+      "columns": 15,
+      "policies": [
+        {
+          "name": "sales_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "sales_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "sales_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "customers", "companies", "people", "quotes"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "security_events",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "security_events_admin_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "security_events_admin_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["people", "tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "service_acceptances",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "service_acceptances_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_acceptances_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_acceptances_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "service_orders", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "service_attachments",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "service_attachments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_attachments_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_attachments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "service_orders", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "service_executions",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "service_executions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_executions_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_executions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "service_orders", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "service_occurrences",
+      "kind": "table",
+      "rls": true,
+      "columns": 13,
+      "policies": [
+        {
+          "name": "service_occurrences_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_occurrences_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_occurrences_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_occurrences_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [
+        "tenants",
+        "service_orders",
+        "work_orders",
+        "people",
+        "people"
+      ],
+      "fk_in_count": 0
+    },
+    {
+      "name": "service_order_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "service_order_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_order_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_order_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "service_orders"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "service_order_status_history",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "service_order_status_history_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_order_status_history_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_order_status_history_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "service_orders", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "service_orders",
+      "kind": "table",
+      "rls": true,
+      "columns": 16,
+      "policies": [
+        {
+          "name": "service_orders_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_orders_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_orders_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["company_relationships", "tenants", "company_services"],
+      "fk_in_count": 10
+    },
+    {
+      "name": "service_sla",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "service_sla_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_sla_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_sla_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "service_sla_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "services"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "services",
+      "kind": "table",
+      "rls": true,
+      "columns": 27,
+      "policies": [
+        {
+          "name": "services_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "services_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "services_member_write",
+          "cmd": "ALL",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "services_public_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 5
+    },
+    {
+      "name": "sessions",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "sessions_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "sessions_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "skills",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "skills_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "skills_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "skills_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "stage_templates",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "stage_templates_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "stage_templates_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "stage_templates_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "stock_balances",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "stock_balances_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "products"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "stock_entries",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "stock_entries_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "stock_entries_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "products", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "stock_inventory",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "stock_inventory_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "stock_inventory_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "stock_inventory_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "warehouses"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "stock_inventory_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "stock_inventory_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "stock_inventory_items_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "stock_inventory_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [
+        "tenants",
+        "stock_inventory",
+        "products",
+        "stock_lots",
+        "warehouse_locations"
+      ],
+      "fk_in_count": 0
+    },
+    {
+      "name": "stock_lots",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "stock_lots_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "stock_lots_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "stock_lots_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "products"],
+      "fk_in_count": 6
+    },
+    {
+      "name": "stock_movements",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "stock_movements_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "stock_movements_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "products"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "suppliers",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "suppliers_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "suppliers_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "suppliers_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies"],
+      "fk_in_count": 4
+    },
+    {
+      "name": "support_ticket_assignments",
+      "kind": "table",
+      "rls": true,
+      "columns": 5,
+      "policies": [
+        {
+          "name": "support_ticket_assignments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "support_ticket_assignments_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "support_ticket_assignments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "support_tickets", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "support_ticket_categories",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "support_ticket_categories_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "support_ticket_categories_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "support_ticket_categories_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "support_ticket_messages",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "support_ticket_messages_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "support_ticket_messages_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "support_ticket_messages_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "support_tickets", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "support_ticket_status_history",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "support_ticket_status_history_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "support_ticket_status_history_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "support_tickets"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "support_tickets",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "support_tickets_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "support_tickets_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "support_tickets_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "support_ticket_categories", "people"],
+      "fk_in_count": 3
+    },
+    {
+      "name": "talent_pool_memberships",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "talent_pool_memberships_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "talent_pool_memberships_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "talent_pool_memberships_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "task_attachments",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "task_attachments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "task_attachments_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "task_attachments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "tasks", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "task_comments",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "task_comments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "task_comments_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "task_comments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "tasks", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "task_status_history",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "task_status_history_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "task_status_history_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "task_status_history_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "tasks", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "tasks",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "tasks_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "tasks_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "tasks_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "people"],
+      "fk_in_count": 3
+    },
+    {
+      "name": "tax_calculations",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "tax_calculations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "tax_calculations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "tax_calculations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "tax_rates", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "tax_rates",
+      "kind": "table",
+      "rls": true,
+      "columns": 11,
+      "policies": [
+        {
+          "name": "tax_rates_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "tax_rates_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "tax_rates_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "tenant_memberships",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "tenant_memberships_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "tenant_memberships_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "tenant_memberships_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["people", "tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "tenant_settings",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "tenant_settings_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "tenant_settings_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "tenant_settings_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "tenants",
+      "kind": "table",
+      "rls": true,
+      "columns": 6,
+      "policies": [
+        {
+          "name": "tenants_member_read",
+          "cmd": "SELECT",
+          "roles": "{authenticated}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [],
+      "fk_in_count": 187
+    },
+    {
+      "name": "third_party_custody",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "third_party_custody_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "third_party_custody_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "third_party_custody_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "companies"],
+      "fk_in_count": 1
+    },
+    {
+      "name": "third_party_custody_items",
+      "kind": "table",
+      "rls": true,
+      "columns": 8,
+      "policies": [
+        {
+          "name": "third_party_custody_items_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "third_party_custody_items_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "third_party_custody", "products"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "validation_results",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "validation_results_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "validation_results_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "validation_results_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "warehouse_locations",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "warehouse_locations_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "warehouse_locations_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "warehouse_locations_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "warehouses"],
+      "fk_in_count": 3
+    },
+    {
+      "name": "warehouses",
+      "kind": "table",
+      "rls": true,
+      "columns": 7,
+      "policies": [
+        {
+          "name": "warehouses_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "warehouses_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "warehouses_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants"],
+      "fk_in_count": 4
+    },
+    {
+      "name": "webhook_deliveries",
+      "kind": "table",
+      "rls": true,
+      "columns": 16,
+      "policies": [
+        {
+          "name": "webhook_deliveries_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "webhook_deliveries_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "domain_events", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "work_order_acceptances",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "work_order_acceptances_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_acceptances_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_acceptances_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "work_orders", "customers", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "work_order_assignments",
+      "kind": "table",
+      "rls": true,
+      "columns": 13,
+      "policies": [
+        {
+          "name": "work_order_assignments_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_assignments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_assignments_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_assignments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "work_orders", "employees"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "work_order_attachments",
+      "kind": "table",
+      "rls": true,
+      "columns": 9,
+      "policies": [
+        {
+          "name": "work_order_attachments_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_attachments_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_attachments_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "work_orders", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "work_order_checklists",
+      "kind": "table",
+      "rls": true,
+      "columns": 10,
+      "policies": [
+        {
+          "name": "work_order_checklists_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_checklists_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_checklists_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_checklists_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "work_orders", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "work_order_materials",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "work_order_materials_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_materials_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_materials_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_materials_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "work_orders", "products", "stock_lots"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "work_order_occurrences",
+      "kind": "table",
+      "rls": true,
+      "columns": 12,
+      "policies": [
+        {
+          "name": "work_order_occurrences_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_occurrences_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_occurrences_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_order_occurrences_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": ["tenants", "work_orders", "people", "people"],
+      "fk_in_count": 0
+    },
+    {
+      "name": "work_orders",
+      "kind": "table",
+      "rls": true,
+      "columns": 19,
+      "policies": [
+        {
+          "name": "work_orders_member_delete",
+          "cmd": "DELETE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_orders_member_read",
+          "cmd": "SELECT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_orders_member_update",
+          "cmd": "UPDATE",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        },
+        {
+          "name": "work_orders_member_write",
+          "cmd": "INSERT",
+          "roles": "{public}",
+          "permissive": "PERMISSIVE"
+        }
+      ],
+      "fk_out": [
+        "tenants",
+        "service_orders",
+        "contracts",
+        "customers",
+        "company_locations",
+        "employees",
+        "people"
+      ],
+      "fk_in_count": 13
+    }
+  ],
+  "triggers_by_table": {
+    "administrative_documents": ["trg_set_updated_at_administrative_documents"],
+    "administrative_requests": ["trg_set_updated_at_administrative_requests"],
+    "administrative_tasks": ["trg_set_updated_at_administrative_tasks"],
+    "ai_conversations": ["trg_set_updated_at_ai_conversations"],
+    "applications": ["update_applications_updated_at"],
+    "candidate_job_alerts": ["trg_candidate_job_alerts_updated_at"],
+    "candidate_portal_modules": ["trg_cpm_updated_at"],
+    "candidate_skills": ["update_candidate_skills_updated_at"],
+    "chat_rooms": ["trg_set_updated_at_chat_rooms"],
+    "companies": [
+      "trg_audit_companies",
+      "trg_audit_companies",
+      "trg_audit_companies",
+      "trg_set_updated_at_companies"
+    ],
+    "company_social_links": ["update_company_social_links_updated_at"],
+    "consents": ["trg_audit_consents", "trg_set_updated_at_consents"],
+    "contracts": [
+      "trg_audit_contracts",
+      "trg_audit_contracts",
+      "trg_audit_contracts"
+    ],
+    "data_deletion_requests": ["trg_set_updated_at_data_deletion_requests"],
+    "data_export_requests": ["trg_set_updated_at_data_export_requests"],
+    "data_retention_policies": ["trg_set_updated_at_data_retention_policies"],
+    "document_links": ["trg_set_updated_at_document_links"],
+    "document_versions": ["trg_set_updated_at_document_versions"],
+    "domain_events": ["trg_domain_event_to_outbox"],
+    "file_access_logs": ["trg_set_updated_at_file_access_logs"],
+    "files": ["trg_set_updated_at_files"],
+    "footer_configs": ["trg_footer_configs_updated_at"],
+    "global_navigation_links": ["trg_gnl_updated_at"],
+    "integration_connections": ["update_integration_connections_updated_at"],
+    "integration_events": ["update_integration_events_updated_at"],
+    "interview_followups": ["update_interview_followups_updated_at"],
+    "media_assets": ["update_media_assets_updated_at"],
+    "page_templates": ["trg_page_templates_updated_at"],
+    "people": [
+      "trg_audit_data_deletion_requests",
+      "trg_audit_people",
+      "trg_audit_people",
+      "trg_audit_people",
+      "trg_set_updated_at_people"
+    ],
+    "permissions": [
+      "trg_set_updated_at_permissions",
+      "update_permissions_updated_at"
+    ],
+    "pos_daily_closures": ["trg_pos_daily_closure_validate"],
+    "privacy_requests": ["trg_set_updated_at_privacy_requests"],
+    "products": [
+      "trg_audit_products",
+      "trg_audit_products",
+      "trg_audit_products",
+      "trg_set_updated_at_products"
+    ],
+    "provider_configs": ["update_provider_configs_updated_at"],
+    "providers": ["update_providers_updated_at"],
+    "purchase_order_items": ["trg_set_updated_at_purchase_order_items"],
+    "purchase_orders": [
+      "trg_audit_purchase_orders",
+      "trg_audit_purchase_orders",
+      "trg_audit_purchase_orders",
+      "trg_set_updated_at_purchase_orders"
+    ],
+    "purchase_receipt_items": ["trg_set_updated_at_purchase_receipt_items"],
+    "purchase_receipts": [
+      "trg_audit_purchase_receipts",
+      "trg_set_updated_at_purchase_receipts"
+    ],
+    "role_assignments": [
+      "trg_audit_role_assignments",
+      "trg_audit_role_assignments",
+      "trg_audit_role_assignments",
+      "update_role_assignments_updated_at"
+    ],
+    "roles": ["trg_set_updated_at_roles"],
+    "services": ["update_services_updated_at"],
+    "stock_balances": [
+      "trg_audit_stock_balances",
+      "trg_set_updated_at_stock_balances"
+    ],
+    "stock_entries": ["trg_set_updated_at_stock_entries"],
+    "stock_movements": ["trg_audit_stock_movements"],
+    "suppliers": [
+      "trg_audit_suppliers",
+      "trg_audit_suppliers",
+      "trg_audit_suppliers",
+      "trg_set_updated_at_suppliers"
+    ],
+    "support_tickets": ["trg_set_updated_at_support_tickets"],
+    "tasks": ["trg_set_updated_at_tasks"],
+    "tenant_memberships": [
+      "trg_audit_tenant_memberships",
+      "trg_audit_tenant_memberships",
+      "trg_audit_tenant_memberships",
+      "trg_set_updated_at_tenant_memberships"
+    ],
+    "tenant_settings": ["trg_set_updated_at_tenant_settings"],
+    "tenants": [
+      "trg_audit_tenants",
+      "trg_audit_tenants",
+      "trg_audit_tenants",
+      "trg_set_updated_at_tenants"
+    ],
+    "third_party_custody": ["trg_set_updated_at_third_party_custody"],
+    "third_party_custody_items": [
+      "trg_set_updated_at_third_party_custody_items"
+    ]
+  },
+  "functions": [
+    {
+      "name": "audit_log_insert",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "bootstrap_candidate_from_auth_user",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "bootstrap_candidate_identity",
+      "returns": "record",
+      "language": "plpgsql"
+    },
+    {
+      "name": "bootstrap_candidate_identity",
+      "returns": "record",
+      "language": "plpgsql"
+    },
+    {
+      "name": "bootstrap_company_from_auth_user",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "can_manage_role_assignment",
+      "returns": "boolean",
+      "language": "sql"
+    },
+    {
+      "name": "can_manage_role_assignment",
+      "returns": "boolean",
+      "language": "sql"
+    },
+    {
+      "name": "cash_dist",
+      "returns": "money",
+      "language": "c"
+    },
+    {
+      "name": "current_person_id",
+      "returns": "uuid",
+      "language": "sql"
+    },
+    {
+      "name": "date_dist",
+      "returns": "integer",
+      "language": "c"
+    },
+    {
+      "name": "domain_event_emit",
+      "returns": "uuid",
+      "language": "plpgsql"
+    },
+    {
+      "name": "emit_domain_event",
+      "returns": "uuid",
+      "language": "plpgsql"
+    },
+    {
+      "name": "event_outbox_enqueue",
+      "returns": "void",
+      "language": "plpgsql"
+    },
+    {
+      "name": "event_outbox_process_next",
+      "returns": "void",
+      "language": "plpgsql"
+    },
+    {
+      "name": "financial_reversal",
+      "returns": "void",
+      "language": "plpgsql"
+    },
+    {
+      "name": "fiscal_cancel_invoice",
+      "returns": "void",
+      "language": "plpgsql"
+    },
+    {
+      "name": "fiscal_emit_invoice",
+      "returns": "void",
+      "language": "plpgsql"
+    },
+    {
+      "name": "float4_dist",
+      "returns": "real",
+      "language": "c"
+    },
+    {
+      "name": "float8_dist",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bit_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bit_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bit_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bit_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bit_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bit_union",
+      "returns": "gbtreekey_var",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bool_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bool_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bool_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bool_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bool_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bool_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bool_union",
+      "returns": "gbtreekey2",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bpchar_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bpchar_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bytea_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bytea_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bytea_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bytea_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bytea_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_bytea_union",
+      "returns": "gbtreekey_var",
+      "language": "c"
+    },
+    {
+      "name": "gbt_cash_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_cash_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_cash_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_cash_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_cash_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_cash_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_cash_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_cash_union",
+      "returns": "gbtreekey16",
+      "language": "c"
+    },
+    {
+      "name": "gbt_date_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_date_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_date_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_date_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_date_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_date_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_date_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_date_union",
+      "returns": "gbtreekey8",
+      "language": "c"
+    },
+    {
+      "name": "gbt_decompress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_enum_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_enum_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_enum_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_enum_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_enum_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_enum_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_enum_union",
+      "returns": "gbtreekey8",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float4_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float4_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float4_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float4_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float4_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float4_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float4_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float4_union",
+      "returns": "gbtreekey8",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float8_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float8_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float8_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float8_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float8_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float8_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float8_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_float8_union",
+      "returns": "gbtreekey16",
+      "language": "c"
+    },
+    {
+      "name": "gbt_inet_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_inet_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_inet_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_inet_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_inet_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_inet_union",
+      "returns": "gbtreekey16",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int2_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int2_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int2_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int2_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int2_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int2_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int2_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int2_union",
+      "returns": "gbtreekey4",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int4_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int4_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int4_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int4_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int4_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int4_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int4_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int4_union",
+      "returns": "gbtreekey8",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int8_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int8_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int8_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int8_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int8_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int8_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int8_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_int8_union",
+      "returns": "gbtreekey16",
+      "language": "c"
+    },
+    {
+      "name": "gbt_intv_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_intv_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_intv_decompress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_intv_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_intv_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_intv_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_intv_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_intv_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_intv_union",
+      "returns": "gbtreekey32",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad8_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad8_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad8_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad8_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad8_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad8_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad8_union",
+      "returns": "gbtreekey16",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_macad_union",
+      "returns": "gbtreekey16",
+      "language": "c"
+    },
+    {
+      "name": "gbt_numeric_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_numeric_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_numeric_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_numeric_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_numeric_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_numeric_union",
+      "returns": "gbtreekey_var",
+      "language": "c"
+    },
+    {
+      "name": "gbt_oid_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_oid_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_oid_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_oid_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_oid_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_oid_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_oid_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_oid_union",
+      "returns": "gbtreekey8",
+      "language": "c"
+    },
+    {
+      "name": "gbt_text_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_text_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_text_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_text_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_text_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_text_union",
+      "returns": "gbtreekey_var",
+      "language": "c"
+    },
+    {
+      "name": "gbt_time_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_time_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_time_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_time_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_time_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_time_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_time_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_time_union",
+      "returns": "gbtreekey16",
+      "language": "c"
+    },
+    {
+      "name": "gbt_timetz_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_timetz_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_ts_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_ts_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_ts_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_ts_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_ts_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_ts_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_ts_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_ts_union",
+      "returns": "gbtreekey16",
+      "language": "c"
+    },
+    {
+      "name": "gbt_tstz_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_tstz_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_tstz_distance",
+      "returns": "double precision",
+      "language": "c"
+    },
+    {
+      "name": "gbt_uuid_compress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_uuid_consistent",
+      "returns": "boolean",
+      "language": "c"
+    },
+    {
+      "name": "gbt_uuid_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_uuid_penalty",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_uuid_picksplit",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_uuid_same",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_uuid_union",
+      "returns": "gbtreekey32",
+      "language": "c"
+    },
+    {
+      "name": "gbt_var_decompress",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbt_var_fetch",
+      "returns": "internal",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey16_in",
+      "returns": "gbtreekey16",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey16_out",
+      "returns": "cstring",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey2_in",
+      "returns": "gbtreekey2",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey2_out",
+      "returns": "cstring",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey32_in",
+      "returns": "gbtreekey32",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey32_out",
+      "returns": "cstring",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey4_in",
+      "returns": "gbtreekey4",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey4_out",
+      "returns": "cstring",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey8_in",
+      "returns": "gbtreekey8",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey8_out",
+      "returns": "cstring",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey_var_in",
+      "returns": "gbtreekey_var",
+      "language": "c"
+    },
+    {
+      "name": "gbtreekey_var_out",
+      "returns": "cstring",
+      "language": "c"
+    },
+    {
+      "name": "handle_auth_user_deleted",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "handle_auth_user_updated",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "handle_new_auth_user",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "int2_dist",
+      "returns": "smallint",
+      "language": "c"
+    },
+    {
+      "name": "int4_dist",
+      "returns": "integer",
+      "language": "c"
+    },
+    {
+      "name": "int8_dist",
+      "returns": "bigint",
+      "language": "c"
+    },
+    {
+      "name": "interval_dist",
+      "returns": "interval",
+      "language": "c"
+    },
+    {
+      "name": "is_admin_master",
+      "returns": "boolean",
+      "language": "sql"
+    },
+    {
+      "name": "is_admin_master",
+      "returns": "boolean",
+      "language": "sql"
+    },
+    {
+      "name": "is_tenant_member",
+      "returns": "boolean",
+      "language": "sql"
+    },
+    {
+      "name": "is_valid_cnpj",
+      "returns": "boolean",
+      "language": "plpgsql"
+    },
+    {
+      "name": "is_valid_cpf",
+      "returns": "boolean",
+      "language": "plpgsql"
+    },
+    {
+      "name": "lgpd_consent_register",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "lgpd_legal_hold_check",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "match_candidates_to_demand",
+      "returns": "record",
+      "language": "plpgsql"
+    },
+    {
+      "name": "media_for_entity",
+      "returns": "record",
+      "language": "sql"
+    },
+    {
+      "name": "normalize_cnpj",
+      "returns": "text",
+      "language": "sql"
+    },
+    {
+      "name": "normalize_cpf",
+      "returns": "text",
+      "language": "sql"
+    },
+    {
+      "name": "oid_dist",
+      "returns": "oid",
+      "language": "c"
+    },
+    {
+      "name": "pos_daily_closure_validate",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "purchase_receipt_confirm",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "register_company_interest",
+      "returns": "uuid",
+      "language": "plpgsql"
+    },
+    {
+      "name": "repair_candidate_chain",
+      "returns": "record",
+      "language": "plpgsql"
+    },
+    {
+      "name": "resolve_page_template",
+      "returns": "jsonb",
+      "language": "plpgsql"
+    },
+    {
+      "name": "set_primary_media",
+      "returns": "void",
+      "language": "plpgsql"
+    },
+    {
+      "name": "set_updated_at",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "stock_movement_insert",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "tg_set_updated_at",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "time_dist",
+      "returns": "interval",
+      "language": "c"
+    },
+    {
+      "name": "trg_domain_event_to_outbox",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "ts_dist",
+      "returns": "interval",
+      "language": "c"
+    },
+    {
+      "name": "tstz_dist",
+      "returns": "interval",
+      "language": "c"
+    },
+    {
+      "name": "update_updated_at",
+      "returns": "trigger",
+      "language": "plpgsql"
+    },
+    {
+      "name": "user_has_permission",
+      "returns": "boolean",
+      "language": "plpgsql"
+    },
+    {
+      "name": "user_permissions",
+      "returns": "record",
+      "language": "plpgsql"
+    },
+    {
+      "name": "user_tenant_ids",
+      "returns": "uuid",
+      "language": "sql"
+    },
+    {
+      "name": "validation_assert",
+      "returns": "void",
+      "language": "plpgsql"
+    },
+    {
+      "name": "validation_upsert",
+      "returns": "void",
+      "language": "plpgsql"
+    }
+  ],
+  "enums": {
+    "business_error_code": [
+      "INSUFFICIENT_STOCK",
+      "DUPLICATE_OPERATION",
+      "INVALID_STATUS_TRANSITION",
+      "PURCHASE_RECEIPT_ALREADY_CONFIRMED",
+      "LGPD_LEGAL_HOLD",
+      "UNAUTHORIZED_OPERATION",
+      "TENANT_ACCESS_DENIED",
+      "CONCURRENT_UPDATE",
+      "VALIDATION_ERROR",
+      "INTERNAL_ERROR",
+      "PAYMENT_ALREADY_PROCESSED",
+      "INVOICE_ALREADY_PAID",
+      "POS_SESSION_NOT_OPEN",
+      "CASH_REGISTER_CLOSED",
+      "FISCAL_DOCUMENT_CANCELLED"
+    ]
+  }
+}

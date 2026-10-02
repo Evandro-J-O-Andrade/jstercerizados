@@ -46,7 +46,7 @@
     "react-intersection-observer": "^11.0.0",
     "react-router-dom": "^7.7.1",
     "split-type": "^0.3.4",
-    "tailwind-merge": "^3.3.1",
+    "tailwind-merge": "^3.7.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -68,8 +68,8 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
-    "jsdom": "^29.0.0",
     "js-yaml": "^4.3.2",
+    "jsdom": "^29.0.0",
     "lint-staged": "^17.3.0",
     "pg": "^8.23.0",
     "postcss": "^8.5.6",

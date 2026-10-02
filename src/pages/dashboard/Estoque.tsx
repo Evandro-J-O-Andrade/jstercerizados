@@ -9,6 +9,7 @@ import { stockRepository } from '@/repositories/stock.repository';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Product, ProductCreateInput } from '@/types/domain/stock';
 import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+import { getModuleById } from '@/components/portal/ModuleRegistry';
 
 const COLUMNS: ColumnDef<Product>[] = [
   { key: 'name', header: 'Nome', sortable: true },
@@ -92,15 +93,7 @@ function ProductForm({
 export default function Estoque() {
   const { currentTenantId } = useAuth();
 
-  const moduleDef: ModuleDefinition = {
-    id: 'estoque',
-    title: 'Estoque',
-    description: 'Gestão de produtos e materiais.',
-    icon: 'package',
-    route: '/estoque',
-    category: 'negocio',
-    scope: 'tenant',
-  };
+  const moduleDef: ModuleDefinition | undefined = getModuleById('estoque');
 
   const defaultForm: ProductCreateInput = {
     tenant_id: currentTenantId || '',

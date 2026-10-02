@@ -12,6 +12,7 @@ import type {
   SupportTicketCreateInput,
 } from '@/types/domain/support';
 import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+import { getModuleById } from '@/components/portal/ModuleRegistry';
 
 const COLUMNS: ColumnDef<SupportTicket>[] = [
   { key: 'title', header: 'Título', sortable: true },
@@ -152,15 +153,7 @@ function TicketForm({
 export default function Suporte() {
   const { currentTenantId } = useAuth();
 
-  const moduleDef: ModuleDefinition = {
-    id: 'suporte',
-    title: 'Suporte',
-    description: 'Gestão de tickets e atendimentos.',
-    icon: 'help-circle',
-    route: '/suporte',
-    category: 'negocio',
-    scope: 'tenant',
-  };
+  const moduleDef: ModuleDefinition | undefined = getModuleById('suporte');
 
   const defaultForm: SupportTicketCreateInput = {
     tenant_id: currentTenantId || '',

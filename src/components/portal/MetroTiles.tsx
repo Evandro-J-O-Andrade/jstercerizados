@@ -4,6 +4,7 @@ import {
   useCallback,
   useRef,
   useEffect,
+  useLayoutEffect,
   useMemo,
 } from 'react';
 import { NavLink } from 'react-router-dom';
@@ -35,6 +36,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/utils';
 import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+import type { ModuleStats } from '@/lib/module-stats';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   home: Home,
@@ -79,6 +81,7 @@ export interface TileStats {
     label: string;
     variant?: 'primary' | 'success' | 'warning' | 'danger';
   };
+  description?: string;
 }
 
 interface TilePosition {
@@ -483,7 +486,8 @@ function TileContent({
   const isWide = position.w >= 4 && position.h === 1;
   const isTall = position.w === 1 && position.h >= 3;
   const hasStats = Boolean(
-    stats && (stats.primary || stats.secondary || stats.badge),
+    stats &&
+    (stats.primary || stats.secondary || stats.badge || stats.description),
   );
 
   const iconSize = isHero
@@ -573,7 +577,7 @@ function TileContent({
                 descSize,
               )}
             >
-              {module.description}
+              {stats?.description || module.description}
             </p>
           )}
         </div>
@@ -667,7 +671,8 @@ interface MetroTileGridProps {
   modules: ModuleDefinition[];
   onReorder: (modules: ModuleDefinition[]) => void;
   tileLayout: Record<string, TilePosition>;
-  statsMap?: Record<string, TileStats>;
+  moduleStats?: Record<string, ModuleStats>;
+  statsLoading?: boolean;
   userId: string;
   tenantId: string | null;
 }
@@ -680,7 +685,8 @@ export function MetroTileGrid({
   modules,
   onReorder,
   tileLayout,
-  statsMap = {},
+  moduleStats = {},
+  statsLoading = false,
   userId,
   tenantId,
 }: MetroTileGridProps) {
@@ -748,17 +754,143 @@ export function MetroTileGrid({
     [tileOrder, onReorder],
   );
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const [scrollTop, setScrollTop] = useState(0);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const updateHeight = () => {
+      setViewportHeight(container.clientHeight);
+    };
+
+    updateHeight();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const resizeObserver = new ResizeObserver(updateHeight);
+      resizeObserver.observe(container);
+
+      return () => resizeObserver.disconnect();
+    }
+
+    return undefined;
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (!containerRef.current) return;
+    setScrollTop(containerRef.current.scrollTop);
+  }, []);
+
+  const { visibleStart, visibleEnd, totalHeight } = useMemo(() => {
+    if (viewportHeight === 0 || tileOrder.length === 0) {
+      return {
+        visibleStart: 0,
+        visibleEnd: tileOrder.length,
+        totalHeight: 0,
+      };
+    }
+
+    const pixelsPerRow = TILE_ROW_HEIGHT;
+    const topPixel = scrollTop;
+    const bottomPixel = scrollTop + viewportHeight;
+
+    const startRow = Math.max(
+      0,
+      Math.floor(topPixel / pixelsPerRow) - VIRTUAL_BUFFER,
+    );
+    const endRow = Math.min(
+      MAX_ROWS,
+      Math.ceil(bottomPixel / pixelsPerRow) + VIRTUAL_BUFFER,
+    );
+
+    const startTile = tileOrder.findIndex(
+      (_m, i) => (tileLayout[tileOrder[i].id]?.y ?? 0) >= startRow,
+    );
+    let endTile = tileOrder.length;
+    for (let i = tileOrder.length - 1; i >= 0; i--) {
+      const pos = tileLayout[tileOrder[i].id] || { y: 0, h: 1 };
+      if ((pos.y ?? 0) + (pos.h ?? 1) <= endRow) {
+        endTile = i + 1;
+        break;
+      }
+    }
+
+    const totalRows = Math.max(
+      0,
+      ...tileOrder.map((m) => {
+        const pos = tileLayout[m.id] || { y: 0, h: 1 };
+        return (pos.y ?? 0) + (pos.h ?? 1);
+      }),
+    );
+    const totalHeight = totalRows * pixelsPerRow;
+
+    return {
+      visibleStart: Math.max(0, startTile === -1 ? 0 : startTile),
+      visibleEnd:
+        endTile === 0 ? tileOrder.length : Math.min(tileOrder.length, endTile),
+      totalHeight,
+    };
+  }, [viewportHeight, scrollTop, tileOrder, tileLayout]);
+
+  const topSpacerHeight = useMemo(() => {
+    if (visibleStart === 0) return 0;
+    const firstVisible = tileOrder[visibleStart];
+    const pos = tileLayout[firstVisible?.id] || { y: 0 };
+    return (pos.y ?? 0) * TILE_ROW_HEIGHT;
+  }, [visibleStart, tileOrder, tileLayout]);
+
+  const bottomSpacerHeight = useMemo(() => {
+    const lastVisible = tileOrder[visibleEnd - 1];
+    if (!lastVisible) return 0;
+    const pos = tileLayout[lastVisible.id] || { y: 0, h: 1 };
+    const lastRow = (pos.y ?? 0) + (pos.h ?? 1);
+    return Math.max(0, totalHeight - lastRow * TILE_ROW_HEIGHT);
+  }, [visibleEnd, tileOrder, tileLayout, totalHeight]);
+
+  const safeStart = Math.max(0, visibleStart);
+  const safeEnd = Math.min(tileOrder.length, visibleEnd);
+  const visibleTiles = tileOrder.slice(safeStart, safeEnd);
+
   return (
     <div
-      className="metro-grid-responsive grid auto-rows-[240px] grid-cols-12 gap-4"
+      ref={containerRef}
+      className="metro-grid-responsive grid auto-rows-[240px] grid-cols-12 gap-4 overflow-y-auto"
       role="list"
       aria-label="Módulos do sistema"
+      onScroll={handleScroll}
     >
-      {tileOrder.map((module, index) => {
+      {topSpacerHeight > 0 && (
+        <div
+          className="col-span-12"
+          style={{ height: `${topSpacerHeight}px` }}
+          aria-hidden="true"
+        />
+      )}
+
+      {visibleTiles.map((module, visualIndex) => {
+        const index = safeStart + visualIndex;
         const position = tileLayout[module.id] || { x: 0, y: 0, w: 2, h: 1 };
         const isDragging = draggingIndex === index;
         const isDragOver = dragOverIndex === index;
-        const stats = statsMap[module.id];
+        const moduleStat = moduleStats[module.id];
+        const stats: TileStats | undefined =
+          statsLoading || !moduleStat
+            ? undefined
+            : {
+                primary: moduleStat.primaryMetric
+                  ? {
+                      label: moduleStat.primaryMetric.label,
+                      value: moduleStat.primaryMetric.value,
+                    }
+                  : undefined,
+                secondary: moduleStat.secondaryMetrics?.map((m) => ({
+                  label: m.label,
+                  value: m.value,
+                })),
+                description: moduleStat.description,
+              };
 
         return (
           <MetroTile
@@ -774,6 +906,14 @@ export function MetroTileGrid({
           />
         );
       })}
+
+      {bottomSpacerHeight > 0 && (
+        <div
+          className="col-span-12"
+          style={{ height: `${bottomSpacerHeight}px` }}
+          aria-hidden="true"
+        />
+      )}
     </div>
   );
 }
@@ -798,6 +938,8 @@ const ALLOWED_SIZES: AllowedSize[] = [
 
 const COLS = 12;
 const MAX_ROWS = 50;
+const TILE_ROW_HEIGHT = 240;
+const VIRTUAL_BUFFER = 2;
 
 interface FreeRect {
   x: number;

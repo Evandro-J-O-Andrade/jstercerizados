@@ -1,0 +1,730 @@
+{
+  "generated_at": "2026-09-30T16:40:22.913Z",
+  "count": 28,
+  "modules": [
+    {
+      "id": "admin-master",
+      "title": "Visão Global",
+      "route": "/dashboard/global",
+      "scope": "global",
+      "category": "plataforma",
+      "permission": "domain_events.read",
+      "features": ["dashboard-global"],
+      "feature_routes": ["/dashboard/global"],
+      "tables_guess": ["global_navigation_links"]
+    },
+    {
+      "id": "inicio",
+      "title": "Início",
+      "route": "/dashboard",
+      "scope": "tenant",
+      "category": "inicio",
+      "permission": "",
+      "features": [],
+      "feature_routes": [],
+      "tables_guess": []
+    },
+    {
+      "id": "tenants",
+      "title": "Tenants",
+      "route": "/dashboard/tenants",
+      "scope": "global",
+      "category": "plataforma",
+      "permission": "tenants.read",
+      "features": [
+        "listar",
+        "criar",
+        "editar",
+        "suspender",
+        "excluir",
+        "configuracoes"
+      ],
+      "feature_routes": [
+        "/dashboard/tenants",
+        "/dashboard/tenants/configuracoes"
+      ],
+      "tables_guess": ["tenants"]
+    },
+    {
+      "id": "onboarding",
+      "title": "Onboarding",
+      "route": "/dashboard/onboarding",
+      "scope": "global",
+      "category": "plataforma",
+      "permission": "tenants.read",
+      "features": ["provisionar", "criar", "ativar", "configuracao"],
+      "feature_routes": [
+        "/dashboard/onboarding",
+        "/dashboard/onboarding/configuracao"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "assinaturas",
+      "title": "Assinaturas",
+      "route": "/dashboard/assinaturas",
+      "scope": "global",
+      "category": "plataforma",
+      "permission": "finance.read",
+      "features": [
+        "planos",
+        "criar",
+        "editar",
+        "renovacoes",
+        "aprovar",
+        "rejeitar"
+      ],
+      "feature_routes": [
+        "/dashboard/assinaturas",
+        "/dashboard/assinaturas/renovacoes"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "gestao-saas",
+      "title": "Gestão SaaS",
+      "route": "/dashboard/gestao-saas",
+      "scope": "global",
+      "category": "plataforma",
+      "permission": "domain_events.read",
+      "features": [
+        "dashboard-saas",
+        "mrr-receita",
+        "exportar",
+        "uso-plataforma",
+        "crescimento"
+      ],
+      "feature_routes": [
+        "/dashboard/gestao-saas",
+        "/dashboard/gestao-saas/mrr",
+        "/dashboard/gestao-saas/uso",
+        "/dashboard/gestao-saas/crescimento"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "usuarios",
+      "title": "Usuários",
+      "route": "/dashboard/usuarios",
+      "scope": "global",
+      "category": "seguranca",
+      "permission": "people.read",
+      "features": [
+        "listar",
+        "criar",
+        "editar",
+        "desativar",
+        "exportar",
+        "convidar"
+      ],
+      "feature_routes": ["/dashboard/usuarios", "/dashboard/usuarios"],
+      "tables_guess": []
+    },
+    {
+      "id": "roles-permissoes",
+      "title": "Roles & Permissões",
+      "route": "/dashboard/roles-permissoes",
+      "scope": "global",
+      "category": "seguranca",
+      "permission": "roles.read",
+      "features": [
+        "listar",
+        "criar",
+        "editar",
+        "excluir",
+        "permissoes",
+        "criar",
+        "editar",
+        "excluir"
+      ],
+      "feature_routes": [
+        "/dashboard/roles-permissoes",
+        "/dashboard/roles-permissoes"
+      ],
+      "tables_guess": ["roles"]
+    },
+    {
+      "id": "auditoria",
+      "title": "Auditoria",
+      "route": "/dashboard/auditoria",
+      "scope": "global",
+      "category": "seguranca",
+      "permission": "audit.read",
+      "features": [
+        "logs",
+        "exportar",
+        "filtrar",
+        "eventos",
+        "exportar",
+        "rbac-auditoria"
+      ],
+      "feature_routes": [
+        "/dashboard/auditoria",
+        "/dashboard/auditoria/eventos",
+        "/dashboard/rbac-auditoria"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "contratos",
+      "title": "Contratos",
+      "route": "/dashboard/contratos",
+      "scope": "tenant",
+      "category": "documentos",
+      "permission": null,
+      "features": [
+        "listar",
+        "criar",
+        "editar",
+        "excluir",
+        "renovar",
+        "exportar",
+        "modelos",
+        "criar",
+        "editar"
+      ],
+      "feature_routes": [
+        "/dashboard/contratos",
+        "/dashboard/contratos/modelos"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "rh",
+      "title": "Recursos Humanos",
+      "route": "/dashboard/rh",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "people.read",
+      "features": [
+        "dashboard-rh",
+        "funcionarios",
+        "funcionarios-lista",
+        "criar",
+        "editar",
+        "desativar",
+        "exportar",
+        "experiencias",
+        "formacao",
+        "cursos",
+        "idiomas",
+        "habilidades",
+        "documentos-rh",
+        "upload",
+        "editar",
+        "excluir",
+        "banco-de-talentos",
+        "clientes",
+        "criar",
+        "editar",
+        "excluir",
+        "relatorios-rh",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/rh",
+        "/dashboard/funcionarios",
+        "/dashboard/funcionarios",
+        "/dashboard/experiencias",
+        "/dashboard/formacao",
+        "/dashboard/cursos",
+        "/dashboard/idiomas",
+        "/dashboard/habilidades",
+        "/dashboard/documentos-rh",
+        "/dashboard/banco-de-talentos",
+        "/dashboard/clientes",
+        "/dashboard/relatorios/rh"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "recrutamento",
+      "title": "Recrutamento",
+      "route": "/dashboard/recrutamento",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "jobs.read",
+      "features": [
+        "vagas",
+        "criar",
+        "editar",
+        "arquivar",
+        "publicar",
+        "exportar",
+        "candidatos",
+        "criar",
+        "editar",
+        "excluir",
+        "exportar",
+        "candidatos-habilidades",
+        "candidatos-formacao",
+        "candidatos-experiencias",
+        "candidatos-idiomas",
+        "candidatos-documentos",
+        "candidatos-preferencias",
+        "candidatos-visualizacoes",
+        "matches",
+        "candidaturas",
+        "aprovar",
+        "rejeitar",
+        "entrevistar",
+        "processos-seletivos",
+        "criar",
+        "editar",
+        "fechar",
+        "etapas",
+        "criar",
+        "editar",
+        "relatorios-recrutamento",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/vagas",
+        "/dashboard/candidatos",
+        "/dashboard/candidatos/habilidades",
+        "/dashboard/candidatos/formacao",
+        "/dashboard/candidatos/experiencias",
+        "/dashboard/candidatos/idiomas",
+        "/dashboard/candidatos/documentos",
+        "/dashboard/candidatos/preferencias",
+        "/dashboard/candidatos/visualizacoes",
+        "/dashboard/matches",
+        "/dashboard/candidaturas",
+        "/dashboard/processos-seletivos",
+        "/dashboard/etapas",
+        "/dashboard/relatorios/recrutamento"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "crm",
+      "title": "CRM",
+      "route": "/dashboard/crm",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "companies.read",
+      "features": [
+        "dashboard-crm",
+        "leads",
+        "criar",
+        "editar",
+        "converter",
+        "prospects",
+        "criar",
+        "editar",
+        "empresas",
+        "criar",
+        "editar",
+        "excluir",
+        "pipeline",
+        "clientes-ativos",
+        "relacionamentos",
+        "indicadores",
+        "exportar",
+        "equipes",
+        "criar",
+        "editar",
+        "excluir",
+        "contratos-gestao",
+        "criar",
+        "editar",
+        "excluir",
+        "renovar",
+        "servicos-gestao",
+        "criar",
+        "editar",
+        "concluir",
+        "relatorios-crm",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/crm",
+        "/dashboard/clientes/leads",
+        "/dashboard/clientes/prospects",
+        "/dashboard/empresas",
+        "/dashboard/clientes/pipeline",
+        "/dashboard/clientes/ativos",
+        "/dashboard/relacionamentos",
+        "/dashboard/gestao/indicadores",
+        "/dashboard/gestao/equipes",
+        "/dashboard/gestao/contratos",
+        "/dashboard/servicos",
+        "/dashboard/relatorios/crm"
+      ],
+      "tables_guess": ["leads"]
+    },
+    {
+      "id": "financeiro",
+      "title": "Financeiro",
+      "route": "/dashboard/financeiro",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "finance.dashboard.read",
+      "features": [
+        "contas-pagar",
+        "criar",
+        "editar",
+        "excluir",
+        "exportar",
+        "contas-receber",
+        "criar",
+        "editar",
+        "excluir",
+        "cobrar",
+        "exportar",
+        "fluxo-caixa",
+        "exportar",
+        "bancos",
+        "criar",
+        "editar",
+        "excluir",
+        "centro-custos",
+        "criar",
+        "editar",
+        "excluir",
+        "relatorios-financeiro",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/financeiro/contas-pagar",
+        "/dashboard/financeiro/contas-receber",
+        "/dashboard/financeiro/fluxo-caixa",
+        "/dashboard/financeiro/bancos",
+        "/dashboard/financeiro/centro-custos",
+        "/dashboard/relatorios/financeiro"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "faturamento",
+      "title": "Faturamento",
+      "route": "/dashboard/faturamento",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "finance.read",
+      "features": [
+        "dashboard-faturamento",
+        "faturas",
+        "criar",
+        "editar",
+        "cancelar",
+        "exportar",
+        "vendas",
+        "criar",
+        "editar",
+        "orcamentos",
+        "criar",
+        "editar",
+        "converter",
+        "relatorios-faturamento",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/faturamento",
+        "/dashboard/faturamento/faturas",
+        "/dashboard/faturamento/vendas",
+        "/dashboard/faturamento/orcamentos",
+        "/dashboard/relatorios/faturamento"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "fiscal",
+      "title": "Fiscal",
+      "route": "/dashboard/fiscal",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "fiscal.dashboard.read",
+      "features": [
+        "notas-fiscais",
+        "emitir",
+        "cancelar",
+        "inutilizar",
+        "notas-recebidas",
+        "retencoes",
+        "relatorios-fiscais",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/fiscal/notas-fiscais",
+        "/dashboard/fiscal/notas-recebidas",
+        "/dashboard/fiscal/retencoes",
+        "/dashboard/fiscal/relatorios"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "contabilidade",
+      "title": "Contabilidade",
+      "route": "/dashboard/contabilidade",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "accounting.dashboard.read",
+      "features": [
+        "plano-contas",
+        "criar",
+        "editar",
+        "excluir",
+        "lancamentos",
+        "criar",
+        "editar",
+        "excluir",
+        "balancetes",
+        "fechamento",
+        "relatorios-contabeis",
+        "exportar",
+        "relatorios-contabilidade",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/contabilidade/plano-contas",
+        "/dashboard/contabilidade/lancamentos",
+        "/dashboard/contabilidade/balancetes",
+        "/dashboard/contabilidade/fechamento",
+        "/dashboard/contabilidade/relatorios",
+        "/dashboard/relatorios/contabilidade"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "estoque",
+      "title": "Estoque",
+      "route": "/dashboard/estoque",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "stock_movements.read",
+      "features": [
+        "produtos",
+        "criar",
+        "editar",
+        "excluir",
+        "movimentacoes",
+        "entrada",
+        "saida",
+        "exportar",
+        "relatorios-almoxarifado",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/estoque/produtos",
+        "/dashboard/estoque/movimentacoes",
+        "/dashboard/relatorios/almoxarifado"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "servicos",
+      "title": "Serviços",
+      "route": "/dashboard/servicos",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "",
+      "features": [
+        "catalogo",
+        "ordens",
+        "criar",
+        "editar",
+        "concluir",
+        "cancelar",
+        "relatorios-estoque",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/servicos",
+        "/dashboard/servicos/ordens",
+        "/dashboard/relatorios/estoque"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "almoxarifado",
+      "title": "Almoxarifado",
+      "route": "/dashboard/almoxarifado",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "stock_movements.read",
+      "features": [
+        "dashboard-almoxarifado",
+        "entradas",
+        "criar",
+        "editar",
+        "saidas",
+        "criar",
+        "editar",
+        "devolucoes",
+        "criar",
+        "editar",
+        "custodia",
+        "epi",
+        "entregar",
+        "devolver",
+        "relatorios-servicos",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/almoxarifado",
+        "/dashboard/almoxarifado/entradas",
+        "/dashboard/almoxarifado/saidas",
+        "/dashboard/almoxarifado/devolucoes",
+        "/dashboard/almoxarifado/custodia",
+        "/dashboard/almoxarifado/epi",
+        "/dashboard/relatorios/servicos"
+      ],
+      "tables_guess": [
+        "epi_deliveries",
+        "epi_delivery_items",
+        "epi_return_items",
+        "epi_returns"
+      ]
+    },
+    {
+      "id": "suporte",
+      "title": "Suporte",
+      "route": "/dashboard/suporte",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "support_tickets.read",
+      "features": [
+        "chamados",
+        "criar",
+        "editar",
+        "resolver",
+        "fechar",
+        "faq",
+        "criar",
+        "editar",
+        "feedback",
+        "solicitacoes",
+        "relatorios-suporte",
+        "exportar"
+      ],
+      "feature_routes": [
+        "/dashboard/suporte/chamados",
+        "/dashboard/suporte/faq",
+        "/dashboard/suporte/feedback",
+        "/dashboard/suporte/solicitacoes",
+        "/dashboard/relatorios/suporte"
+      ],
+      "tables_guess": ["faqs", "feedback"]
+    },
+    {
+      "id": "relatorios",
+      "title": "Relatórios",
+      "route": "/dashboard/relatorios",
+      "scope": "tenant",
+      "category": "negocio",
+      "permission": "domain_events.read",
+      "features": ["relatorio-geral", "gerar", "exportar"],
+      "feature_routes": ["/dashboard/relatorios"],
+      "tables_guess": []
+    },
+    {
+      "id": "ia",
+      "title": "IA & Automação",
+      "route": "/dashboard/ia",
+      "scope": "tenant",
+      "category": "ia",
+      "permission": "",
+      "features": [
+        "assistente",
+        "configurar",
+        "testar",
+        "automacoes",
+        "criar",
+        "editar",
+        "ativar",
+        "conversas",
+        "integracoes-ia",
+        "conectar",
+        "editar",
+        "desconectar"
+      ],
+      "feature_routes": [
+        "/dashboard/ia/assistente",
+        "/dashboard/ia/automacoes",
+        "/dashboard/ia/conversas",
+        "/dashboard/ia/integracoes"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "integracoes",
+      "title": "Integrações",
+      "route": "/dashboard/integracoes",
+      "scope": "global",
+      "category": "plataforma",
+      "permission": "integrations.manage",
+      "features": [
+        "supabase",
+        "configurar",
+        "testar",
+        "n8n",
+        "configurar",
+        "testar",
+        "whatsapp",
+        "configurar",
+        "testar",
+        "email",
+        "configurar",
+        "testar"
+      ],
+      "feature_routes": [
+        "/dashboard/integracoes/supabase",
+        "/dashboard/integracoes/n8n",
+        "/dashboard/integracoes/whatsapp",
+        "/dashboard/integracoes/email"
+      ],
+      "tables_guess": ["email_messages", "email_templates"]
+    },
+    {
+      "id": "configuracoes-saas",
+      "title": "Configurações SaaS",
+      "route": "/dashboard/configuracoes",
+      "scope": "global",
+      "category": "plataforma",
+      "permission": "tenant.manage",
+      "features": ["geral", "editar", "modulos", "habilitar", "desabilitar"],
+      "feature_routes": [
+        "/dashboard/configuracoes",
+        "/dashboard/configuracoes/modulos"
+      ],
+      "tables_guess": []
+    },
+    {
+      "id": "preferencias",
+      "title": "Preferências",
+      "route": "/dashboard/configuracoes/preferencias",
+      "scope": "tenant",
+      "category": "conta",
+      "permission": "",
+      "features": ["notificacoes"],
+      "feature_routes": ["/dashboard/notificacoes"],
+      "tables_guess": []
+    },
+    {
+      "id": "minha-conta",
+      "title": "Minha conta",
+      "route": "/dashboard/configuracoes/conta",
+      "scope": "tenant",
+      "category": "conta",
+      "permission": "",
+      "features": ["perfil", "editar"],
+      "feature_routes": ["/dashboard/configuracoes/conta"],
+      "tables_guess": []
+    },
+    {
+      "id": "seguranca-conta",
+      "title": "Segurança",
+      "route": "/dashboard/configuracoes/seguranca",
+      "scope": "tenant",
+      "category": "conta",
+      "permission": "",
+      "features": ["senha", "alterar", "sessoes", "encerrar"],
+      "feature_routes": [
+        "/dashboard/configuracoes/seguranca",
+        "/dashboard/configuracoes/seguranca/sessoes"
+      ],
+      "tables_guess": []
+    }
+  ]
+}

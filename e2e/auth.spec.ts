@@ -11,7 +11,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 async function login(page: any) {
-  await page.goto('http://localhost:3000/login');
+  await page.goto('http://localhost:3004/login');
   await page.waitForLoadState('networkidle');
 
   const skipButton = page.getByRole('button', { name: 'Pular' });
@@ -30,7 +30,7 @@ async function login(page: any) {
 
 test.describe('Auth flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:3000/login');
+    await page.goto('http://localhost:3004/login');
     await page.evaluate(() => localStorage.clear());
     await page.context().clearCookies();
   });
