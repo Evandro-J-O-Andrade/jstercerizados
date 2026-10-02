@@ -116,7 +116,6 @@ const CandidateAlertas = lazy(
 import { CandidatePortal } from '@/components/portal/CandidatePortal';
 import { CandidateProvider } from '@/contexts/CandidateContext';
 import { CandidateRoute } from '@/components/auth/CandidateRoute';
-import ComingSoonPage from '@/pages/dashboard/ComingSoonPage';
 import VagasPage from '@/pages/dashboard/Vagas';
 import CandidaturasPage from '@/pages/dashboard/Candidaturas';
 import CandidatosPage from '@/pages/dashboard/Candidatos';
@@ -751,8 +750,12 @@ function RoutesAndLayout() {
                 </PermissionGuard>
               }
             />
-            <ModuleRouter moduleRegistries={moduleRouteRegistries} />
-            <Route path="*" element={<ComingSoonPage />} />
+            <Route
+              path="*"
+              element={
+                <ModuleRouter moduleRegistries={moduleRouteRegistries} />
+              }
+            />
           </Route>
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/onboarding" element={<Onboarding />} />
