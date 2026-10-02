@@ -35,9 +35,10 @@ export interface AccountIdentity {
  * logout: () => Promise<void>;
  * availableMemberships: membership list (active only);
  * activeRole: resolved from roleAssignments for currentTenantId.
- * activePermissions: merged role permissions (admin_master adds all global permissions).
- * availableModules: filtered by permission + scope. Modules without user permission are hidden (not 403).
+ * activePermissions: merged role permissions from role_permissions chain (real DB assignments only, no admin_master override).
+ * availableModules: filtered by real permission + scope. Modules without user permission are hidden (not 403).
  * 403 is reserved for direct URL access to a route without permission — a security boundary, not navigation.
+ * activeRole: context-aware — resolved from roleAssignments matching currentTenantId, falls back to global roles.
  * @security admin_master is global scope; switching tenants must revalidate membership status and reload permissions.
  */
 export interface AccountContextType {
@@ -74,6 +75,7 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
     tenantMemberships,
     tenants,
     permissions,
+    roleAssignments,
     isAdminMaster,
     isCandidate,
     isEmpresa,
@@ -91,6 +93,7 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
       currentTenantId,
       tenants,
       tenantMemberships,
+      roleAssignments,
       permissions,
       isAdminMaster,
       isCandidate,
@@ -104,6 +107,7 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
     currentTenantId,
     tenants,
     tenantMemberships,
+    roleAssignments,
     permissions,
     isAdminMaster,
     isCandidate,
@@ -148,14 +152,13 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
   }, [user, refreshAuthData]);
 
   const activeRole = useMemo(() => {
-    if (!roles.length) return null;
-    const primaryRole = roles[0];
+    if (!identity.role) return null;
     return {
-      id: primaryRole.id,
-      name: primaryRole.name,
-      scope: primaryRole.scope,
+      id: identity.role.id,
+      name: identity.role.name,
+      scope: identity.role.scope,
     };
-  }, [roles]);
+  }, [identity.role]);
 
   const value = useMemo<AccountContextType>(
     () => ({

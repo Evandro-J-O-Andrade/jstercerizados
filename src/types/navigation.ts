@@ -57,17 +57,14 @@ export function filterNavigation(
   roleNames: string[],
 ): FilteredNavigation {
   const permSet = new Set(permissions.map((p) => `${p.resource}.${p.action}`));
-  const isAdminMaster = roleNames.includes('admin_master');
 
   const passesPermission = (key: string | null): boolean => {
     if (!key) return true;
-    if (isAdminMaster) return true;
     return permSet.has(key);
   };
 
   const passesAudience = (audience: string[]): boolean => {
-    if (!audience || audience.length === 0) return true; // global = todos
-    if (isAdminMaster) return true; // admin master vê tudo
+    if (!audience || audience.length === 0) return true;
     return audience.some((r) => roleNames.includes(r));
   };
 

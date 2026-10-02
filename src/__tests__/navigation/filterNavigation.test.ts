@@ -81,7 +81,7 @@ describe('filterNavigation', () => {
     expect(out.sidebarItems.find((i) => i.key === 'support')).toBeDefined();
   });
 
-  it('admin_master ignora permission_key e vê tudo', () => {
+  it('admin_master sem a permission_key não vê módulo protegido', () => {
     const out = filterNavigation(
       [
         mod({
@@ -93,6 +93,22 @@ describe('filterNavigation', () => {
       [],
       [],
       ['admin_master'],
+    );
+    expect(out.sidebarItems.find((i) => i.key === 'vagas')).toBeUndefined();
+  });
+
+  it('admin_master com a permission_key real e audience compatível vê o módulo', () => {
+    const out = filterNavigation(
+      [
+        mod({
+          key: 'vagas',
+          permission_key: 'jobs.read',
+          route: '/candidato/vagas',
+        }),
+      ],
+      [],
+      [{ resource: 'jobs', action: 'read' } as Permission],
+      ['admin_master', 'candidato'],
     );
     expect(out.sidebarItems.find((i) => i.key === 'vagas')).toBeDefined();
   });

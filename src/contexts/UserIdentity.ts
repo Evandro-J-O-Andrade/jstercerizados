@@ -3,6 +3,7 @@ import type {
   Role,
   TenantMembership,
   Permission,
+  RoleAssignment,
   FirstLoginState,
   LegalAcceptance,
 } from '@/types/auth';
@@ -108,12 +109,65 @@ function computeContextLabel(
   return roleScope === 'global' ? 'Gestão da Plataforma' : tenantName;
 }
 
+function resolveActiveRole(
+  roleAssignments: RoleAssignment[],
+  roleById: Map<string, Role>,
+  currentTenantId: string | null,
+): Role | null {
+  if (!roleAssignments.length) {
+    return null;
+  }
+
+  const activeAssignments = roleAssignments.filter((ra) => {
+    if (ra.expires_at && new Date(ra.expires_at) < new Date()) {
+      return false;
+    }
+    return true;
+  });
+
+  if (currentTenantId) {
+    const tenantRoles = activeAssignments.filter(
+      (ra) => ra.tenant_id === currentTenantId,
+    );
+    if (tenantRoles.length > 1) {
+      const globalRole = tenantRoles.find(
+        (ra) => roleById.get(ra.role_id)?.scope === 'global',
+      );
+      if (globalRole) return roleById.get(globalRole.role_id) ?? null;
+    }
+    if (tenantRoles.length > 0) {
+      return roleById.get(tenantRoles[0].role_id) ?? null;
+    }
+  }
+
+  const globalRole = activeAssignments.find(
+    (ra) => ra.tenant_id === null || ra.tenant_id === undefined,
+  );
+  if (globalRole) {
+    return roleById.get(globalRole.role_id) ?? null;
+  }
+
+  if (activeAssignments.length > 0) {
+    return roleById.get(activeAssignments[0].role_id) ?? null;
+  }
+
+  const adminMasterRole = Array.from(roleById.values()).find(
+    (r) => r.name === 'admin_master' && r.scope === 'global',
+  );
+  if (adminMasterRole) {
+    return adminMasterRole;
+  }
+
+  return null;
+}
+
 export function deriveUserIdentity(
   person: Person | null,
   roles: Role[],
   currentTenantId: string | null,
   tenants: { id: string; name: string }[],
   memberships: TenantMembership[],
+  roleAssignments: RoleAssignment[],
   permissions: Permission[],
   isAdminMaster: boolean,
   isCandidate: boolean,
@@ -133,12 +187,19 @@ export function deriveUserIdentity(
   const personId = person?.id || '';
   const authUserId = person?.auth_user_id || '';
 
-  const primaryRole = roles[0];
-  const role = primaryRole
+  const roleById = new Map<string, Role>((roles || []).map((r) => [r.id, r]));
+
+  const resolvedRole = resolveActiveRole(
+    roleAssignments,
+    roleById,
+    currentTenantId,
+  );
+
+  const role = resolvedRole
     ? {
-        id: primaryRole.id,
-        name: primaryRole.name,
-        scope: normalizeRoleScope(primaryRole.scope) as 'global' | 'tenant',
+        id: resolvedRole.id,
+        name: resolvedRole.name,
+        scope: normalizeRoleScope(resolvedRole.scope) as 'global' | 'tenant',
       }
     : null;
 

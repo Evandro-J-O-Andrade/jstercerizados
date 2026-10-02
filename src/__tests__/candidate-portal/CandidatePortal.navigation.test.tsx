@@ -277,11 +277,40 @@ describe('CandidatePortal navigation', () => {
     expect(screen.getAllByText('Voltar para o site').length).toBeGreaterThan(0);
   });
 
-  it('admin_master sees all items even without specific permissions', async () => {
+  it('admin_master sem permissões reais não vê itens protegidos', async () => {
     mockUseAuth.mockReturnValue({
       person: { id: 'p1', full_name: 'Root', email: 'root@x.com' } as never,
       permissions: [],
-      roles: [{ id: 'r2', name: 'admin_master', scope: 'global' } as never],
+      roles: [
+        { id: 'r2', name: 'admin_master', scope: 'global' } as never,
+        { id: 'r3', name: 'candidato', scope: 'tenant' } as never,
+      ],
+      isAdminMaster: true,
+      isCandidate: true,
+      logout: vi.fn(),
+    } as never);
+
+    withRouter('/candidato');
+    await waitFor(() => {
+      expect(screen.getAllByText('Voltar para o site').length).toBeGreaterThan(
+        0,
+      );
+    });
+    expect(screen.queryByText('Vagas')).not.toBeInTheDocument();
+  });
+
+  it('admin_master com permissões reais vê itens protegidos', async () => {
+    mockUseAuth.mockReturnValue({
+      person: { id: 'p1', full_name: 'Root', email: 'root@x.com' } as never,
+      permissions: [
+        { resource: 'jobs', action: 'read' } as Permission,
+        { resource: 'candidates.self', action: 'read' } as Permission,
+        { resource: 'account', action: 'manage' } as Permission,
+      ],
+      roles: [
+        { id: 'r2', name: 'admin_master', scope: 'global' } as never,
+        { id: 'r3', name: 'candidato', scope: 'tenant' } as never,
+      ],
       isAdminMaster: true,
       isCandidate: true,
       logout: vi.fn(),

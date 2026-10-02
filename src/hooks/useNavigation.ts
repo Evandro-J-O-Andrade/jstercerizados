@@ -9,7 +9,7 @@ import {
 } from '@/types/navigation';
 
 export function useNavigation() {
-  const { permissions, roles, isAdminMaster } = useAuth();
+  const { permissions, roles } = useAuth();
   const [modules, setModules] = useState<CandidatePortalModule[]>([]);
   const [globals, setGlobals] = useState<GlobalNavigationLink[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,13 +35,7 @@ export function useNavigation() {
     };
   }, []);
 
-  const roleNames = useMemo(
-    () =>
-      isAdminMaster
-        ? ['admin_master', ...roles.map((r) => r.name)]
-        : roles.map((r) => r.name),
-    [roles, isAdminMaster],
-  );
+  const roleNames = useMemo(() => roles.map((r) => r.name), [roles]);
 
   const filtered = useMemo<FilteredNavigation>(
     () => filterNavigation(modules, globals, permissions, roleNames),
