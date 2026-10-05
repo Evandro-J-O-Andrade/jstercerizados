@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { PageLoader } from '@/components/ui/PageLoader';
 import { Button } from '@/components/ui/Button';
@@ -79,7 +79,7 @@ export function ProtectedRoute({
   }
 
   if (!isAuthenticated || !person) {
-    return <Navigate to="/entrar" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // RBAC hardlock: candidato puro nunca deve entrar em /dashboard/*
@@ -108,11 +108,20 @@ export function ProtectedRoute({
     return <Navigate to="/onboarding" replace />;
   }
 
+  // Nunca redirecionar para a própria rota que acabou de negar acesso:
+  // isso reabriria o mesmo guard e produziria um loop de navegação.
+  const denyAccess = (): React.ReactElement => {
+    const preferred = isCandidate ? '/candidato' : '/dashboard';
+    if (sameRoute(preferred, location.pathname)) {
+      return <AccessDenied />;
+    }
+    return <Navigate to={preferred} replace />;
+  };
+
   if (allowedRoles && allowedRoles.length > 0) {
     const hasAllowedRole = allowedRoles.some((role) => hasRole(roles, role));
     if (!hasAllowedRole) {
-      const fallback = '/dashboard';
-      return <Navigate to={fallback} replace />;
+      return denyAccess();
     }
   }
 
@@ -121,14 +130,50 @@ export function ProtectedRoute({
       hasPermission(permissions, perm),
     );
     if (!hasAllowedPermission) {
-      const fallback = '/dashboard';
-      return <Navigate to={fallback} replace />;
+      return denyAccess();
     }
   }
 
   if (requireAnyRole && roles.length === 0) {
-    return <Navigate to="/dashboard" replace />;
+    return denyAccess();
   }
 
   return <>{children}</>;
+}
+
+function sameRoute(a: string, b: string): boolean {
+  const normalize = (value: string) =>
+    value.length > 1 && value.endsWith('/') ? value.slice(0, -1) : value;
+  return normalize(a) === normalize(b) || b.startsWith(`${normalize(a)}/`);
+}
+
+function AccessDenied() {
+  const navigate = useNavigate();
+  return (
+    <div
+      role="alert"
+      data-testid="access-denied"
+      className="flex min-h-[60dvh] items-center justify-center"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-md text-center"
+      >
+        <div className="bg-destructive/10 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
+          <Shield className="text-destructive h-10 w-10" />
+        </div>
+        <h2 className="text-foreground mb-4 text-2xl font-bold">
+          Acesso não autorizado
+        </h2>
+        <p className="text-muted-foreground mb-6">
+          Você não tem permissão para acessar esta área. Se acredita que isso é
+          um engano, fale com o administrador.
+        </p>
+        <Button variant="primary" size="lg" onClick={() => navigate('/')}>
+          Voltar ao início
+        </Button>
+      </motion.div>
+    </div>
+  );
 }

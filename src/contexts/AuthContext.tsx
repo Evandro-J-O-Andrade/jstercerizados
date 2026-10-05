@@ -84,7 +84,7 @@ interface AuthContextType {
   hasAllPermissions: (permissionKeys: string[]) => boolean;
   switchTenant: (tenantId: string | null) => Promise<void>;
   refreshAuthData: (authUserId?: string) => Promise<void>;
-  resolvePostLoginDestination: () => string;
+  resolvePostLoginDestination: (overrideWelcomeCompleted?: boolean) => string;
   authError: string | null;
   recoveryMode: boolean;
 }
@@ -162,6 +162,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
+      console.log('[AUTH:IDENTITY] memberships loaded', {
+        count: (membershipData || []).length,
+      });
+
       const tenantIds = (membershipData || [])
         .map((m: TenantMembership) => m.tenant_id)
         .filter((id): id is string => Boolean(id));
@@ -177,11 +181,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         tenantsData = (tenantsResult || []) as { id: string; name: string }[];
       }
 
+      console.log('[AUTH:IDENTITY] tenants loaded', {
+        count: tenantsData.length,
+      });
+
       const { data: roleAssignmentData, error: roleAssignmentError } =
         await supabase
           .from('role_assignments')
           .select('*')
           .eq('person_id', personData.id);
+
+      console.log('[AUTH:IDENTITY] role_assignments loaded', {
+        count: (roleAssignmentData || []).length,
+        error: roleAssignmentError?.message ?? null,
+      });
 
       if (roleAssignmentError) {
         console.error(
@@ -198,6 +211,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ),
       );
 
+      console.log('[AUTH:IDENTITY] roleIds resolved', { roleIds });
+
       const { data: rolesData } = await supabase
         .from('roles')
         .select('*')
@@ -206,6 +221,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const adminMaster = (rolesData || []).some(
         (r: Role) => r.scope === 'global' && r.name === 'admin_master',
       );
+
+      console.log('[AUTH:IDENTITY] roles loaded', {
+        count: (rolesData || []).length,
+        names: (rolesData || []).map((r: Role) => r.name),
+      });
 
       let isCandidate = (rolesData || []).some(
         (r: Role) => r.name === 'candidato',
@@ -266,11 +286,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
+      console.log('[AUTH:IDENTITY] permissions loaded', {
+        count: permissionsData.length,
+        slugs: permissionsData.map((p) => p.name),
+      });
+
+      console.log('[AUTH:IDENTITY] candidate flags resolved', {
+        isCandidate,
+        isEmpresa,
+        adminMaster,
+      });
+
       const { data: firstLoginData } = await supabase
         .from('first_login_state')
         .select('*')
         .eq('person_id', personData.id)
         .maybeSingle();
+
+      console.log('[AUTH:FIRST_LOGIN] first_login_state loaded', {
+        personId: personData.id,
+        firstLoginData: firstLoginData ? {
+          welcome_completed_at: firstLoginData.welcome_completed_at,
+          first_login_completed: firstLoginData.first_login_completed,
+          must_change_password: firstLoginData.must_change_password,
+          terms_version: firstLoginData.terms_version,
+        } : null,
+      });
 
       const { data: legalAcceptancesData } = await supabase
         .from('legal_acceptances')
@@ -292,6 +333,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsCandidate(isCandidate);
         setIsEmpresa(isEmpresa);
       }
+
+      console.log('[AUTH:IDENTITY] loadAuthData complete', {
+        personId: personData.id,
+        primaryTenantId,
+        isCandidate,
+        permissionCount: permissionsData.length,
+      });
     } catch (error) {
       console.error('[AUTH:IDENTITY] loadAuthData failed', error);
       if (isMountedRef.current) {
@@ -348,8 +396,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (currentSession?.user) {
           console.log('[AUTH] initAuth loading identity');
-          await loadAuthData(currentSession.user.id);
-          initialSessionProcessedRef.current = true;
+          authLoadInFlightRef.current = true;
+          try {
+            await loadAuthData(currentSession.user.id);
+            initialSessionProcessedRef.current = true;
+          } finally {
+            authLoadInFlightRef.current = false;
+          }
         }
       } catch (error) {
         console.error('Erro ao inicializar auth:', error);
@@ -1067,16 +1120,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user, person, loadAuthData],
   );
 
-  const resolvePostLoginDestination = useCallback((): string => {
-    console.log('[AUTH:FLOW] resolvePostLoginDestination', {
-      isAdminMaster,
-      membershipCount: tenantMemberships.length,
-      mustChangePassword: firstLoginState?.must_change_password ?? null,
-      firstLoginCompleted: firstLoginState?.first_login_completed ?? null,
-      termsVersion: firstLoginState?.terms_version ?? null,
-      permissionCount: permissions.length,
-      recoveryMode,
-    });
+const resolvePostLoginDestination = useCallback(
+    (overrideWelcomeCompleted?: boolean): string => {
+      console.log('[AUTH:FLOW] resolvePostLoginDestination', {
+        isAdminMaster,
+        isCandidate,
+        tenantMemberships: tenantMemberships.length,
+        firstLoginState: firstLoginState ? {
+          welcome_completed_at: firstLoginState.welcome_completed_at,
+          first_login_completed: firstLoginState.first_login_completed,
+          must_change_password: firstLoginState.must_change_password,
+          terms_version: firstLoginState.terms_version,
+        } : null,
+        overrideWelcomeCompleted,
+        hasAcceptedTerms: legalAcceptances.some((a) => a.document_type === 'terms') || firstLoginState?.terms_version != null,
+      });
 
     if (recoveryMode) {
       console.log('[AUTH:FLOW] redirect → /redefinir-senha (recovery)');
@@ -1099,27 +1157,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       legalAcceptances.some((a) => a.document_type === 'terms') ||
       firstLoginState?.terms_version != null;
 
-    if (!hasAcceptedTerms) {
-      console.log('[AUTH:FLOW] redirect → /auth/terms (termos pendentes)');
-      return '/auth/terms';
-    }
+     if (!hasAcceptedTerms) {
+       console.log('[AUTH:FLOW] redirect → /auth/terms (termos pendentes)');
+       return '/auth/terms';
+     }
 
-    console.log(
-      '[AUTH:FLOW] redirect → /auth/welcome (etapa obrigatória pós-login)',
-    );
-    return '/auth/welcome';
-  }, [
-    isAdminMaster,
-    isCandidate,
-    tenantMemberships,
-    firstLoginState,
-    legalAcceptances,
-    hasAnyPermission,
-    permissions,
-    recoveryMode,
-    roleAssignments,
-    roles,
-  ]);
+      // If welcome flow already completed, skip to role-based destination
+      const welcomeCompleted =
+        overrideWelcomeCompleted || Boolean(firstLoginState?.welcome_completed_at);
+
+      if (welcomeCompleted) {
+        if (isCandidate) {
+          console.log('[AUTH:FLOW] redirect → /candidato (candidato, welcome completed)');
+          return '/candidato';
+        }
+        if (isAdminMaster) {
+          console.log('[AUTH:FLOW] redirect → /dashboard (admin, welcome completed)');
+          return '/dashboard';
+        }
+        // Default for non-admin, non-candidate users with admin roles
+        console.log('[AUTH:FLOW] redirect → /dashboard (default, welcome completed)');
+        return '/dashboard';
+      }
+
+     // First-time login: go through welcome flow
+     console.log(
+       '[AUTH:FLOW] redirect → /auth/welcome (welcome not yet completed)',
+     );
+     return '/auth/welcome';
+    }, [
+      isAdminMaster,
+      isCandidate,
+      tenantMemberships,
+      firstLoginState,
+      legalAcceptances,
+      permissions,
+     recoveryMode,
+     roleAssignments,
+     roles,
+   ]);
 
   const register = async (
     email: string,

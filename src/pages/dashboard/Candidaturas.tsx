@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
@@ -6,7 +6,7 @@ import { UserCheck, Plus, Pencil, Trash2, Search, Eye } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { applicationsRepository } from '@/repositories/applications.repository';
 import { jobsRepository } from '@/repositories/jobs.repository';
-import { candidatesRepository } from '@/repositories/candidates.repository';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import { cn } from '@/utils';
 import type {
   Application,
@@ -643,3 +643,4 @@ export default function Candidaturas() {
     </ModuleWorkspace>
   );
 }
+

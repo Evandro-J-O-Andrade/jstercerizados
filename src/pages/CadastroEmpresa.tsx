@@ -228,7 +228,7 @@ export default function CompanyRegister() {
             <p className="text-muted-foreground text-sm">
               Já tem conta?{' '}
               <Link
-                to="/entrar"
+                to="/login"
                 className="text-primary hover:text-primary/80 font-medium"
               >
                 Entrar

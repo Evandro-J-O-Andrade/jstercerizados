@@ -1,0 +1,73 @@
+-- =============================================================================
+-- 20261002000002_add_module_read_permissions.sql
+-- =============================================================================
+-- WHAT:
+--   Cria as permissões de leitura de módulo que o MODULE_PERMISSION_MAP exige
+--   mas que nunca existiram na tabela public.permissions:
+--     fiscal.read, accounting.read, stock.read
+--
+-- WHY:
+--   Quatro módulos do Portal (fiscal, contabilidade, estoque, almoxarifado)
+--   retornam 403 para TODOS os usuários, inclusive admin_master, porque o
+--   frontend exige uma permissão inexistente. Nem o bypass de admin_master
+--   consegue conceder o que não está na tabela.
+--
+--   ARCH:
+--   - A chave canônica de uma permissão é resource || '.' || action
+--     (ver getPermissionKey / normalizePermission em src/utils/rbac-normalize.ts).
+--   - Recurso já existe para 'fiscal' e 'accounting'; 'stock' é novo.
+--   - Nenhuma outra permissão, role, policy ou trigger é tocada.
+--
+--   ROLLBACK:
+--     DELETE FROM public.role_permissions WHERE permission_id IN (
+--       SELECT id FROM public.permissions
+--       WHERE (resource, action) IN
+--         (('fiscal','read'),('accounting','read'),('stock','read'))
+--     );
+--     DELETE FROM public.permissions
+--     WHERE (resource, action) IN
+--       (('fiscal','read'),('accounting','read'),('stock','read'));
+-- =============================================================================
+
+begin;
+
+-- -----------------------------------------------------------------------------
+-- 1. Permissões
+-- -----------------------------------------------------------------------------
+-- description segue o padrão textual humano (as linhas preexistentes
+-- usavam a própria chave como description, o que é um defeito anterior
+-- que fica FORA do escopo desta migration).
+-- -----------------------------------------------------------------------------
+insert into public.permissions (resource, action, description, code)
+values
+  ('fiscal',     'read', 'Acesso de leitura ao módulo Fiscal',        'fiscal.read'),
+  ('accounting', 'read', 'Acesso de leitura ao módulo Contabilidade', 'accounting.read'),
+  ('stock',      'read', 'Acesso de leitura ao módulo Estoque',       'stock.read')
+on conflict (resource, action) do update
+  set description = excluded.description,
+      code        = excluded.code,
+      updated_at  = now();
+
+-- -----------------------------------------------------------------------------
+-- 2. Grants
+-- -----------------------------------------------------------------------------
+-- tenant_admin + o manager de cada setor. admin_master NÃO é concedido aqui
+-- de propósito: ele obtém acesso absoluto pelo bypass real já existente em
+-- AuthContext (select * from permissions quando adminMaster), então basta a
+-- permissão existir na tabela para que ele a receba.
+-- -----------------------------------------------------------------------------
+insert into public.role_permissions (role_id, permission_id)
+select r.id, p.id
+from public.roles r
+cross join public.permissions p
+where (r.name, p.resource, p.action) in (
+    ('tenant_admin',     'fiscal',     'read'),
+    ('fiscal_manager',   'fiscal',     'read'),
+    ('tenant_admin',     'accounting', 'read'),
+    ('accounting_manager','accounting','read'),
+    ('tenant_admin',     'stock',      'read'),
+    ('stock_manager',    'stock',      'read')
+  )
+on conflict (role_id, permission_id) do nothing;
+
+commit;

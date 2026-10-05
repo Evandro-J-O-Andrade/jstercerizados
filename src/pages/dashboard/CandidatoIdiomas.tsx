@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { candidateLanguagesRepository } from '@/repositories/candidate-languages.repository';
-import { candidatesRepository } from '@/repositories/candidates.repository';
+import { candidateLanguagesRepository } from '@/modules/candidato/repositories/candidate-languages.repository';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import type {
   CandidateLanguage,
   CandidateLanguageCreateInput,
   CandidateLanguageUpdateInput,
-} from '@/types/domain/candidate';
+} from '@/modules/candidato/types/candidate';
 
 const LEVEL_OPTIONS = [
   { value: 'basic', label: 'Básico' },
@@ -369,3 +369,4 @@ export default function CandidatoIdiomas() {
     </ModuleWorkspace>
   );
 }
+

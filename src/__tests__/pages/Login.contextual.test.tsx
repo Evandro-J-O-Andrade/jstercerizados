@@ -57,9 +57,12 @@ describe('Login contextual', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('admin: NAO renderiza link Cadastre-se', () => {
+  it('admin: NAO renderiza link de cadastro', () => {
     renderLogin();
-    expect(screen.queryByTestId('toggle-signup')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('candidato-signup-link')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('empresa-signup-link'),
+    ).not.toBeInTheDocument();
   });
 
   it('admin: renderiza form de login com titulo Painel Administrativo', () => {
@@ -75,7 +78,8 @@ describe('Login contextual', () => {
       expect(screen.getByText(/Continuar com Google/i)).toBeInTheDocument();
     });
     expect(screen.getByText(/Continuar com Microsoft/i)).toBeInTheDocument();
-    expect(screen.getByTestId('toggle-signup')).toBeInTheDocument();
+    const signupLink = screen.getByTestId('candidato-signup-link');
+    expect(signupLink).toHaveAttribute('href', '/cadastro/candidato');
   });
 
   it('empresa: renderiza botoes OAuth e link de cadastro', async () => {
@@ -88,38 +92,20 @@ describe('Login contextual', () => {
     expect(screen.getByTestId('empresa-signup-link')).toBeInTheDocument();
   });
 
-  it('candidato + signup: mostra form de cadastro com nome, email, senha, confirmar', async () => {
+  it('candidato: cadastro fica na rota dedicada, sem form embutido', async () => {
     renderLogin();
     fireEvent.click(screen.getByRole('button', { name: 'Candidato' }));
     await waitFor(() => {
-      expect(screen.getByTestId('toggle-signup')).toBeInTheDocument();
+      expect(screen.getByTestId('candidato-signup-link')).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByTestId('toggle-signup'));
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/Nome completo/i)).toBeInTheDocument();
-    });
     expect(screen.getByLabelText(/^E-mail/i)).toBeInTheDocument();
-    const passwordInputs = screen.getAllByLabelText(/^Senha/i);
-    expect(passwordInputs.length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByLabelText(/Confirmar senha/i)).toBeInTheDocument();
-  });
-
-  it('candidato + signup: clique em toggle-signin volta para o form de login', async () => {
-    renderLogin();
-    fireEvent.click(screen.getByRole('button', { name: 'Candidato' }));
-    await waitFor(() => {
-      expect(screen.getByTestId('toggle-signup')).toBeInTheDocument();
-    });
-    fireEvent.click(screen.getByTestId('toggle-signup'));
-    await waitFor(() => {
-      expect(screen.getByLabelText(/Nome completo/i)).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByTestId('toggle-signin'));
-    await waitFor(() => {
-      expect(screen.queryByLabelText(/Nome completo/i)).not.toBeInTheDocument();
-    });
+    expect(
+      screen.queryByLabelText(/Nome completo/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText(/Confirmar senha/i),
+    ).not.toBeInTheDocument();
   });
 
   it('botao Google chama loginWithProvider com google', async () => {

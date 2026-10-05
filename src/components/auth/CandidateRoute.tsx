@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthRoute } from '@/components/auth/AuthRoute';
+import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
 
 interface CandidateRouteProps {
   children: React.ReactNode;
@@ -10,19 +11,18 @@ export function CandidateRoute({ children }: CandidateRouteProps) {
   const { isAuthenticated, isCandidate, isLoading } = useAuth();
 
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-muted-foreground">Carregando...</div>
-      </div>
-    );
+    return <RouteLoadingFallback />;
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/entrar" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   if (!isCandidate) {
-    return <Navigate to="/dashboard" replace />;
+    const fallback = window.location.pathname.startsWith('/candidato')
+      ? '/dashboard'
+      : '/login';
+    return <Navigate to={fallback} replace />;
   }
 
   return <AuthRoute>{children}</AuthRoute>;

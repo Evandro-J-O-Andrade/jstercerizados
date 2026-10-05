@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { candidateSkillsRepository } from '@/repositories/candidate-skills.repository';
-import { candidatesRepository } from '@/repositories/candidates.repository';
+import { candidateSkillsRepository } from '@/modules/candidato/repositories/candidate-skills.repository';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import type {
   CandidateSkill,
   CandidateSkillCreateInput,
   CandidateSkillUpdateInput,
-} from '@/types/domain/candidate';
+} from '@/modules/candidato/types/candidate';
 
 const LEVEL_OPTIONS = [
   { value: 'basic', label: 'Básico' },
@@ -396,3 +396,4 @@ export default function CandidatoHabilidades() {
     </ModuleWorkspace>
   );
 }
+

@@ -1,5 +1,7 @@
 import type { ModuleRoute } from '@/platform/router/types';
 import { rhRoutes } from '@/modules/rh/routes';
+import { CandidatoRoutes } from '@/modules/candidato/CandidatoRoutes';
+import { RecrutamentoRoutes } from '@/modules/recrutamento/RecrutamentoRoutes';
 import { servicosRoutes } from '@/modules/servicos/routes';
 import { estoqueRoutes } from '@/modules/estoque/routes';
 import { fiscalRoutes } from '@/modules/fiscal/routes';
@@ -11,6 +13,8 @@ import { posRoutes } from '@/modules/pos/routes';
 
 export const moduleRouteRegistries: Record<string, ModuleRoute[]> = {
   rh: rhRoutes,
+  candidato: CandidatoRoutes,
+  recrutamento: RecrutamentoRoutes,
   servicos: servicosRoutes,
   estoque: estoqueRoutes,
   fiscal: fiscalRoutes,

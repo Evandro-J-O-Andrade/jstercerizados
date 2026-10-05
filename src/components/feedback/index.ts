@@ -7,3 +7,8 @@ export { SectionLoader } from './SectionLoader';
 export { InlineLoader } from './InlineLoader';
 export { DataState, withDataBoundary, ErrorBoundary } from './DataState';
 export type { AsyncData, AsyncStatus, DataStateProps } from './DataState';
+export { ContentBoundary } from './ContentBoundary';
+export type {
+  ContentBoundaryProps,
+  ContentBoundaryStatus,
+} from './ContentBoundary';

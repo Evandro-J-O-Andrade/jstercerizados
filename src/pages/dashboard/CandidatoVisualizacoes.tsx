@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { candidatesRepository } from '@/repositories/candidates.repository';
-import type { CandidateProfileView } from '@/types/domain/candidate';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
+import type { CandidateProfileView } from '@/modules/candidato/types/candidate';
 
 export default function CandidatoVisualizacoes() {
   const { currentTenantId, isAdminMaster } = useAuth();
@@ -181,3 +181,4 @@ export default function CandidatoVisualizacoes() {
     </ModuleWorkspace>
   );
 }
+

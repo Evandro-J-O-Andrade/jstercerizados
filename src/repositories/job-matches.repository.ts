@@ -1,5 +1,5 @@
-import { SupabaseRepository } from './supabase.repository';
-import type { JobMatchGenerateResult } from '@/types/domain/candidate';
+﻿import { SupabaseRepository } from './supabase.repository';
+import type { JobMatchGenerateResult } from '@/modules/candidato/types/candidate';
 
 export class JobMatchesRepository extends SupabaseRepository {
   async generateByDemand(demandId: string): Promise<JobMatchGenerateResult[]> {
@@ -18,3 +18,4 @@ export class JobMatchesRepository extends SupabaseRepository {
 }
 
 export const jobMatchesRepository = new JobMatchesRepository();
+

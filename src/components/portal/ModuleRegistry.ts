@@ -15,6 +15,14 @@ export interface ModuleFeature {
   description: string;
   icon?: string;
   route: string;
+  /**
+   * URLs antigas que ainda precisam resolver para esta feature.
+   * A migração de `/dashboard/<x>` para `/dashboard/recrutamento/<x>` está em
+   * curso: enquanto as rotas antigas existirem em App.tsx, elas precisam
+   * continuar resolvendo para o módulo certo, senão caem no fallback e são
+   * tratadas como `inicio`. Remova cada entrada quando a rota antiga sair.
+   */
+  legacyRoutes?: string[];
   requiredPermissions?: string[];
   actions?: ModuleAction[];
   features?: ModuleFeature[];
@@ -697,7 +705,8 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
         id: 'vagas',
         title: 'Vagas',
         description: 'Gerencie vagas abertas e publicadas',
-        route: '/dashboard/vagas',
+        route: '/dashboard/recrutamento/vagas',
+        legacyRoutes: ['/dashboard/vagas'],
         requiredPermissions: ['jobs.read'],
         actions: [
           {
@@ -713,22 +722,16 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
             permission: 'jobs.update',
           },
           {
-            id: 'arquivar',
-            title: 'Arquivar',
-            description: 'Arquivar vaga',
-            permission: 'jobs.archive',
-          },
-          {
             id: 'publicar',
             title: 'Publicar',
             description: 'Publicar vaga',
             permission: 'jobs.publish',
           },
           {
-            id: 'exportar',
-            title: 'Exportar',
-            description: 'Exportar vagas',
-            permission: 'jobs.export',
+            id: 'fechar',
+            title: 'Fechar',
+            description: 'Fechar vaga',
+            permission: 'jobs.close',
           },
         ],
       },
@@ -736,7 +739,8 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
         id: 'candidatos',
         title: 'Candidatos',
         description: 'Banco de talentos e currículos',
-        route: '/dashboard/candidatos',
+        route: '/dashboard/recrutamento/candidatos',
+        legacyRoutes: ['/dashboard/candidatos'],
         requiredPermissions: ['candidates.read'],
         actions: [
           {
@@ -757,82 +761,37 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
             description: 'Remover candidato',
             permission: 'candidates.delete',
           },
-          {
-            id: 'exportar',
-            title: 'Exportar',
-            description: 'Exportar candidatos',
-            permission: 'candidates.export',
-          },
         ],
       },
       {
-        id: 'candidatos-habilidades',
-        title: 'Habilidades',
-        description: 'Gerencie habilidades dos candidatos',
-        route: '/dashboard/candidatos/habilidades',
-        requiredPermissions: ['candidates.read'],
-      },
-      {
-        id: 'candidatos-formacao',
-        title: 'Formação',
-        description: 'Gerencie a formação acadêmica dos candidatos',
-        route: '/dashboard/candidatos/formacao',
-        requiredPermissions: ['candidates.read'],
-      },
-      {
-        id: 'candidatos-experiencias',
-        title: 'Experiências',
-        description: 'Gerencie as experiências profissionais dos candidatos',
-        route: '/dashboard/candidatos/experiencias',
-        requiredPermissions: ['candidates.read'],
-      },
-      {
-        id: 'candidatos-idiomas',
-        title: 'Idiomas',
-        description: 'Gerencie os idiomas dos candidatos',
-        route: '/dashboard/candidatos/idiomas',
-        requiredPermissions: ['candidates.read'],
+        id: 'candidatos-perfil',
+        title: 'Perfil do Candidato',
+        description: 'Consultar perfil completo do candidato',
+        route: '/dashboard/recrutamento/candidatos/:id',
+        legacyRoutes: ['/dashboard/candidatos/:id'],
+        requiredPermissions: ['candidates.profile.read'],
       },
       {
         id: 'candidatos-documentos',
-        title: 'Documentos',
-        description: 'Gerencie os documentos dos candidatos',
-        route: '/dashboard/candidatos/documentos',
-        requiredPermissions: ['candidates.read'],
-      },
-      {
-        id: 'candidatos-preferencias',
-        title: 'Preferências',
-        description: 'Gerencie as preferências de matching dos candidatos',
-        route: '/dashboard/candidatos/preferencias',
-        requiredPermissions: ['candidates.read'],
-      },
-      {
-        id: 'candidatos-visualizacoes',
-        title: 'Visualizações',
-        description: 'Acompanhe as visualizações de perfil dos candidatos',
-        route: '/dashboard/candidatos/visualizacoes',
-        requiredPermissions: ['candidates.read'],
-      },
-      {
-        id: 'matches',
-        title: 'Matches',
-        description: 'Gerencie os matches entre candidatos e vagas',
-        route: '/dashboard/matches',
-        requiredPermissions: ['jobs.read'],
+        title: 'Documentos do Candidato',
+        description: 'Consultar documentos do candidato',
+        route: '/dashboard/recrutamento/candidatos/:id/documentos',
+        legacyRoutes: ['/dashboard/candidatos/:id/documentos'],
+        requiredPermissions: ['candidates.documents.read'],
       },
       {
         id: 'candidaturas',
         title: 'Candidaturas',
         description: 'Acompanhe candidaturas e status',
-        route: '/dashboard/candidaturas',
+        route: '/dashboard/recrutamento/candidaturas',
+        legacyRoutes: ['/dashboard/candidaturas'],
         requiredPermissions: ['applications.read'],
         actions: [
           {
-            id: 'aprovar',
-            title: 'Aprovar',
-            description: 'Aprovar candidatura',
-            permission: 'applications.approve',
+            id: 'avancar',
+            title: 'Avançar',
+            description: 'Avançar status da candidatura',
+            permission: 'applications.advance',
           },
           {
             id: 'rejeitar',
@@ -841,19 +800,19 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
             permission: 'applications.reject',
           },
           {
-            id: 'entrevistar',
-            title: 'Entrevistar',
-            description: 'Agendar entrevista',
-            permission: 'applications.interview',
+            id: 'historico',
+            title: 'Histórico',
+            description: 'Consultar histórico de status',
+            permission: 'applications.history.read',
           },
         ],
       },
       {
-        id: 'processos-seletivos',
-        title: 'Processos seletivos',
+        id: 'processos',
+        title: 'Processos Seletivos',
         description: 'Acompanhe processos e etapas',
-        route: '/dashboard/processos-seletivos',
-        requiredPermissions: ['jobs.read'],
+        route: '/dashboard/recrutamento/processos',
+        requiredPermissions: ['recruitment.read'],
         actions: [
           {
             id: 'criar',
@@ -868,10 +827,10 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
             permission: 'recruitment.update',
           },
           {
-            id: 'fechar',
-            title: 'Fechar',
-            description: 'Fechar processo',
-            permission: 'recruitment.close',
+            id: 'excluir',
+            title: 'Excluir',
+            description: 'Excluir processo',
+            permission: 'recruitment.delete',
           },
         ],
       },
@@ -879,7 +838,8 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
         id: 'etapas',
         title: 'Etapas de Recrutamento',
         description: 'Gerencie etapas dos processos seletivos',
-        route: '/dashboard/etapas',
+        route: '/dashboard/recrutamento/etapas',
+        legacyRoutes: ['/dashboard/etapas'],
         requiredPermissions: ['recruitment.stage.manage'],
         actions: [
           {
@@ -897,19 +857,69 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
         ],
       },
       {
-        id: 'relatorios-recrutamento',
-        title: 'Relatórios de Recrutamento',
-        description: 'Relatórios do módulo de recrutamento',
-        route: '/dashboard/relatorios/recrutamento',
-        requiredPermissions: ['reports.read'],
+        id: 'talent-pool',
+        title: 'Banco de Talentos',
+        description: 'Consulta e matching de talentos',
+        route: '/dashboard/recrutamento/talent-pool',
+        legacyRoutes: ['/dashboard/banco-de-talentos'],
+        requiredPermissions: ['talent_pool.read'],
         actions: [
           {
-            id: 'exportar',
-            title: 'Exportar',
-            description: 'Exportar relatório de recrutamento',
-            permission: 'reports.export',
+            id: 'gerenciar',
+            title: 'Gerenciar',
+            description: 'Administrar talentos do banco',
+            permission: 'talent_pool.manage',
+          },
+          {
+            id: 'match',
+            title: 'Matching',
+            description: 'Executar matching candidato-vaga',
+            permission: 'talent_pool.match',
           },
         ],
+      },
+      {
+        id: 'demandas',
+        title: 'Demandas de Recrutamento',
+        description: 'Gerencie demandas de recrutamento',
+        route: '/dashboard/recrutamento/demandas',
+        legacyRoutes: ['/dashboard/demandas'],
+        requiredPermissions: ['recruitment_demands.read'],
+        actions: [
+          {
+            id: 'criar',
+            title: 'Nova demanda',
+            description: 'Abrir nova demanda',
+            permission: 'recruitment_demands.create',
+          },
+          {
+            id: 'editar',
+            title: 'Editar',
+            description: 'Alterar demanda',
+            permission: 'recruitment_demands.update',
+          },
+          {
+            id: 'excluir',
+            title: 'Excluir',
+            description: 'Excluir demanda',
+            permission: 'recruitment_demands.delete',
+          },
+        ],
+      },
+      {
+        id: 'matches',
+        title: 'Matches',
+        description: 'Compatibilidade entre candidato e vaga',
+        route: '/dashboard/recrutamento/matches',
+        legacyRoutes: ['/dashboard/matches'],
+        requiredPermissions: ['talent_pool.match'],
+      },
+      {
+        id: 'relatorios',
+        title: 'Relatórios de Recrutamento',
+        description: 'Relatórios do módulo de recrutamento',
+        route: '/dashboard/recrutamento/relatorios',
+        requiredPermissions: ['reports.read'],
       },
     ],
   },
@@ -2344,8 +2354,19 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
           },
         ],
       },
-    ],
-  },
+     ],
+   },
+   {
+     id: 'candidato',
+     title: 'Área do Candidato',
+     description:
+       'Vagas, candidaturas, currículo e configurações do portal candidato',
+     icon: 'briefcase',
+     route: '/candidato',
+     category: 'negocio',
+     scope: 'tenant',
+      requiredPermissions: ['candidates.self.read'],
+    },
 ];
 
 const CATEGORY_META: Record<ModuleCategory, { label: string; order: number }> =
@@ -2477,12 +2498,12 @@ export const MODULE_PERMISSION_MAP: Record<string, string> = {
   financeiro: 'finance.read',
   faturamento: 'finance.read',
   fiscal: 'fiscal.read',
-  contabilidade: 'accounting.read',
+   contabilidade: 'accounting.read',
+   candidato: 'candidates.self.read',
   servicos: 'service_orders.read',
+  contratos: 'contracts.read',
   estoque: 'stock.read',
   almoxarifado: 'stock.read',
-  operacoes: 'work_orders.read',
-  pos: 'pos_sales.read',
   suporte: 'support_tickets.read',
   relatorios: 'reports.read',
   ia: '',

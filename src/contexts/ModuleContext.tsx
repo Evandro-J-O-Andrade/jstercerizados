@@ -58,7 +58,12 @@ export function ModuleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const pathname = location.pathname;
 
-    if (pathname === '/dashboard' || pathname === '/dashboard/') {
+    if (
+      pathname === '/dashboard' ||
+      pathname === '/dashboard/' ||
+      pathname === '/candidato' ||
+      pathname === '/candidato/'
+    ) {
       setCurrentModule(null);
       setCurrentFeature(null);
       return;
@@ -76,6 +81,23 @@ export function ModuleProvider({ children }: { children: ReactNode }) {
         foundModule = module;
         foundFeature = feature;
         break;
+      }
+    }
+
+    // Legacy routes: URLs antigas que ainda são referenciadas por páginas
+    // versionadas e precisam continuar resolvendo para o módulo correto.
+    // Sem isto elas caem no fallback de módulo e são tratadas como `inicio`.
+    if (!foundModule) {
+      for (const { module, feature } of ALL_FEATURES) {
+        if (!feature.legacyRoutes?.length) continue;
+        for (const legacy of feature.legacyRoutes) {
+          if (pathname === legacy || pathname.startsWith(`${legacy}/`)) {
+            foundModule = module;
+            foundFeature = feature;
+            break;
+          }
+        }
+        if (foundModule) break;
       }
     }
 

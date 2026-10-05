@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { candidateExperiencesRepository } from '@/repositories/candidate-experiences.repository';
-import { candidatesRepository } from '@/repositories/candidates.repository';
+import { candidateExperiencesRepository } from '@/modules/candidato/repositories/candidate-experiences.repository';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import type {
   CandidateExperience,
   CandidateExperienceCreateInput,
   CandidateExperienceUpdateInput,
-} from '@/types/domain/candidate';
+} from '@/modules/candidato/types/candidate';
 
 export default function CandidatoExperiencias() {
   const { currentTenantId, isAdminMaster } = useAuth();
@@ -429,3 +429,4 @@ export default function CandidatoExperiencias() {
     </ModuleWorkspace>
   );
 }
+

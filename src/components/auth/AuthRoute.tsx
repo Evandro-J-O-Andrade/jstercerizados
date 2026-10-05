@@ -20,7 +20,7 @@ export function AuthRoute({ children }: AuthRouteProps) {
   }
 
   if (!isAuthenticated || !person) {
-    return <Navigate to="/entrar" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   const hasAcceptedTerms = legalAcceptances.some(

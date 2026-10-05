@@ -33,6 +33,18 @@ import {
   FileSignature,
   Wrench,
   Rocket,
+  Heart,
+  Bell,
+  UserCheck,
+  Mail,
+  Sparkles,
+  Award,
+  Languages,
+  Search,
+  Clock,
+   History as HistoryIcon,
+   GraduationCap,
+  Target,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
@@ -70,6 +82,18 @@ export const ICON_MAP: Record<
   folder: FolderOpen,
   'file-signature': FileSignature,
   wrench: Wrench,
+  heart: Heart,
+  bell: Bell,
+  'user-check': UserCheck,
+  mail: Mail,
+  sparkles: Sparkles,
+  target: Target,
+  award: Award,
+  languages: Languages,
+  search: Search,
+  clock: Clock,
+  history: HistoryIcon,
+  'graduation-cap': GraduationCap,
 };
 
 function ModuleIcon({ name, className }: { name: string; className?: string }) {

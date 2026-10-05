@@ -648,7 +648,7 @@ export default function Sobre() {
               className="relative mb-8 overflow-hidden rounded-3xl"
             >
               <SafeImage
-                src="/images/sobre/bannersobre.jpg"
+                src="/images/sobre/bannersobre.png"
                 fallbackSrc={IMAGES.hero.sobre.fallback}
                 alt={`Equipe ${COMPANY.tradingName}`}
                 objectFit="contain"

@@ -1,6 +1,6 @@
-import { SupabaseRepository } from './supabase.repository';
+﻿import { SupabaseRepository } from './supabase.repository';
 import type { Database } from '@/types/database';
-import type { Candidate } from '@/types/domain/candidate';
+import type { Candidate } from '@/modules/candidato/types/candidate';
 
 type CandidateDocument = Database['public']['Tables']['candidate_documents']['Row'];
 type CandidateDocumentInsert = Database['public']['Tables']['candidate_documents']['Insert'];
@@ -228,3 +228,4 @@ export const candidateCoursesRepository = new CandidateCoursesRepository();
 export { SupabaseRepository };
 
 export type { Candidate };
+

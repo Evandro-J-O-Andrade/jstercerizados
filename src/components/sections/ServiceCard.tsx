@@ -70,8 +70,8 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
             {service.shortDescription || service.description}
           </p>
 
-          {service.benefits && service.benefits.length > 0 && (
-            <div className="mb-4">
+          <div className="mb-4 min-h-[20px]">
+            {service.benefits && service.benefits.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {service.benefits.slice(0, 3).map((benefit) => (
                   <span
@@ -82,8 +82,8 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
                   </span>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           <div className="text-primary mt-auto flex items-center text-sm font-medium">
             Saiba mais

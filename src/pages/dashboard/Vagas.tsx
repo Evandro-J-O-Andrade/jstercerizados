@@ -25,8 +25,8 @@ const JOB_STATUS = [
 
 const CONTRACT_TYPE_OPTIONS = [
   { value: 'clt', label: 'CLT' },
-  { value: 'internship', label: 'Est�gio' },
-  { value: 'temporary', label: 'Tempor�rio' },
+  { value: 'internship', label: 'Estágio' },
+  { value: 'temporary', label: 'Temporário' },
   { value: 'freelance', label: 'Freelance' },
   { value: 'contracted', label: 'Contratado' },
   { value: 'cd', label: 'CD' },
@@ -34,12 +34,12 @@ const CONTRACT_TYPE_OPTIONS = [
 
 const WORK_MODE_OPTIONS = [
   { value: 'onsite', label: 'Presencial' },
-  { value: 'hybrid', label: 'H�brido' },
+  { value: 'hybrid', label: 'Híbrido' },
   { value: 'remote', label: 'Remoto' },
 ] as const;
 
 const SALARY_TYPE_OPTIONS = [
-  { value: 'negotiate', label: 'Negoci�vel' },
+  { value: 'negotiate', label: 'Negociável' },
   { value: 'range', label: 'Faixa' },
   { value: 'monthly', label: 'Mensal' },
 ] as const;
@@ -286,7 +286,7 @@ export default function Vagas() {
             <Search className="text-muted-foreground h-4 w-4" />
             <input
               type="text"
-              placeholder="Buscar por t�tulo ou descri��o..."
+              placeholder="Buscar por título ou descrição..."
               className="bg-transparent text-sm outline-none"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -352,7 +352,7 @@ export default function Vagas() {
               <thead className="bg-muted/50">
                 <tr>
                   <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    T�tulo
+                    Título
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
                     Tipo
@@ -367,7 +367,7 @@ export default function Vagas() {
                     Status
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-right text-xs font-semibold tracking-wider uppercase">
-                    A��es
+                    Ações
                   </th>
                 </tr>
               </thead>
@@ -385,17 +385,17 @@ export default function Vagas() {
                         (opt) => opt.value === job.contract_type,
                       )?.label ||
                         job.contract_type ||
-                        '�'}
+                        '—'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
                       {WORK_MODE_OPTIONS.find(
                         (opt) => opt.value === job.work_mode,
                       )?.label ||
                         job.work_mode ||
-                        '�'}
+                        '—'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {[job.city, job.state].filter(Boolean).join('/') || '�'}
+                      {[job.city, job.state].filter(Boolean).join('/') || '—'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span
@@ -451,7 +451,7 @@ export default function Vagas() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    T�tulo
+                    Título
                   </label>
                   <input
                     type="text"
@@ -477,7 +477,7 @@ export default function Vagas() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Descri��o
+                    Descrição
                   </label>
                   <textarea
                     className="w-full rounded-lg border px-3 py-2 text-sm"
@@ -529,7 +529,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Sal�rio m�nimo
+                    Salário mínimo
                   </label>
                   <input
                     type="number"
@@ -542,7 +542,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Sal�rio m�ximo
+                    Salário máximo
                   </label>
                   <input
                     type="number"
@@ -555,7 +555,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Tipo de sal�rio
+                    Tipo de salário
                   </label>
                   <select
                     className="w-full rounded-lg border px-3 py-2 text-sm"
@@ -610,7 +610,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Publica��o
+                    Publicação
                   </label>
                   <input
                     type="datetime-local"
@@ -623,7 +623,7 @@ export default function Vagas() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Expira��o
+                    Expiração
                   </label>
                   <input
                     type="datetime-local"
@@ -702,7 +702,7 @@ export default function Vagas() {
       <ConfirmDialog
         open={!!deleteConfirm}
         title="Remover vaga?"
-        message="Tem certeza que deseja remover esta vaga? Essa a��o n�o pode ser desfeita."
+        message="Tem certeza que deseja remover esta vaga? Essa ação não pode ser desfeita."
         confirmLabel="Remover"
         variant="danger"
         onConfirm={handleDelete}

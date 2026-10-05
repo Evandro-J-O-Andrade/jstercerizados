@@ -1,4 +1,4 @@
-export type {
+﻿export type {
   Candidate,
   CandidateCreateInput,
   CandidateUpdateInput,
@@ -12,4 +12,5 @@ export type {
   TalentPoolMembership,
   CandidatePreference,
   JobMatch,
-} from '@/types/domain/candidate';
+} from '@/modules/candidato/types/candidate';
+

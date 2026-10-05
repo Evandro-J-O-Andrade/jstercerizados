@@ -20,7 +20,7 @@ export default function AuthTerms() {
 
   useEffect(() => {
     if (!isAuthenticated || !person) {
-      navigate('/entrar', { replace: true });
+      navigate('/login', { replace: true });
     }
   }, [isAuthenticated, person, navigate]);
 

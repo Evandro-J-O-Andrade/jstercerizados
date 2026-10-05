@@ -227,7 +227,7 @@ export default function ServicoDetalhe() {
 
           {/* Área principal da Hero.
               A altura disponível pertence à Hero, não ao conteúdo textual. */}
-          <div className="grid flex-1 grid-cols-1 items-center gap-12 lg:grid-cols-2">
+          <div className="grid flex-1 grid-cols-1 items-stretch gap-12 lg:grid-cols-2">
             {/* Texto */}
             <motion.div
               initial={{ opacity: 0, x: -40 }}
@@ -297,7 +297,7 @@ export default function ServicoDetalhe() {
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="relative hidden items-center lg:flex lg:-translate-y-14 xl:-translate-y-16"
+              className="relative hidden h-full items-center lg:flex lg:-translate-y-14 xl:-translate-y-16"
             >
               <motion.div
                 animate={{ y: [0, -6, 0] }}
@@ -306,8 +306,9 @@ export default function ServicoDetalhe() {
                   repeat: Infinity,
                   ease: 'easeInOut',
                 }}
+                className="flex h-full w-full"
               >
-                <div className="bg-card/30 border-border relative mx-auto aspect-[4/3] w-full max-w-[640px] overflow-hidden rounded-3xl border backdrop-blur-sm sm:aspect-[3/2] lg:aspect-[4/3] lg:max-w-[560px] xl:max-w-[640px]">
+                <div className="bg-card/30 border-border relative h-full w-full overflow-hidden rounded-3xl border backdrop-blur-sm">
                   <img
                     src={service.image}
                     alt={service.title}

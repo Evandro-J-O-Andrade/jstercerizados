@@ -90,32 +90,8 @@ const PrimeiroAcessoTermos = lazy(
   () => import('@/pages/primeiro-acesso/Termos'),
 );
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
-const CandidateDashboard = lazy(
-  () => import('@/features/candidato/pages/CandidateMetroDashboard'),
-);
-const CandidateVagas = lazy(() => import('@/features/candidato/pages/Vagas'));
-const CandidateCandidaturas = lazy(
-  () => import('@/features/candidato/pages/Candidaturas'),
-);
-const CandidateFavoritas = lazy(
-  () => import('@/features/candidato/pages/Favoritas'),
-);
-const CandidateCurriculo = lazy(
-  () => import('@/features/candidato/pages/Curriculo'),
-);
-const CandidatePerfil = lazy(() => import('@/features/candidato/pages/Perfil'));
-const CandidateNotificacoes = lazy(
-  () => import('@/features/candidato/pages/Notificacoes'),
-);
-const CandidateConfiguracoes = lazy(
-  () => import('@/features/candidato/pages/Configuracoes'),
-);
-const CandidateAlertas = lazy(
-  () => import('@/features/candidato/pages/Alertas'),
-);
-import { CandidatePortal } from '@/components/portal/CandidatePortal';
-import { CandidateProvider } from '@/contexts/CandidateContext';
-import { CandidateRoute } from '@/components/auth/CandidateRoute';
+import { CandidatoContainer } from '@/modules/candidato/CandidatoContainer';
+import { CandidatoProvider } from '@/modules/candidato/CandidatoContext';
 import VagasPage from '@/pages/dashboard/Vagas';
 import CandidaturasPage from '@/pages/dashboard/Candidaturas';
 import CandidatosPage from '@/pages/dashboard/Candidatos';
@@ -158,6 +134,7 @@ import RelatorioAlmoxarifadoPage from '@/pages/dashboard/relatorios/RelatorioAlm
 import RelatorioServicosPage from '@/pages/dashboard/relatorios/RelatorioServicosPage';
 import RelatorioSuportePage from '@/pages/dashboard/relatorios/RelatorioSuportePage';
 import { RHDashboardPage } from '@/modules/rh/dashboard';
+import { RecrutamentoProvider } from '@/modules/recrutamento/RecrutamentoContext';
 
 function App() {
   const { introComplete, setIntroComplete } = useIntro();
@@ -740,7 +717,7 @@ function RoutesAndLayout() {
                 </PermissionGuard>
               }
             />
-            <Route
+<Route
               path="configuracoes/seguranca"
               element={
                 <PermissionGuard
@@ -748,6 +725,18 @@ function RoutesAndLayout() {
                 >
                   <SegurancaPage />
                 </PermissionGuard>
+              }
+            />
+            <Route
+              path="recrutamento/*"
+              element={
+                <RecrutamentoProvider>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['recrutamento']}
+                    moduleRouteBase="/dashboard/recrutamento"
+                  />
+                </RecrutamentoProvider>
               }
             />
             <Route
@@ -785,25 +774,24 @@ function RoutesAndLayout() {
               </FirstAccessRoute>
             }
           />
-          <Route
+<Route
             path="/candidato/*"
             element={
-              <CandidateRoute>
-                <CandidateProvider>
-                  <CandidatePortal />
-                </CandidateProvider>
-              </CandidateRoute>
+              <AuthRoute>
+                <ProtectedRoute
+                  allowedRoles={['candidato']}
+                  allowedPermissions={['candidates.self.read']}
+                >
+                  <CandidatoProvider>
+                    <ModuleProvider>
+                      <CandidatoContainer />
+                    </ModuleProvider>
+                  </CandidatoProvider>
+                </ProtectedRoute>
+              </AuthRoute>
             }
           >
-            <Route index element={<CandidateDashboard />} />
-            <Route path="vagas" element={<CandidateVagas />} />
-            <Route path="candidaturas" element={<CandidateCandidaturas />} />
-            <Route path="favoritas" element={<CandidateFavoritas />} />
-            <Route path="alertas" element={<CandidateAlertas />} />
-            <Route path="curriculo" element={<CandidateCurriculo />} />
-            <Route path="perfil" element={<CandidatePerfil />} />
-            <Route path="notificacoes" element={<CandidateNotificacoes />} />
-            <Route path="configuracoes" element={<CandidateConfiguracoes />} />
+            <Route path="*" element={<ModuleRouter moduleRegistries={moduleRouteRegistries} moduleIds={['candidato']} moduleRouteBase="/candidato" skipLayout />} />
           </Route>
           <Route
             path="*"
@@ -845,7 +833,7 @@ function RoutesAndLayout() {
                     <Route path="/privacidade" element={<Privacidade />} />
                     <Route path="/termos" element={<Termos />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/entrar" element={<EntrarHub />} />
+                    <Route path="/login" element={<EntrarHub />} />
                     <Route path="/entrar/admin" element={<EntrarAdmin />} />
                     <Route
                       path="/entrar/candidato"
@@ -883,3 +871,4 @@ function RoutesAndLayout() {
 }
 
 export default App;
+

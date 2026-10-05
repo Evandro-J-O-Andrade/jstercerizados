@@ -159,7 +159,7 @@ export function PortalHeader({
 
   const handleLogout = async () => {
     await logout();
-    navigate('/entrar');
+    navigate('/login');
   };
 
   const displayName = identity.displayName;

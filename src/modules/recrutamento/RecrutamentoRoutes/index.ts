@@ -1,0 +1,1 @@
+export { RecrutamentoRoutes } from './RecrutamentoRoutes';

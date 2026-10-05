@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -8,7 +8,6 @@ import {
   EyeOff,
   Briefcase,
   Building2,
-  UserPlus,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,22 +31,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-const signupSchema = z
-  .object({
-    full_name: z.string().min(3, 'Informe seu nome completo'),
-    email: z.string().email('E-mail inválido'),
-    password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
-    confirmPassword: z.string().min(6, 'Confirme sua senha'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ['confirmPassword'],
-    message: 'As senhas não coincidem',
-  });
-
-type SignupFormData = z.infer<typeof signupSchema>;
-
 export type AccessFlow = 'admin' | 'candidato' | 'empresa';
-type AuthMode = 'signin' | 'signup';
 
 interface LoginProps {
   requestedContext?: AccessFlow | null;
@@ -63,10 +47,7 @@ interface FlowConfig {
   emailLabel: string;
   passwordLabel: string;
   signinLabel: string;
-  signingupLabel: string;
   signinLoading: string;
-  signupLabel: string;
-  signupLoading: string;
   footer: string;
 }
 
@@ -76,19 +57,19 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
   const [accessFlow, setAccessFlow] = useState<AccessFlow>(
     requestedContext ?? 'admin',
   );
-  const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   // Token retornado pelo Turnstile (ou null se dev/disabled). Por enquanto
   // exibimos o estado no botao; o backend (Edge Function) fara a
-  // verificacao real antes de chamar signInWithPassword/signUp.
+  // verificacao real antes de chamar signInWithPassword.
   const submittedRef = useRef(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
+
   const {
     login,
     loginWithProvider,
-    register,
     isAuthenticated,
+    isLoading,
     authError,
     person,
     resolvePostLoginDestination,
@@ -99,35 +80,23 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
     register: rhfRegister,
     handleSubmit,
     formState: { errors },
-    reset: resetForm,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
-  const {
-    register: rhfRegisterSignup,
-    handleSubmit: handleSubmitSignup,
-    formState: { errors: signupErrors },
-    reset: resetSignup,
-  } = useForm<SignupFormData>({
-    resolver: zodResolver(signupSchema),
-  });
-
   useEffect(() => {
-    if (isAuthenticated && person) {
+    if (!isLoading && isAuthenticated && person) {
       const target = resolvePostLoginDestination();
       navigate(target, { replace: true });
     }
-  }, [isAuthenticated, person, navigate, resolvePostLoginDestination]);
+  }, [isLoading, isAuthenticated, person, navigate, resolvePostLoginDestination]);
 
   useEffect(() => {
     setError('');
     submittedRef.current = false;
     setTurnstileToken(null);
     turnstileRef.current?.reset();
-    if (authMode === 'signin') resetSignup();
-    else resetForm();
-  }, [authMode, resetForm, resetSignup]);
+  }, []);
 
   const onInvalid = (formErrors: unknown) => {
     console.error('[AUTH:FORM_INVALID]', formErrors);
@@ -156,44 +125,6 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
         if (isCaptchaError(userMessage)) {
           resetCaptcha();
         }
-      }
-    } catch (err) {
-      submittedRef.current = true;
-      const userMessage = normalizeError(err).userMessage;
-      setError(userMessage);
-      if (isCaptchaError(userMessage)) {
-        resetCaptcha();
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const onSignUp = async (data: SignupFormData): Promise<void> => {
-    setError('');
-    setIsSubmitting(true);
-    submittedRef.current = false;
-
-    try {
-      const result = await register(data.email, data.password, {
-        full_name: data.full_name,
-        email: data.email,
-        signupContext: accessFlow === 'empresa' ? 'empresa' : 'candidato',
-        emailRedirectTo:
-          accessFlow === 'empresa' ? '/entrar/empresa' : '/entrar/candidato',
-        turnstileToken: turnstileToken ?? undefined,
-      });
-      if (result.error) {
-        submittedRef.current = true;
-        const userMessage = normalizeError(result.error).userMessage;
-        setError(userMessage);
-        if (isCaptchaError(userMessage)) {
-          resetCaptcha();
-        }
-      } else {
-        setError(
-          'Cadastro realizado. Verifique seu e-mail para confirmar a conta antes de entrar.',
-        );
       }
     } catch (err) {
       submittedRef.current = true;
@@ -242,10 +173,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       emailLabel: 'E-mail administrativo',
       passwordLabel: 'Senha',
       signinLabel: 'Entrar no painel',
-      signingupLabel: '',
       signinLoading: 'Preparando painel...',
-      signupLabel: '',
-      signupLoading: '',
       footer: 'Área restrita — Acesso autorizado apenas.',
     },
     candidato: {
@@ -258,10 +186,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       emailLabel: 'E-mail',
       passwordLabel: 'Senha',
       signinLabel: 'Entrar',
-      signingupLabel: 'Já tem conta? Entrar',
       signinLoading: 'Preparando seu painel...',
-      signupLabel: 'Criar conta de candidato',
-      signupLoading: 'Criando sua conta...',
       footer: 'Acesso exclusivo para candidatos.',
     },
     empresa: {
@@ -274,11 +199,8 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       allowOAuth: true,
       emailLabel: 'E-mail corporativo',
       passwordLabel: 'Senha',
-      signinLabel: 'Entrar',
-      signingupLabel: 'Já tem conta? Entrar',
+signinLabel: 'Entrar',
       signinLoading: 'Preparando seu painel...',
-      signupLabel: 'Criar conta de empresa',
-      signupLoading: 'Criando sua conta...',
       footer: 'Acesso exclusivo para empresas parceiras.',
     },
   };
@@ -366,7 +288,6 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
                   type="button"
                   onClick={() => {
                     setAccessFlow(flow);
-                    setAuthMode('signin');
                   }}
                   className={cn(
                     'flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200',
@@ -389,7 +310,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
 
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${accessFlow}-${authMode}`}
+              key={accessFlow}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
@@ -414,7 +335,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
                 </p>
               </div>
 
-              {config.allowOAuth && authMode === 'signin' && (
+              {config.allowOAuth && (
                 <div className="mb-5 space-y-2">
                   <Button
                     type="button"
@@ -457,8 +378,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
                 </div>
               )}
 
-              {authMode === 'signin' ? (
-                <form
+              <form
                   onSubmit={handleSubmit(onSignIn, onInvalid)}
                   className="space-y-5"
                   data-mode="signin"
@@ -532,81 +452,8 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
                     {config.signinLabel}
                   </Button>
                 </form>
-              ) : (
-                <form
-                  onSubmit={handleSubmitSignup(onSignUp, onInvalid)}
-                  className="space-y-5"
-                  data-mode="signup"
-                >
-                  <Input
-                    label="Nome completo"
-                    type="text"
-                    autoComplete="name"
-                    placeholder="Seu nome"
-                    error={signupErrors.full_name?.message}
-                    {...rhfRegisterSignup('full_name')}
-                  />
-                  <Input
-                    label={config.emailLabel}
-                    type="email"
-                    autoComplete="email"
-                    placeholder={config.placeholderEmail}
-                    error={signupErrors.email?.message}
-                    {...rhfRegisterSignup('email')}
-                  />
-                  <div className="relative">
-                    <Input
-                      label={config.passwordLabel}
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      error={signupErrors.password?.message}
-                      autoComplete="new-password"
-                      {...rhfRegisterSignup('password')}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-muted-foreground hover:text-foreground absolute top-9 right-3"
-                      aria-label={
-                        showPassword ? 'Ocultar senha' : 'Mostrar senha'
-                      }
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-                  <Input
-                    label="Confirmar senha"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    error={signupErrors.confirmPassword?.message}
-                    autoComplete="new-password"
-                    {...rhfRegisterSignup('confirmPassword')}
-                  />
 
-                  <Turnstile
-                    ref={turnstileRef}
-                    onTokenChange={setTurnstileToken}
-                    action="signup"
-                  />
-
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="xl"
-                    className="w-full"
-                    loading={isSubmitting}
-                    leftIcon={<UserPlus className="h-5 w-5" />}
-                  >
-                    {config.signupLabel}
-                  </Button>
-                </form>
-              )}
-
-              {config.allowSignup && authMode === 'signin' && (
+              {config.allowSignup && (
                 <div className="mt-4 text-center">
                   {accessFlow === 'empresa' ? (
                     <Link
@@ -617,28 +464,14 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
                       Ainda não tem conta? Cadastre sua empresa
                     </Link>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => setAuthMode('signup')}
-                      className="text-muted-foreground hover:text-primary text-sm transition-colors"
-                      data-testid="toggle-signup"
+                    <Link
+                      to="/cadastro/candidato"
+                      className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+                      data-testid="candidato-signup-link"
                     >
-                      Ainda não tem conta? Cadastre-se
-                    </button>
+                      Ainda não tem conta? Cadastre-se como candidato
+                    </Link>
                   )}
-                </div>
-              )}
-
-              {config.allowSignup && authMode === 'signup' && (
-                <div className="mt-4 text-center">
-                  <button
-                    type="button"
-                    onClick={() => setAuthMode('signin')}
-                    className="text-muted-foreground hover:text-primary text-sm transition-colors"
-                    data-testid="toggle-signin"
-                  >
-                    {config.signingupLabel}
-                  </button>
                 </div>
               )}
 

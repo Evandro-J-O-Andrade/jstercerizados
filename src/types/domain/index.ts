@@ -40,7 +40,12 @@ export type {
   TalentPoolMembership,
   CandidatePreference,
   JobMatch,
-} from './candidate';
+} from '@/modules/candidato/types/candidate';
+
+export type {
+  CandidateContext,
+  CandidateContextInput,
+} from '@/modules/candidato/types/candidate-context';
 
 export type {
   Job,

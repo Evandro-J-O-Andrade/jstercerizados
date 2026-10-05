@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+﻿import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ vi.mock('@/contexts/AccountContext', () => ({
   useAccount: vi.fn(),
 }));
 
-vi.mock('@/contexts/CandidateContext', () => ({
+vi.mock('@/modules/candidato/context/CandidateContext', () => ({
   useCandidate: vi.fn(),
 }));
 
@@ -56,6 +56,14 @@ vi.mock('lucide-react', () => {
     'GraduationCap',
     'Award',
     'Languages',
+    'Heart',
+    'UserCheck',
+    'Mail',
+    'Sparkles',
+    'Search',
+    'Clock',
+    'History',
+    'Target',
   ];
   iconNames.forEach((name) => {
     icons[name] = ({ className }: any) => (
@@ -95,39 +103,39 @@ vi.mock('@/components/feedback/ConfirmDialog', () => ({
   ConfirmDialog: () => null,
 }));
 
-vi.mock('@/features/candidato/components/candidate/ExperienceDialog', () => ({
+vi.mock('@/modules/candidato/components/candidate/ExperienceDialog', () => ({
   ExperienceDialog: () => null,
 }));
 
-vi.mock('@/features/candidato/components/candidate/EducationDialog', () => ({
+vi.mock('@/modules/candidato/components/candidate/EducationDialog', () => ({
   EducationDialog: () => null,
 }));
 
-vi.mock('@/features/candidato/components/candidate/CourseDialog', () => ({
+vi.mock('@/modules/candidato/components/candidate/CourseDialog', () => ({
   CourseDialog: () => null,
 }));
 
-vi.mock('@/features/candidato/components/candidate/LanguageDialog', () => ({
+vi.mock('@/modules/candidato/components/candidate/LanguageDialog', () => ({
   LanguageDialog: () => null,
 }));
 
-vi.mock('@/features/candidato/components/candidate/SkillDialog', () => ({
+vi.mock('@/modules/candidato/components/candidate/SkillDialog', () => ({
   SkillDialog: () => null,
 }));
 
-vi.mock('@/features/candidato/components/candidate/DocumentDialog', () => ({
+vi.mock('@/modules/candidato/components/candidate/DocumentDialog', () => ({
   DocumentDialog: () => null,
 }));
 
-vi.mock('@/features/candidato/components/candidate/PreferencesDialog', () => ({
+vi.mock('@/modules/candidato/components/candidate/PreferencesDialog', () => ({
   PreferencesDialog: () => null,
 }));
 
-vi.mock('@/repositories/candidates.repository', () => ({
+vi.mock('@/modules/candidato/repositories/candidates.repository', () => ({
   candidatesRepository: { update: vi.fn() },
 }));
 
-vi.mock('@/repositories/candidate-experiences.repository', () => ({
+vi.mock('@/modules/candidato/repositories/candidate-experiences.repository', () => ({
   candidateExperiencesRepository: {
     delete: vi.fn(),
     create: vi.fn(),
@@ -135,7 +143,7 @@ vi.mock('@/repositories/candidate-experiences.repository', () => ({
   },
 }));
 
-vi.mock('@/repositories/candidate-education.repository', () => ({
+vi.mock('@/modules/candidato/repositories/candidate-education.repository', () => ({
   candidateEducationRepository: {
     delete: vi.fn(),
     create: vi.fn(),
@@ -143,7 +151,7 @@ vi.mock('@/repositories/candidate-education.repository', () => ({
   },
 }));
 
-vi.mock('@/repositories/candidate-courses.repository', () => ({
+vi.mock('@/modules/candidato/repositories/candidate-courses.repository', () => ({
   candidateCoursesRepository: {
     delete: vi.fn(),
     create: vi.fn(),
@@ -151,7 +159,7 @@ vi.mock('@/repositories/candidate-courses.repository', () => ({
   },
 }));
 
-vi.mock('@/repositories/candidate-languages.repository', () => ({
+vi.mock('@/modules/candidato/repositories/candidate-languages.repository', () => ({
   candidateLanguagesRepository: {
     delete: vi.fn(),
     create: vi.fn(),
@@ -159,7 +167,7 @@ vi.mock('@/repositories/candidate-languages.repository', () => ({
   },
 }));
 
-vi.mock('@/repositories/candidate-skills.repository', () => ({
+vi.mock('@/modules/candidato/repositories/candidate-skills.repository', () => ({
   candidateSkillsRepository: {
     delete: vi.fn(),
     create: vi.fn(),
@@ -167,7 +175,7 @@ vi.mock('@/repositories/candidate-skills.repository', () => ({
   },
 }));
 
-vi.mock('@/repositories/candidate-documents.repository', () => ({
+vi.mock('@/modules/candidato/repositories/candidate-documents.repository', () => ({
   candidateDocumentsRepository: {
     delete: vi.fn(),
     create: vi.fn(),
@@ -175,7 +183,7 @@ vi.mock('@/repositories/candidate-documents.repository', () => ({
   },
 }));
 
-vi.mock('@/repositories/candidate-preferences.repository', () => ({
+vi.mock('@/modules/candidato/repositories/candidate-preferences.repository', () => ({
   candidatePreferencesRepository: { create: vi.fn(), update: vi.fn() },
 }));
 
@@ -329,3 +337,4 @@ describe('MetroTileGrid — Virtualização', () => {
     }
   });
 });
+

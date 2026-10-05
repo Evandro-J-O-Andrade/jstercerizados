@@ -1,0 +1,1 @@
+export { CandidatoRoutes } from './CandidatoRoutes';

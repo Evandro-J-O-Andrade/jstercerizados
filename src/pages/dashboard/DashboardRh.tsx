@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+﻿import { useMemo, useState, useEffect } from 'react';
 import {
   BriefcaseBusiness,
   Building2,
@@ -23,7 +23,7 @@ import {
 import { useAccount } from '@/contexts/AccountContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { employeesRepository } from '@/repositories/employees.repository';
-import { candidatesRepository } from '@/repositories/candidates.repository';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import { jobsRepository } from '@/repositories/jobs.repository';
 import { applicationsRepository } from '@/repositories/applications.repository';
 import { companiesRepository } from '@/repositories/companies.repository';
@@ -174,7 +174,7 @@ export default function DashboardRh() {
       },
       {
         id: 'recent-admissions',
-        label: 'Admissões recentes',
+label: 'Admissões recentes',
         value: stats.recentAdmissions,
         description: 'Últimos 30 dias',
         icon: CalendarCheck,
@@ -184,7 +184,7 @@ export default function DashboardRh() {
       },
       {
         id: 'recent-candidates',
-        label: 'Novos candidatos',
+label: 'Novos candidatos',
         value: stats.recentCandidates,
         description: 'Últimos 30 dias',
         icon: UserPlus,
@@ -273,3 +273,4 @@ export default function DashboardRh() {
     </ModuleWorkspace>
   );
 }
+

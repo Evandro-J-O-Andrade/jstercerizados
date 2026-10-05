@@ -17,8 +17,16 @@ interface ModuleWorkspaceProps {
   sidebar?: ReactNode;
   children: ReactNode;
   className?: string;
+  homeRoute?: string;
 }
 
+/**
+ * ModuleWorkspace — cabeçalho de módulo + área de conteúdo.
+ *
+ * NÃO carrega container de largura/padding. O shell (PortalShell para
+ * /dashboard, CandidateContent para /candidato) já é dono desse container.
+ * Carregá-lo aqui duplicava o padding em todas as páginas de dashboard.
+ */
 export function ModuleWorkspace({
   title,
   description,
@@ -28,21 +36,16 @@ export function ModuleWorkspace({
   sidebar,
   children,
   className,
+  homeRoute = '/dashboard',
 }: ModuleWorkspaceProps) {
-  const baseClasses =
-    'mx-auto max-w-[1920px] px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10';
-  const cnResult = cn(baseClasses, className);
-  const flexClasses = 'flex flex-col';
-  const combinedClassName = cn(cnResult, flexClasses);
-
   return (
-    <div className={combinedClassName}>
+    <div className={cn('flex flex-col', className)}>
       {breadcrumbItems.length > 0 && (
         <nav aria-label="Breadcrumb" className="mb-6">
           <ol className="text-muted-foreground flex items-center gap-2 text-sm">
             <li>
               <NavLink
-                to="/dashboard"
+                to={homeRoute}
                 className="hover:text-foreground transition-colors"
               >
                 <Home className="h-4 w-4" />

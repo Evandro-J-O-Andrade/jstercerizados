@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Plus, Search, User, MapPin, Eye } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { talentPoolRepository } from '@/repositories/talent-pool.repository';
-import { candidatesRepository } from '@/repositories/candidates.repository';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import { cn } from '@/utils';
 import type {
   Candidate,
   TalentPoolMembership,
   CandidatePreference,
   JobMatch,
-} from '@/types/domain/candidate';
+} from '@/modules/candidato/types/candidate';
 
 type Tab = 'dashboard' | 'candidates' | 'profile';
 
@@ -369,7 +369,7 @@ export default function BancoDeTalentos() {
                                 {person.city}
                                 {person.state && `, ${person.state}`}
                               </span>
-                            ) : (
+) : (
                               '—'
                             )}
                           </td>
@@ -460,7 +460,7 @@ export default function BancoDeTalentos() {
                             {selectedCandidate.person.state &&
                               `, ${selectedCandidate.person.state}`}
                           </span>
-                        ) : (
+) : (
                           '—'
                         )}
                       </div>
@@ -537,7 +537,7 @@ export default function BancoDeTalentos() {
                           <div className="flex items-center justify-between">
                             <div className="font-medium">{exp.position}</div>
                             <div className="text-muted-foreground text-xs">
-                              {formatDate(exp.start_date)} —{' '}
+                              {formatDate(exp.start_date)} — {' '}
                               {exp.end_date
                                 ? formatDate(exp.end_date)
                                 : 'Atual'}
@@ -575,7 +575,7 @@ export default function BancoDeTalentos() {
                           <div className="flex items-center justify-between">
                             <div className="font-medium">{edu.course}</div>
                             <div className="text-muted-foreground text-xs">
-                              {formatDate(edu.start_date)} —{' '}
+                              {formatDate(edu.start_date)} — {' '}
                               {edu.end_date
                                 ? formatDate(edu.end_date)
                                 : 'Atual'}
@@ -647,3 +647,4 @@ export default function BancoDeTalentos() {
     </ModuleWorkspace>
   );
 }
+

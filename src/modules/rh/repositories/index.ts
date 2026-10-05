@@ -1,7 +1,7 @@
-export {
+﻿export {
   CandidatesRepository,
   candidatesRepository,
-} from '@/repositories/candidates.repository';
+} from '@/modules/candidato/repositories/candidates.repository';
 export {
   EmployeesRepository,
   employeesRepository,
@@ -18,7 +18,7 @@ export {
 export {
   CandidateSkillsRepository,
   candidateSkillsRepository,
-} from '@/repositories/candidate-skills.repository';
+} from '@/modules/candidato/repositories/candidate-skills.repository';
 export {
   RecruitmentDemandsRepository,
   recruitmentDemandsRepository,
@@ -31,3 +31,4 @@ export {
   TalentPoolRepository,
   talentPoolRepository,
 } from '@/repositories/talent-pool.repository';
+

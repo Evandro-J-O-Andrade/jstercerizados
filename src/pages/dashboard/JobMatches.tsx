@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
@@ -10,7 +10,7 @@ import {
   recruitmentDemandsRepository,
   type RecruitmentDemandOption,
 } from '@/repositories/recruitment-demands.repository';
-import type { JobMatchGenerateResult } from '@/types/domain/candidate';
+import type { JobMatchGenerateResult } from '@/modules/candidato/types/candidate';
 
 type PersonName = Record<string, string>;
 
@@ -215,3 +215,4 @@ export default function JobMatches() {
     </ModuleWorkspace>
   );
 }
+

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import {
   Activity,
   ArrowUpRight,
@@ -25,7 +25,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
 import { useNavigate } from 'react-router-dom';
 import { jobsRepository } from '@/repositories/jobs.repository';
-import { candidatesRepository } from '@/repositories/candidates.repository';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import { companiesRepository } from '@/repositories/companies.repository';
 import type { Job, Candidate, Company } from '@/types/domain';
 
@@ -283,7 +283,7 @@ export default function VisaoGeral() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <DashboardSection
             title="Vagas recentes"
-            description="Últimas vagas publicadas."
+            description="Ãšltimas vagas publicadas."
             icon={BriefcaseBusiness}
             actions={
               <Button
@@ -324,7 +324,7 @@ export default function VisaoGeral() {
 
           <DashboardSection
             title="Candidatos recentes"
-            description="Últimos candidatos cadastrados."
+            description="Ãšltimos candidatos cadastrados."
             icon={Users}
             actions={
               <Button
@@ -375,3 +375,4 @@ export default function VisaoGeral() {
     </div>
   );
 }
+

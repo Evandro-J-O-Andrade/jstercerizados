@@ -27,7 +27,7 @@ export default function PrimeiroAcessoSenha() {
 
   useEffect(() => {
     if (!isAuthenticated || !person) {
-      navigate('/entrar', { replace: true });
+      navigate('/login', { replace: true });
     }
   }, [isAuthenticated, person, navigate]);
 

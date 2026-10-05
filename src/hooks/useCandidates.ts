@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { candidatesRepository } from '@/repositories/candidates.repository';
-import type { Candidate } from '@/types/domain/candidate';
+﻿import { useEffect, useState } from 'react';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
+import type { Candidate } from '@/modules/candidato/types/candidate';
 
 export function useCandidates(
   tenantId: string | null,
@@ -44,3 +44,4 @@ export function useCandidates(
     refetch: () => candidatesRepository.findAll(tenantId ?? '', filters),
   };
 }
+

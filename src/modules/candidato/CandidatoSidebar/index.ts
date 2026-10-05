@@ -1,0 +1,1 @@
+export { CandidatoSidebar } from './CandidatoSidebar';

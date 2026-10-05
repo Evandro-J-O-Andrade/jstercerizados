@@ -519,7 +519,7 @@ export function Navbar() {
                   </motion.div>
                   <motion.div variants={itemVariants}>
                     <Link
-                      to="/entrar"
+                      to="/login"
                       onClick={() => setIsOpen(false)}
                       className="border-border hover:bg-muted block rounded-lg border px-3 py-2 text-center text-sm font-medium transition-colors"
                     >

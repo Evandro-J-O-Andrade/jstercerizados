@@ -14,7 +14,7 @@ export function FirstAccessRoute({ children }: FirstAccessRouteProps) {
   }
 
   if (!isAuthenticated || !person) {
-    return <Navigate to="/entrar" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;

@@ -292,7 +292,7 @@ describe('ProtectedRoute — candidato RBAC (P1 — redirect contextual)', () =>
             }
           />
           <Route
-            path="/entrar"
+            path="/login"
             element={<div data-testid="entrar-page">Entrar</div>}
           />
           <Route
@@ -383,5 +383,126 @@ describe('ProtectedRoute — candidato RBAC (P1 — redirect contextual)', () =>
 
     expect(screen.getByTestId('candidate-dashboard')).toBeInTheDocument();
     expect(navigationCount.value).toBe(1);
+  });
+
+  it(' TESTE 9: candidato SEM candidates.self.read não faz loop em /candidato', () => {
+    // Regressão: o fallback era `isCandidate ? '/candidato' : '/dashboard'`,
+    // que redirecionava para a própria rota protegida e reentrava no guard.
+    let renderCount = 0;
+
+    function Guarded() {
+      renderCount += 1;
+      return (
+        <ProtectedRoute
+          allowedRoles={['candidato']}
+          allowedPermissions={['candidates.self.read']}
+        >
+          <div data-testid="candidate-dashboard">Candidate Portal</div>
+        </ProtectedRoute>
+      );
+    }
+
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      person: { id: 'p1', full_name: 'Candidato', email: 'c@t.com' } as any,
+      tenantMemberships: [],
+      currentTenantId: 't1',
+      tenants: [{ id: 't1', name: 'J&S' }],
+      roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as any],
+      permissions: [],
+      roleAssignments: [],
+      firstLoginState: null,
+      legalAcceptances: [],
+      isAdminMaster: false,
+      isCandidate: true,
+      authError: null,
+      user: null,
+      tenantIds: [],
+      login: vi.fn(),
+      loginWithProvider: vi.fn(),
+      logout: vi.fn(),
+      register: vi.fn(),
+      resetPassword: vi.fn(),
+      updateProfile: vi.fn(),
+      changePassword: vi.fn(),
+      acceptTerms: vi.fn(),
+      switchTenant: vi.fn(),
+    } as any);
+
+    render(
+      <MemoryRouter initialEntries={['/candidato']}>
+        <Routes>
+          <Route path="/candidato" element={<Guarded />} />
+          <Route path="/" element={<div data-testid="home">Home</div>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    // Estado explícito de acesso negado, sem navegação e sem repetição.
+    expect(screen.getByTestId('access-denied')).toBeInTheDocument();
+    expect(screen.queryByTestId('candidate-dashboard')).not.toBeInTheDocument();
+    expect(renderCount).toBe(1);
+  });
+
+  it(' TESTE 10: candidato COM candidates.self.read acessa o portal', () => {
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      person: { id: 'p1', full_name: 'Candidato', email: 'c@t.com' } as any,
+      tenantMemberships: [],
+      currentTenantId: 't1',
+      tenants: [{ id: 't1', name: 'J&S' }],
+      roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as any],
+      permissions: [
+        {
+          id: 'perm-1',
+          name: 'candidates.self.read',
+          module: 'candidato',
+          resource: 'candidates',
+          action: 'read',
+          description: null,
+          created_at: '2026-01-01',
+        },
+      ] as any,
+      roleAssignments: [],
+      firstLoginState: null,
+      legalAcceptances: [],
+      isAdminMaster: false,
+      isCandidate: true,
+      authError: null,
+      user: null,
+      tenantIds: [],
+      login: vi.fn(),
+      loginWithProvider: vi.fn(),
+      logout: vi.fn(),
+      register: vi.fn(),
+      resetPassword: vi.fn(),
+      updateProfile: vi.fn(),
+      changePassword: vi.fn(),
+      acceptTerms: vi.fn(),
+      switchTenant: vi.fn(),
+    } as any);
+
+    render(
+      <MemoryRouter initialEntries={['/candidato']}>
+        <Routes>
+          <Route
+            path="/candidato"
+            element={
+              <ProtectedRoute
+                allowedRoles={['candidato']}
+                allowedPermissions={['candidates.self.read']}
+              >
+                <div data-testid="candidate-dashboard">Candidate Portal</div>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId('candidate-dashboard')).toBeInTheDocument();
+    expect(screen.queryByTestId('access-denied')).not.toBeInTheDocument();
   });
 });

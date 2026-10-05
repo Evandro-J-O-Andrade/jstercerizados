@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import type { ComponentType, ReactNode } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { useAccount } from '@/platform/context';
 import { PermissionGuard } from '@/platform/permissions';
 import {
@@ -14,23 +14,44 @@ import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { ModuleSidebar } from '@/components/portal/ModuleSidebar';
 import { EmptyState } from '@/components/fallback';
 import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
-import { Clock, LayoutDashboard } from 'lucide-react';
+import { Clock, LayoutDashboard, ShieldAlert } from 'lucide-react';
 import { cn } from '@/utils';
 import type { ModuleRoute } from './types';
 
 interface ModuleRouterProps {
   moduleRegistries: Record<string, ModuleRoute[]>;
+  moduleIds?: string[];
+  moduleRouteBase?: string;
+  skipLayout?: boolean;
 }
 
-function ModuleRouteRenderer({
-  route,
-  module,
-}: {
-  route: ModuleRoute;
-  module: ModuleDefinition;
-}) {
-  const { activePermissions } = useAccount();
+function ModuleAccessDenied({ label }: { label: string }) {
+  return (
+    <div
+      role="alert"
+      data-testid="module-access-denied"
+      className="flex min-h-[40dvh] items-center justify-center p-6"
+    >
+      <div className="max-w-md text-center">
+        <div className="bg-destructive/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+          <ShieldAlert className="text-destructive h-8 w-8" />
+        </div>
+        <h2 className="text-foreground text-xl font-bold">
+          Acesso não autorizado
+        </h2>
+        <p className="text-muted-foreground mt-2">
+          Você não tem permissão para acessar esta área de {label}.
+        </p>
+      </div>
+    </div>
+  );
+}
 
+function renderModuleRoute(
+  route: ModuleRoute,
+  module: ModuleDefinition,
+  activePermissions: ReturnType<typeof useAccount>['activePermissions'],
+): ReactNode {
   const hasPermission =
     !route.requiredPermissions ||
     route.requiredPermissions.length === 0 ||
@@ -39,18 +60,23 @@ function ModuleRouteRenderer({
     );
 
   const path = route.path.startsWith('/') ? route.path.slice(1) : route.path;
+  const Element = route.element as ComponentType;
 
   if (!hasPermission) {
-    return null;
+    return (
+      <Route
+        key={route.path}
+        path={path}
+        element={<ModuleAccessDenied label={module.title} />}
+      />
+    );
   }
-
-  const Element = route.element as ComponentType;
 
   return (
     <Route key={route.path} path={path} element={<Element />}>
-      {route.children?.map((child) => (
-        <ModuleRouteRenderer key={child.path} route={child} module={module} />
-      ))}
+      {route.children?.map((child) =>
+        renderModuleRoute(child, module, activePermissions),
+      )}
     </Route>
   );
 }
@@ -69,6 +95,7 @@ function ModuleFeatureRenderer({ module }: { module: ModuleDefinition }) {
   ) {
     return (
       <div className="space-y-4">
+        <Outlet />
         <p className="text-muted-foreground">
           Acesse as funcionalidades pelo menu lateral.
         </p>
@@ -83,6 +110,7 @@ function ModuleFeatureRenderer({ module }: { module: ModuleDefinition }) {
         .map((feature) => (
           <FeatureCard key={feature.id} feature={feature} />
         ))}
+      <Outlet />
     </div>
   );
 }
@@ -160,7 +188,10 @@ function ModuleLayout({
       {showSidebar && (
         <ModuleSidebar module={module} permissions={activePermissions} />
       )}
-      <div className="min-w-0 flex-1 p-6">{children}</div>
+      <div className="min-w-0 flex-1 p-6">
+        <Outlet />
+        {children}
+      </div>
     </ModuleWorkspace>
   );
 }
@@ -177,50 +208,129 @@ function ModulePlaceholder() {
   );
 }
 
-export function ModuleRouter({ moduleRegistries }: ModuleRouterProps) {
+/**
+ * Converte uma rota absoluta legada (`/dashboard/vagas`) no path relativo usado
+ * pelas rotas deste router, trocando segmentos de parâmetro (`:id`) pelo
+ * curinga `*` para que o valor seja preservado no redirect.
+ */
+function toRouterPath(absoluteRoute: string, base: string): string | null {
+  if (!absoluteRoute.startsWith(`${base}/`)) return null;
+  return absoluteRoute
+    .slice(base.length + 1)
+    .split('/')
+    .map((segment) => (segment.startsWith(':') ? '*' : segment))
+    .join('/');
+}
+
+/**
+ * Redirecionamentos das URLs antigas para as canônicas do módulo.
+ *
+ * Páginas versionadas (`VisaoGeral`, `GlobalDashboardPage`, `GestaoPage`,
+ * `DashboardRh`) ainda navegam para `/dashboard/vagas`,
+ * `/dashboard/candidatos`, etc. Sem estes redirects elas caem no
+ * `ModulePlaceholder` e o usuário vê "Em breve" numafeature que existe.
+ *
+ * A lista vem de `feature.legacyRoutes` — fonte única, a mesma que o
+ * `ModuleContext` usa para resolver o módulo. Remova a entrada do registry
+ * quando a URL antiga sair de uso.
+ */
+function buildLegacyRedirects(
+  modules: ModuleDefinition[],
+  base: string,
+): Array<{ key: string; path: string; to: string }> {
+  const redirects: Array<{ key: string; path: string; to: string }> = [];
+  const seen = new Set<string>();
+
+  for (const module of modules) {
+    for (const feature of module.features ?? []) {
+      for (const legacy of feature.legacyRoutes ?? []) {
+        const path = toRouterPath(legacy, base);
+        if (!path || seen.has(path)) continue;
+        seen.add(path);
+        redirects.push({
+          key: `legacy-${module.id}-${path}`,
+          path,
+          to: feature.route
+            .split('/')
+            .map((segment) => (segment.startsWith(':') ? '*' : segment))
+            .join('/'),
+        });
+      }
+    }
+  }
+
+  // Rotas mais específicas primeiro: React Router resolve pela ordem.
+  return redirects.sort((a, b) => b.path.length - a.path.length);
+}
+
+export function ModuleRouter({ moduleRegistries, moduleIds, moduleRouteBase, skipLayout }: ModuleRouterProps) {
   const { activePermissions, effectiveScopes } = useAccount();
+
+  const base = moduleRouteBase || '/dashboard';
 
   const availableModules = getAvailableModules(
     activePermissions,
     effectiveScopes,
   );
 
-  const launcherRoutes = availableModules.filter(
-    (module) =>
-      module.route !== '/dashboard' &&
-      (MODULE_PERMISSION_MAP[module.id] || !module.requiredPermissions?.length),
+  const launcherRoutes = (moduleIds
+    ? availableModules.filter((m) => moduleIds.includes(m.id))
+    : availableModules.filter(
+        (module) =>
+          module.route !== base &&
+          (MODULE_PERMISSION_MAP[module.id] ||
+            !module.requiredPermissions?.length),
+      )
+  ).filter(
+    (module) => moduleIds || module.route !== base
   );
 
   return (
     <Suspense fallback={<RouteLoadingFallback />}>
       <Routes>
+        {buildLegacyRedirects(availableModules, base).map((redirect) => (
+          <Route
+            key={redirect.key}
+            path={redirect.path}
+            element={<Navigate to={redirect.to} replace />}
+          />
+        ))}
         {launcherRoutes.map((module) => {
-          const modulePath = module.route.replace('/dashboard/', '');
+          const modulePath =
+            base === '/dashboard'
+              ? module.route.replace('/dashboard/', '')
+              : module.route === base
+                ? ''
+                : module.route.replace(`${base}/`, '');
           const registry = moduleRegistries[module.id];
+
+          const routeElement = (
+            <PermissionGuard
+              permission={MODULE_PERMISSION_MAP[module.id] || ''}
+            >
+              {skipLayout ? (
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <ModuleFeatureRenderer module={module} />
+                </Suspense>
+              ) : (
+                <ModuleLayout module={module}>
+                  <Suspense fallback={<RouteLoadingFallback />}>
+                    <ModuleFeatureRenderer module={module} />
+                  </Suspense>
+                </ModuleLayout>
+              )}
+            </PermissionGuard>
+          );
 
           return (
             <Route
               key={module.id}
               path={modulePath}
-              element={
-                <PermissionGuard
-                  permission={MODULE_PERMISSION_MAP[module.id] || ''}
-                >
-                  <ModuleLayout module={module}>
-                    <Suspense fallback={<RouteLoadingFallback />}>
-                      <ModuleFeatureRenderer module={module} />
-                    </Suspense>
-                  </ModuleLayout>
-                </PermissionGuard>
-              }
+              element={routeElement}
             >
-              {registry?.map((route) => (
-                <ModuleRouteRenderer
-                  key={route.path}
-                  route={route}
-                  module={module}
-                />
-              ))}
+{registry?.map((route) =>
+  renderModuleRoute(route, module, activePermissions),
+)}
               <Route path="*" element={<ModulePlaceholder />} />
             </Route>
           );

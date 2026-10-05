@@ -1,4 +1,4 @@
-import type { Candidate } from '@/types/domain/candidate';
+﻿import type { Candidate } from '@/modules/candidato/types/candidate';
 
 export interface MatchBreakdownItem {
   label: string;
@@ -123,3 +123,4 @@ export const MATCH_WEIGHTS = {
 } as const;
 
 export const ALGORITHM_VERSION = '1.0.0';
+

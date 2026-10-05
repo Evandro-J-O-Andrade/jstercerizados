@@ -21,6 +21,26 @@ function devApiServer(): Plugin {
           });
         }
       });
+      // Ensure charset=utf-8 is sent for HTML responses
+      server.middlewares.use((req, res, next) => {
+        const originalEnd = res.end;
+        res.end = function (chunk?: any, encoding?: any) {
+          if (res.getHeader('Content-Type')?.toString().startsWith('text/html') &&
+              !res.getHeader('Content-Type')?.toString().includes('charset')) {
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          }
+          if (res.getHeader('Content-Type')?.toString().startsWith('text/javascript') &&
+              !res.getHeader('Content-Type')?.toString().includes('charset')) {
+            res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+          }
+          if (res.getHeader('Content-Type')?.toString().startsWith('text/css') &&
+              !res.getHeader('Content-Type')?.toString().includes('charset')) {
+            res.setHeader('Content-Type', 'text/css; charset=utf-8');
+          }
+          return originalEnd.call(this, chunk, encoding);
+        };
+        next();
+      });
       server.middlewares.use(async (req, res, next) => {
         const url = new URL(
           req.url ?? '',

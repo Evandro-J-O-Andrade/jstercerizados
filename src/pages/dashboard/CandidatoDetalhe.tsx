@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -9,9 +9,9 @@ import {
   MapPin,
   Star,
 } from 'lucide-react';
-import { candidatesRepository } from '@/repositories/candidates.repository';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import { useAuth } from '@/contexts/AuthContext';
-import type { Candidate } from '@/types/domain/candidate';
+import type { Candidate } from '@/modules/candidato/types/candidate';
 
 type TabValue =
   | 'overview'
@@ -296,7 +296,7 @@ export default function CandidatoDetalhe() {
                 <p className="text-xs text-muted-foreground">
                   {formatDate(edu.start_date)}{' '}
                   {edu.end_date ? `- ${formatDate(edu.end_date)}` : ''}{' '}
-                  {edu.degree ? `• ${edu.degree}` : ''}
+                  {edu.degree ? `⬢ ${edu.degree}` : ''}
                 </p>
               </div>
             ))
@@ -318,7 +318,7 @@ export default function CandidatoDetalhe() {
                 <p className="text-sm text-muted-foreground">{course.institution}</p>
                 <p className="text-xs text-muted-foreground">
                   {formatDate(course.completed_at)}{' '}
-                  {course.hours ? `• ${course.hours}h` : ''}
+                  {course.hours ? `⬢ ${course.hours}h` : ''}
                 </p>
               </div>
             ))
@@ -366,4 +366,5 @@ export default function CandidatoDetalhe() {
     </div>
   );
 }
+
 

@@ -1,9 +1,9 @@
-import { SupabaseRepository } from './supabase.repository';
+﻿import { SupabaseRepository } from './supabase.repository';
 import type {
   TalentPoolMembership,
   TalentPoolMembershipCreateInput,
   TalentPoolMembershipUpdateInput,
-} from '@/types/domain/candidate';
+} from '@/modules/candidato/types/candidate';
 
 export class TalentPoolRepository extends SupabaseRepository {
   async findByTenant(tenantId: string): Promise<TalentPoolMembership[]> {
@@ -132,3 +132,4 @@ export class TalentPoolRepository extends SupabaseRepository {
 }
 
 export const talentPoolRepository = new TalentPoolRepository();
+

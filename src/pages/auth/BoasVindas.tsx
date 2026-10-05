@@ -156,13 +156,14 @@ export default function AuthWelcome() {
     isAdminMaster,
     updateFirstLoginState,
     firstLoginState,
+    resolvePostLoginDestination,
   } = useAuth();
   const { identity, userIdentity } = useAccount();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!person) {
-      navigate('/entrar', { replace: true });
+      navigate('/login', { replace: true });
     }
   }, [person, navigate]);
 
@@ -179,23 +180,31 @@ export default function AuthWelcome() {
     setIsSubmitting(true);
     setError('');
 
+    // A boas-vindas é etapa transitória: a gravação de welcome_completed_at é
+    // bookkeeping e não pode impedir a entrada no sistema. Se a gravação
+    // falhar, o usuário ainda segue para o destino resolvido.
     try {
-      await updateFirstLoginState({
+      const result = await updateFirstLoginState({
         welcome_completed_at: new Date().toISOString(),
         first_login_completed: true,
       });
 
-      const roleNames = roles.map((r) => r.name.toLowerCase());
-      const isCandidato = roleNames.some((n) => n.includes('candidato'));
-
-      if (isCandidato) {
-        navigate('/candidato', { replace: true });
-      } else {
-        navigate('/dashboard', { replace: true });
+      if (result.error) {
+        console.warn('[AUTH:WELCOME] falha ao registrar welcome_completed_at', {
+          error: result.error,
+        });
       }
+    } catch (persistError) {
+      console.warn('[AUTH:WELCOME] exceção ao registrar welcome_completed_at', {
+        error: persistError,
+      });
+    }
+
+    try {
+      const destination = resolvePostLoginDestination(true);
+      navigate(destination, { replace: true });
     } catch {
       setError('Erro ao acessar. Tente novamente.');
-    } finally {
       setIsSubmitting(false);
     }
   };

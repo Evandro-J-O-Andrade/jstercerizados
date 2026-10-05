@@ -1,0 +1,2 @@
+export { useRecrutamentoAuthorization, useRecrutamentoCan, useRecrutamentoCanAll, useRecrutamentoCanAny } from './RecrutamentoAuthorization';
+export type { RecrutamentoFeatureAccess } from './RecrutamentoAuthorization';

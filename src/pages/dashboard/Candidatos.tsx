@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
@@ -6,13 +6,13 @@ import { Users, Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/feedback/ToastContext';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
-import { candidatesRepository } from '@/repositories/candidates.repository';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import { cn } from '@/utils';
 import type {
   Candidate,
   CandidateCreateInput,
   CandidateUpdateInput,
-} from '@/types/domain/candidate';
+} from '@/modules/candidato/types/candidate';
 
 const CANDIDATE_STATUS = [
   { value: 'active', label: 'Ativo' },
@@ -527,3 +527,4 @@ export default function Candidatos() {
     </ModuleWorkspace>
   );
 }
+

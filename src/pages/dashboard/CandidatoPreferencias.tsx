@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { candidatePreferencesRepository } from '@/repositories/candidate-preferences.repository';
-import { candidatesRepository } from '@/repositories/candidates.repository';
+import { candidatePreferencesRepository } from '@/modules/candidato/repositories/candidate-preferences.repository';
+import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import type {
   CandidatePreference,
   CandidatePreferenceCreateInput,
   CandidatePreferenceUpdateInput,
-} from '@/types/domain/candidate';
+} from '@/modules/candidato/types/candidate';
 
 export default function CandidatoPreferencias() {
   const { currentTenantId, isAdminMaster } = useAuth();
@@ -538,3 +538,4 @@ export default function CandidatoPreferencias() {
     </ModuleWorkspace>
   );
 }
+
