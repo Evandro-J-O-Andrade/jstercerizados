@@ -295,8 +295,8 @@ export default function RelatoriosPage() {
     },
     {
       id: 'reports-active-services',
-      label: 'Serviços ativos',
-      value: services.filter((item) => item.active).length,
+      label: 'Serviços publicados',
+      value: services.filter((item) => item.status === 'published').length,
       icon: UserCog,
       permission: 'service_orders.read',
       tone: 'success',

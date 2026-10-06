@@ -33,13 +33,28 @@ export interface Service {
   id: string;
   tenant_id: string;
   name: string;
-  description: string | null;
-  short_description: string | null;
-  benefits: string[] | null;
-  image_url: string | null;
-  icon: string | null;
+  slug: string;
   category: string;
-  active: boolean;
+  short_description: string | null;
+  description: string | null;
+  card_image_url: string | null;
+  hero_image_url: string | null;
+  hero_title: string | null;
+  hero_subtitle: string | null;
+  benefits: string[] | null;
+  icon: string | null;
+  process_steps: unknown;
+  cta_title: string | null;
+  cta_description: string | null;
+  cta_button_text: string | null;
+  cta_button_url: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
+  seo_keywords: string[] | null;
+  status: 'draft' | 'published' | 'archived';
+  published_at: string | null;
+  display_order: number | null;
+  created_by: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -47,13 +62,28 @@ export interface Service {
 export interface ServiceCreateInput {
   tenant_id: string;
   name: string;
-  description?: string | null;
-  short_description?: string | null;
-  benefits?: string[] | null;
-  image_url?: string | null;
-  icon?: string | null;
+  slug?: string;
   category: string;
-  active?: boolean;
+  short_description?: string | null;
+  description?: string | null;
+  card_image_url?: string | null;
+  hero_image_url?: string | null;
+  hero_title?: string | null;
+  hero_subtitle?: string | null;
+  benefits?: string[] | null;
+  icon?: string | null;
+  process_steps?: unknown;
+  cta_title?: string | null;
+  cta_description?: string | null;
+  cta_button_text?: string | null;
+  cta_button_url?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string[] | null;
+  status?: 'draft' | 'published' | 'archived';
+  published_at?: string | null;
+  display_order?: number | null;
+  created_by?: string | null;
 }
 
 export interface ServiceExecution {

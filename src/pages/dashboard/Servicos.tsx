@@ -18,16 +18,29 @@ import type {
 } from '@/types/domain/service';
 import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
 import { getModuleById } from '@/components/portal/ModuleRegistry';
+import { ServiceForm } from '@/modules/servicos/components/ServiceForm';
+import { SERVICOS_PERMISSIONS } from '@/modules/servicos/permissions';
 
 type Tab = 'services' | 'orders' | 'executions';
 
 const SERVICES_COLUMNS: ColumnDef<Service>[] = [
   { key: 'name', header: 'Nome', sortable: true },
   { key: 'category', header: 'Categoria', sortable: true },
+  { key: 'status', header: 'Status', sortable: true },
   {
-    key: 'active',
-    header: 'Ativo',
-    render: (item) => (item.active ? 'Sim' : 'Não'),
+    key: 'published_at',
+    header: 'Publicado em',
+    render: (item) =>
+      item.published_at
+        ? new Date(item.published_at).toLocaleDateString('pt-BR')
+        : '-',
+    sortable: true,
+  },
+  {
+    key: 'display_order',
+    header: 'Ordem',
+    render: (item) => item.display_order ?? '-',
+    sortable: true,
   },
   {
     key: 'created_at',
@@ -40,12 +53,13 @@ const SERVICES_COLUMNS: ColumnDef<Service>[] = [
 const SERVICES_FILTERS: FilterDef[] = [
   { key: 'category', label: 'Categoria', type: 'text' },
   {
-    key: 'active',
-    label: 'Ativo',
+    key: 'status',
+    label: 'Status',
     type: 'select',
     options: [
-      { value: 'true', label: 'Sim' },
-      { value: 'false', label: 'Não' },
+      { value: 'draft', label: 'Rascunho' },
+      { value: 'published', label: 'Publicado' },
+      { value: 'archived', label: 'Arquivado' },
     ],
   },
 ];
@@ -113,54 +127,6 @@ const EXECUTIONS_COLUMNS: ColumnDef<ServiceExecution>[] = [
 ];
 
 const EXECUTIONS_FILTERS: FilterDef[] = [];
-
-function ServiceForm({
-  form,
-  setForm,
-}: {
-  form: ServiceCreateInput;
-  setForm: (form: ServiceCreateInput) => void;
-}) {
-  return (
-    <div className="space-y-4">
-      <div>
-        <label className="text-foreground text-sm font-medium">Nome</label>
-        <input
-          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
-      </div>
-      <div>
-        <label className="text-foreground text-sm font-medium">Categoria</label>
-        <input
-          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
-          value={form.category}
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
-        />
-      </div>
-      <div>
-        <label className="text-foreground text-sm font-medium">Descrição</label>
-        <textarea
-          className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
-          value={form.description ?? ''}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-        />
-      </div>
-      <div className="flex items-center gap-2">
-        <input
-          id="active"
-          type="checkbox"
-          checked={form.active}
-          onChange={(e) => setForm({ ...form, active: e.target.checked })}
-        />
-        <label htmlFor="active" className="text-foreground text-sm">
-          Ativo
-        </label>
-      </div>
-    </div>
-  );
-}
 
 function OrderForm({
   form,
@@ -315,21 +281,49 @@ function ExecutionForm({
 }
 
 export default function Servicos() {
-  const { currentTenantId } = useAuth();
+  const { currentTenantId, hasAnyPermission } = useAuth();
   const [tab, setTab] = useState<Tab>('services');
+  const [editingService, setEditingService] = useState<Service | null>(null);
+  const [serviceModalOpen, setServiceModalOpen] = useState(false);
+  const [servicesRefreshKey, setServicesRefreshKey] = useState(0);
 
   const moduleDef: ModuleDefinition | undefined = getModuleById('servicos');
+
+  const canCreateService = hasAnyPermission([
+    SERVICOS_PERMISSIONS.servicesCreate,
+  ]);
+  const canUpdateService = hasAnyPermission([
+    SERVICOS_PERMISSIONS.servicesUpdate,
+  ]);
+  const canDeleteService = hasAnyPermission([
+    SERVICOS_PERMISSIONS.servicesDelete,
+  ]);
+
+  const canCreateOrder = hasAnyPermission([
+    SERVICOS_PERMISSIONS.serviceOrdersCreate,
+  ]);
+  const canUpdateOrder = hasAnyPermission([
+    SERVICOS_PERMISSIONS.serviceOrdersUpdate,
+  ]);
+  const canDeleteOrder = hasAnyPermission([
+    SERVICOS_PERMISSIONS.serviceOrdersDelete,
+  ]);
+
+  const canCreateExecution = hasAnyPermission([
+    SERVICOS_PERMISSIONS.serviceExecutionsCreate,
+  ]);
+  const canUpdateExecution = hasAnyPermission([
+    SERVICOS_PERMISSIONS.serviceExecutionsUpdate,
+  ]);
+  const canDeleteExecution = hasAnyPermission([
+    SERVICOS_PERMISSIONS.serviceExecutionsDelete,
+  ]);
 
   const serviceDefaultForm: ServiceCreateInput = {
     tenant_id: currentTenantId || '',
     name: '',
     category: '',
     active: true,
-    description: '',
-    short_description: '',
-    benefits: [],
-    image_url: '',
-    icon: '',
   };
 
   const orderDefaultForm: ServiceOrderCreateInput = {
@@ -386,16 +380,48 @@ export default function Servicos() {
           title="Serviços"
           description="Catálogo de serviços."
           module={moduleDef}
-          permissions={[
-            {
-              id: 'services.read',
-              name: 'services.read',
-              module: 'services',
-              resource: 'services',
-              action: 'read',
-              created_at: new Date().toISOString(),
-            },
-          ]}
+          permissions={
+            [
+              {
+                id: SERVICOS_PERMISSIONS.servicesRead,
+                name: SERVICOS_PERMISSIONS.servicesRead,
+                module: 'services',
+                resource: 'services',
+                action: 'read',
+                created_at: new Date().toISOString(),
+              },
+              canCreateService
+                ? {
+                    id: SERVICOS_PERMISSIONS.servicesCreate,
+                    name: SERVICOS_PERMISSIONS.servicesCreate,
+                    module: 'services',
+                    resource: 'services',
+                    action: 'create',
+                    created_at: new Date().toISOString(),
+                  }
+                : undefined,
+              canUpdateService
+                ? {
+                    id: SERVICOS_PERMISSIONS.servicesUpdate,
+                    name: SERVICOS_PERMISSIONS.servicesUpdate,
+                    module: 'services',
+                    resource: 'services',
+                    action: 'update',
+                    created_at: new Date().toISOString(),
+                  }
+                : undefined,
+              canDeleteService
+                ? {
+                    id: SERVICOS_PERMISSIONS.servicesDelete,
+                    name: SERVICOS_PERMISSIONS.servicesDelete,
+                    module: 'services',
+                    resource: 'services',
+                    action: 'delete',
+                    created_at: new Date().toISOString(),
+                  }
+                : undefined,
+            ].filter(Boolean) as any
+          }
           columns={SERVICES_COLUMNS}
           filters={SERVICES_FILTERS}
           fetchData={async (tenantId) =>
@@ -412,10 +438,37 @@ export default function Servicos() {
           }
           getItemId={(item) => item.id}
           emptyMessage="Nenhum serviço cadastrado."
-          renderForm={(form, setForm) => (
+          onEditStart={(item) => setEditingService(item as Service)}
+          onModalClose={() => setEditingService(null)}
+          modalOpen={serviceModalOpen}
+          onModalOpenChange={setServiceModalOpen}
+          refreshKey={servicesRefreshKey}
+          renderForm={(_form, _setForm, isEditing) => (
             <ServiceForm
-              form={form as ServiceCreateInput}
-              setForm={setForm as (form: ServiceCreateInput) => void}
+              open={serviceModalOpen}
+              tenantId={currentTenantId || ''}
+              editingService={isEditing ? editingService : null}
+              serviceId={isEditing ? (editingService?.id ?? null) : null}
+              onSubmit={async (data) => {
+                if (isEditing && editingService) {
+                  await servicesRepository.updateService(
+                    editingService.tenant_id,
+                    editingService.id,
+                    data,
+                  );
+                } else {
+                  await servicesRepository.createService({
+                    ...data,
+                    tenant_id: currentTenantId || '',
+                  });
+                }
+                setServiceModalOpen(false);
+                setServicesRefreshKey((key) => key + 1);
+              }}
+              onCancel={() => {
+                setEditingService(null);
+                setServiceModalOpen(false);
+              }}
             />
           )}
           defaultForm={serviceDefaultForm}
@@ -427,16 +480,48 @@ export default function Servicos() {
           title="Ordens de Serviço"
           description="Ordens e acompanhamento."
           module={moduleDef}
-          permissions={[
-            {
-              id: 'service_orders.read',
-              name: 'service_orders.read',
-              module: 'services',
-              resource: 'service_orders',
-              action: 'read',
-              created_at: new Date().toISOString(),
-            },
-          ]}
+          permissions={
+            [
+              {
+                id: SERVICOS_PERMISSIONS.serviceOrdersRead,
+                name: SERVICOS_PERMISSIONS.serviceOrdersRead,
+                module: 'services',
+                resource: 'service_orders',
+                action: 'read',
+                created_at: new Date().toISOString(),
+              },
+              canCreateOrder
+                ? {
+                    id: SERVICOS_PERMISSIONS.serviceOrdersCreate,
+                    name: SERVICOS_PERMISSIONS.serviceOrdersCreate,
+                    module: 'services',
+                    resource: 'service_orders',
+                    action: 'create',
+                    created_at: new Date().toISOString(),
+                  }
+                : undefined,
+              canUpdateOrder
+                ? {
+                    id: SERVICOS_PERMISSIONS.serviceOrdersUpdate,
+                    name: SERVICOS_PERMISSIONS.serviceOrdersUpdate,
+                    module: 'services',
+                    resource: 'service_orders',
+                    action: 'update',
+                    created_at: new Date().toISOString(),
+                  }
+                : undefined,
+              canDeleteOrder
+                ? {
+                    id: SERVICOS_PERMISSIONS.serviceOrdersDelete,
+                    name: SERVICOS_PERMISSIONS.serviceOrdersDelete,
+                    module: 'services',
+                    resource: 'service_orders',
+                    action: 'delete',
+                    created_at: new Date().toISOString(),
+                  }
+                : undefined,
+            ].filter(Boolean) as any
+          }
           columns={ORDERS_COLUMNS}
           filters={ORDERS_FILTERS}
           fetchData={async (tenantId) =>
@@ -468,16 +553,48 @@ export default function Servicos() {
           title="Execuções"
           description="Execuções de serviço."
           module={moduleDef}
-          permissions={[
-            {
-              id: 'service_executions.read',
-              name: 'service_executions.read',
-              module: 'services',
-              resource: 'service_executions',
-              action: 'read',
-              created_at: new Date().toISOString(),
-            },
-          ]}
+          permissions={
+            [
+              {
+                id: SERVICOS_PERMISSIONS.serviceExecutionsRead,
+                name: SERVICOS_PERMISSIONS.serviceExecutionsRead,
+                module: 'services',
+                resource: 'service_executions',
+                action: 'read',
+                created_at: new Date().toISOString(),
+              },
+              canCreateExecution
+                ? {
+                    id: SERVICOS_PERMISSIONS.serviceExecutionsCreate,
+                    name: SERVICOS_PERMISSIONS.serviceExecutionsCreate,
+                    module: 'services',
+                    resource: 'service_executions',
+                    action: 'create',
+                    created_at: new Date().toISOString(),
+                  }
+                : undefined,
+              canUpdateExecution
+                ? {
+                    id: SERVICOS_PERMISSIONS.serviceExecutionsUpdate,
+                    name: SERVICOS_PERMISSIONS.serviceExecutionsUpdate,
+                    module: 'services',
+                    resource: 'service_executions',
+                    action: 'update',
+                    created_at: new Date().toISOString(),
+                  }
+                : undefined,
+              canDeleteExecution
+                ? {
+                    id: SERVICOS_PERMISSIONS.serviceExecutionsDelete,
+                    name: SERVICOS_PERMISSIONS.serviceExecutionsDelete,
+                    module: 'services',
+                    resource: 'service_executions',
+                    action: 'delete',
+                    created_at: new Date().toISOString(),
+                  }
+                : undefined,
+            ].filter(Boolean) as any
+          }
           columns={EXECUTIONS_COLUMNS}
           filters={EXECUTIONS_FILTERS}
           fetchData={async (tenantId) =>
