@@ -4,9 +4,10 @@ import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { getSupabaseClient } from '@/lib/supabase';
 import { useRealtimeChat } from '@/hooks/useRealtimeChat';
 import { sendToN8n } from '@/lib/n8n';
-import { X, Send, User, Headphones, Bot, Loader2 } from 'lucide-react';
+import { X, Send, User, Headphones, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { normalizeChatResponse } from '@/lib/chat-response-normalizer';
 
 type ChatRole = 'user' | 'assistant' | 'system' | 'agent';
@@ -225,7 +226,7 @@ export function HumanChatWidget({
                 <div className="flex-1 space-y-4 overflow-y-auto p-4">
                   {connecting ? (
                     <div className="flex items-center justify-center py-8">
-                      <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                      <LoadingSpinner size="sm" />
                     </div>
                   ) : (
                     messages.map((message) => (

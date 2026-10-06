@@ -1,5 +1,6 @@
 import { type HTMLAttributes } from 'react';
 import { cn } from '@/utils';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 interface InlineLoaderProps extends HTMLAttributes<HTMLDivElement> {
   message?: string;
@@ -12,8 +13,6 @@ export function InlineLoader({
   size = 'sm',
   ...rest
 }: InlineLoaderProps) {
-  const spinnerSize = size === 'md' ? 'h-5 w-5 border-2' : 'h-4 w-4 border-2';
-
   return (
     <span
       role="status"
@@ -23,12 +22,7 @@ export function InlineLoader({
       {...rest}
       className={cn('inline-flex items-center gap-2', className)}
     >
-      <span
-        className={cn(
-          'border-border border-t-primary inline-block animate-spin rounded-full',
-          spinnerSize,
-        )}
-      />
+      <LoadingSpinner size={size} />
       <span className="text-muted-foreground text-xs">{message}</span>
     </span>
   );

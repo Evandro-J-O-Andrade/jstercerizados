@@ -1,11 +1,12 @@
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { Users, Search, Plus, Loader2 } from 'lucide-react';
+import { Users, Search, Plus } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useRecrutamento } from '@/modules/recrutamento/RecrutamentoContext';
 import { useState } from 'react';
 import type { CandidateListItem } from '@/modules/recrutamento/types';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 function CandidateCard({ candidate }: { candidate: CandidateListItem }) {
   const fullName = candidate.person?.full_name ?? 'Sem nome';
@@ -85,7 +86,7 @@ export default function RecrutamentoCandidatos() {
           role="status"
           aria-busy="true"
         >
-          <Loader2 className="text-primary h-8 w-8 animate-spin" />
+          <LoadingSpinner size="sm" />
           <span className="sr-only">Carregando candidatos…</span>
         </div>
       </ModuleWorkspace>

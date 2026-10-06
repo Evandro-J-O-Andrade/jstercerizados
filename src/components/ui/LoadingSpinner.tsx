@@ -30,12 +30,17 @@ export function LoadingSpinner({
     <div className="relative" role="status" aria-live="polite" aria-busy="true">
       <div
         className={cn(
+          'absolute inset-0 rounded-full border-2 border-gray-800/60',
+        )}
+      />
+      <div
+        className={cn(
           SIZE_MAP[size],
           BORDER_WIDTH_MAP[size],
           'border-t-primary border-r-primary rounded-full border-transparent',
           prefersReducedMotion ? 'animate-spin-slow' : 'animate-spin',
-          'shadow-[0_0_20px_hsl(var(--primary)/0.4)]',
-          'dark:shadow-[0_0_24px_hsl(var(--primary)/0.5)]',
+          'shadow-[0_0_15px_rgba(212,160,23,0.35)]',
+          'dark:shadow-[0_0_20px_rgba(212,160,23,0.45)]',
           className,
         )}
       />

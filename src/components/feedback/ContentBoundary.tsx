@@ -7,12 +7,7 @@ import { NotFoundState } from '@/components/fallback/NotFoundState';
 import { UnauthorizedState } from '@/components/fallback/UnauthorizedState';
 
 export type ContentBoundaryStatus =
-  | 'loading'
-  | 'error'
-  | 'empty'
-  | 'not_found'
-  | 'unauthorized'
-  | 'success';
+  'loading' | 'error' | 'empty' | 'not_found' | 'unauthorized' | 'success';
 
 export interface ContentBoundaryProps {
   status: ContentBoundaryStatus;
@@ -34,8 +29,10 @@ export interface ContentBoundaryProps {
  * Delimita apenas a área de conteúdo do módulo. Header, Sidebar e Footer
  * ficam FORA deste componente e não são desmontados durante uma operação.
  *
- * O loading usa RouteLoadingFallback, que já implementa o degrade progressivo:
- * círculo primeiro, logo J&S + mensagem apenas após o limiar de 2s.
+ * O loading usa RouteLoadingFallback (componente protegido pelo
+ * src/components/ui/loading-contract.ts), que já implementa o degrade
+ * progressivo: spinner primeiro, logo J&S + mensagem apenas após o limiar
+ * de 2s.
  *
  * O botão "Voltar" respeita o histórico real do navegador: usa window.history
  * apenas quando existe entrada anterior dentro do app, senão cai no

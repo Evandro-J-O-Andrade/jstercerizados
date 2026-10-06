@@ -2,7 +2,6 @@ import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import {
   FileCheck,
   Search,
-  Loader2,
   Clock,
   UserCheck,
   XCircle,
@@ -10,6 +9,7 @@ import {
   Briefcase,
   User,
 } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -128,7 +128,7 @@ export default function RecrutamentoCandidaturas() {
           role="status"
           aria-busy="true"
         >
-          <Loader2 className="text-primary h-8 w-8 animate-spin" />
+          <LoadingSpinner size="sm" />
           <span className="sr-only">Carregando candidaturas…</span>
         </div>
       </ModuleWorkspace>

@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Zap,
 } from 'lucide-react';
+import { PageLoader } from '@/components/ui/PageLoader';
 import { Button } from '@/components/ui/Button';
 import { SafeImage } from '@/components/ui/SafeImage';
 import { Section } from '@/components/sections/Section';
@@ -100,11 +101,7 @@ export default function ServicoDetalhe() {
   }
 
   if (!service) {
-    return (
-      <div className="flex min-h-[60dvh] items-center justify-center">
-        <div className="border-muted-foreground/30 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   const heroImage =

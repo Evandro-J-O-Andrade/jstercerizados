@@ -1,5 +1,6 @@
 import { type HTMLAttributes } from 'react';
 import { cn } from '@/utils';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 interface SectionLoaderProps extends HTMLAttributes<HTMLDivElement> {
   message?: string;
@@ -53,7 +54,7 @@ export function SectionLoader({
         className,
       )}
     >
-      <div className="border-border border-t-primary h-8 w-8 animate-spin rounded-full border-4" />
+      <LoadingSpinner size="sm" />
       <p className="text-muted-foreground text-sm">{message}</p>
     </div>
   );

@@ -3,13 +3,13 @@ import {
   Briefcase,
   Search,
   Plus,
-  Loader2,
   Flag,
   X,
   CheckCircle,
   Clock,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
@@ -128,7 +128,7 @@ export default function RecrutamentoVagas() {
           role="status"
           aria-busy="true"
         >
-          <Loader2 className="text-primary h-8 w-8 animate-spin" />
+          <LoadingSpinner size="sm" />
           <span className="sr-only">Carregando vagas…</span>
         </div>
       </ModuleWorkspace>

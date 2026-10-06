@@ -10,6 +10,12 @@ export { Badge } from './Badge';
 export { PageLoader } from './PageLoader';
 export { RouteLoadingFallback } from './RouteLoadingFallback';
 export { LoadingSpinner, LoadingOverlay } from './LoadingSpinner';
+export {
+  LOADING_PROTECTED_COMPONENTS,
+  LOADING_HIERARCHY,
+  assertLoadingComponent,
+  type LoadingContract,
+} from './loading-contract';
 export { SectionLoader, InlineLoader } from '@/components/feedback';
 export {
   DataState,

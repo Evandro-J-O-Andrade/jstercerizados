@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -41,8 +42,8 @@ export default function AuthCallback() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <div className="border-primary mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-t-transparent" />
-        <p className="text-muted-foreground text-sm">
+        <LoadingSpinner size="md" />
+        <p className="text-muted-foreground mt-4 text-sm">
           {isLoading ? 'Finalizando autenticação...' : 'Redirecionando...'}
         </p>
       </div>
