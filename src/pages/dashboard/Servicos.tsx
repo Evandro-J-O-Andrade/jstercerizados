@@ -10,6 +10,7 @@ import { servicesRepository } from '@/repositories/services.repository';
 import { useAuth } from '@/contexts/AuthContext';
 import type {
   Service,
+  ServiceStatus,
   ServiceOrder,
   ServiceExecution,
   ServiceCreateInput,
@@ -23,23 +24,19 @@ import { SERVICOS_PERMISSIONS } from '@/modules/servicos/permissions';
 
 type Tab = 'services' | 'orders' | 'executions';
 
+const SERVICE_STATUS_LABELS: Record<ServiceStatus, string> = {
+  draft: 'Rascunho',
+  published: 'Publicado',
+  archived: 'Arquivado',
+};
+
 const SERVICES_COLUMNS: ColumnDef<Service>[] = [
   { key: 'name', header: 'Nome', sortable: true },
   { key: 'category', header: 'Categoria', sortable: true },
-  { key: 'status', header: 'Status', sortable: true },
   {
-    key: 'published_at',
-    header: 'Publicado em',
-    render: (item) =>
-      item.published_at
-        ? new Date(item.published_at).toLocaleDateString('pt-BR')
-        : '-',
-    sortable: true,
-  },
-  {
-    key: 'display_order',
-    header: 'Ordem',
-    render: (item) => item.display_order ?? '-',
+    key: 'status',
+    header: 'Status',
+    render: (item) => SERVICE_STATUS_LABELS[item.status] ?? item.status,
     sortable: true,
   },
   {
@@ -319,11 +316,22 @@ export default function Servicos() {
     SERVICOS_PERMISSIONS.serviceExecutionsDelete,
   ]);
 
+  const handleToggleServiceStatus = async (item: Service) => {
+    if (item.status === 'archived') return;
+    const next: ServiceStatus =
+      item.status === 'published' ? 'draft' : 'published';
+    await servicesRepository.updateServiceStatus(
+      currentTenantId || '',
+      item.id,
+      next,
+    );
+  };
+
   const serviceDefaultForm: ServiceCreateInput = {
     tenant_id: currentTenantId || '',
     name: '',
     category: '',
-    active: true,
+    status: 'draft',
   };
 
   const orderDefaultForm: ServiceOrderCreateInput = {
@@ -443,6 +451,8 @@ export default function Servicos() {
           modalOpen={serviceModalOpen}
           onModalOpenChange={setServiceModalOpen}
           refreshKey={servicesRefreshKey}
+          onToggleStatus={handleToggleServiceStatus}
+          getToggleState={(item) => item.status === 'published'}
           renderForm={(_form, _setForm, isEditing) => (
             <ServiceForm
               open={serviceModalOpen}

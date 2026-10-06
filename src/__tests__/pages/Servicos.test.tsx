@@ -202,7 +202,7 @@ describe('Servicos — UI States & Permissions', () => {
     await waitFor(() => {
       expect(screen.getByText('Serviço A')).toBeInTheDocument();
       expect(screen.getByText('rh')).toBeInTheDocument();
-      expect(screen.getByText('published')).toBeInTheDocument();
+      expect(screen.getAllByText('Publicado').length).toBeGreaterThan(0);
     });
   });
 

@@ -23,9 +23,9 @@ const serviceSchema = z.object({
   description: z.string().optional().nullable(),
   short_description: z.string().optional().nullable(),
   benefits: z.array(z.string()).optional().nullable(),
-  image_url: z.string().optional().nullable(),
+  card_image_url: z.string().optional().nullable(),
   icon: z.string().optional().nullable(),
-  active: z.boolean().default(true),
+  status: z.enum(['draft', 'published', 'archived']).default('draft'),
 });
 
 export type ServiceFormData = z.infer<typeof serviceSchema>;
@@ -104,9 +104,9 @@ export function ServiceForm({
       description: null,
       short_description: null,
       benefits: [],
-      image_url: null,
+      card_image_url: null,
       icon: null,
-      active: true,
+      status: 'draft',
     },
   });
 
@@ -127,9 +127,9 @@ export function ServiceForm({
         description: editingService.description ?? null,
         short_description: editingService.short_description ?? null,
         benefits: editingService.benefits ?? [],
-        image_url: editingService.image_url ?? null,
+        card_image_url: editingService.card_image_url ?? null,
         icon: editingService.icon ?? null,
-        active: editingService.active,
+        status: editingService.status,
       });
       loadMediaAssets();
     } else {
@@ -139,9 +139,9 @@ export function ServiceForm({
         description: null,
         short_description: null,
         benefits: [],
-        image_url: null,
+        card_image_url: null,
         icon: null,
-        active: true,
+        status: 'draft',
       });
       setMediaAssets({ card: [], hero: [], gallery: [] });
     }
@@ -231,16 +231,16 @@ export function ServiceForm({
           </div>
 
           <div>
-            <Label htmlFor="image_url">URL da imagem</Label>
+            <Label htmlFor="card_image_url">URL da imagem do card</Label>
             <Input
-              id="image_url"
-              {...register('image_url')}
+              id="card_image_url"
+              {...register('card_image_url')}
               placeholder="https://..."
-              className={cn(errors.image_url && 'border-destructive')}
+              className={cn(errors.card_image_url && 'border-destructive')}
             />
-            {errors.image_url && (
+            {errors.card_image_url && (
               <p className="text-destructive mt-1 text-xs">
-                {errors.image_url.message}
+                {errors.card_image_url.message}
               </p>
             )}
           </div>
@@ -260,11 +260,22 @@ export function ServiceForm({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <input id="active" type="checkbox" {...register('active')} />
-            <Label htmlFor="active" className="text-sm">
-              Ativo
-            </Label>
+          <div>
+            <Label htmlFor="status">Status</Label>
+            <select
+              id="status"
+              {...register('status')}
+              className="border-border bg-background mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none"
+            >
+              <option value="draft">Rascunho</option>
+              <option value="published">Publicado</option>
+              <option value="archived">Arquivado</option>
+            </select>
+            {errors.status && (
+              <p className="text-destructive mt-1 text-xs">
+                {errors.status.message}
+              </p>
+            )}
           </div>
 
           {editingService && (

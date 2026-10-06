@@ -68,7 +68,7 @@ export default function RelatoriosPage() {
     { id: string; name: string; category: string | null }[]
   >([]);
   const [services, setServices] = useState<
-    { id: string; name: string; active: boolean }[]
+    { id: string; name: string; status: string }[]
   >([]);
   const [tickets, setTickets] = useState<
     { id: string; status: string; priority: string }[]

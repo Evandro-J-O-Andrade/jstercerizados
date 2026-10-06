@@ -29,6 +29,8 @@ export interface ServiceOrderCreateInput {
   notes?: string | null;
 }
 
+export type ServiceStatus = 'draft' | 'published' | 'archived';
+
 export interface Service {
   id: string;
   tenant_id: string;
@@ -51,7 +53,7 @@ export interface Service {
   seo_title: string | null;
   seo_description: string | null;
   seo_keywords: string[] | null;
-  status: 'draft' | 'published' | 'archived';
+  status: ServiceStatus;
   published_at: string | null;
   display_order: number | null;
   created_by: string | null;
@@ -80,7 +82,7 @@ export interface ServiceCreateInput {
   seo_title?: string | null;
   seo_description?: string | null;
   seo_keywords?: string[] | null;
-  status?: 'draft' | 'published' | 'archived';
+  status?: ServiceStatus;
   published_at?: string | null;
   display_order?: number | null;
   created_by?: string | null;
