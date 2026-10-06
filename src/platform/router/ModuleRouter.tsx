@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import type { ComponentType, ReactNode } from 'react';
-import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
+import { Routes, Route, Outlet, Navigate, Link } from 'react-router-dom';
 import { useAccount } from '@/platform/context';
 import { PermissionGuard } from '@/platform/permissions';
 import {
@@ -12,6 +12,7 @@ import {
 } from '@/platform/modules';
 import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { ModuleSidebar } from '@/components/portal/ModuleSidebar';
+import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { EmptyState } from '@/components/fallback';
 import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
 import { Clock, LayoutDashboard, ShieldAlert } from 'lucide-react';
@@ -93,14 +94,7 @@ function ModuleFeatureRenderer({ module }: { module: ModuleDefinition }) {
     features.length === 0 ||
     features.every((f) => f.route === module.route)
   ) {
-    return (
-      <div className="space-y-4">
-        <Outlet />
-        <p className="text-muted-foreground">
-          Acesse as funcionalidades pelo menu lateral.
-        </p>
-      </div>
-    );
+    return <Outlet />;
   }
 
   return (
@@ -123,8 +117,8 @@ function FeatureCard({ feature }: { feature: ModuleFeature }) {
   const isComingSoon = feature.implementationStatus === 'coming_soon';
 
   return (
-    <a
-      href={feature.route}
+    <Link
+      to={feature.route}
       className={cn(
         'block rounded-lg border p-4 transition-all',
         isComingSoon
@@ -158,7 +152,7 @@ function FeatureCard({ feature }: { feature: ModuleFeature }) {
           Em desenvolvimento
         </span>
       )}
-    </a>
+    </Link>
   );
 }
 
@@ -263,7 +257,12 @@ function buildLegacyRedirects(
   return redirects.sort((a, b) => b.path.length - a.path.length);
 }
 
-export function ModuleRouter({ moduleRegistries, moduleIds, moduleRouteBase, skipLayout }: ModuleRouterProps) {
+export function ModuleRouter({
+  moduleRegistries,
+  moduleIds,
+  moduleRouteBase,
+  skipLayout,
+}: ModuleRouterProps) {
   const { activePermissions, effectiveScopes } = useAccount();
 
   const base = moduleRouteBase || '/dashboard';
@@ -273,17 +272,16 @@ export function ModuleRouter({ moduleRegistries, moduleIds, moduleRouteBase, ski
     effectiveScopes,
   );
 
-  const launcherRoutes = (moduleIds
-    ? availableModules.filter((m) => moduleIds.includes(m.id))
-    : availableModules.filter(
-        (module) =>
-          module.route !== base &&
-          (MODULE_PERMISSION_MAP[module.id] ||
-            !module.requiredPermissions?.length),
-      )
-  ).filter(
-    (module) => moduleIds || module.route !== base
-  );
+  const launcherRoutes = (
+    moduleIds
+      ? availableModules.filter((m) => moduleIds.includes(m.id))
+      : availableModules.filter(
+          (module) =>
+            module.route !== base &&
+            (MODULE_PERMISSION_MAP[module.id] ||
+              !module.requiredPermissions?.length),
+        )
+  ).filter((module) => moduleIds || module.route !== base);
 
   return (
     <Suspense fallback={<RouteLoadingFallback />}>
@@ -326,11 +324,11 @@ export function ModuleRouter({ moduleRegistries, moduleIds, moduleRouteBase, ski
             <Route
               key={module.id}
               path={modulePath}
-              element={routeElement}
+              element={<ErrorBoundary>{routeElement}</ErrorBoundary>}
             >
-{registry?.map((route) =>
-  renderModuleRoute(route, module, activePermissions),
-)}
+              {registry?.map((route) =>
+                renderModuleRoute(route, module, activePermissions),
+              )}
               <Route path="*" element={<ModulePlaceholder />} />
             </Route>
           );

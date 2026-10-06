@@ -1,3 +1,4 @@
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const ALLOWED_ORIGINS = [
@@ -13,21 +14,24 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const MAX_GALLERY_ITEMS = 10;
 
 const ENTITY_TO_RESOURCE: Record<string, string> = {
-  company: 'companies',
-  service: 'services',
-  partner: 'partners',
-  supplier: 'suppliers',
+  company: 'companies.media',
+  service: 'services.media',
+  partner: 'partners.media',
+  supplier: 'suppliers.media',
 };
 
 const PRIMARY_PURPOSES = ['logo', 'hero', 'card'];
 
 function corsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get('origin') ?? '';
-  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  const allowed = ALLOWED_ORIGINS.includes(origin)
+    ? origin
+    : ALLOWED_ORIGINS[0];
   return {
     'Access-Control-Allow-Origin': allowed,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Headers':
+      'authorization, x-client-info, apikey, content-type',
     'Access-Control-Max-Age': '86400',
   };
 }
@@ -39,7 +43,12 @@ function json(data: unknown, status: number, req: Request): Response {
   });
 }
 
-function errorResponse(code: string, message: string, status: number, req: Request): Response {
+function errorResponse(
+  code: string,
+  message: string,
+  status: number,
+  req: Request,
+): Response {
   return json({ success: false, error: message, code }, status, req);
 }
 
@@ -54,7 +63,12 @@ serve(async (req: Request) => {
 
   const authHeader = req.headers.get('Authorization');
   if (!authHeader) {
-    return errorResponse('UNAUTHORIZED', 'Missing Authorization header', 401, req);
+    return errorResponse(
+      'UNAUTHORIZED',
+      'Missing Authorization header',
+      401,
+      req,
+    );
   }
 
   const url = Deno.env.get('SUPABASE_URL')!;
@@ -74,16 +88,24 @@ serve(async (req: Request) => {
 
   try {
     // 1. Get authenticated user
-    const { data: { user }, error: userError } = await userClient.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await userClient.auth.getUser();
     if (userError || !user) {
-      return errorResponse('UNAUTHORIZED', 'Invalid or expired token', 401, req);
+      return errorResponse(
+        'UNAUTHORIZED',
+        'Invalid or expired token',
+        401,
+        req,
+      );
     }
 
     const authUserId = user.id;
 
     // 2. Parse multipart form data
     const formData = await req.formData();
-    
+
     const file = formData.get('file') as File | null;
     const entityType = formData.get('entity_type') as string;
     const entityId = formData.get('entity_id') as string;
@@ -92,29 +114,61 @@ serve(async (req: Request) => {
     const sortOrderStr = formData.get('sort_order') as string | null;
 
     if (!file || !entityType || !entityId || !purpose) {
-      return errorResponse('INVALID_REQUEST', 'Missing required fields: file, entity_type, entity_id, purpose', 400, req);
+      return errorResponse(
+        'INVALID_REQUEST',
+        'Missing required fields: file, entity_type, entity_id, purpose',
+        400,
+        req,
+      );
     }
 
     // 3. Validate entity_type
     const resource = ENTITY_TO_RESOURCE[entityType];
     if (!resource) {
-      return errorResponse('INVALID_ENTITY_TYPE', `Invalid entity_type: ${entityType}`, 400, req);
+      return errorResponse(
+        'INVALID_ENTITY_TYPE',
+        `Invalid entity_type: ${entityType}`,
+        400,
+        req,
+      );
     }
 
     // 4. Validate purpose
-    const validPurposes = ['logo', 'hero', 'card', 'gallery', 'avatar', 'cover'];
+    const validPurposes = [
+      'logo',
+      'hero',
+      'card',
+      'gallery',
+      'avatar',
+      'cover',
+    ];
     if (!validPurposes.includes(purpose)) {
-      return errorResponse('INVALID_PURPOSE', `Invalid purpose: ${purpose}`, 400, req);
+      return errorResponse(
+        'INVALID_PURPOSE',
+        `Invalid purpose: ${purpose}`,
+        400,
+        req,
+      );
     }
 
     // 5. Validate MIME type (reject SVG for user uploads)
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-      return errorResponse('INVALID_MIME_TYPE', 'Formato não suportado. Use PNG, JPG ou WebP.', 400, req);
+      return errorResponse(
+        'INVALID_MIME_TYPE',
+        'Formato não suportado. Use PNG, JPG ou WebP.',
+        400,
+        req,
+      );
     }
 
     // 6. Validate file size
     if (file.size > MAX_FILE_SIZE) {
-      return errorResponse('FILE_TOO_LARGE', `Arquivo muito grande. Máximo ${MAX_FILE_SIZE / 1024 / 1024} MB.`, 413, req);
+      return errorResponse(
+        'FILE_TOO_LARGE',
+        `Arquivo muito grande. Máximo ${MAX_FILE_SIZE / 1024 / 1024} MB.`,
+        413,
+        req,
+      );
     }
 
     // 7. Resolve person_id from auth_user_id
@@ -125,7 +179,12 @@ serve(async (req: Request) => {
       .maybeSingle();
 
     if (personError || !person) {
-      return errorResponse('PERSON_NOT_FOUND', 'Identidade não encontrada. Complete seu cadastro ou contate o administrador.', 403, req);
+      return errorResponse(
+        'PERSON_NOT_FOUND',
+        'Identidade não encontrada. Complete seu cadastro ou contate o administrador.',
+        403,
+        req,
+      );
     }
     const personId = person.id;
 
@@ -140,34 +199,61 @@ serve(async (req: Request) => {
       .maybeSingle();
 
     if (membershipError || !membership) {
-      return errorResponse('TENANT_NOT_FOUND', 'Nenhum tenant ativo encontrado para o usuário.', 403, req);
+      return errorResponse(
+        'TENANT_NOT_FOUND',
+        'Nenhum tenant ativo encontrado para o usuário.',
+        403,
+        req,
+      );
     }
     const tenantId = membership.tenant_id;
 
     // 9. Check permission via RPC (uses user_has_permission internally)
-    const { data: hasPermission, error: permError } = await userClient.rpc('user_has_permission', {
-      p_auth_user_id: authUserId,
-      p_resource: resource,
-      p_action: 'media.write',
-      p_tenant_id: tenantId,
-    });
+    const { data: hasPermission, error: permError } = await userClient.rpc(
+      'user_has_permission',
+      {
+        p_auth_user_id: authUserId,
+        p_resource: resource,
+        p_action: 'write',
+        p_tenant_id: tenantId,
+      },
+    );
 
     if (permError || !hasPermission) {
-      return errorResponse('PERMISSION_DENIED', `Sem permissão para upload de mídia em ${resource}.`, 403, req);
+      return errorResponse(
+        'PERMISSION_DENIED',
+        `Sem permissão para upload de mídia em ${resource}.`,
+        403,
+        req,
+      );
     }
 
     // 10. Verify entity exists and belongs to tenant
-    const entityTable = entityType === 'company' ? 'companies' : 
-                        entityType === 'service' ? 'services' :
-                        entityType === 'partner' ? 'company_relationships' :
-                        entityType === 'supplier' ? 'company_relationships' : null;
+    const entityTable =
+      entityType === 'company'
+        ? 'companies'
+        : entityType === 'service'
+          ? 'services'
+          : entityType === 'partner'
+            ? 'company_relationships'
+            : entityType === 'supplier'
+              ? 'company_relationships'
+              : null;
 
     if (!entityTable) {
-      return errorResponse('INVALID_ENTITY_TYPE', `Entity type not supported for verification`, 400, req);
+      return errorResponse(
+        'INVALID_ENTITY_TYPE',
+        `Entity type not supported for verification`,
+        400,
+        req,
+      );
     }
 
-    let entityQuery = userClient.from(entityTable).select('id').eq('id', entityId);
-    
+    let entityQuery = userClient
+      .from(entityTable)
+      .select('id')
+      .eq('id', entityId);
+
     if (entityType === 'company' || entityType === 'service') {
       entityQuery = entityQuery.eq('tenant_id', tenantId);
     } else {
@@ -175,9 +261,15 @@ serve(async (req: Request) => {
       entityQuery = entityQuery.eq('tenant_id', tenantId);
     }
 
-    const { data: entity, error: entityError } = await entityQuery.maybeSingle();
+    const { data: entity, error: entityError } =
+      await entityQuery.maybeSingle();
     if (entityError || !entity) {
-      return errorResponse('ENTITY_NOT_FOUND', 'Entidade não encontrada ou sem acesso.', 404, req);
+      return errorResponse(
+        'ENTITY_NOT_FOUND',
+        'Entidade não encontrada ou sem acesso.',
+        404,
+        req,
+      );
     }
 
     // 11. Check gallery limit (for gallery purpose)
@@ -192,7 +284,12 @@ serve(async (req: Request) => {
       if (countError) {
         console.error('[media-upload] Gallery count error:', countError);
       } else if (count && count >= MAX_GALLERY_ITEMS) {
-        return errorResponse('GALLERY_LIMIT_EXCEEDED', `Limite de ${MAX_GALLERY_ITEMS} imagens por galeria atingido.`, 400, req);
+        return errorResponse(
+          'GALLERY_LIMIT_EXCEEDED',
+          `Limite de ${MAX_GALLERY_ITEMS} imagens por galeria atingido.`,
+          400,
+          req,
+        );
       }
     }
 
@@ -212,7 +309,12 @@ serve(async (req: Request) => {
 
     if (uploadError) {
       console.error('[media-upload] Storage upload error:', uploadError);
-      return errorResponse('UPLOAD_FAILED', 'Falha ao enviar arquivo para o storage.', 500, req);
+      return errorResponse(
+        'UPLOAD_FAILED',
+        'Falha ao enviar arquivo para o storage.',
+        500,
+        req,
+      );
     }
 
     // 14. Get public URL
@@ -267,16 +369,24 @@ serve(async (req: Request) => {
       // Cleanup storage on DB failure
       await adminClient.storage.from('public-media').remove([storagePath]);
       console.error('[media-upload] media_assets insert error:', assetError);
-      return errorResponse('DB_INSERT_FAILED', 'Falha ao registrar mídia no banco.', 500, req);
+      return errorResponse(
+        'DB_INSERT_FAILED',
+        'Falha ao registrar mídia no banco.',
+        500,
+        req,
+      );
     }
 
     // 17. If primary purpose, call set_primary_media RPC
     if (PRIMARY_PURPOSES.includes(purpose)) {
-      const { error: primaryError } = await adminClient.rpc('set_primary_media', {
-        p_entity_type: entityType,
-        p_entity_id: entityId,
-        p_media_id: asset.id,
-      });
+      const { error: primaryError } = await adminClient.rpc(
+        'set_primary_media',
+        {
+          p_entity_type: entityType,
+          p_entity_id: entityId,
+          p_media_id: asset.id,
+        },
+      );
 
       if (primaryError) {
         console.error('[media-upload] set_primary_media error:', primaryError);
@@ -285,26 +395,34 @@ serve(async (req: Request) => {
     }
 
     // 18. Return success
-    return json({
-      success: true,
-      asset: {
-        id: asset.id,
-        bucket_id: asset.bucket_id,
-        storage_path: asset.storage_path,
-        file_url: asset.file_url,
-        file_name: asset.file_name,
-        mime_type: asset.mime_type,
-        width: asset.width,
-        height: asset.height,
-        is_primary: asset.is_primary,
-        sort_order: asset.sort_order,
-        alt_text: asset.alt_text,
-        created_at: asset.created_at,
+    return json(
+      {
+        success: true,
+        asset: {
+          id: asset.id,
+          bucket_id: asset.bucket_id,
+          storage_path: asset.storage_path,
+          file_url: asset.file_url,
+          file_name: asset.file_name,
+          mime_type: asset.mime_type,
+          width: asset.width,
+          height: asset.height,
+          is_primary: asset.is_primary,
+          sort_order: asset.sort_order,
+          alt_text: asset.alt_text,
+          created_at: asset.created_at,
+        },
       },
-    }, 200, req);
-
+      200,
+      req,
+    );
   } catch (error) {
     console.error('[media-upload] Exception:', error);
-    return errorResponse('INTERNAL_ERROR', 'Erro interno do servidor.', 500, req);
+    return errorResponse(
+      'INTERNAL_ERROR',
+      'Erro interno do servidor.',
+      500,
+      req,
+    );
   }
 });

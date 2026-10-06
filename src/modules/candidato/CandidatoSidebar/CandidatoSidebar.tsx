@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigation } from '@/hooks/useNavigation';
 import { resolveIcon } from '@/utils/navigation-icons';
 import { Button } from '@/components/ui/Button';
 import { COMPANY } from '@/config';
@@ -11,6 +10,8 @@ interface CandidatoSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: () => void;
+  items: NavigationItem[];
+  loading: boolean;
 }
 
 function isExternal(href: string): boolean {
@@ -109,10 +110,11 @@ export function CandidatoSidebar({
   isOpen,
   onClose,
   onNavigate,
+  items,
+  loading,
 }: CandidatoSidebarProps) {
   const { person, logout } = useAuth();
   const navigate = useNavigate();
-  const { sidebarItems, loading } = useNavigation();
 
   const displayName = person?.full_name?.split(' ')[0] || 'Candidato';
 
@@ -150,7 +152,7 @@ export function CandidatoSidebar({
     <aside
       className={[
         'bg-card border-border fixed top-0 left-0 z-50 h-full transform border-r transition-all duration-200',
-        'lg:static lg:translate-x-0 lg:z-auto',
+        'lg:static lg:z-auto lg:translate-x-0',
         isOpen ? 'translate-x-0' : '-translate-x-full',
         'w-72',
       ].join(' ')}
@@ -193,7 +195,7 @@ export function CandidatoSidebar({
               Carregando menu…
             </p>
           ) : (
-            sidebarItems.map((item, idx) =>
+            items.map((item, idx) =>
               item.source === 'module' ? (
                 <ModuleNavLink
                   key={item.key}

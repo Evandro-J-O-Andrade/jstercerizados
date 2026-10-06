@@ -34,7 +34,6 @@ import ContabilidadePage from '@/pages/dashboard/ContabilidadePage';
 import Estoque from '@/pages/dashboard/Estoque';
 import Almoxarifado from '@/pages/dashboard/Almoxarifado';
 import Servicos from '@/pages/dashboard/Servicos';
-import Suporte from '@/pages/dashboard/Suporte';
 import FaturamentoPage from '@/pages/dashboard/FaturamentoPage';
 import GlobalDashboardPage from '@/pages/dashboard/GlobalDashboardPage';
 import VisaoGeral from '@/pages/dashboard/VisaoGeral';
@@ -82,6 +81,7 @@ const EntrarEmpresa = lazy(() =>
 );
 const CadastroCandidato = lazy(() => import('@/pages/CadastroCandidato'));
 const CadastroEmpresa = lazy(() => import('@/pages/CadastroEmpresa'));
+const SuporteDashboardPage = lazy(() => import('@/modules/suporte/dashboard'));
 const RecuperarSenha = lazy(() => import('@/pages/RecuperarSenha'));
 const RedefinirSenha = lazy(() => import('@/pages/RedefinirSenha'));
 const AlterarSenha = lazy(() => import('@/pages/AlterarSenha'));
@@ -629,7 +629,7 @@ function RoutesAndLayout() {
               path="suporte"
               element={
                 <PermissionGuard permission={MODULE_PERMISSION_MAP.suporte}>
-                  <Suporte />
+                  <SuporteDashboardPage />
                 </PermissionGuard>
               }
             />
@@ -717,7 +717,7 @@ function RoutesAndLayout() {
                 </PermissionGuard>
               }
             />
-<Route
+            <Route
               path="configuracoes/seguranca"
               element={
                 <PermissionGuard
@@ -774,7 +774,7 @@ function RoutesAndLayout() {
               </FirstAccessRoute>
             }
           />
-<Route
+          <Route
             path="/candidato/*"
             element={
               <AuthRoute>
@@ -791,7 +791,17 @@ function RoutesAndLayout() {
               </AuthRoute>
             }
           >
-            <Route path="*" element={<ModuleRouter moduleRegistries={moduleRouteRegistries} moduleIds={['candidato']} moduleRouteBase="/candidato" skipLayout />} />
+            <Route
+              path="*"
+              element={
+                <ModuleRouter
+                  moduleRegistries={moduleRouteRegistries}
+                  moduleIds={['candidato']}
+                  moduleRouteBase="/candidato"
+                  skipLayout
+                />
+              }
+            />
           </Route>
           <Route
             path="*"
@@ -833,7 +843,7 @@ function RoutesAndLayout() {
                     <Route path="/privacidade" element={<Privacidade />} />
                     <Route path="/termos" element={<Termos />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/login" element={<EntrarHub />} />
+                    <Route path="/entrar" element={<EntrarHub />} />
                     <Route path="/entrar/admin" element={<EntrarAdmin />} />
                     <Route
                       path="/entrar/candidato"
@@ -871,4 +881,3 @@ function RoutesAndLayout() {
 }
 
 export default App;
-

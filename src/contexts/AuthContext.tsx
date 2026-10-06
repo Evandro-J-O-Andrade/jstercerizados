@@ -305,12 +305,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       console.log('[AUTH:FIRST_LOGIN] first_login_state loaded', {
         personId: personData.id,
-        firstLoginData: firstLoginData ? {
-          welcome_completed_at: firstLoginData.welcome_completed_at,
-          first_login_completed: firstLoginData.first_login_completed,
-          must_change_password: firstLoginData.must_change_password,
-          terms_version: firstLoginData.terms_version,
-        } : null,
+        firstLoginData: firstLoginData
+          ? {
+              welcome_completed_at: firstLoginData.welcome_completed_at,
+              first_login_completed: firstLoginData.first_login_completed,
+              must_change_password: firstLoginData.must_change_password,
+              terms_version: firstLoginData.terms_version,
+            }
+          : null,
       });
 
       const { data: legalAcceptancesData } = await supabase
@@ -1120,82 +1122,88 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user, person, loadAuthData],
   );
 
-const resolvePostLoginDestination = useCallback(
+  const resolvePostLoginDestination = useCallback(
     (overrideWelcomeCompleted?: boolean): string => {
       console.log('[AUTH:FLOW] resolvePostLoginDestination', {
         isAdminMaster,
         isCandidate,
         tenantMemberships: tenantMemberships.length,
-        firstLoginState: firstLoginState ? {
-          welcome_completed_at: firstLoginState.welcome_completed_at,
-          first_login_completed: firstLoginState.first_login_completed,
-          must_change_password: firstLoginState.must_change_password,
-          terms_version: firstLoginState.terms_version,
-        } : null,
+        firstLoginState: firstLoginState
+          ? {
+              welcome_completed_at: firstLoginState.welcome_completed_at,
+              first_login_completed: firstLoginState.first_login_completed,
+              must_change_password: firstLoginState.must_change_password,
+              terms_version: firstLoginState.terms_version,
+            }
+          : null,
         overrideWelcomeCompleted,
-        hasAcceptedTerms: legalAcceptances.some((a) => a.document_type === 'terms') || firstLoginState?.terms_version != null,
+        hasAcceptedTerms:
+          legalAcceptances.some((a) => a.document_type === 'terms') ||
+          firstLoginState?.terms_version != null,
       });
 
-    if (recoveryMode) {
-      console.log('[AUTH:FLOW] redirect → /redefinir-senha (recovery)');
-      return '/redefinir-senha';
-    }
+      if (recoveryMode) {
+        console.log('[AUTH:FLOW] redirect → /redefinir-senha (recovery)');
+        return '/redefinir-senha';
+      }
 
-    if (tenantMemberships.length === 0) {
-      console.log('[AUTH:FLOW] redirect → /onboarding (sem membership)');
-      return '/onboarding';
-    }
+      if (tenantMemberships.length === 0) {
+        console.log('[AUTH:FLOW] redirect → /onboarding (sem membership)');
+        return '/onboarding';
+      }
 
-    if (firstLoginState?.must_change_password) {
-      console.log(
-        '[AUTH:FLOW] redirect → /primeiro-acesso/senha (must_change_password)',
-      );
-      return '/primeiro-acesso/senha';
-    }
+      if (firstLoginState?.must_change_password) {
+        console.log(
+          '[AUTH:FLOW] redirect → /primeiro-acesso/senha (must_change_password)',
+        );
+        return '/primeiro-acesso/senha';
+      }
 
-    const hasAcceptedTerms =
-      legalAcceptances.some((a) => a.document_type === 'terms') ||
-      firstLoginState?.terms_version != null;
+      const hasAcceptedTerms =
+        legalAcceptances.some((a) => a.document_type === 'terms') ||
+        firstLoginState?.terms_version != null;
 
-     if (!hasAcceptedTerms) {
-       console.log('[AUTH:FLOW] redirect → /auth/terms (termos pendentes)');
-       return '/auth/terms';
-     }
+      if (!hasAcceptedTerms) {
+        console.log('[AUTH:FLOW] redirect → /auth/terms (termos pendentes)');
+        return '/auth/terms';
+      }
 
-      // If welcome flow already completed, skip to role-based destination
-      const welcomeCompleted =
-        overrideWelcomeCompleted || Boolean(firstLoginState?.welcome_completed_at);
-
-      if (welcomeCompleted) {
+      if (overrideWelcomeCompleted) {
         if (isCandidate) {
-          console.log('[AUTH:FLOW] redirect → /candidato (candidato, welcome completed)');
+          console.log(
+            '[AUTH:FLOW] redirect → /candidato (candidato, welcome completed)',
+          );
           return '/candidato';
         }
         if (isAdminMaster) {
-          console.log('[AUTH:FLOW] redirect → /dashboard (admin, welcome completed)');
+          console.log(
+            '[AUTH:FLOW] redirect → /dashboard (admin, welcome completed)',
+          );
           return '/dashboard';
         }
         // Default for non-admin, non-candidate users with admin roles
-        console.log('[AUTH:FLOW] redirect → /dashboard (default, welcome completed)');
+        console.log(
+          '[AUTH:FLOW] redirect → /dashboard (default, welcome completed)',
+        );
         return '/dashboard';
       }
 
-     // First-time login: go through welcome flow
-     console.log(
-       '[AUTH:FLOW] redirect → /auth/welcome (welcome not yet completed)',
-     );
-     return '/auth/welcome';
-    }, [
+      // Keep welcome in the post-login handoff; protected-route refreshes use AuthRoute.
+      console.log('[AUTH:FLOW] redirect → /auth/welcome (post-login)');
+      return '/auth/welcome';
+    },
+    [
       isAdminMaster,
       isCandidate,
       tenantMemberships,
       firstLoginState,
       legalAcceptances,
       permissions,
-     recoveryMode,
-     roleAssignments,
-     roles,
-   ]);
+      recoveryMode,
+      roleAssignments,
+      roles,
+    ],
+  );
 
   const register = async (
     email: string,

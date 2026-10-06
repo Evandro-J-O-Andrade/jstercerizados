@@ -1,14 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  Shield,
-  LogIn,
-  Eye,
-  EyeOff,
-  Briefcase,
-  Building2,
-} from 'lucide-react';
+import { Shield, LogIn, Eye, EyeOff, Briefcase, Building2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -89,7 +82,13 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       const target = resolvePostLoginDestination();
       navigate(target, { replace: true });
     }
-  }, [isLoading, isAuthenticated, person, navigate, resolvePostLoginDestination]);
+  }, [
+    isLoading,
+    isAuthenticated,
+    person,
+    navigate,
+    resolvePostLoginDestination,
+  ]);
 
   useEffect(() => {
     setError('');
@@ -166,7 +165,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
     admin: {
       title: 'Painel Administrativo',
       subtitle: 'Acesse sua conta para gerenciar operações, RH e relatórios.',
-      icon: <Shield className="h-8 w-8" />,
+      icon: <Shield className="h-5 w-5 sm:h-8 sm:w-8" />,
       placeholderEmail: 'admin@jsempregos.com.br',
       allowSignup: false,
       allowOAuth: false,
@@ -179,7 +178,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
     candidato: {
       title: 'Área do Candidato',
       subtitle: 'Acesse seu perfil para acompanhar candidaturas e currículo.',
-      icon: <Briefcase className="h-8 w-8" />,
+      icon: <Briefcase className="h-5 w-5 sm:h-8 sm:w-8" />,
       placeholderEmail: 'candidato@exemplo.com',
       allowSignup: true,
       allowOAuth: true,
@@ -193,13 +192,13 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       title: 'Área da Empresa',
       subtitle:
         'Acesse sua conta para publicar vagas e gerenciar recrutamento.',
-      icon: <Building2 className="h-8 w-8" />,
+      icon: <Building2 className="h-5 w-5 sm:h-8 sm:w-8" />,
       placeholderEmail: 'empresa@exemplo.com',
       allowSignup: true,
       allowOAuth: true,
       emailLabel: 'E-mail corporativo',
       passwordLabel: 'Senha',
-signinLabel: 'Entrar',
+      signinLabel: 'Entrar',
       signinLoading: 'Preparando seu painel...',
       footer: 'Acesso exclusivo para empresas parceiras.',
     },
@@ -208,7 +207,7 @@ signinLabel: 'Entrar',
   const config = flowConfig[accessFlow];
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <div className="bg-background min-h-dvh">
       <SEO
         title={`Entrar — ${COMPANY.name}`}
         description={`Acesse sua conta na ${COMPANY.name}. Área do candidato, empresa ou administrador.`}
@@ -223,273 +222,280 @@ signinLabel: 'Entrar',
         ]}
         noindex
       />
-      <SafeImage
-        src={IMAGES.hero.login.src}
-        fallbackSrc={IMAGES.hero.login.fallback}
-        className="absolute inset-0 h-full w-full object-cover"
-        loading="eager"
-        decoding="async"
-      />
-      <img
-        src="/images/hero/hero-overlay.svg"
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover opacity-65"
-        aria-hidden="true"
-      />
-
-      <div className="from-background/95 via-background/70 absolute inset-0 bg-gradient-to-r to-transparent" />
-      <div className="from-background via-background/30 to-background/10 absolute inset-0 bg-gradient-to-t" />
-
-      <img
-        src="/images/backgrounds/hero-grid.svg"
-        alt=""
-        className="absolute inset-0 h-full w-full opacity-80"
-        aria-hidden="true"
-      />
-
-      <motion.div
-        className="bg-primary/10 animate-pulse-glow absolute top-1/4 left-1/4 hidden h-2 w-2 rounded-full md:block"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
-      />
-      <motion.div
-        className="bg-primary/10 animate-pulse-glow absolute top-1/3 right-1/4 hidden h-3 w-3 rounded-full md:block"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.8 }}
-      />
-      <motion.div
-        className="bg-primary/15 animate-float-slow absolute right-1/3 bottom-1/3 hidden h-5 w-5 rounded-full opacity-70 md:block"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.8 }}
-      />
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
-        className="relative z-10 w-full max-w-md px-4"
-      >
-        <div
-          className={cn(
-            'shadow-glass rounded-3xl border p-8',
-            accessFlow === 'admin'
-              ? 'border-border/40 bg-card'
-              : 'border-primary/20 bg-card/95',
-          )}
+      <div className="bg-card lg:border-border mx-auto grid min-h-dvh w-full max-w-[1680px] grid-cols-1 lg:min-h-[calc(100dvh-3rem)] lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.88fr)] lg:overflow-hidden lg:rounded-2xl lg:border">
+        <section
+          aria-label="J&S Empregos"
+          className="bg-surface text-foreground relative hidden min-h-[calc(100dvh-3rem)] flex-col justify-between overflow-hidden p-12 lg:flex xl:p-16"
         >
-          {requestedContext == null && (
-            <div className="mb-6 flex justify-center gap-2">
-              {(['admin', 'candidato', 'empresa'] as const).map((flow) => (
-                <button
-                  key={flow}
-                  type="button"
-                  onClick={() => {
-                    setAccessFlow(flow);
-                  }}
-                  className={cn(
-                    'flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200',
-                    accessFlow === flow
-                      ? 'bg-primary text-primary-foreground shadow-md'
-                      : 'text-muted-foreground hover:bg-muted',
-                  )}
-                  data-flow={flow}
-                >
-                  {flowConfig[flow].icon}
-                  {flow === 'admin'
-                    ? 'Admin'
-                    : flow === 'candidato'
-                      ? 'Candidato'
-                      : 'Empresa'}
-                </button>
-              ))}
-            </div>
-          )}
+          <SafeImage
+            src={IMAGES.hero.login.src}
+            fallbackSrc={IMAGES.hero.login.fallback}
+            className="absolute inset-0 h-full w-full opacity-20"
+            loading="eager"
+            decoding="async"
+            skeleton={false}
+          />
+          <div className="bg-surface/85 absolute inset-0" aria-hidden="true" />
+          <div className="relative z-10 mx-auto flex max-w-xl flex-col items-center py-16 text-center">
+            <img
+              src="/images/global/brand/Login.png"
+              alt=""
+              className="mb-10 h-40 w-40 shrink-0 object-contain"
+              fetchPriority="high"
+            />
+            <p className="text-primary text-sm font-semibold uppercase">
+              Portal de acesso · {COMPANY.brand}
+            </p>
+            <h2 className="mt-4 text-4xl leading-tight font-bold xl:text-5xl">
+              {COMPANY.tagline}
+            </h2>
+            <p className="text-foreground/75 mt-5 max-w-lg text-base leading-relaxed">
+              {COMPANY.description}
+            </p>
+          </div>
+          <p className="text-foreground/60 relative z-10 text-xs">
+            Acesso seguro para candidatos, empresas e equipes autorizadas.
+          </p>
+        </section>
 
-          <AnimatePresence mode="wait">
+        <section className="flex min-h-dvh items-center justify-center px-4 py-8 sm:px-8 lg:min-h-0 lg:px-10 xl:px-16">
+          <div className="w-full max-w-md">
             <motion.div
-              key={accessFlow}
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
+              className="w-full"
             >
-              <div className="mb-8 text-center">
-                <div
-                  className={cn(
-                    'mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl backdrop-blur-sm',
-                    accessFlow === 'admin'
-                      ? 'bg-primary/20 text-primary'
-                      : 'bg-primary/10 text-primary',
-                  )}
-                >
-                  {config.icon}
-                </div>
-                <h1 className="text-foreground text-3xl font-bold">
-                  {config.title}
-                </h1>
-                <p className="text-muted-foreground mt-2 text-sm">
-                  {config.subtitle}
-                </p>
-              </div>
-
-              {config.allowOAuth && (
-                <div className="mb-5 space-y-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="lg"
-                    className="w-full"
-                    onClick={() => handleOAuth('google')}
-                    loading={isSubmitting}
-                    data-provider="google"
+              <div
+                className={cn(
+                  'shadow-glass rounded-2xl border p-6 sm:p-8',
+                  accessFlow === 'admin'
+                    ? 'border-border/40 bg-card'
+                    : 'border-primary/20 bg-card/95',
+                )}
+              >
+                {requestedContext == null && (
+                  <div
+                    role="group"
+                    aria-label="Tipo de acesso"
+                    className="bg-muted/70 mb-6 grid grid-cols-3 gap-1 rounded-xl p-1"
                   >
-                    <GoogleIcon />
-                    Continuar com Google
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="lg"
-                    className="w-full"
-                    onClick={() => handleOAuth('azure')}
-                    loading={isSubmitting}
-                    data-provider="azure"
-                  >
-                    <MicrosoftIcon />
-                    Continuar com Microsoft
-                  </Button>
-                  <div className="text-muted-foreground flex items-center gap-3 text-xs uppercase">
-                    <span className="bg-border h-px flex-1" />
-                    <span>ou</span>
-                    <span className="bg-border h-px flex-1" />
+                    {(['admin', 'candidato', 'empresa'] as const).map(
+                      (flow) => (
+                        <button
+                          key={flow}
+                          type="button"
+                          onClick={() => {
+                            setAccessFlow(flow);
+                          }}
+                          className={cn(
+                            'flex min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-xs font-medium transition-all duration-200 sm:flex-row sm:gap-2 sm:px-4 sm:text-sm',
+                            accessFlow === flow
+                              ? 'bg-primary text-primary-foreground shadow-md'
+                              : 'text-muted-foreground hover:bg-muted',
+                          )}
+                          data-flow={flow}
+                          aria-pressed={accessFlow === flow}
+                        >
+                          {flowConfig[flow].icon}
+                          {flow === 'admin'
+                            ? 'Admin'
+                            : flow === 'candidato'
+                              ? 'Candidato'
+                              : 'Empresa'}
+                        </button>
+                      ),
+                    )}
                   </div>
-                </div>
-              )}
+                )}
 
-              {error && (
-                <div
-                  role="alert"
-                  className="bg-destructive/10 text-destructive mb-4 rounded-xl p-4 text-sm"
-                >
-                  {error}
-                </div>
-              )}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={accessFlow}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="mb-8 text-center">
+                      <div
+                        className={cn(
+                          'mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl backdrop-blur-sm',
+                          accessFlow === 'admin'
+                            ? 'bg-primary/20 text-primary'
+                            : 'bg-primary/10 text-primary',
+                        )}
+                      >
+                        {config.icon}
+                      </div>
+                      <h1 className="text-foreground text-3xl font-bold">
+                        {config.title}
+                      </h1>
+                      <p className="text-muted-foreground mt-2 text-sm">
+                        {config.subtitle}
+                      </p>
+                    </div>
 
-              <form
-                  onSubmit={handleSubmit(onSignIn, onInvalid)}
-                  className="space-y-5"
-                  data-mode="signin"
-                >
-                  <Input
-                    label={config.emailLabel}
-                    type="email"
-                    autoComplete="email"
-                    placeholder={config.placeholderEmail}
-                    error={errors.email?.message}
-                    {...rhfRegister('email')}
-                  />
+                    {config.allowOAuth && (
+                      <div className="mb-5 space-y-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="lg"
+                          className="w-full"
+                          onClick={() => handleOAuth('google')}
+                          loading={isSubmitting}
+                          data-provider="google"
+                        >
+                          <GoogleIcon />
+                          Continuar com Google
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="lg"
+                          className="w-full"
+                          onClick={() => handleOAuth('azure')}
+                          loading={isSubmitting}
+                          data-provider="azure"
+                        >
+                          <MicrosoftIcon />
+                          Continuar com Microsoft
+                        </Button>
+                        <div className="text-muted-foreground flex items-center gap-3 text-xs uppercase">
+                          <span className="bg-border h-px flex-1" />
+                          <span>ou</span>
+                          <span className="bg-border h-px flex-1" />
+                        </div>
+                      </div>
+                    )}
 
-                  <div className="relative">
-                    <Input
-                      label={config.passwordLabel}
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      error={errors.password?.message}
-                      autoComplete="current-password"
-                      {...rhfRegister('password')}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-muted-foreground hover:text-foreground absolute top-9 right-3"
-                      aria-label={
-                        showPassword ? 'Ocultar senha' : 'Mostrar senha'
-                      }
+                    {error && (
+                      <div
+                        role="alert"
+                        className="bg-destructive/10 text-destructive mb-4 rounded-xl p-4 text-sm"
+                      >
+                        {error}
+                      </div>
+                    )}
+
+                    <form
+                      onSubmit={handleSubmit(onSignIn, onInvalid)}
+                      className="space-y-5"
+                      data-mode="signin"
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        className="border-input text-primary focus:ring-primary h-4 w-4 rounded"
+                      <Input
+                        label={config.emailLabel}
+                        type="email"
+                        autoComplete="email"
+                        placeholder={config.placeholderEmail}
+                        error={errors.email?.message}
+                        {...rhfRegister('email')}
                       />
-                      <span className="text-muted-foreground text-sm">
-                        Lembrar de mim
-                      </span>
-                    </label>
-                    <Link
-                      to="/recuperar-senha"
-                      className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
-                    >
-                      Esqueceu a senha?
-                    </Link>
-                  </div>
 
-                  <Turnstile
-                    ref={turnstileRef}
-                    onTokenChange={setTurnstileToken}
-                    action="login"
-                  />
+                      <div className="relative">
+                        <Input
+                          label={config.passwordLabel}
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="••••••••"
+                          error={errors.password?.message}
+                          autoComplete="current-password"
+                          {...rhfRegister('password')}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="text-muted-foreground hover:text-foreground absolute top-9 right-3"
+                          aria-label={
+                            showPassword ? 'Ocultar senha' : 'Mostrar senha'
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
 
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="xl"
-                    className="w-full"
-                    loading={isSubmitting}
-                    leftIcon={<LogIn className="h-5 w-5" />}
-                  >
-                    {config.signinLabel}
-                  </Button>
-                </form>
+                      <div className="flex items-center justify-between">
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            className="border-input text-primary focus:ring-primary h-4 w-4 rounded"
+                          />
+                          <span className="text-muted-foreground text-sm">
+                            Lembrar de mim
+                          </span>
+                        </label>
+                        <Link
+                          to="/recuperar-senha"
+                          className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+                        >
+                          Esqueceu a senha?
+                        </Link>
+                      </div>
 
-              {config.allowSignup && (
-                <div className="mt-4 text-center">
-                  {accessFlow === 'empresa' ? (
-                    <Link
-                      to="/cadastro/empresa"
-                      className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
-                      data-testid="empresa-signup-link"
-                    >
-                      Ainda não tem conta? Cadastre sua empresa
-                    </Link>
-                  ) : (
-                    <Link
-                      to="/cadastro/candidato"
-                      className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
-                      data-testid="candidato-signup-link"
-                    >
-                      Ainda não tem conta? Cadastre-se como candidato
-                    </Link>
-                  )}
-                </div>
-              )}
+                      <Turnstile
+                        ref={turnstileRef}
+                        onTokenChange={setTurnstileToken}
+                        action="login"
+                      />
 
-              {!config.allowSignup && (
-                <div className="mt-4 text-center">
-                  <p className="text-muted-foreground text-xs">
-                    Cadastro restrito a convite administrativo.
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        size="xl"
+                        className="w-full"
+                        loading={isSubmitting}
+                        leftIcon={<LogIn className="h-5 w-5" />}
+                      >
+                        {config.signinLabel}
+                      </Button>
+                    </form>
+
+                    {config.allowSignup && (
+                      <div className="mt-4 text-center">
+                        {accessFlow === 'empresa' ? (
+                          <Link
+                            to="/cadastro/empresa"
+                            className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+                            data-testid="empresa-signup-link"
+                          >
+                            Ainda não tem conta? Cadastre sua empresa
+                          </Link>
+                        ) : (
+                          <Link
+                            to="/cadastro/candidato"
+                            className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
+                            data-testid="candidato-signup-link"
+                          >
+                            Ainda não tem conta? Cadastre-se como candidato
+                          </Link>
+                        )}
+                      </div>
+                    )}
+
+                    {!config.allowSignup && (
+                      <div className="mt-4 text-center">
+                        <p className="text-muted-foreground text-xs">
+                          Cadastro restrito a convite administrativo.
+                        </p>
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+
+                <div className="mt-6 text-center">
+                  <p className="text-muted-foreground/80 text-xs">
+                    {config.footer}
                   </p>
                 </div>
-              )}
+              </div>
             </motion.div>
-          </AnimatePresence>
-
-          <div className="mt-6 text-center">
-            <p className="text-muted-foreground/80 text-xs">{config.footer}</p>
           </div>
-        </div>
-      </motion.div>
+        </section>
+      </div>
     </div>
   );
 }

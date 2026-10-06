@@ -36,9 +36,7 @@ export function AuthRoute({ children }: AuthRouteProps) {
     return <Navigate to="/auth/terms" replace />;
   }
 
-  const welcomeCompleted =
-    Boolean(firstLoginState?.welcome_completed_at) ||
-    firstLoginState?.first_login_completed === true;
+  const welcomeCompleted = Boolean(firstLoginState?.welcome_completed_at);
 
   if (!welcomeCompleted) {
     return <Navigate to="/auth/welcome" replace />;

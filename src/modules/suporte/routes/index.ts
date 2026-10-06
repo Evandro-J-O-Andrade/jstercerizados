@@ -2,13 +2,14 @@ import type { ComponentType } from 'react';
 import { lazy } from 'react';
 import type { ModuleRoute } from '@/platform/router/types';
 
+const SuporteDashboardPage = lazy(() => import('@/modules/suporte/dashboard'));
 const SuportePage = lazy(() => import('@/pages/dashboard/Suporte'));
 
 export const suporteRoutes: ModuleRoute[] = [
   {
     path: '',
     label: 'Dashboard Suporte',
-    element: SuportePage as unknown as ComponentType,
+    element: SuporteDashboardPage as unknown as ComponentType,
     requiredPermissions: ['support_tickets.read'],
     icon: 'LayoutDashboard',
   },

@@ -1,110 +1,238 @@
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { Briefcase, Users, GitBranch, FileCheck, Link, Database } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Briefcase, FileCheck, GitBranch, Users } from 'lucide-react';
+import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
+import { ContentBoundary } from '@/components/feedback/ContentBoundary';
+import { EmptyState } from '@/components/fallback/EmptyState';
 import { useRecrutamento } from '@/modules/recrutamento/RecrutamentoContext';
-import { useNavigate } from 'react-router-dom';
+import type {
+  ApplicationListItem,
+  ApplicationStatus,
+} from '@/modules/recrutamento/types';
 
-export default function DashboardRecrutamento() {
-  const { jobs, candidates, applications, processes, talentPool, demands, isLoading } = useRecrutamento();
-  const navigate = useNavigate();
+const STATUS_LABELS: Record<ApplicationStatus, string> = {
+  applied: 'Recebida',
+  screening: 'Em triagem',
+  interview_scheduled: 'Entrevista agendada',
+  interviewed: 'Entrevistada',
+  offer_sent: 'Proposta enviada',
+  hired: 'Contratada',
+  rejected: 'Rejeitada',
+  withdrawn: 'Desistiu',
+};
 
-  const stats = [
-    { label: 'Vagas', count: jobs.length, icon: Briefcase, color: 'text-blue-500', bg: 'bg-blue-100', route: 'vagas' },
-    { label: 'Candidatos', count: candidates.length, icon: Users, color: 'text-green-500', bg: 'bg-green-100', route: 'candidatos' },
-    { label: 'Processos', count: processes.length, icon: GitBranch, color: 'text-purple-500', bg: 'bg-purple-100', route: 'processos' },
-    { label: 'Candidaturas', count: applications.length, icon: FileCheck, color: 'text-orange-500', bg: 'bg-orange-100', route: 'candidaturas' },
-    { label: 'Matches', count: talentPool.length, icon: Link, color: 'text-pink-500', bg: 'bg-pink-100', route: 'matches' },
-    { label: 'Demandas', count: demands.length, icon: Database, color: 'text-indigo-500', bg: 'bg-indigo-100', route: 'demandas' },
-  ];
+function statusVariant(status: ApplicationStatus) {
+  if (status === 'hired') return 'success' as const;
+  if (status === 'rejected' || status === 'withdrawn') return 'danger' as const;
+  if (status === 'screening' || status === 'offer_sent')
+    return 'default' as const;
+  return 'secondary' as const;
+}
 
-  if (isLoading) {
+function formatDate(value: string): string {
+  return new Date(value).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+  });
+}
+
+function RecentApplications({
+  applications,
+}: {
+  applications: ApplicationListItem[];
+}) {
+  if (applications.length === 0) {
     return (
-      <ModuleWorkspace
-        title="Recrutamento"
-        description="Gerencie vagas, candidatos e processos seletivos"
-        icon={Briefcase}
-        breadcrumbItems={[{ label: 'Recrutamento' }]}
-      >
-        <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      </ModuleWorkspace>
+      <EmptyState
+        title="Nenhuma candidatura registrada"
+        description="As candidaturas recebidas aparecerão aqui."
+      />
     );
   }
 
   return (
-    <ModuleWorkspace
-      title="Recrutamento"
-      description="Gerencie vagas, candidatos e processos seletivos"
-      icon={Briefcase}
-      breadcrumbItems={[{ label: 'Recrutamento' }]}
-    >
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {stats.map((stat) => (
-          <Card
-            key={stat.label}
-            className="cursor-pointer hover:border-primary/30 hover:bg-primary/5 transition-all"
-            onClick={() => navigate(stat.route)}
-          >
-            <div className="flex items-center gap-4">
-              <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${stat.bg}`}>
-                <stat.icon className={`h-6 w-6 ${stat.color}`} />
-              </div>
-              <div>
-                <p className="text-foreground text-sm font-medium">{stat.label}</p>
-                <p className="text-2xl font-bold">{stat.count}</p>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+    <div className="border-border overflow-x-auto rounded-lg border">
+      <table className="divide-border min-w-full divide-y">
+        <thead className="bg-muted/50">
+          <tr>
+            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold uppercase">
+              Candidato
+            </th>
+            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold uppercase">
+              Vaga
+            </th>
+            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold uppercase">
+              Etapa
+            </th>
+            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold uppercase">
+              Status
+            </th>
+            <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold uppercase">
+              Recebida
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-border divide-y">
+          {applications.map((application) => (
+            <tr key={application.id} className="hover:bg-muted/30">
+              <td className="px-4 py-3">
+                <p className="text-foreground text-sm font-medium">
+                  {application.candidate_name}
+                </p>
+                <p className="text-muted-foreground text-xs">
+                  {application.candidate_email}
+                </p>
+              </td>
+              <td className="text-foreground px-4 py-3 text-sm">
+                {application.job_title}
+              </td>
+              <td className="text-muted-foreground px-4 py-3 text-sm">
+                {application.stage_name || '—'}
+              </td>
+              <td className="px-4 py-3">
+                <Badge variant={statusVariant(application.status)}>
+                  {STATUS_LABELS[application.status]}
+                </Badge>
+              </td>
+              <td className="text-muted-foreground px-4 py-3 text-sm whitespace-nowrap">
+                {formatDate(application.applied_at)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="cursor-pointer hover:border-primary/30 hover:bg-primary/5 transition-all" onClick={() => navigate('vagas')}>
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
-              <Briefcase className="h-6 w-6 text-blue-500" />
+export default function DashboardRecrutamento() {
+  const { applicationsEnriched, dashboardStats, error, isLoading, refetch } =
+    useRecrutamento();
+
+  const metrics = dashboardStats
+    ? [
+        {
+          id: 'open-jobs',
+          label: 'Vagas publicadas',
+          value: dashboardStats.jobs.published,
+          detail: `${dashboardStats.jobs.total} vagas no total`,
+          icon: Briefcase,
+          route: 'vagas',
+          tone: 'text-primary bg-primary/10',
+        },
+        {
+          id: 'active-candidates',
+          label: 'Candidatos ativos',
+          value: dashboardStats.candidates.active,
+          detail: `${dashboardStats.candidates.new_this_month} novos neste mês`,
+          icon: Users,
+          route: 'candidatos',
+          tone: 'text-success bg-success/10',
+        },
+        {
+          id: 'applications-review',
+          label: 'Candidaturas em triagem',
+          value:
+            dashboardStats.applications.applied +
+            dashboardStats.applications.screening,
+          detail: `${dashboardStats.applications.new_today} recebidas hoje`,
+          icon: FileCheck,
+          route: 'candidaturas',
+          tone: 'text-warning bg-warning/10',
+        },
+        {
+          id: 'active-processes',
+          label: 'Processos em andamento',
+          value:
+            dashboardStats.processes.open +
+            dashboardStats.processes.in_progress,
+          detail: `${dashboardStats.processes.total} processos no total`,
+          icon: GitBranch,
+          route: 'processos',
+          tone: 'text-foreground bg-muted',
+        },
+      ]
+    : [];
+
+  const status = error ? 'error' : isLoading ? 'loading' : 'success';
+
+  return (
+    <ContentBoundary
+      status={status}
+      error={error}
+      onRetry={() => void refetch()}
+      homeRoute="/dashboard/recrutamento"
+      className="w-full min-w-0 space-y-7"
+    >
+      {!dashboardStats ? (
+        <EmptyState
+          title="Indicadores indisponíveis"
+          description="Não há dados de recrutamento disponíveis para este contexto."
+        />
+      ) : (
+        <>
+          <section aria-label="Indicadores de recrutamento">
+            <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
+              {metrics.map((metric) => {
+                const Icon = metric.icon;
+                return (
+                  <Link
+                    key={metric.id}
+                    to={`/dashboard/recrutamento/${metric.route}`}
+                    className="group focus-visible:ring-ring rounded-lg focus-visible:ring-2 focus-visible:outline-none"
+                  >
+                    <Card className="group-hover:border-primary/40 h-full p-4 transition-colors">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-muted-foreground text-sm">
+                            {metric.label}
+                          </p>
+                          <p
+                            className="text-foreground mt-2 text-2xl font-semibold"
+                            data-testid={`metric-${metric.id}`}
+                          >
+                            {metric.value.toLocaleString('pt-BR')}
+                          </p>
+                          <p className="text-muted-foreground mt-1 text-xs">
+                            {metric.detail}
+                          </p>
+                        </div>
+                        <span
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${metric.tone}`}
+                        >
+                          <Icon className="h-5 w-5" />
+                        </span>
+                      </div>
+                    </Card>
+                  </Link>
+                );
+              })}
             </div>
-            <div>
-              <h3 className="font-medium">Vagas</h3>
-              <p className="text-sm text-muted-foreground">Gerencie vagas abertas e publicadas</p>
+          </section>
+
+          <section className="min-w-0">
+            <div className="border-border mb-3 flex flex-wrap items-end justify-between gap-3 border-b pb-3">
+              <div>
+                <h2 className="text-foreground text-lg font-semibold">
+                  Candidaturas recentes
+                </h2>
+                <p className="text-muted-foreground mt-1 text-sm">
+                  Registros mais recentes deste tenant.
+                </p>
+              </div>
+              <Link
+                to="/dashboard/recrutamento/candidaturas"
+                className="text-primary text-sm font-medium hover:underline"
+              >
+                Ver todas
+              </Link>
             </div>
-          </div>
-        </Card>
-        <Card className="cursor-pointer hover:border-primary/30 hover:bg-primary/5 transition-all" onClick={() => navigate('candidatos')}>
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
-              <Users className="h-6 w-6 text-green-500" />
-            </div>
-            <div>
-              <h3 className="font-medium">Candidatos</h3>
-              <p className="text-sm text-muted-foreground">Banco de talentos e currículos</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="cursor-pointer hover:border-primary/30 hover:bg-primary/5 transition-all" onClick={() => navigate('processos')}>
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
-              <GitBranch className="h-6 w-6 text-purple-500" />
-            </div>
-            <div>
-              <h3 className="font-medium">Processos Seletivos</h3>
-              <p className="text-sm text-muted-foreground">Acompanhe processos e etapas</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="cursor-pointer hover:border-primary/30 hover:bg-primary/5 transition-all" onClick={() => navigate('candidaturas')}>
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100">
-              <FileCheck className="h-6 w-6 text-orange-500" />
-            </div>
-            <div>
-              <h3 className="font-medium">Candidaturas</h3>
-              <p className="text-sm text-muted-foreground">Acompanhe candidaturas e status</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </ModuleWorkspace>
+            <RecentApplications
+              applications={applicationsEnriched.slice(0, 8)}
+            />
+          </section>
+        </>
+      )}
+    </ContentBoundary>
   );
 }

@@ -13,6 +13,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { PageLoader } from '@/components/ui/PageLoader';
 import { SEO } from '@/components/ui/SEO';
 import { useAccount } from '@/contexts/AccountContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -151,6 +152,8 @@ export default function AuthWelcome() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const {
+    isAuthenticated,
+    isLoading,
     person,
     roles,
     isAdminMaster,
@@ -160,12 +163,25 @@ export default function AuthWelcome() {
   } = useAuth();
   const { identity, userIdentity } = useAccount();
   const navigate = useNavigate();
+  const postLoginDestination =
+    !isLoading && isAuthenticated && person
+      ? resolvePostLoginDestination()
+      : null;
 
   useEffect(() => {
-    if (!person) {
-      navigate('/login', { replace: true });
+    if (isLoading) {
+      return;
     }
-  }, [person, navigate]);
+
+    if (!isAuthenticated || !person) {
+      navigate('/login', { replace: true });
+      return;
+    }
+
+    if (postLoginDestination && postLoginDestination !== '/auth/welcome') {
+      navigate(postLoginDestination, { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate, person, postLoginDestination]);
 
   const isReturning = Boolean(firstLoginState?.welcome_completed_at);
 
@@ -209,7 +225,11 @@ export default function AuthWelcome() {
     }
   };
 
-  if (!person) {
+  if (isLoading) {
+    return <PageLoader />;
+  }
+
+  if (!isAuthenticated || !person || postLoginDestination !== '/auth/welcome') {
     return null;
   }
 

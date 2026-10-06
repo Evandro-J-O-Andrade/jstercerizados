@@ -1,4 +1,4 @@
-﻿import { type ReactNode, useLayoutEffect } from 'react';
+import { type ReactNode, useLayoutEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { COMPANY, NEW_WAVE_URL } from '@/config';
 
@@ -14,7 +14,6 @@ interface CandidatoContentProps {
  * acumulem padding duas vezes.
  */
 export function CandidatoContent({ children }: CandidatoContentProps) {
-
   useLayoutEffect(() => {
     const previousBodyOverflow = document.body.style.overflow;
     const previousHtmlOverflow = document.documentElement.style.overflow;
@@ -31,7 +30,7 @@ export function CandidatoContent({ children }: CandidatoContentProps) {
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       <main className="flex min-h-0 flex-1 flex-col">
-        <div className="mx-auto flex min-h-0 w-full max-w-[1920px] flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
+        <div className="mx-auto flex min-h-0 w-full max-w-[1920px] flex-1 flex-col overflow-y-auto px-4 py-6 pb-24 sm:px-6 lg:px-8 lg:pb-6 xl:max-w-[2200px] xl:px-10">
           {content}
         </div>
       </main>

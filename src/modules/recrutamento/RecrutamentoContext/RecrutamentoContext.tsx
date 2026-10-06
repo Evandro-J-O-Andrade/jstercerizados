@@ -4,6 +4,7 @@ import {
   useEffect,
   useCallback,
   useState,
+  useRef,
   type ReactNode,
 } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -44,20 +45,20 @@ export interface RecrutamentoContextValue {
   talentPool: TalentPoolMembership[];
   demands: RecruitmentDemand[];
   matches: JobMatch[];
-  
+
   // Enriched data for views
   jobsEnriched: JobListItem[];
   candidatesEnriched: CandidateListItem[];
   applicationsEnriched: ApplicationListItem[];
   processesEnriched: RecruitmentProcessListItem[];
-  
+
   // Dashboard stats
   dashboardStats: RecruitmentDashboardStats | null;
-  
+
   // State
   isLoading: boolean;
   error: string | null;
-  
+
   // Refetch methods
   refetch: () => Promise<void>;
   refetchJobs: () => Promise<void>;
@@ -69,47 +70,58 @@ export interface RecrutamentoContextValue {
   refetchDemands: () => Promise<void>;
   refetchMatches: () => Promise<void>;
   refetchDashboardStats: () => Promise<void>;
-  
+
   // Job actions
   createJob: (input: any) => Promise<Job | null>;
   updateJob: (input: any) => Promise<Job | null>;
   updateJobStatus: (id: string, status: Job['status']) => Promise<Job | null>;
   deleteJob: (id: string) => Promise<boolean>;
-  
+
   // Candidate actions
   createCandidate: (input: any) => Promise<Candidate | null>;
   updateCandidate: (input: any) => Promise<Candidate | null>;
   deleteCandidate: (id: string) => Promise<boolean>;
-  
+
   // Application actions
   createApplication: (input: any) => Promise<Application | null>;
   updateApplication: (input: any) => Promise<Application | null>;
-  moveApplicationToStage: (applicationId: string, stageId: string, movedBy: string, notes?: string) => Promise<Application | null>;
-  updateApplicationStatus: (id: string, status: Application['status'], additionalData?: any) => Promise<Application | null>;
+  moveApplicationToStage: (
+    applicationId: string,
+    stageId: string,
+    movedBy: string,
+    notes?: string,
+  ) => Promise<Application | null>;
+  updateApplicationStatus: (
+    id: string,
+    status: Application['status'],
+    additionalData?: any,
+  ) => Promise<Application | null>;
   deleteApplication: (id: string) => Promise<boolean>;
-  
+
   // Process actions
   createProcess: (input: any) => Promise<RecruitmentProcess | null>;
   updateProcess: (input: any) => Promise<RecruitmentProcess | null>;
   deleteProcess: (id: string) => Promise<boolean>;
-  
+
   // Stage actions
   createStage: (input: any) => Promise<RecruitmentStage | null>;
   updateStage: (input: any) => Promise<RecruitmentStage | null>;
   deleteStage: (id: string) => Promise<boolean>;
-  
+
   // Demand actions
   createDemand: (input: any) => Promise<RecruitmentDemand | null>;
   updateDemand: (input: any) => Promise<RecruitmentDemand | null>;
   deleteDemand: (id: string) => Promise<boolean>;
-  
+
   // Match actions
   upsertMatch: (match: any) => Promise<JobMatch | null>;
   markMatchNotified: (id: string) => Promise<JobMatch | null>;
   invalidateMatch: (id: string, reason: string) => Promise<JobMatch | null>;
 }
 
-const RecrutamentoContext = createContext<RecrutamentoContextValue | null>(null);
+const RecrutamentoContext = createContext<RecrutamentoContextValue | null>(
+  null,
+);
 
 export function RecrutamentoProvider({ children }: { children: ReactNode }) {
   const { currentTenantId } = useAuth();
@@ -122,41 +134,50 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
   const [talentPool, setTalentPool] = useState<TalentPoolMembership[]>([]);
   const [demands, setDemands] = useState<RecruitmentDemand[]>([]);
   const [matches, setMatches] = useState<JobMatch[]>([]);
-  
+
   const [jobsEnriched, setJobsEnriched] = useState<JobListItem[]>([]);
-  const [candidatesEnriched, setCandidatesEnriched] = useState<CandidateListItem[]>([]);
-  const [applicationsEnriched, setApplicationsEnriched] = useState<ApplicationListItem[]>([]);
-  const [processesEnriched, setProcessesEnriched] = useState<RecruitmentProcessListItem[]>([]);
-  
-  const [dashboardStats, setDashboardStats] = useState<RecruitmentDashboardStats | null>(null);
-  
-  const [isLoading, setIsLoading] = useState(false);
+  const [candidatesEnriched, setCandidatesEnriched] = useState<
+    CandidateListItem[]
+  >([]);
+  const [applicationsEnriched, setApplicationsEnriched] = useState<
+    ApplicationListItem[]
+  >([]);
+  const [processesEnriched, setProcessesEnriched] = useState<
+    RecruitmentProcessListItem[]
+  >([]);
+
+  const [dashboardStats, setDashboardStats] =
+    useState<RecruitmentDashboardStats | null>(null);
+
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const activeRequestsRef = useRef(0);
 
   const tenantId = currentTenantId;
 
-  const refetch = useCallback(async () => {
-    await Promise.all([
-      refetchJobs(),
-      refetchCandidates(),
-      refetchApplications(),
-      refetchProcesses(),
-      refetchStages(),
-      refetchTalentPool(),
-      refetchDemands(),
-      refetchMatches(),
-      refetchDashboardStats(),
-    ]);
+  const beginRequest = useCallback(() => {
+    activeRequestsRef.current += 1;
+    setIsLoading(true);
+  }, []);
+
+  const finishRequest = useCallback(() => {
+    activeRequestsRef.current = Math.max(0, activeRequestsRef.current - 1);
+    setIsLoading(activeRequestsRef.current > 0);
   }, []);
 
   const refetchJobs = useCallback(async () => {
     if (!tenantId) return;
-    setIsLoading(true);
+    beginRequest();
     setError(null);
     try {
       const [listResult, enrichedResult] = await Promise.all([
         jobsRepository.list({ tenant_id: tenantId }),
-        jobsRepository.list({ tenant_id: tenantId, sort_by: 'created_at', sort_order: 'desc', limit: 50 }),
+        jobsRepository.list({
+          tenant_id: tenantId,
+          sort_by: 'created_at',
+          sort_order: 'desc',
+          limit: 50,
+        }),
       ]);
       if (listResult.error) throw listResult.error;
       if (enrichedResult.error) throw enrichedResult.error;
@@ -165,18 +186,23 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       setError(normalizeError(e).userMessage);
     } finally {
-      setIsLoading(false);
+      finishRequest();
     }
-  }, [tenantId]);
+  }, [tenantId, beginRequest, finishRequest]);
 
   const refetchCandidates = useCallback(async () => {
     if (!tenantId) return;
-    setIsLoading(true);
+    beginRequest();
     setError(null);
     try {
       const [listResult, enrichedResult] = await Promise.all([
         candidatesRepository.list({ tenant_id: tenantId }),
-        candidatesRepository.list({ tenant_id: tenantId, sort_by: 'created_at', sort_order: 'desc', limit: 50 }),
+        candidatesRepository.list({
+          tenant_id: tenantId,
+          sort_by: 'created_at',
+          sort_order: 'desc',
+          limit: 50,
+        }),
       ]);
       if (listResult.error) throw listResult.error;
       if (enrichedResult.error) throw enrichedResult.error;
@@ -185,18 +211,23 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       setError(normalizeError(e).userMessage);
     } finally {
-      setIsLoading(false);
+      finishRequest();
     }
-  }, [tenantId]);
+  }, [tenantId, beginRequest, finishRequest]);
 
   const refetchApplications = useCallback(async () => {
     if (!tenantId) return;
-    setIsLoading(true);
+    beginRequest();
     setError(null);
     try {
       const [listResult, enrichedResult] = await Promise.all([
         applicationsRepository.list({ tenant_id: tenantId }),
-        applicationsRepository.list({ tenant_id: tenantId, sort_by: 'applied_at', sort_order: 'desc', limit: 50 }),
+        applicationsRepository.list({
+          tenant_id: tenantId,
+          sort_by: 'applied_at',
+          sort_order: 'desc',
+          limit: 50,
+        }),
       ]);
       if (listResult.error) throw listResult.error;
       if (enrichedResult.error) throw enrichedResult.error;
@@ -205,13 +236,13 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       setError(normalizeError(e).userMessage);
     } finally {
-      setIsLoading(false);
+      finishRequest();
     }
-  }, [tenantId]);
+  }, [tenantId, beginRequest, finishRequest]);
 
   const refetchProcesses = useCallback(async () => {
     if (!tenantId) return;
-    setIsLoading(true);
+    beginRequest();
     setError(null);
     try {
       const [listData, enrichedData] = await Promise.all([
@@ -219,17 +250,19 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
         recruitmentProcessRepository.findAll(tenantId),
       ]);
       setProcesses(listData as unknown as RecruitmentProcess[]);
-      setProcessesEnriched(enrichedData as unknown as RecruitmentProcessListItem[]);
+      setProcessesEnriched(
+        enrichedData as unknown as RecruitmentProcessListItem[],
+      );
     } catch (e) {
       setError(normalizeError(e).userMessage);
     } finally {
-      setIsLoading(false);
+      finishRequest();
     }
-  }, [tenantId]);
+  }, [tenantId, beginRequest, finishRequest]);
 
   const refetchStages = useCallback(async () => {
     if (!tenantId) return;
-    setIsLoading(true);
+    beginRequest();
     setError(null);
     try {
       const data = await recruitmentStageRepository.findAll(tenantId);
@@ -237,13 +270,13 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       setError(normalizeError(e).userMessage);
     } finally {
-      setIsLoading(false);
+      finishRequest();
     }
-  }, [tenantId]);
+  }, [tenantId, beginRequest, finishRequest]);
 
   const refetchTalentPool = useCallback(async () => {
     if (!tenantId) return;
-    setIsLoading(true);
+    beginRequest();
     setError(null);
     try {
       const data = await talentPoolRepository.findAll(tenantId);
@@ -251,13 +284,13 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       setError(normalizeError(e).userMessage);
     } finally {
-      setIsLoading(false);
+      finishRequest();
     }
-  }, [tenantId]);
+  }, [tenantId, beginRequest, finishRequest]);
 
   const refetchDemands = useCallback(async () => {
     if (!tenantId) return;
-    setIsLoading(true);
+    beginRequest();
     setError(null);
     try {
       const data = await recruitmentDemandRepository.findAll(tenantId);
@@ -265,41 +298,49 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       setError(normalizeError(e).userMessage);
     } finally {
-      setIsLoading(false);
+      finishRequest();
     }
-  }, [tenantId]);
+  }, [tenantId, beginRequest, finishRequest]);
 
   const refetchMatches = useCallback(async () => {
     if (!tenantId) return;
-    setIsLoading(true);
+    beginRequest();
     setError(null);
     try {
-      const result = await jobMatchesRepository.list({ tenant_id: tenantId, sort_by: 'score', sort_order: 'desc', limit: 100 });
+      const result = await jobMatchesRepository.list({
+        tenant_id: tenantId,
+        sort_by: 'score',
+        sort_order: 'desc',
+        limit: 100,
+      });
       if (result.error) throw result.error;
       setMatches(result.data || []);
     } catch (e) {
       setError(normalizeError(e).userMessage);
     } finally {
-      setIsLoading(false);
+      finishRequest();
     }
-  }, [tenantId]);
+  }, [tenantId, beginRequest, finishRequest]);
 
   const refetchDashboardStats = useCallback(async () => {
     if (!tenantId) return;
+    beginRequest();
     try {
-      const [jobsStats, candidatesStats, applicationsStats, matchesStats] = await Promise.all([
-        jobsRepository.getStats(tenantId),
-        candidatesRepository.getStats(tenantId),
-        applicationsRepository.getStats(tenantId),
-        jobMatchesRepository.getStats(tenantId),
-      ]);
-      
+      const [jobsStats, candidatesStats, applicationsStats, matchesStats] =
+        await Promise.all([
+          jobsRepository.getStats(tenantId),
+          candidatesRepository.getStats(tenantId),
+          applicationsRepository.getStats(tenantId),
+          jobMatchesRepository.getStats(tenantId),
+        ]);
+
       // Get process stats (old repository returns data directly)
-      const processesData = await recruitmentProcessRepository.findAll(tenantId);
-      
+      const processesData =
+        await recruitmentProcessRepository.findAll(tenantId);
+
       // Get demands stats - old repository may not have getStats, so use findAll
       const demandsData = await recruitmentDemandRepository.findAll(tenantId);
-      
+
       setDashboardStats({
         jobs: {
           total: jobsStats.data?.total || 0,
@@ -329,16 +370,23 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
         },
         processes: {
           total: processesData.length,
-          planning: processesData.filter((p: any) => p.status === 'planning').length,
+          planning: processesData.filter((p: any) => p.status === 'planning')
+            .length,
           open: processesData.filter((p: any) => p.status === 'open').length,
-          in_progress: processesData.filter((p: any) => p.status === 'in_progress').length,
-          completed: processesData.filter((p: any) => p.status === 'completed').length,
+          in_progress: processesData.filter(
+            (p: any) => p.status === 'in_progress',
+          ).length,
+          completed: processesData.filter((p: any) => p.status === 'completed')
+            .length,
         },
         demands: {
           total: demandsData.length,
           open: demandsData.filter((d: any) => d.status === 'open').length,
-          in_progress: demandsData.filter((d: any) => d.status === 'in_progress').length,
-          fulfilled: demandsData.filter((d: any) => d.status === 'fulfilled').length,
+          in_progress: demandsData.filter(
+            (d: any) => d.status === 'in_progress',
+          ).length,
+          fulfilled: demandsData.filter((d: any) => d.status === 'fulfilled')
+            .length,
         },
         matches: {
           total: matchesStats.data?.total || 0,
@@ -348,306 +396,446 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
       });
     } catch (e) {
       setError(normalizeError(e).userMessage);
+    } finally {
+      finishRequest();
     }
-  }, [tenantId]);
+  }, [tenantId, beginRequest, finishRequest]);
+
+  const refetch = useCallback(async () => {
+    await Promise.all([
+      refetchJobs(),
+      refetchCandidates(),
+      refetchApplications(),
+      refetchProcesses(),
+      refetchStages(),
+      refetchTalentPool(),
+      refetchDemands(),
+      refetchMatches(),
+      refetchDashboardStats(),
+    ]);
+  }, [
+    refetchJobs,
+    refetchCandidates,
+    refetchApplications,
+    refetchProcesses,
+    refetchStages,
+    refetchTalentPool,
+    refetchDemands,
+    refetchMatches,
+    refetchDashboardStats,
+  ]);
 
   // Job actions
-  const createJob = useCallback(async (input: any) => {
-    if (!tenantId) return null;
-    try {
-      const result = await jobsRepository.create({ ...input, tenant_id: tenantId });
-      if (result.error) throw result.error;
-      await refetchJobs();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [tenantId, refetchJobs]);
+  const createJob = useCallback(
+    async (input: any) => {
+      if (!tenantId) return null;
+      try {
+        const result = await jobsRepository.create({
+          ...input,
+          tenant_id: tenantId,
+        });
+        if (result.error) throw result.error;
+        await refetchJobs();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [tenantId, refetchJobs],
+  );
 
-  const updateJob = useCallback(async (input: any) => {
-    try {
-      const result = await jobsRepository.update(input);
-      if (result.error) throw result.error;
-      await refetchJobs();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [refetchJobs]);
+  const updateJob = useCallback(
+    async (input: any) => {
+      try {
+        const result = await jobsRepository.update(input);
+        if (result.error) throw result.error;
+        await refetchJobs();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [refetchJobs],
+  );
 
-  const updateJobStatus = useCallback(async (id: string, status: Job['status']) => {
-    try {
-      const result = await jobsRepository.updateStatus(id, status);
-      if (result.error) throw result.error;
-      await refetchJobs();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [refetchJobs]);
+  const updateJobStatus = useCallback(
+    async (id: string, status: Job['status']) => {
+      try {
+        const result = await jobsRepository.updateStatus(id, status);
+        if (result.error) throw result.error;
+        await refetchJobs();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [refetchJobs],
+  );
 
-  const deleteJob = useCallback(async (id: string) => {
-    try {
-      const result = await jobsRepository.delete(id);
-      if (result.error) throw result.error;
-      await refetchJobs();
-      return true;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return false;
-    }
-  }, [refetchJobs]);
+  const deleteJob = useCallback(
+    async (id: string) => {
+      try {
+        const result = await jobsRepository.delete(id);
+        if (result.error) throw result.error;
+        await refetchJobs();
+        return true;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return false;
+      }
+    },
+    [refetchJobs],
+  );
 
   // Candidate actions
-  const createCandidate = useCallback(async (input: any) => {
-    if (!tenantId) return null;
-    try {
-      const result = await candidatesRepository.create({ ...input, tenant_id: tenantId });
-      if (result.error) throw result.error;
-      await refetchCandidates();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [tenantId, refetchCandidates]);
+  const createCandidate = useCallback(
+    async (input: any) => {
+      if (!tenantId) return null;
+      try {
+        const result = await candidatesRepository.create({
+          ...input,
+          tenant_id: tenantId,
+        });
+        if (result.error) throw result.error;
+        await refetchCandidates();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [tenantId, refetchCandidates],
+  );
 
-  const updateCandidate = useCallback(async (input: any) => {
-    if (!tenantId) return null;
-    try {
-      const result = await candidatesRepository.update({ ...input, tenant_id: tenantId });
-      if (result.error) throw result.error;
-      await refetchCandidates();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [tenantId, refetchCandidates]);
+  const updateCandidate = useCallback(
+    async (input: any) => {
+      if (!tenantId) return null;
+      try {
+        const result = await candidatesRepository.update({
+          ...input,
+          tenant_id: tenantId,
+        });
+        if (result.error) throw result.error;
+        await refetchCandidates();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [tenantId, refetchCandidates],
+  );
 
-  const deleteCandidate = useCallback(async (id: string) => {
-    if (!tenantId) return false;
-    try {
-      const result = await candidatesRepository.delete(id, tenantId);
-      if (result.error) throw result.error;
-      await refetchCandidates();
-      return true;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return false;
-    }
-  }, [tenantId, refetchCandidates]);
+  const deleteCandidate = useCallback(
+    async (id: string) => {
+      if (!tenantId) return false;
+      try {
+        const result = await candidatesRepository.delete(id, tenantId);
+        if (result.error) throw result.error;
+        await refetchCandidates();
+        return true;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return false;
+      }
+    },
+    [tenantId, refetchCandidates],
+  );
 
   // Application actions
-  const createApplication = useCallback(async (input: any) => {
-    if (!tenantId) return null;
-    try {
-      const result = await applicationsRepository.create({ ...input, tenant_id: tenantId });
-      if (result.error) throw result.error;
-      await refetchApplications();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [tenantId, refetchApplications]);
+  const createApplication = useCallback(
+    async (input: any) => {
+      if (!tenantId) return null;
+      try {
+        const result = await applicationsRepository.create({
+          ...input,
+          tenant_id: tenantId,
+        });
+        if (result.error) throw result.error;
+        await refetchApplications();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [tenantId, refetchApplications],
+  );
 
-  const updateApplication = useCallback(async (input: any) => {
-    try {
-      const result = await applicationsRepository.update(input);
-      if (result.error) throw result.error;
-      await refetchApplications();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [refetchApplications]);
+  const updateApplication = useCallback(
+    async (input: any) => {
+      try {
+        const result = await applicationsRepository.update(input);
+        if (result.error) throw result.error;
+        await refetchApplications();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [refetchApplications],
+  );
 
-  const moveApplicationToStage = useCallback(async (applicationId: string, stageId: string, movedBy: string, notes?: string) => {
-    try {
-      const result = await applicationsRepository.moveToStage(applicationId, stageId, movedBy, notes);
-      if (result.error) throw result.error;
-      await refetchApplications();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [refetchApplications]);
+  const moveApplicationToStage = useCallback(
+    async (
+      applicationId: string,
+      stageId: string,
+      movedBy: string,
+      notes?: string,
+    ) => {
+      try {
+        const result = await applicationsRepository.moveToStage(
+          applicationId,
+          stageId,
+          movedBy,
+          notes,
+        );
+        if (result.error) throw result.error;
+        await refetchApplications();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [refetchApplications],
+  );
 
-  const updateApplicationStatus = useCallback(async (id: string, status: Application['status'], additionalData: any = {}) => {
-    try {
-      const result = await applicationsRepository.updateStatus(id, status, additionalData);
-      if (result.error) throw result.error;
-      await refetchApplications();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [refetchApplications]);
+  const updateApplicationStatus = useCallback(
+    async (
+      id: string,
+      status: Application['status'],
+      additionalData: any = {},
+    ) => {
+      try {
+        const result = await applicationsRepository.updateStatus(
+          id,
+          status,
+          additionalData,
+        );
+        if (result.error) throw result.error;
+        await refetchApplications();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [refetchApplications],
+  );
 
-  const deleteApplication = useCallback(async (id: string) => {
-    try {
-      const result = await applicationsRepository.delete(id);
-      if (result.error) throw result.error;
-      await refetchApplications();
-      return true;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return false;
-    }
-  }, [refetchApplications]);
+  const deleteApplication = useCallback(
+    async (id: string) => {
+      try {
+        const result = await applicationsRepository.delete(id);
+        if (result.error) throw result.error;
+        await refetchApplications();
+        return true;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return false;
+      }
+    },
+    [refetchApplications],
+  );
 
   // Process actions
-  const createProcess = useCallback(async (input: any) => {
-    if (!tenantId) return null;
-    try {
-      const data = await recruitmentProcessRepository.create({ ...input, tenant_id: tenantId });
-      await refetchProcesses();
-      return data as unknown as RecruitmentProcess;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [tenantId, refetchProcesses]);
+  const createProcess = useCallback(
+    async (input: any) => {
+      if (!tenantId) return null;
+      try {
+        const data = await recruitmentProcessRepository.create({
+          ...input,
+          tenant_id: tenantId,
+        });
+        await refetchProcesses();
+        return data as unknown as RecruitmentProcess;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [tenantId, refetchProcesses],
+  );
 
-  const updateProcess = useCallback(async (input: any) => {
-    try {
-      const { id, ...updates } = input;
-      const data = await recruitmentProcessRepository.update(id, updates);
-      await refetchProcesses();
-      return data as unknown as RecruitmentProcess;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [refetchProcesses]);
+  const updateProcess = useCallback(
+    async (input: any) => {
+      try {
+        const { id, ...updates } = input;
+        const data = await recruitmentProcessRepository.update(id, updates);
+        await refetchProcesses();
+        return data as unknown as RecruitmentProcess;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [refetchProcesses],
+  );
 
-  const deleteProcess = useCallback(async (id: string) => {
-    try {
-      await recruitmentProcessRepository.delete(id);
-      await refetchProcesses();
-      return true;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return false;
-    }
-  }, [refetchProcesses]);
+  const deleteProcess = useCallback(
+    async (id: string) => {
+      try {
+        await recruitmentProcessRepository.delete(id);
+        await refetchProcesses();
+        return true;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return false;
+      }
+    },
+    [refetchProcesses],
+  );
 
   // Stage actions
-  const createStage = useCallback(async (input: any) => {
-    if (!tenantId) return null;
-    try {
-      const data = await recruitmentStageRepository.create({ ...input, tenant_id: tenantId });
-      await refetchStages();
-      return data as unknown as RecruitmentStage;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [tenantId, refetchStages]);
+  const createStage = useCallback(
+    async (input: any) => {
+      if (!tenantId) return null;
+      try {
+        const data = await recruitmentStageRepository.create({
+          ...input,
+          tenant_id: tenantId,
+        });
+        await refetchStages();
+        return data as unknown as RecruitmentStage;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [tenantId, refetchStages],
+  );
 
-  const updateStage = useCallback(async (input: any) => {
-    try {
-      const { id, ...updates } = input;
-      const data = await recruitmentStageRepository.update(id, updates);
-      await refetchStages();
-      return data as unknown as RecruitmentStage;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [refetchStages]);
+  const updateStage = useCallback(
+    async (input: any) => {
+      try {
+        const { id, ...updates } = input;
+        const data = await recruitmentStageRepository.update(id, updates);
+        await refetchStages();
+        return data as unknown as RecruitmentStage;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [refetchStages],
+  );
 
-  const deleteStage = useCallback(async (id: string) => {
-    try {
-      await recruitmentStageRepository.delete(id);
-      await refetchStages();
-      return true;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return false;
-    }
-  }, [refetchStages]);
+  const deleteStage = useCallback(
+    async (id: string) => {
+      try {
+        await recruitmentStageRepository.delete(id);
+        await refetchStages();
+        return true;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return false;
+      }
+    },
+    [refetchStages],
+  );
 
   // Demand actions
-  const createDemand = useCallback(async (input: any) => {
-    if (!tenantId) return null;
-    try {
-      const data = await recruitmentDemandRepository.create({ ...input, tenant_id: tenantId });
-      await refetchDemands();
-      return data as unknown as RecruitmentDemand;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [tenantId, refetchDemands]);
+  const createDemand = useCallback(
+    async (input: any) => {
+      if (!tenantId) return null;
+      try {
+        const data = await recruitmentDemandRepository.create({
+          ...input,
+          tenant_id: tenantId,
+        });
+        await refetchDemands();
+        return data as unknown as RecruitmentDemand;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [tenantId, refetchDemands],
+  );
 
-  const updateDemand = useCallback(async (input: any) => {
-    try {
-      const { id, ...updates } = input;
-      const data = await recruitmentDemandRepository.update(id, updates);
-      await refetchDemands();
-      return data as unknown as RecruitmentDemand;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [refetchDemands]);
+  const updateDemand = useCallback(
+    async (input: any) => {
+      try {
+        const { id, ...updates } = input;
+        const data = await recruitmentDemandRepository.update(id, updates);
+        await refetchDemands();
+        return data as unknown as RecruitmentDemand;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [refetchDemands],
+  );
 
-  const deleteDemand = useCallback(async (id: string) => {
-    try {
-      await recruitmentDemandRepository.delete(id);
-      await refetchDemands();
-      return true;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return false;
-    }
-  }, [refetchDemands]);
+  const deleteDemand = useCallback(
+    async (id: string) => {
+      try {
+        await recruitmentDemandRepository.delete(id);
+        await refetchDemands();
+        return true;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return false;
+      }
+    },
+    [refetchDemands],
+  );
 
   // Match actions
-  const upsertMatch = useCallback(async (match: any) => {
-    if (!tenantId) return null;
-    try {
-      const result = await jobMatchesRepository.upsert({ ...match, tenant_id: tenantId });
-      if (result.error) throw result.error;
-      await refetchMatches();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [tenantId, refetchMatches]);
+  const upsertMatch = useCallback(
+    async (match: any) => {
+      if (!tenantId) return null;
+      try {
+        const result = await jobMatchesRepository.upsert({
+          ...match,
+          tenant_id: tenantId,
+        });
+        if (result.error) throw result.error;
+        await refetchMatches();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [tenantId, refetchMatches],
+  );
 
-  const markMatchNotified = useCallback(async (id: string) => {
-    try {
-      const result = await jobMatchesRepository.markNotified(id);
-      if (result.error) throw result.error;
-      await refetchMatches();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [refetchMatches]);
+  const markMatchNotified = useCallback(
+    async (id: string) => {
+      try {
+        const result = await jobMatchesRepository.markNotified(id);
+        if (result.error) throw result.error;
+        await refetchMatches();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [refetchMatches],
+  );
 
-  const invalidateMatch = useCallback(async (id: string, reason: string) => {
-    try {
-      const result = await jobMatchesRepository.invalidate(id, reason);
-      if (result.error) throw result.error;
-      await refetchMatches();
-      return result.data;
-    } catch (e) {
-      setError(normalizeError(e).userMessage);
-      return null;
-    }
-  }, [refetchMatches]);
+  const invalidateMatch = useCallback(
+    async (id: string, reason: string) => {
+      try {
+        const result = await jobMatchesRepository.invalidate(id, reason);
+        if (result.error) throw result.error;
+        await refetchMatches();
+        return result.data;
+      } catch (e) {
+        setError(normalizeError(e).userMessage);
+        return null;
+      }
+    },
+    [refetchMatches],
+  );
 
   useEffect(() => {
     if (!tenantId) {
@@ -664,6 +852,7 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
       setApplicationsEnriched([]);
       setProcessesEnriched([]);
       setDashboardStats(null);
+      setIsLoading(false);
       return;
     }
     void refetch();
@@ -731,7 +920,9 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
 export function useRecrutamento(): RecrutamentoContextValue {
   const ctx = useContext(RecrutamentoContext);
   if (!ctx) {
-    throw new Error('useRecrutamento must be used within <RecrutamentoProvider>');
+    throw new Error(
+      'useRecrutamento must be used within <RecrutamentoProvider>',
+    );
   }
   return ctx;
 }

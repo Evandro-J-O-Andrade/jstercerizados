@@ -1,7 +1,9 @@
-﻿import { type ReactNode, useState, useCallback } from 'react';
+import { type ReactNode, useState, useCallback } from 'react';
 import { CandidatoSidebar } from '../CandidatoSidebar';
 import { CandidatoHeader } from './CandidatoHeader';
 import { CandidatoContent } from './CandidatoContent';
+import { CandidatoBottomNavigation } from './CandidatoBottomNavigation';
+import { useNavigation } from '@/hooks/useNavigation';
 
 interface CandidatoContainerProps {
   children?: ReactNode;
@@ -9,6 +11,7 @@ interface CandidatoContainerProps {
 
 export function CandidatoContainer({ children }: CandidatoContainerProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { sidebarItems, bottomNavItems, loading } = useNavigation();
 
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
   const handleNavigate = useCallback(() => setSidebarOpen(false), []);
@@ -26,6 +29,8 @@ export function CandidatoContainer({ children }: CandidatoContainerProps) {
           isOpen={sidebarOpen}
           onClose={closeSidebar}
           onNavigate={handleNavigate}
+          items={sidebarItems}
+          loading={loading}
         />
 
         {sidebarOpen && (
@@ -39,6 +44,7 @@ export function CandidatoContainer({ children }: CandidatoContainerProps) {
           <CandidatoContent>{children}</CandidatoContent>
         </div>
       </div>
+      <CandidatoBottomNavigation items={bottomNavItems} />
     </div>
   );
 }
