@@ -333,7 +333,7 @@ export const jobMatchesRepository = {
             work_mode,
             companies (
               name,
-              trade_name,
+               trading_name,
               logo_url
             )
           )
@@ -356,7 +356,7 @@ export const jobMatchesRepository = {
         job_city: row.jobs?.city,
         job_state: row.jobs?.state,
         job_work_mode: row.jobs?.work_mode,
-        company_name: row.jobs?.companies?.trade_name || row.jobs?.companies?.name,
+        company_name: row.jobs?.companies?.trading_name || row.jobs?.companies?.name,
         company_logo_url: row.jobs?.companies?.logo_url,
       }));
 

@@ -397,7 +397,8 @@ export const jobsRepository = {
             name,
             trading_name,
             logo_url
-          )
+          ),
+          recruitment_processes!inner (id)
         `)
         .eq('recruitment_processes.id', processId);
 

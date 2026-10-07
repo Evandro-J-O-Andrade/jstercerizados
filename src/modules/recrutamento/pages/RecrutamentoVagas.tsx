@@ -6,6 +6,7 @@ import { ModulePage } from '@/components/modules/ModulePage';
 import { jobsRepository } from '@/modules/recrutamento/repositories';
 import { Briefcase } from 'lucide-react';
 import type { JobListItem, JobStatus, CreateJobInput, UpdateJobInput } from '@/modules/recrutamento/types';
+import type { ModuleDefinition, ModuleCategory } from '@/components/portal/ModuleRegistry';
 import { JOB_STATUS_LABELS } from '@/modules/recrutamento/constants/jobStatus';
 import { CONTRACT_TYPE_LABELS } from '@/modules/recrutamento/constants/contractType';
 import { WORK_MODE_LABELS } from '@/modules/recrutamento/constants/workMode';
@@ -59,11 +60,11 @@ const JOBS_COLUMNS = [
 ];
 
 const JOBS_FILTERS = [
-  { key: 'search', label: 'Buscar', type: 'text', placeholder: 'Título, descrição...' },
+  { key: 'search', label: 'Buscar', type: 'text' as const },
   {
     key: 'status',
     label: 'Status',
-    type: 'select',
+    type: 'select' as const,
     options: [
       { value: '', label: 'Todos' },
       { value: 'draft', label: 'Rascunho' },
@@ -77,7 +78,7 @@ const JOBS_FILTERS = [
   {
     key: 'contract_type',
     label: 'Contrato',
-    type: 'select',
+    type: 'select' as const,
     options: [
       { value: '', label: 'Todos' },
       { value: 'clt', label: 'CLT' },
@@ -91,7 +92,7 @@ const JOBS_FILTERS = [
   {
     key: 'work_mode',
     label: 'Modalidade',
-    type: 'select',
+    type: 'select' as const,
     options: [
       { value: '', label: 'Todas' },
       { value: 'onsite', label: 'Presencial' },
@@ -102,7 +103,7 @@ const JOBS_FILTERS = [
   {
     key: 'seniority',
     label: 'Senioridade',
-    type: 'select',
+    type: 'select' as const,
     options: [
       { value: '', label: 'Todas' },
       { value: 'internship', label: 'Estágio' },
@@ -113,8 +114,8 @@ const JOBS_FILTERS = [
       { value: 'leadership', label: 'Liderança' },
     ],
   },
-  { key: 'city', label: 'Cidade', type: 'text' },
-  { key: 'state', label: 'UF', type: 'text' },
+  { key: 'city', label: 'Cidade', type: 'text' as const },
+  { key: 'state', label: 'UF', type: 'text' as const },
 ];
 
 const DEFAULT_FORM: JobFormData = {
@@ -125,8 +126,8 @@ const DEFAULT_FORM: JobFormData = {
   responsibilities: '',
   requirements: '',
   benefits: '',
-  salary_min: null,
-  salary_max: null,
+  salary_min: undefined,
+  salary_max: undefined,
   salary_type: 'negotiate',
   contract_type: 'clt',
   seniority: 'junior',
@@ -139,9 +140,15 @@ const DEFAULT_FORM: JobFormData = {
   metadata: {},
 };
 
-function JobForm({ form, setForm, isEditing }: { form: JobFormData; setForm: (f: JobFormData) => void; isEditing: boolean }) {
-  const handleChange = (key: keyof JobFormData, value: any) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+interface JobFormProps {
+  form: JobFormData;
+  setForm: (f: JobFormData) => void;
+  editMode: boolean;
+}
+
+function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
+  const handleChange = (key: keyof JobFormData, value: string | number | undefined) => {
+    (setForm as React.Dispatch<React.SetStateAction<JobFormData>>)((prev: JobFormData): JobFormData => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -286,7 +293,7 @@ function JobForm({ form, setForm, isEditing }: { form: JobFormData; setForm: (f:
             step="0.01"
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.salary_min ?? ''}
-            onChange={(e) => handleChange('salary_min', e.target.value ? Number(e.target.value) : null)}
+            onChange={(e) => handleChange('salary_min', e.target.value ? Number(e.target.value) : undefined)}
             placeholder="Ex: 5000"
           />
         </div>
@@ -297,7 +304,7 @@ function JobForm({ form, setForm, isEditing }: { form: JobFormData; setForm: (f:
             step="0.01"
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.salary_max ?? ''}
-            onChange={(e) => handleChange('salary_max', e.target.value ? Number(e.target.value) : null)}
+            onChange={(e) => handleChange('salary_max', e.target.value ? Number(e.target.value) : undefined)}
             placeholder="Ex: 7000"
           />
         </div>
@@ -347,7 +354,15 @@ export default function RecrutamentoVagas() {
   const { currentTenantId, hasAnyPermission } = useAuth();
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const moduleDef = { id: 'recrutamento', name: 'Recrutamento' };
+  const moduleDef: ModuleDefinition = {
+    id: 'recrutamento',
+    title: 'Recrutamento',
+    description: 'Gestão de recrutamento e seleção',
+    icon: 'Briefcase',
+    route: '/recrutamento',
+    category: 'recrutamento' as ModuleCategory,
+    scope: 'tenant',
+  };
 
   const canCreate = hasAnyPermission(['recrutamento:vagas:create']);
   const canUpdate = hasAnyPermission(['recrutamento:vagas:update']);
@@ -376,26 +391,26 @@ export default function RecrutamentoVagas() {
       ].filter(Boolean) as any}
       columns={JOBS_COLUMNS}
       filters={JOBS_FILTERS}
-      fetchData={async (tenantId) => {
-        const result = await jobsRepository.list({ tenant_id: tenantId, sort_by: 'created_at', sort_order: 'desc', limit: 100 });
+      fetchData={async (_tenantId) => {
+        const result = await jobsRepository.list({ tenant_id: currentTenantId || '', sort_by: 'created_at', sort_order: 'desc', limit: 100 });
         return result.data || [];
       }}
-      createItem={async (tenantId, input) => {
-        const result = await jobsRepository.create({ ...input, tenant_id: tenantId });
+      createItem={async (_tenantId, input) => {
+        const result = await jobsRepository.create({ ...input, tenant_id: currentTenantId || '' });
         if (result.error) throw result.error;
         return result.data!;
       }}
-      updateItem={async (tenantId, id, input) => {
+      updateItem={async (_tenantId, id, input) => {
         const result = await jobsRepository.update({ id, ...input } as UpdateJobInput);
         if (result.error) throw result.error;
         return result.data!;
       }}
-      deleteItem={async (tenantId, id) => {
+      deleteItem={async (_tenantId, id) => {
         await jobsRepository.delete(id);
       }}
       getItemId={(item) => item.id}
       defaultForm={DEFAULT_FORM}
-      renderForm={JobForm}
+      renderForm={(form, setForm, editMode) => <JobForm form={form} setForm={setForm} editMode={editMode} />}
       onToggleStatus={canToggle ? handleToggleStatus : undefined}
       getToggleState={(item) => item.status === 'published'}
       emptyMessage="Nenhuma vaga encontrada."

@@ -216,7 +216,7 @@ export const applicationsRepository = {
             *,
             companies (
               name,
-              trade_name,
+               trading_name,
               logo_url
             )
           ),
@@ -568,7 +568,7 @@ export const applicationsRepository = {
             salary_type,
             companies (
               name,
-              trade_name,
+               trading_name,
               logo_url
             )
           ),
