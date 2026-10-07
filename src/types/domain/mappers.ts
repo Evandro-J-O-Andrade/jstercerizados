@@ -4,8 +4,6 @@ import type {
   Company,
   CompanySocials,
   Candidate,
-  Job,
-  JobRow,
   Application,
   Lead,
   Service,
@@ -48,65 +46,6 @@ export function mapCandidate(
     skills: extras?.skills ?? [],
     documents: extras?.documents ?? [],
     profileViews: extras?.profileViews ?? [],
-  };
-}
-
-export function mapJob(row: JobRow): Job {
-  const contractType = row.contract_type || '';
-  const employmentType = contractType || null;
-
-  const city = row.city || '';
-  const state = row.state || '';
-  const locationDetail = row.location_detail || '';
-  const location =
-    [city, state].filter(Boolean).join(', ') || locationDetail || null;
-
-  let salary: string | null = null;
-  if (
-    row.salary_type === 'range' &&
-    row.salary_min != null &&
-    row.salary_max != null
-  ) {
-    salary = `${row.salary_min.toLocaleString('pt-BR')} – ${row.salary_max.toLocaleString('pt-BR')}`;
-  } else if (row.salary_type === 'monthly' && row.salary_min != null) {
-    salary = `${row.salary_min.toLocaleString('pt-BR')}/mês`;
-  } else {
-    salary = 'A combinar';
-  }
-
-  return {
-    id: row.id,
-    tenant_id: row.tenant_id,
-    company_relationship_id: row.company_relationship_id,
-    title: row.title,
-    slug: row.slug,
-    description: row.description,
-    responsibilities: row.responsibilities,
-    requirements: row.requirements,
-    benefits: row.benefits,
-    salary_min: row.salary_min,
-    salary_max: row.salary_max,
-    salary_type: row.salary_type,
-    contract_type: row.contract_type,
-    seniority: row.seniority,
-    work_hours: row.work_hours,
-    work_mode: row.work_mode as Job['work_mode'],
-    city: row.city,
-    state: row.state,
-    location_detail: row.location_detail,
-    status: row.status,
-    views_count: row.views_count,
-    applications_count: row.applications_count,
-    published_at: row.published_at,
-    expires_at: row.expires_at,
-    metadata: row.metadata,
-    created_by: row.created_by,
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-    employment_type: employmentType,
-    location,
-    salary,
-    closed_at: row.expires_at,
   };
 }
 

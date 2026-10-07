@@ -306,7 +306,11 @@ export default function VisaoGeral() {
                           {job.title}
                         </p>
                         <p className="text-muted-foreground mt-0.5 text-xs">
-                          {job.location || 'Sem localização'}
+                          {[job.city, job.state]
+                            .filter(Boolean)
+                            .join(', ') ||
+                            job.location_detail ||
+                            'Sem localização'}
                         </p>
                       </div>
                       <span className="bg-success/10 text-success ml-3 shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium">

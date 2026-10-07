@@ -1,6 +1,6 @@
 import Candidatos from '@/pages/dashboard/Candidatos';
 import CandidatoDetalhe from '@/pages/dashboard/CandidatoDetalhe';
-import Vagas from '@/pages/dashboard/Vagas';
+import Vagas from '@/modules/recrutamento/pages/RecrutamentoVagas';
 import Funcionarios from '@/pages/dashboard/Funcionarios';
 import FuncionarioDetalhe from '@/pages/dashboard/FuncionarioDetalhe';
 import ProcessosSeletivos from '@/pages/dashboard/ProcessosSeletivos';
