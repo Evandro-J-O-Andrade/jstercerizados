@@ -28,8 +28,12 @@ const SALARY_TYPE_OPTIONS = [
 ] as const;
 
 export default function Candidatos() {
-  const { currentTenantId, isAdminMaster } = useAuth();
+  const { currentTenantId, hasAnyPermission } = useAuth();
   const { addToast } = useToast();
+
+  const canCreate = hasAnyPermission(['candidates.create']);
+  const canUpdate = hasAnyPermission(['candidates.update']);
+  const canDelete = hasAnyPermission(['candidates.delete']);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -198,7 +202,7 @@ export default function Candidatos() {
       icon={Users}
       breadcrumbItems={[{ label: 'Candidatos' }]}
       actions={
-        isAdminMaster ? (
+        canCreate ? (
           <Button variant="primary" size="sm" onClick={openCreate}>
             <Plus className="h-4 w-4" />
             Novo candidato
@@ -338,22 +342,26 @@ export default function Candidatos() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => openEdit(candidate)}
-                          className="text-muted-foreground hover:text-foreground"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteConfirm(candidate.id)}
-                          className="text-destructive hover:text-destructive/80"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                    <div className="flex items-center justify-end gap-2">
+                          {canUpdate && (
+                            <button
+                              type="button"
+                              onClick={() => openEdit(candidate)}
+                              className="text-muted-foreground hover:text-foreground"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              onClick={() => setDeleteConfirm(candidate.id)}
+                              className="text-destructive hover:text-destructive/80"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
                     </td>
                   </tr>
                 ))}
@@ -362,7 +370,7 @@ export default function Candidatos() {
           </div>
         )}
 
-        {(selected || !selected) && (
+        {(canCreate || selected) && (
           <Card className="p-6">
             <h3 className="text-foreground mb-4 text-lg font-semibold">
               {selected ? 'Editar candidato' : 'Novo candidato'}
