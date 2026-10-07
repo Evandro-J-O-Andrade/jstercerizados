@@ -28,4 +28,5 @@ export interface MediaUploaderProps {
   showPreview?: boolean;
   className?: string;
   existingAssets?: MediaAsset[];
+  multiple?: boolean;
 }

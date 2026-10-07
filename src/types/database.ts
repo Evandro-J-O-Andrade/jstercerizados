@@ -1722,6 +1722,65 @@ export interface Database {
           updated_at?: string;
         };
       };
+      media_assets: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          entity_type: string;
+          entity_id: string;
+          purpose: string;
+          bucket_id: string;
+          storage_path: string;
+          file_url: string;
+          file_name: string;
+          mime_type: string;
+          width: number | null;
+          height: number | null;
+          is_primary: boolean;
+          sort_order: number;
+          alt_text: string | null;
+          created_at: string;
+          updated_at: string;
+          metadata: Record<string, unknown>;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          entity_type: string;
+          entity_id: string;
+          purpose?: string;
+          bucket_id?: string;
+          storage_path?: string;
+          file_url?: string;
+          file_name?: string;
+          mime_type?: string;
+          width?: number | null;
+          height?: number | null;
+          is_primary?: boolean;
+          sort_order?: number;
+          alt_text?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          metadata?: Record<string, unknown>;
+        };
+        Update: {
+          tenant_id?: string;
+          entity_type?: string;
+          entity_id?: string;
+          purpose?: string;
+          bucket_id?: string;
+          storage_path?: string;
+          file_url?: string;
+          file_name?: string;
+          mime_type?: string;
+          width?: number | null;
+          height?: number | null;
+          is_primary?: boolean;
+          sort_order?: number;
+          alt_text?: string | null;
+          metadata?: Record<string, unknown>;
+        };
+      };
       legal_acceptances: {
         Row: {
           id: string;

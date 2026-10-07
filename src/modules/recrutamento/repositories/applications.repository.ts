@@ -214,13 +214,10 @@ export const applicationsRepository = {
           *,
           jobs!inner (
             *,
-            company_relationships!inner (
-              company_id,
-              companies!inner (
-                name,
-                trade_name,
-                logo_url
-              )
+            companies (
+              name,
+              trade_name,
+              logo_url
             )
           ),
           candidates!inner (
@@ -569,13 +566,10 @@ export const applicationsRepository = {
             salary_min,
             salary_max,
             salary_type,
-            company_relationships!inner (
-              company_id,
-              companies!inner (
-                name,
-                trade_name,
-                logo_url
-              )
+            companies (
+              name,
+              trade_name,
+              logo_url
             )
           ),
           recruitment_processes!left (

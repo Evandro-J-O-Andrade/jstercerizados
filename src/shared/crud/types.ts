@@ -54,4 +54,11 @@ export interface ModulePageConfig<T, C> {
   ) => ReactNode;
   defaultForm: C;
   renderWorkspace?: WorkspaceRenderer;
+  onEditStart?: (item: T) => void;
+  onModalClose?: () => void;
+  onToggleStatus?: (item: T) => Promise<void>;
+  getToggleState?: (item: T) => boolean;
+  modalOpen?: boolean;
+  onModalOpenChange?: (open: boolean) => void;
+  refreshKey?: number;
 }

@@ -29,6 +29,13 @@ export function ModulePage<T extends { id: string; created_at?: string }, C>({
   renderForm,
   defaultForm,
   renderWorkspace,
+  onEditStart,
+  onModalClose,
+  onToggleStatus,
+  getToggleState,
+  modalOpen: modalOpenProp,
+  onModalOpenChange,
+  refreshKey,
 }: ModulePageConfig<T, C>) {
   const { currentTenantId, isAdminMaster } = useAuth();
   const [items, setItems] = useState<T[]>([]);
@@ -36,14 +43,26 @@ export function ModulePage<T extends { id: string; created_at?: string }, C>({
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [filterValues, setFilterValues] = useState<Record<string, string>>({});
-  const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<T | null>(null);
   const [form, setForm] = useState<C>(defaultForm);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<T | null>(null);
+  const [internalModalOpen, setInternalModalOpen] = useState(false);
   const [sortKey, setSortKey] = useState<string>('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+
+  const isModalControlled = modalOpenProp !== undefined;
+  const effectiveModalOpen = isModalControlled
+    ? modalOpenProp
+    : internalModalOpen;
+  const setModalOpenState = (open: boolean) => {
+    if (isModalControlled) {
+      onModalOpenChange?.(open);
+    } else {
+      setInternalModalOpen(open);
+    }
+  };
 
   useEffect(() => {
     if (!currentTenantId) return;
@@ -66,7 +85,7 @@ export function ModulePage<T extends { id: string; created_at?: string }, C>({
     return () => {
       cancelled = true;
     };
-  }, [currentTenantId, filterValues]);
+  }, [currentTenantId, filterValues, refreshKey]);
 
   const filtered = useMemo(() => {
     let result = items;
@@ -107,7 +126,7 @@ export function ModulePage<T extends { id: string; created_at?: string }, C>({
     setForm(defaultForm);
     setFormError(null);
     setFormSuccess(null);
-    setModalOpen(true);
+    setModalOpenState(true);
   };
 
   const openEdit = (item: T) => {
@@ -115,7 +134,8 @@ export function ModulePage<T extends { id: string; created_at?: string }, C>({
     setForm(defaultForm);
     setFormError(null);
     setFormSuccess(null);
-    setModalOpen(true);
+    setModalOpenState(true);
+    onEditStart?.(item);
   };
 
   const handleSubmit = async () => {
@@ -134,7 +154,8 @@ export function ModulePage<T extends { id: string; created_at?: string }, C>({
         await createItem(currentTenantId, form as C);
         setFormSuccess('Registro criado com sucesso.');
       }
-      setModalOpen(false);
+      setModalOpenState(false);
+      onModalClose?.();
       const data = await fetchData(currentTenantId, filterValues);
       setItems(data);
     } catch (err) {
@@ -151,6 +172,20 @@ export function ModulePage<T extends { id: string; created_at?: string }, C>({
       setItems(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao excluir');
+    }
+  };
+
+  const handleToggleStatus = async (item: T) => {
+    if (!currentTenantId || !onToggleStatus) return;
+    setError(null);
+    setFormSuccess(null);
+    try {
+      await onToggleStatus(item);
+      setFormSuccess('Status atualizado com sucesso.');
+      const data = await fetchData(currentTenantId, filterValues);
+      setItems(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao atualizar status');
     }
   };
 
@@ -202,13 +237,18 @@ export function ModulePage<T extends { id: string; created_at?: string }, C>({
             onEdit={openEdit}
             onDelete={setDeleteConfirm}
             showActions={isAdminMaster}
+            onToggleStatus={onToggleStatus ? handleToggleStatus : undefined}
+            getToggleState={getToggleState}
           />
         )}
       </Card>
 
-      {modalOpen && (
+      {effectiveModalOpen && (
         <CrudDialog
-          onClose={() => setModalOpen(false)}
+          onClose={() => {
+            setModalOpenState(false);
+            onModalClose?.();
+          }}
           title={`${editItem ? 'Editar' : 'Novo'} ${title
             .replace(/s$/, '')
             .replace(/ções$/, 'ção')}`}

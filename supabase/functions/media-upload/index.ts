@@ -22,6 +22,16 @@ const ENTITY_TO_RESOURCE: Record<string, string> = {
 
 const PRIMARY_PURPOSES = ['logo', 'hero', 'card'];
 
+const MAGIC_BYTES: Record<string, Uint8Array[]> = {
+  'image/png': [new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])],
+  'image/jpeg': [
+    new Uint8Array([0xff, 0xd8, 0xff, 0xdb]),
+    new Uint8Array([0xff, 0xd8, 0xff, 0xe0]),
+    new Uint8Array([0xff, 0xd8, 0xff, 0xe1]),
+  ],
+  'image/webp': [new Uint8Array([0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50])],
+};
+
 function corsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get('origin') ?? '';
   const allowed = ALLOWED_ORIGINS.includes(origin)
@@ -50,6 +60,18 @@ function errorResponse(
   req: Request,
 ): Response {
   return json({ success: false, error: message, code }, status, req);
+}
+
+function validateMagicBytes(file: File, declaredMime: string): Promise<boolean> {
+  const expectedSignatures = MAGIC_BYTES[declaredMime];
+  if (!expectedSignatures) return Promise.resolve(false);
+
+  return file.slice(0, 12).arrayBuffer().then((buffer) => {
+    const header = new Uint8Array(buffer);
+    return expectedSignatures.some((sig) =>
+      sig.every((byte, i) => header[i] === byte),
+    );
+  });
 }
 
 serve(async (req: Request) => {
@@ -161,7 +183,18 @@ serve(async (req: Request) => {
       );
     }
 
-    // 6. Validate file size
+    // 6. Validate magic bytes (file content matches declared MIME)
+    const magicValid = await validateMagicBytes(file, file.type);
+    if (!magicValid) {
+      return errorResponse(
+        'INVALID_FILE_CONTENT',
+        'Conteúdo do arquivo não corresponde ao formato declarado.',
+        400,
+        req,
+      );
+    }
+
+    // 7. Validate file size
     if (file.size > MAX_FILE_SIZE) {
       return errorResponse(
         'FILE_TOO_LARGE',
@@ -171,7 +204,7 @@ serve(async (req: Request) => {
       );
     }
 
-    // 7. Resolve person_id from auth_user_id
+    // 8. Resolve person_id from auth_user_id
     const { data: person, error: personError } = await userClient
       .from('people')
       .select('id')
@@ -229,6 +262,8 @@ serve(async (req: Request) => {
     }
 
     // 10. Verify entity exists and belongs to tenant
+    // Contract: entity_id = companies.id for company/service
+    //           entity_id = company_relationships.id for partner/supplier
     const entityTable =
       entityType === 'company'
         ? 'companies'
@@ -390,11 +425,34 @@ serve(async (req: Request) => {
 
       if (primaryError) {
         console.error('[media-upload] set_primary_media error:', primaryError);
-        // Non-fatal: asset created, primary not set
+        // Atomic rollback: delete storage object and media_assets record
+        await adminClient.storage.from('public-media').remove([storagePath]);
+        await adminClient.from('media_assets').delete().eq('id', asset.id);
+        return errorResponse(
+          'SET_PRIMARY_FAILED',
+          'Falha ao definir mídia como principal. Upload revertido.',
+          500,
+          req,
+        );
       }
     }
 
-    // 18. Return success
+    // 18. Sync companies.logo_url for logo purpose
+    let logoSyncSuccess = true;
+    if (purpose === 'logo' && entityType === 'company') {
+      const { error: logoSyncError } = await adminClient
+        .from('companies')
+        .update({ logo_url: fileUrl })
+        .eq('id', entityId)
+        .eq('tenant_id', tenantId);
+
+      if (logoSyncError) {
+        console.error('[media-upload] companies.logo_url sync error:', logoSyncError);
+        logoSyncSuccess = false;
+      }
+    }
+
+    // 19. Return success
     return json(
       {
         success: true,
@@ -412,6 +470,7 @@ serve(async (req: Request) => {
           alt_text: asset.alt_text,
           created_at: asset.created_at,
         },
+        logo_sync: logoSyncSuccess,
       },
       200,
       req,

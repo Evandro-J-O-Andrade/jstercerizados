@@ -466,22 +466,10 @@ export default function Vagas() {
                         )}
                       </div>
 
-                      {vaga.beneficios && vaga.beneficios.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-muted-foreground mb-2 text-xs font-medium">
-                            Benefícios
-                          </p>
-                          <div className="flex flex-wrap gap-1">
-                            {vaga.beneficios.slice(0, 3).map((beneficio) => (
-                              <span
-                                key={beneficio}
-                                className="bg-muted rounded-full px-2 py-0.5 text-xs"
-                              >
-                                {beneficio}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
+                      {vaga.descricao && (
+                        <p className="text-muted-foreground mb-4 line-clamp-3 text-sm leading-relaxed">
+                          {vaga.descricao}
+                        </p>
                       )}
 
                       <div className="mt-auto flex gap-2">

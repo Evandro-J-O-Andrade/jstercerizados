@@ -6,7 +6,7 @@ export {
   EmployeesRepository,
   employeesRepository,
 } from '@/repositories/employees.repository';
-export { JobsRepository, jobsRepository } from '@/repositories/jobs.repository';
+export { jobsRepository } from '@/modules/recrutamento/repositories/jobs.repository';
 export {
   ApplicationsRepository,
   applicationsRepository,

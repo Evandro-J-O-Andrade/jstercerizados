@@ -4,6 +4,7 @@ import { cn } from '@/utils';
 
 interface DropZoneProps {
   onFilesSelected: (files: File[]) => void;
+  onError?: (error: string | null) => void;
   accept?: string;
   maxFiles?: number;
   maxSizeMB?: number;
@@ -14,6 +15,7 @@ interface DropZoneProps {
 
 export function DropZone({
   onFilesSelected,
+  onError,
   accept = 'image/png,image/jpeg,image/webp',
   maxFiles = 1,
   maxSizeMB = 10,
@@ -41,14 +43,12 @@ export function DropZone({
       validFiles.push(file);
     }
 
-    if (errors.length > 0) {
-      setDragError(errors.join('; '));
-    } else {
-      setDragError(null);
-    }
+    const errorMessage = errors.length > 0 ? errors.join('; ') : null;
+    setDragError(errorMessage);
+    onError?.(errorMessage);
 
     return validFiles.slice(0, maxFiles);
-  }, [maxFiles, maxSizeMB]);
+  }, [maxFiles, maxSizeMB, onError]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -121,6 +121,7 @@ export function DropZone({
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         disabled={disabled}
         aria-hidden="true"
+        aria-label="selecionar arquivo"
       />
 
       <div className="flex flex-col items-center justify-center p-8 text-center">

@@ -24,16 +24,17 @@ import { EmptyState } from '@/components/fallback';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
 import { useNavigate } from 'react-router-dom';
-import { jobsRepository } from '@/repositories/jobs.repository';
+import { jobsRepository } from '@/modules/recrutamento/repositories/jobs.repository';
 import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import { companiesRepository } from '@/repositories/companies.repository';
-import type { Job, Candidate, Company } from '@/types/domain';
+import type { JobListItem, Candidate } from '@/modules/recrutamento/types';
+import type { Company } from '@/types/domain/company';
 
 export default function VisaoGeral() {
   const { currentTenantId, isAdminMaster, person } = useAuth();
   const { identity, activePermissions } = useAccount();
   const navigate = useNavigate();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<JobListItem[]>([]);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,14 +50,14 @@ export default function VisaoGeral() {
       setError(null);
 
       try {
-        const [jobsData, candidatesData, companiesData] = await Promise.all([
-          jobsRepository.findAll(currentTenantId),
+        const [jobsResult, candidatesData, companiesData] = await Promise.all([
+          jobsRepository.list({ tenant_id: currentTenantId }),
           candidatesRepository.findAll(currentTenantId),
           companiesRepository.findAll(currentTenantId),
         ]);
 
         if (!cancelled) {
-          setJobs(jobsData);
+          setJobs(jobsResult.data || []);
           setCandidates(candidatesData);
           setCompanies(companiesData);
         }

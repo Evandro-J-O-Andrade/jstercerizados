@@ -8,6 +8,8 @@ import { GalleryGrid } from './GalleryGrid';
 import { useMediaUpload } from '@/hooks/useMediaUpload';
 import type { MediaAsset, MediaUploaderProps } from './MediaUploader.types';
 
+const EMPTY_ASSETS: MediaAsset[] = [];
+
 export function MediaUploader({
   entityType,
   entityId,
@@ -21,13 +23,15 @@ export function MediaUploader({
   maxSizeMB = 10,
   showPreview = true,
   className,
-  existingAssets = [],
+  existingAssets = EMPTY_ASSETS,
+  multiple = false,
 }: MediaUploaderProps) {
-  const defaultMaxFiles = purpose === 'gallery' ? 10 : 1;
+  const defaultMaxFiles = purpose === 'gallery' ? 10 : multiple ? 10 : 1;
   const effectiveMaxFiles = maxFiles ?? defaultMaxFiles;
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [assets, setAssets] = useState<MediaAsset[]>(existingAssets);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const {
     uploading,
@@ -41,7 +45,14 @@ export function MediaUploader({
     entityType,
     entityId,
     purpose,
-    onUploadComplete,
+    onUploadComplete: (asset) => {
+      setAssets((prev) =>
+        purpose === 'gallery'
+          ? [...prev, asset]
+          : [{ ...asset, is_primary: true }],
+      );
+      onUploadComplete?.(asset);
+    },
     onError,
     onDelete,
   });
@@ -52,10 +63,15 @@ export function MediaUploader({
   }, [existingAssets]);
 
   const handleFilesSelected = useCallback((files: File[]) => {
+    setValidationError(null);
     const remainingSlots = effectiveMaxFiles - assets.length - selectedFiles.length;
     const filesToAdd = files.slice(0, Math.max(0, remainingSlots));
     setSelectedFiles((prev) => [...prev, ...filesToAdd]);
   }, [assets.length, effectiveMaxFiles, selectedFiles.length]);
+
+  const handleValidationError = useCallback((error: string | null) => {
+    setValidationError(error);
+  }, []);
 
   const removeSelectedFile = useCallback((index: number) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
@@ -96,16 +112,25 @@ export function MediaUploader({
 
   return (
     <div className={cn('space-y-4', className)}>
-      {/* Drop Zone / Upload Area */}
-      {(purpose !== 'gallery' && (!assets.length || !hasPrimary)) ||
-        (purpose === 'gallery' && assets.length < effectiveMaxFiles) ? (
+      {validationError && (
+        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
+            <p className="text-sm text-red-800 dark:text-red-200">{validationError}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Drop Zone / Upload Area (single-image purposes only; gallery uses its own selector below) */}
+      {purpose !== 'gallery' && (!assets.length || !hasPrimary) ? (
         <DropZone
           onFilesSelected={handleFilesSelected}
+          onError={handleValidationError}
           accept={accept}
           maxFiles={effectiveMaxFiles - assets.length - selectedFiles.length}
           maxSizeMB={maxSizeMB}
           disabled={disabled || uploading}
-          multiple={purpose === 'gallery' || effectiveMaxFiles > 1}
+          multiple={multiple || effectiveMaxFiles > 1}
         />
       ) : null}
 
@@ -197,6 +222,7 @@ export function MediaUploader({
             {assets.length < effectiveMaxFiles && !uploading && (
               <DropZone
                 onFilesSelected={handleFilesSelected}
+                onError={handleValidationError}
                 accept={accept}
                 maxFiles={effectiveMaxFiles - assets.length}
                 maxSizeMB={maxSizeMB}

@@ -6,24 +6,45 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/fallback';
-import { jobsRepository } from '@/repositories/jobs.repository';
-import type { Job } from '@/types/domain/job';
+import { jobsRepository } from '@/modules/recrutamento/repositories/jobs.repository';
+import type { JobListItem, JobStatus } from '@/modules/recrutamento/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/feedback/ToastContext';
+
+const STATUS_LABELS: Record<JobStatus, string> = {
+  draft: 'Rascunho',
+  published: 'Publicada',
+  paused: 'Pausada',
+  closed: 'Fechada',
+  filled: 'Preenchida',
+  cancelled: 'Cancelada',
+};
+
+const STATUS_OPTIONS: { value: JobStatus | 'all'; label: string }[] = [
+  { value: 'all', label: 'Todos os status' },
+  { value: 'draft', label: 'Rascunho' },
+  { value: 'published', label: 'Publicada' },
+  { value: 'paused', label: 'Pausada' },
+  { value: 'closed', label: 'Fechada' },
+  { value: 'filled', label: 'Preenchida' },
+  { value: 'cancelled', label: 'Cancelada' },
+];
 
 export default function RelatorioRecrutamentoPage() {
   const { addToast } = useToast();
   const { currentTenantId } = useAuth();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<JobListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<JobStatus | 'all'>('all');
 
   useEffect(() => {
     if (!currentTenantId) return;
     setLoading(true);
-    jobsRepository.findAll(currentTenantId)
-      .then(setJobs)
+    jobsRepository.list({ tenant_id: currentTenantId })
+      .then((result) => {
+        if (!result.error) setJobs(result.data || []);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [currentTenantId]);
@@ -46,7 +67,7 @@ export default function RelatorioRecrutamentoPage() {
   const kpis = useMemo(() => {
     const total = jobs.length;
     const open = jobs.filter((j) => j.status === 'published').length;
-    const closed = jobs.filter((j) => j.status === 'archived' || j.status === 'expired' || j.status === 'hired').length;
+    const closed = jobs.filter((j) => j.status === 'closed' || j.status === 'filled' || j.status === 'cancelled').length;
     return { total, open, closed };
   }, [jobs]);
 
@@ -106,15 +127,14 @@ export default function RelatorioRecrutamentoPage() {
         </div>
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => setStatusFilter(e.target.value as JobStatus | 'all')}
           className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none"
         >
-          <option value="all">Todos os status</option>
-          <option value="published">Publicada</option>
-          <option value="draft">Rascunho</option>
-          <option value="archived">Arquivada</option>
-          <option value="expired">Expirada</option>
-          <option value="hired">Preenchida</option>
+          {STATUS_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -137,7 +157,7 @@ export default function RelatorioRecrutamentoPage() {
                   <td className="px-4 py-3 text-muted-foreground">{item.city || '—'} / {item.state || '—'}</td>
                   <td className="px-4 py-3">
                     <Badge variant={item.status === 'published' ? 'default' : 'secondary'}>
-                      {item.status === 'published' ? 'Publicada' : item.status === 'draft' ? 'Rascunho' : item.status === 'archived' ? 'Arquivada' : item.status === 'expired' ? 'Expirada' : 'Preenchida'}
+                      {STATUS_LABELS[item.status] || item.status}
                     </Badge>
                   </td>
                 </tr>
@@ -149,5 +169,3 @@ export default function RelatorioRecrutamentoPage() {
     </div>
   );
 }
-
-

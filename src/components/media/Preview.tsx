@@ -40,7 +40,7 @@ export function Preview({
 
       <div className="absolute inset-0 flex items-center justify-between p-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
         <div className="flex flex-col items-start gap-1">
-          {onSetPrimary && purpose !== 'gallery' && !isPrimary && (
+          {onSetPrimary && !isPrimary && (
             <button
               onClick={() => onSetPrimary?.(asset.id)}
               disabled={disabled}
@@ -51,7 +51,7 @@ export function Preview({
                 'shadow-sm'
               )}
               title="Definir como principal"
-              aria-label="Definir como imagem principal"
+              aria-label="Definir como principal"
             >
               <Star className="w-4 h-4" fill="currentColor" />
             </button>

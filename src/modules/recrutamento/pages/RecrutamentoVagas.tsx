@@ -1,229 +1,405 @@
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import {
-  Briefcase,
-  Search,
-  Plus,
-  Flag,
-  X,
-  CheckCircle,
-  Clock,
-} from 'lucide-react';
-import { Card } from '@/components/ui/Card';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Badge } from '@/components/ui/Badge';
-import { useRecrutamento } from '@/modules/recrutamento/RecrutamentoContext';
+'use client';
+
+import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
-import type { JobListItem } from '@/modules/recrutamento/types';
+import { ModulePage } from '@/components/modules/ModulePage';
+import { jobsRepository } from '@/modules/recrutamento/repositories';
+import { Briefcase } from 'lucide-react';
+import type { JobListItem, JobStatus, CreateJobInput, UpdateJobInput } from '@/modules/recrutamento/types';
+import { JOB_STATUS_LABELS } from '@/modules/recrutamento/constants/jobStatus';
+import { CONTRACT_TYPE_LABELS } from '@/modules/recrutamento/constants/contractType';
+import { WORK_MODE_LABELS } from '@/modules/recrutamento/constants/workMode';
+import { SENIORITY_LABELS } from '@/modules/recrutamento/constants/seniority';
 
-function statusBadge(status: JobListItem['status']) {
-  const config = {
-    draft: {
-      variant: 'secondary' as const,
-      icon: <Clock className="h-3 w-3" />,
-      label: 'Rascunho',
-    },
-    published: {
-      variant: 'default' as const,
-      icon: <Flag className="h-3 w-3" />,
-      label: 'Publicada',
-    },
-    paused: {
-      variant: 'outline' as const,
-      icon: <Clock className="h-3 w-3" />,
-      label: 'Pausada',
-    },
-    closed: {
-      variant: 'danger' as const,
-      icon: <X className="h-3 w-3" />,
-      label: 'Fechada',
-    },
-    filled: {
-      variant: 'success' as const,
-      icon: <CheckCircle className="h-3 w-3" />,
-      label: 'Preenchida',
-    },
-    cancelled: {
-      variant: 'danger' as const,
-      icon: <X className="h-3 w-3" />,
-      label: 'Cancelada',
-    },
-  } as const;
-  const { variant, icon, label } = config[status];
-  return (
-    <Badge variant={variant} className="gap-1">
-      {icon} {label}
-    </Badge>
-  );
-}
+type JobFormData = Omit<CreateJobInput, 'tenant_id'>;
 
-function JobCard({ job }: { job: JobListItem }) {
+const JOBS_COLUMNS = [
+  { key: 'title', header: 'Título', sortable: true },
+  { key: 'company_name', header: 'Empresa', sortable: true },
+  {
+    key: 'status',
+    header: 'Status',
+    sortable: true,
+    render: (item: JobListItem) => JOB_STATUS_LABELS[item.status] ?? item.status,
+  },
+  {
+    key: 'contract_type',
+    header: 'Contrato',
+    sortable: true,
+    render: (item: JobListItem) => CONTRACT_TYPE_LABELS[item.contract_type] ?? item.contract_type,
+  },
+  {
+    key: 'work_mode',
+    header: 'Modalidade',
+    sortable: true,
+    render: (item: JobListItem) => WORK_MODE_LABELS[item.work_mode] ?? item.work_mode,
+  },
+  {
+    key: 'seniority',
+    header: 'Senioridade',
+    sortable: true,
+    render: (item: JobListItem) => item.seniority ? SENIORITY_LABELS[item.seniority] : '-',
+  },
+  {
+    key: 'city',
+    header: 'Cidade',
+    sortable: true,
+  },
+  {
+    key: 'state',
+    header: 'UF',
+    sortable: true,
+  },
+  {
+    key: 'published_at',
+    header: 'Publicado em',
+    sortable: true,
+    render: (item: JobListItem) => item.published_at ? new Date(item.published_at).toLocaleDateString('pt-BR') : '-',
+  },
+];
+
+const JOBS_FILTERS = [
+  { key: 'search', label: 'Buscar', type: 'text', placeholder: 'Título, descrição...' },
+  {
+    key: 'status',
+    label: 'Status',
+    type: 'select',
+    options: [
+      { value: '', label: 'Todos' },
+      { value: 'draft', label: 'Rascunho' },
+      { value: 'published', label: 'Publicado' },
+      { value: 'paused', label: 'Pausado' },
+      { value: 'closed', label: 'Fechado' },
+      { value: 'filled', label: 'Preenchido' },
+      { value: 'cancelled', label: 'Cancelado' },
+    ],
+  },
+  {
+    key: 'contract_type',
+    label: 'Contrato',
+    type: 'select',
+    options: [
+      { value: '', label: 'Todos' },
+      { value: 'clt', label: 'CLT' },
+      { value: 'internship', label: 'Estágio' },
+      { value: 'temporary', label: 'Temporário' },
+      { value: 'freelance', label: 'Freelance' },
+      { value: 'contracted', label: 'PJ' },
+      { value: 'cd', label: 'CD' },
+    ],
+  },
+  {
+    key: 'work_mode',
+    label: 'Modalidade',
+    type: 'select',
+    options: [
+      { value: '', label: 'Todas' },
+      { value: 'onsite', label: 'Presencial' },
+      { value: 'hybrid', label: 'Híbrido' },
+      { value: 'remote', label: 'Remoto' },
+    ],
+  },
+  {
+    key: 'seniority',
+    label: 'Senioridade',
+    type: 'select',
+    options: [
+      { value: '', label: 'Todas' },
+      { value: 'internship', label: 'Estágio' },
+      { value: 'junior', label: 'Júnior' },
+      { value: 'mid', label: 'Pleno' },
+      { value: 'senior', label: 'Sênior' },
+      { value: 'master', label: 'Master' },
+      { value: 'leadership', label: 'Liderança' },
+    ],
+  },
+  { key: 'city', label: 'Cidade', type: 'text' },
+  { key: 'state', label: 'UF', type: 'text' },
+];
+
+const DEFAULT_FORM: JobFormData = {
+  company_relationship_id: '',
+  title: '',
+  slug: '',
+  description: '',
+  responsibilities: '',
+  requirements: '',
+  benefits: '',
+  salary_min: null,
+  salary_max: null,
+  salary_type: 'negotiate',
+  contract_type: 'clt',
+  seniority: 'junior',
+  work_hours: '44h',
+  work_mode: 'onsite',
+  city: '',
+  state: '',
+  location_detail: '',
+  status: 'draft',
+  metadata: {},
+};
+
+function JobForm({ form, setForm, isEditing }: { form: JobFormData; setForm: (f: JobFormData) => void; isEditing: boolean }) {
+  const handleChange = (key: keyof JobFormData, value: any) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
   return (
-    <Card className="hover:bg-muted/50 p-4 transition-colors">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h4 className="truncate font-medium">{job.title}</h4>
-            {statusBadge(job.status)}
-          </div>
-          <p className="text-muted-foreground mt-1 truncate text-sm">
-            {job.company_name ? `${job.company_name} • ` : ''}
-            {job.city || 'Local não informado'}
-            {job.state ? `/${job.state}` : ''} • {job.contract_type} •{' '}
-            {job.work_mode}
-          </p>
-          {job.salary_min || job.salary_max ? (
-            <p className="text-primary mt-1 text-sm font-medium">
-              R$ {(job.salary_min || 0).toLocaleString('pt-BR')} – R${' '}
-              {(job.salary_max || 0).toLocaleString('pt-BR')}
-            </p>
-          ) : (
-            <p className="text-muted-foreground mt-1 text-sm">
-              Salário a combinar
-            </p>
-          )}
-          <p className="text-muted-foreground mt-1 text-xs">
-            Criada:{' '}
-            {job.created_at
-              ? new Date(job.created_at).toLocaleDateString('pt-BR')
-              : '—'}
-            {job.published_at &&
-              ` • Publicada: ${new Date(job.published_at).toLocaleDateString('pt-BR')}`}
-          </p>
+    <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="text-foreground text-sm font-medium">Título *</label>
+          <input
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.title}
+            onChange={(e) => handleChange('title', e.target.value)}
+            required
+          />
         </div>
-        <div className="shrink-0 text-right">
-          <p className="text-muted-foreground text-sm">
-            {job.applications_count || 0} candidaturas
-          </p>
+        <div>
+          <label className="text-foreground text-sm font-medium">Slug *</label>
+          <input
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.slug}
+            onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+            required
+          />
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">Empresa (relationship_id) *</label>
+          <input
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.company_relationship_id}
+            onChange={(e) => handleChange('company_relationship_id', e.target.value)}
+            placeholder="UUID do relacionamento"
+            required
+          />
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">Status</label>
+          <select
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.status}
+            onChange={(e) => handleChange('status', e.target.value as JobStatus)}
+          >
+            <option value="draft">Rascunho</option>
+            <option value="published">Publicado</option>
+            <option value="paused">Pausado</option>
+            <option value="closed">Fechado</option>
+            <option value="filled">Preenchido</option>
+            <option value="cancelled">Cancelado</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">Tipo de Contrato</label>
+          <select
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.contract_type}
+            onChange={(e) => handleChange('contract_type', e.target.value)}
+          >
+            <option value="clt">CLT</option>
+            <option value="internship">Estágio</option>
+            <option value="temporary">Temporário</option>
+            <option value="freelance">Freelance</option>
+            <option value="contracted">PJ</option>
+            <option value="cd">CD</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">Modalidade</label>
+          <select
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.work_mode}
+            onChange={(e) => handleChange('work_mode', e.target.value)}
+          >
+            <option value="onsite">Presencial</option>
+            <option value="hybrid">Híbrido</option>
+            <option value="remote">Remoto</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">Senioridade</label>
+          <select
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.seniority}
+            onChange={(e) => handleChange('seniority', e.target.value)}
+          >
+            <option value="internship">Estágio</option>
+            <option value="junior">Júnior</option>
+            <option value="mid">Pleno</option>
+            <option value="senior">Sênior</option>
+            <option value="master">Master</option>
+            <option value="leadership">Liderança</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">Carga Horária</label>
+          <input
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.work_hours}
+            onChange={(e) => handleChange('work_hours', e.target.value)}
+            placeholder="44h"
+          />
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">Cidade</label>
+          <input
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.city}
+            onChange={(e) => handleChange('city', e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">UF</label>
+          <input
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.state}
+            onChange={(e) => handleChange('state', e.target.value.toUpperCase())}
+            maxLength={2}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="text-foreground text-sm font-medium">Detalhe da Localização</label>
+          <input
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.location_detail}
+            onChange={(e) => handleChange('location_detail', e.target.value)}
+            placeholder="Ex: Segunda a sexta, 8h às 17h"
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="text-foreground text-sm font-medium">Tipo de Salário</label>
+          <select
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.salary_type}
+            onChange={(e) => handleChange('salary_type', e.target.value)}
+          >
+            <option value="range">Faixa</option>
+            <option value="monthly">Mensal</option>
+            <option value="negotiate">A combinar</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">Salário Mínimo</label>
+          <input
+            type="number"
+            step="0.01"
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.salary_min ?? ''}
+            onChange={(e) => handleChange('salary_min', e.target.value ? Number(e.target.value) : null)}
+            placeholder="Ex: 5000"
+          />
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">Salário Máximo</label>
+          <input
+            type="number"
+            step="0.01"
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.salary_max ?? ''}
+            onChange={(e) => handleChange('salary_max', e.target.value ? Number(e.target.value) : null)}
+            placeholder="Ex: 7000"
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="text-foreground text-sm font-medium">Descrição</label>
+          <textarea
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm min-h-[100px]"
+            value={form.description}
+            onChange={(e) => handleChange('description', e.target.value)}
+            rows={4}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="text-foreground text-sm font-medium">Responsabilidades</label>
+          <textarea
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm min-h-[80px]"
+            value={form.responsibilities}
+            onChange={(e) => handleChange('responsibilities', e.target.value)}
+            rows={3}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="text-foreground text-sm font-medium">Requisitos</label>
+          <textarea
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm min-h-[80px]"
+            value={form.requirements}
+            onChange={(e) => handleChange('requirements', e.target.value)}
+            rows={3}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="text-foreground text-sm font-medium">Benefícios</label>
+          <textarea
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm min-h-[80px]"
+            value={form.benefits}
+            onChange={(e) => handleChange('benefits', e.target.value)}
+            rows={3}
+            placeholder="Separados por vírgula"
+          />
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
 export default function RecrutamentoVagas() {
-  const { jobsEnriched, isLoading, error, refetchJobs } = useRecrutamento();
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const { currentTenantId, hasAnyPermission } = useAuth();
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const filteredJobs = jobsEnriched.filter((j) => {
-    const matchesSearch =
-      j.title.toLowerCase().includes(search.toLowerCase()) ||
-      (j.company_name ?? '').toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || j.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const moduleDef = { id: 'recrutamento', name: 'Recrutamento' };
 
-  if (isLoading) {
-    return (
-      <ModuleWorkspace
-        title="Vagas"
-        description="Gerencie vagas abertas e publicadas"
-        icon={Briefcase}
-        breadcrumbItems={[{ label: 'Recrutamento' }, { label: 'Vagas' }]}
-      >
-        <div
-          className="flex h-64 items-center justify-center"
-          role="status"
-          aria-busy="true"
-        >
-          <LoadingSpinner size="sm" />
-          <span className="sr-only">Carregando vagas…</span>
-        </div>
-      </ModuleWorkspace>
-    );
-  }
+  const canCreate = hasAnyPermission(['recrutamento:vagas:create']);
+  const canUpdate = hasAnyPermission(['recrutamento:vagas:update']);
+  const canDelete = hasAnyPermission(['recrutamento:vagas:delete']);
+  const canToggle = hasAnyPermission(['recrutamento:vagas:update']);
 
-  if (error) {
-    return (
-      <ModuleWorkspace
-        title="Vagas"
-        description="Gerencie vagas abertas e publicadas"
-        icon={Briefcase}
-        breadcrumbItems={[{ label: 'Recrutamento' }, { label: 'Vagas' }]}
-      >
-        <div className="flex h-64 items-center justify-center">
-          <div className="text-center">
-            <p className="text-destructive">{error}</p>
-            <Button
-              variant="outline"
-              onClick={() => refetchJobs()}
-              className="mt-2"
-            >
-              Tentar novamente
-            </Button>
-          </div>
-        </div>
-      </ModuleWorkspace>
-    );
-  }
+  const handleToggleStatus = async (item: JobListItem) => {
+    if (!currentTenantId) return;
+    const nextStatus: JobStatus = item.status === 'published' ? 'paused' : 'published';
+    await jobsRepository.updateStatus(item.id, nextStatus);
+    setRefreshKey((k) => k + 1);
+  };
 
   return (
-    <ModuleWorkspace
+    <ModulePage<JobListItem, JobFormData>
       title="Vagas"
       description="Gerencie vagas abertas e publicadas"
       icon={Briefcase}
       breadcrumbItems={[{ label: 'Recrutamento' }, { label: 'Vagas' }]}
-      actions={
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="hidden sm:flex">
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Vaga
-          </Button>
-          <Button variant="outline" size="sm" className="sm:hidden">
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-      }
-    >
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="max-w-md flex-1">
-          <div className="relative">
-            <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <Input
-              placeholder="Buscar vagas..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-xs pl-10"
-            />
-          </div>
-        </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="border-input bg-background focus-visible:ring-ring flex h-9 w-full max-w-xs items-center rounded-md border px-3 text-sm focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <option value="all">Todos os status</option>
-          <option value="draft">Rascunho</option>
-          <option value="published">Publicada</option>
-          <option value="paused">Pausada</option>
-          <option value="closed">Fechada</option>
-          <option value="filled">Preenchida</option>
-        </select>
-      </div>
-
-      <div className="space-y-3">
-        {filteredJobs.length === 0 ? (
-          <Card className="py-12 text-center">
-            <Briefcase className="text-muted-foreground/50 mx-auto h-12 w-12" />
-            <h3 className="mt-4 text-lg font-medium">
-              Nenhuma vaga encontrada
-            </h3>
-            <p className="text-muted-foreground mt-2">
-              {search || statusFilter !== 'all'
-                ? 'Tente ajustar os filtros de busca'
-                : 'Nenhuma vaga cadastrada neste tenant'}
-            </p>
-          </Card>
-        ) : (
-          filteredJobs.map((job) => <JobCard key={job.id} job={job} />)
-        )}
-      </div>
-
-      <div className="text-muted-foreground mt-4 text-center text-sm">
-        {filteredJobs.length} de {jobsEnriched.length} vagas
-      </div>
-    </ModuleWorkspace>
+      module={moduleDef}
+      permissions={[
+        { id: 'recrutamento:vagas:read', name: 'Read', module: 'recrutamento', resource: 'vagas', action: 'read', created_at: new Date().toISOString() },
+        canCreate && { id: 'recrutamento:vagas:create', name: 'Create', module: 'recrutamento', resource: 'vagas', action: 'create', created_at: new Date().toISOString() },
+        canUpdate && { id: 'recrutamento:vagas:update', name: 'Update', module: 'recrutamento', resource: 'vagas', action: 'update', created_at: new Date().toISOString() },
+        canDelete && { id: 'recrutamento:vagas:delete', name: 'Delete', module: 'recrutamento', resource: 'vagas', action: 'delete', created_at: new Date().toISOString() },
+      ].filter(Boolean) as any}
+      columns={JOBS_COLUMNS}
+      filters={JOBS_FILTERS}
+      fetchData={async (tenantId) => {
+        const result = await jobsRepository.list({ tenant_id: tenantId, sort_by: 'created_at', sort_order: 'desc', limit: 100 });
+        return result.data || [];
+      }}
+      createItem={async (tenantId, input) => {
+        const result = await jobsRepository.create({ ...input, tenant_id: tenantId });
+        if (result.error) throw result.error;
+        return result.data!;
+      }}
+      updateItem={async (tenantId, id, input) => {
+        const result = await jobsRepository.update({ id, ...input } as UpdateJobInput);
+        if (result.error) throw result.error;
+        return result.data!;
+      }}
+      deleteItem={async (tenantId, id) => {
+        await jobsRepository.delete(id);
+      }}
+      getItemId={(item) => item.id}
+      defaultForm={DEFAULT_FORM}
+      renderForm={JobForm}
+      onToggleStatus={canToggle ? handleToggleStatus : undefined}
+      getToggleState={(item) => item.status === 'published'}
+      emptyMessage="Nenhuma vaga encontrada."
+      refreshKey={refreshKey}
+    />
   );
 }

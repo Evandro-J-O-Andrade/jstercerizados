@@ -20,11 +20,15 @@ export type {
 type PortalModulePageConfig<T, C> = ModulePageConfig<T, C> & {
   module?: ModuleDefinition;
   permissions?: Permission[];
+  onEditStart?: (item: T) => void;
+  onModalClose?: () => void;
 };
 
 export function ModulePage<T extends { id: string; created_at?: string }, C>({
   module,
   permissions = [],
+  onEditStart,
+  onModalClose,
   ...config
 }: PortalModulePageConfig<T, C>) {
   const renderWorkspace = (slot: WorkspaceSlotProps): ReactNode => (
@@ -45,6 +49,11 @@ export function ModulePage<T extends { id: string; created_at?: string }, C>({
   );
 
   return (
-    <SharedModulePage<T, C> {...config} renderWorkspace={renderWorkspace} />
+    <SharedModulePage<T, C>
+      {...config}
+      renderWorkspace={renderWorkspace}
+      onEditStart={onEditStart}
+      onModalClose={onModalClose}
+    />
   );
 }

@@ -24,7 +24,7 @@ import { useAccount } from '@/contexts/AccountContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { employeesRepository } from '@/repositories/employees.repository';
 import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
-import { jobsRepository } from '@/repositories/jobs.repository';
+import { jobsRepository } from '@/modules/recrutamento/repositories/jobs.repository';
 import { applicationsRepository } from '@/repositories/applications.repository';
 import { companiesRepository } from '@/repositories/companies.repository';
 
@@ -59,13 +59,13 @@ export default function DashboardRh() {
         const [
           candidatesData,
           employeesData,
-          jobsData,
+          jobsResult,
           applicationsData,
           clientsData,
         ] = await Promise.all([
           candidatesRepository.findAll(currentTenantId),
           employeesRepository.findAll(currentTenantId),
-          jobsRepository.findAll(currentTenantId),
+          jobsRepository.list({ tenant_id: currentTenantId }),
           applicationsRepository.findAll(currentTenantId),
           companiesRepository.findAll(currentTenantId),
         ]);
@@ -77,7 +77,7 @@ export default function DashboardRh() {
           const activeEmployees = employeesData.filter(
             (employee) => employee.status === 'active',
           ).length;
-          const openJobs = jobsData.filter((job) =>
+          const openJobs = (jobsResult.data || []).filter((job) =>
             ['published', 'draft'].includes(job.status),
           ).length;
           const thirtyDaysAgo = new Date();

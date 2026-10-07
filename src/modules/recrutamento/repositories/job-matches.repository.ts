@@ -331,13 +331,10 @@ export const jobMatchesRepository = {
             city,
             state,
             work_mode,
-            company_relationships!inner (
-              company_id,
-              companies!inner (
-                name,
-                trade_name,
-                logo_url
-              )
+            companies (
+              name,
+              trade_name,
+              logo_url
             )
           )
         `)
@@ -359,8 +356,8 @@ export const jobMatchesRepository = {
         job_city: row.jobs?.city,
         job_state: row.jobs?.state,
         job_work_mode: row.jobs?.work_mode,
-        company_name: row.jobs?.company_relationships?.companies?.trade_name || row.jobs?.company_relationships?.companies?.name,
-        company_logo_url: row.jobs?.company_relationships?.companies?.logo_url,
+        company_name: row.jobs?.companies?.trade_name || row.jobs?.companies?.name,
+        company_logo_url: row.jobs?.companies?.logo_url,
       }));
 
       return { data: mappedData, error: null, count: mappedData.length };

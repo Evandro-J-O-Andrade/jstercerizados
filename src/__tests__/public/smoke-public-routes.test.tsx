@@ -277,14 +277,19 @@ describe('Public route smoke tests — no crashes', () => {
     });
   });
 
-  it('does not call getSupabaseClient during public page renders', async () => {
+  it('renders /vagas gracefully when Supabase client is unavailable', async () => {
     mockGetSupabaseClient.mockClear();
+    mockGetSupabaseClient.mockReturnValue(null);
 
     renderWithRouter(<Vagas />);
     await waitFor(() => {
       expectBodyContains(/Vagas/);
     });
 
-    expect(mockGetSupabaseClient).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Nenhuma vaga encontrada/i),
+      ).toBeInTheDocument();
+    });
   });
 });

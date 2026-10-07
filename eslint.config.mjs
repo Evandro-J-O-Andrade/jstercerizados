@@ -14,6 +14,7 @@ export default [
       'node_modules/**',
       'playwright-report/**',
       'scripts/**',
+      'test-hero-dimensions.js',
       'test-results/**',
       '*.cjs',
       '*.mjs',

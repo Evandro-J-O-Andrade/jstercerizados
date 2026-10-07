@@ -1257,6 +1257,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             phone: profileData.phone ?? '',
             ...(profileData.signupContext && {
               signup_context: profileData.signupContext,
+              signup_origin: profileData.signupContext === 'empresa' ? 'company_signup' : 'self_signup',
             }),
             ...(profileData.companyName && {
               company_name: profileData.companyName,

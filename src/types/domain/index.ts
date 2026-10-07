@@ -48,13 +48,20 @@ export type {
 } from '@/modules/candidato/types/candidate-context';
 
 export type {
-  Job,
-  JobRow,
-  JobCreateInput,
-  JobUpdateInput,
+  JobListItem,
   JobStatus,
-  EmploymentType,
-} from './job';
+  ContractType,
+  WorkMode,
+  Seniority,
+  SalaryType,
+  ProcessStatus,
+  StageType,
+  DemandStatus,
+  DemandPriority,
+  TalentPoolStatus,
+  ConsentStatus,
+  MatchAlgorithmVersion,
+} from '@/modules/recrutamento/types';
 
 export type {
   Application,

@@ -54,41 +54,33 @@ function mapJobRow(row: Record<string, unknown>): Job {
   };
 }
 
-/**
- * Map database row to JobListItem with company info
- */
 function mapJobListItemRow(row: Record<string, unknown>): JobListItem {
   const job = mapJobRow(row);
+  const companies = row.companies as
+    | { name?: string; trading_name?: string; logo_url?: string }
+    | null
+    | undefined;
   return {
     ...job,
-    company_name: row.company_name as string | undefined,
-    company_logo_url: row.company_logo_url as string | undefined,
-    stage_name: row.stage_name as string | undefined,
-    process_id: row.process_id as string | undefined,
+    company_name: companies?.name ?? companies?.trading_name ?? undefined,
+    company_logo_url: companies?.logo_url ?? undefined,
   };
 }
 
 function buildJobQuery(supabase: any, filters: JobFilters) {
   let query = supabase
     .from('jobs')
-    .select(`
+    .select(
+      `
       *,
-      company_relationships!inner (
-        company_id,
-        companies!inner (
-          name,
-          trade_name,
-          logo_url
-        )
-      ),
-      recruitment_stages (
-        id,
-        name
-      ),
-      recruitment_processes!recruitment_stages_process_id_fkey (
-        id
+      companies (
+        name,
+        trading_name,
+        logo_url
       )
-    `, { count: 'exact' });
+    `,
+      { count: 'exact' },
+    );
 
   if (filters.tenant_id) {
     query = query.eq('tenant_id', filters.tenant_id);
@@ -190,18 +182,25 @@ export const jobsRepository = {
 
   /**
    * Get a job by slug (within tenant)
+   *
+   * When tenantId is empty/null, the query runs WITHOUT a tenant_id filter.
+   * This preserves the public-slug lookup behavior used by /vagas/:slug.
    */
-  async getBySlug(tenantId: string, slug: string): Promise<RepositoryResult<Job>> {
+  async getBySlug(tenantId: string | null, slug: string): Promise<RepositoryResult<Job>> {
     try {
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('jobs')
         .select('*')
-        .eq('tenant_id', tenantId)
-        .eq('slug', slug)
-        .single();
+        .eq('slug', slug);
+
+      if (tenantId && tenantId.trim() !== '') {
+        query = query.eq('tenant_id', tenantId);
+      }
+
+      const { data, error } = await query.single();
 
       if (error) {
         return { data: null, error };
@@ -379,6 +378,11 @@ export const jobsRepository = {
 
   /**
    * Get jobs for a specific process
+   *
+   * Uses the real FK: jobs.company_id → companies.id.
+   * company_relationship_id is NOT a FK to company_relationships in the
+   * current production schema, so the old company_relationships!inner
+   * join produced HTTP 400 from PostgREST.
    */
   async getByProcessId(processId: string): Promise<RepositoryListResult<JobListItem>> {
     try {
@@ -389,13 +393,10 @@ export const jobsRepository = {
         .from('jobs')
         .select(`
           *,
-          company_relationships!inner (
-            company_id,
-            companies!inner (
-              name,
-              trade_name,
-              logo_url
-            )
+          companies (
+            name,
+            trading_name,
+            logo_url
           )
         `)
         .eq('recruitment_processes.id', processId);

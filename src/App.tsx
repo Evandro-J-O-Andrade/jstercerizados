@@ -92,7 +92,7 @@ const PrimeiroAcessoTermos = lazy(
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
 import { CandidatoContainer } from '@/modules/candidato/CandidatoContainer';
 import { CandidatoProvider } from '@/modules/candidato/CandidatoContext';
-import VagasPage from '@/pages/dashboard/Vagas';
+import RecrutamentoVagasPage from '@/modules/recrutamento/pages/RecrutamentoVagas';
 import CandidaturasPage from '@/pages/dashboard/Candidaturas';
 import CandidatosPage from '@/pages/dashboard/Candidatos';
 import CandidatoDetalhe from '@/pages/dashboard/CandidatoDetalhe';
@@ -184,9 +184,7 @@ function RoutesAndLayout() {
                     'company_representative',
                   ]}
                 >
-                  <ModuleProvider>
-                    <AppShell />
-                  </ModuleProvider>
+<AppShell />
                 </ProtectedRoute>
               </AuthRoute>
             }
@@ -423,7 +421,7 @@ function RoutesAndLayout() {
                 <PermissionGuard
                   permission={MODULE_PERMISSION_MAP.recrutamento}
                 >
-                  <VagasPage />
+                  <RecrutamentoVagasPage />
                 </PermissionGuard>
               }
             />

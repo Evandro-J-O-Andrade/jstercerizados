@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/Button';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Power } from 'lucide-react';
 import { cn } from '@/utils';
 import type { ColumnDef } from './types';
 
@@ -13,6 +13,8 @@ interface DataTableProps<T> {
   onEdit: (item: T) => void;
   onDelete: (item: T) => void;
   showActions: boolean;
+  onToggleStatus?: (item: T) => void;
+  getToggleState?: (item: T) => boolean;
 }
 
 export function DataTable<T>({
@@ -25,6 +27,8 @@ export function DataTable<T>({
   onEdit,
   onDelete,
   showActions,
+  onToggleStatus,
+  getToggleState,
 }: DataTableProps<T>) {
   return (
     <div className="overflow-x-auto">
@@ -72,10 +76,28 @@ export function DataTable<T>({
               {showActions && (
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-1">
+                    {onToggleStatus && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onToggleStatus(item)}
+                        aria-label="Alternar status"
+                        title={
+                          getToggleState
+                            ? getToggleState(item)
+                              ? 'Ativo — clique para desativar'
+                              : 'Inativo — clique para ativar'
+                            : 'Alternar status'
+                        }
+                      >
+                        <Power className="h-4 w-4" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => onEdit(item)}
+                      aria-label="Editar"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -84,6 +106,7 @@ export function DataTable<T>({
                       size="sm"
                       className="text-red-600"
                       onClick={() => onDelete(item)}
+                      aria-label="Excluir"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

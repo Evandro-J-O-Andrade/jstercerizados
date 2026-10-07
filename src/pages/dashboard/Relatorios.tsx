@@ -26,7 +26,7 @@ import {
 } from '@/components/dashboard/dashboard-model';
 import { EmptyState } from '@/components/fallback';
 import { employeesRepository } from '@/repositories/employees.repository';
-import { jobsRepository } from '@/repositories/jobs.repository';
+import { jobsRepository } from '@/modules/recrutamento/repositories/jobs.repository';
 import { companiesRepository } from '@/repositories/companies.repository';
 import { accountsPayableRepository } from '@/repositories/accounts-payable.repository';
 import { accountsReceivableRepository } from '@/repositories/accounts-receivable.repository';
@@ -35,7 +35,7 @@ import { stockRepository } from '@/repositories/stock.repository';
 import { servicesRepository } from '@/repositories/services.repository';
 import { supportRepository } from '@/repositories/support.repository';
 import type { Employee } from '@/types/domain/employee';
-import type { Job } from '@/types/domain/job';
+import type { Job } from '@/modules/recrutamento/types';
 import type { Company } from '@/types/domain/company';
 import type { AccountPayable } from '@/types/domain/finance';
 import type { AccountReceivable } from '@/types/domain/finance';
@@ -83,7 +83,7 @@ export default function RelatoriosPage() {
     setError(null);
     Promise.all([
       employeesRepository.findAll(tenantId),
-      jobsRepository.findAll(tenantId),
+      jobsRepository.list({ tenant_id: tenantId }).then((r) => r.data || []),
       companiesRepository.findAll(tenantId),
       accountsPayableRepository.findAll(tenantId),
       accountsReceivableRepository.findAll(tenantId),

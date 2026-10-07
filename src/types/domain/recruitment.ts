@@ -154,6 +154,7 @@ export interface PartnerCreateInput {
   city?: string | null;
   state?: string | null;
   status?: PartnerStatus;
+  started_at?: string | null;
 }
 
 export interface PartnerUpdateInput {
@@ -165,6 +166,8 @@ export interface PartnerUpdateInput {
   city?: string | null;
   state?: string | null;
   status?: PartnerStatus;
+  started_at?: string | null;
+  ended_at?: string | null;
 }
 
 export interface BudgetRequest {

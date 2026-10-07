@@ -7,7 +7,7 @@ const CandidatosPage = lazy(() => import('@/pages/dashboard/Candidatos'));
 const CandidatoDetalhe = lazy(
   () => import('@/pages/dashboard/CandidatoDetalhe'),
 );
-const VagasPage = lazy(() => import('@/pages/dashboard/Vagas'));
+const RecrutamentoVagasPage = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoVagas'));
 const FuncionariosPage = lazy(() => import('@/pages/dashboard/Funcionarios'));
 const FuncionarioDetalhe = lazy(
   () => import('@/pages/dashboard/FuncionarioDetalhe'),
@@ -120,7 +120,7 @@ export const rhRoutes: ModuleRoute[] = [
   {
     path: 'vagas',
     label: 'Vagas',
-    element: VagasPage as ComponentType,
+    element: RecrutamentoVagasPage as ComponentType,
     requiredPermissions: ['jobs.read'],
   },
   {

@@ -4,7 +4,6 @@ import { PortalSidebar } from '@/components/portal/PortalSidebar';
 import { PortalHeader } from '@/components/portal/PortalHeader';
 import { AccountProvider } from '@/contexts/AccountContext';
 import { ModuleProvider } from '@/contexts/ModuleContext';
-import { COMPANY, NEW_WAVE_URL } from '@/config';
 
 interface PortalShellProps {
   moduleTitle?: string;
@@ -52,25 +51,6 @@ function PortalShellInner({ moduleTitle, children }: PortalShellProps) {
             </div>
           </main>
         </div>
-
-        <footer className="border-border/50 bg-background/50 shrink-0 border-t">
-          <div className="mx-auto max-w-[1920px] px-4 py-4 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
-            <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:justify-between sm:text-left">
-              <p className="text-muted-foreground text-xs">
-                © {new Date().getFullYear()} {COMPANY.name}. Todos os direitos
-                reservados.
-              </p>
-              <a
-                href={NEW_WAVE_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary text-xs font-medium transition-colors hover:underline"
-              >
-                Desenvolvido por New Wave Sistemas Digital Solutions
-              </a>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );

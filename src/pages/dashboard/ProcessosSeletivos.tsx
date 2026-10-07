@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { ClipboardList, Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { recruitmentProcessesRepository } from '@/repositories/recruitment-processes.repository';
-import { jobsRepository } from '@/repositories/jobs.repository';
+import { jobsRepository } from '@/modules/recrutamento/repositories/jobs.repository';
 import { cn } from '@/utils';
 import type {
   RecruitmentProcess,
@@ -45,13 +45,14 @@ export default function ProcessosSeletivos() {
       setError(null);
 
       try {
-        const [processesData, jobsData] = await Promise.all([
+        const [processesData, jobsResult] = await Promise.all([
           recruitmentProcessesRepository.findAll(currentTenantId),
-          jobsRepository.findAll(currentTenantId),
+          jobsRepository.list({ tenant_id: currentTenantId }),
         ]);
+
         if (!cancelled) {
           setItems(processesData);
-          setJobs(jobsData.map((job) => ({ id: job.id, title: job.title })));
+          setJobs((jobsResult.data || []).map((job) => ({ id: job.id, title: job.title })));
         }
       } catch (err) {
         if (!cancelled) {

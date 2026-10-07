@@ -20,6 +20,35 @@ interface UseMediaUploadResult {
   reorderAssets: (assetId: string, newSortOrder: number) => Promise<void>;
 }
 
+async function invokeMediaAdmin(
+  action: 'archive' | 'set_primary' | 'reorder',
+  props: MediaUploaderProps,
+  mediaId: string,
+  sortOrder?: number,
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error('Supabase não configurado.');
+
+  const { data, error } = await supabase.functions.invoke('media-admin', {
+    body: {
+      action,
+      media_id: mediaId,
+      entity_type: props.entityType,
+      entity_id: props.entityId,
+      sort_order: sortOrder,
+    },
+    method: 'POST',
+  });
+
+  if (error) {
+    throw new Error(error.message || `Erro na operação ${action}`);
+  }
+
+  if (!data?.success) {
+    throw new Error(data?.error || `Falha na operação ${action}`);
+  }
+}
+
 export function useMediaUpload(props: MediaUploaderProps): UseMediaUploadResult {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<UploadProgress>({});
@@ -92,47 +121,17 @@ export function useMediaUpload(props: MediaUploaderProps): UseMediaUploadResult 
   }, [props]);
 
   const deleteAsset = useCallback(async (assetId: string) => {
-    const supabase = getSupabaseClient();
-    if (!supabase) throw new Error('Supabase não configurado.');
-
-    // Soft delete: mark as archived, unset primary
-    const { error } = await supabase
-      .from('media_assets')
-      .update({
-        metadata: { archived: true, archived_at: new Date().toISOString() },
-        is_primary: false,
-      })
-      .eq('id', assetId);
-
-    if (error) throw error;
-
+    await invokeMediaAdmin('archive', props, assetId);
     props.onDelete?.(assetId);
   }, [props]);
 
   const setPrimaryAsset = useCallback(async (assetId: string) => {
-    const supabase = getSupabaseClient();
-    if (!supabase) throw new Error('Supabase não configurado.');
-
-    const { error } = await supabase.rpc('set_primary_media', {
-      p_entity_type: props.entityType,
-      p_entity_id: props.entityId,
-      p_media_id: assetId,
-    });
-
-    if (error) throw error;
-  }, [props.entityType, props.entityId]);
+    await invokeMediaAdmin('set_primary', props, assetId);
+  }, [props]);
 
   const reorderAssets = useCallback(async (assetId: string, newSortOrder: number) => {
-    const supabase = getSupabaseClient();
-    if (!supabase) throw new Error('Supabase não configurado.');
-
-    const { error } = await supabase
-      .from('media_assets')
-      .update({ sort_order: newSortOrder })
-      .eq('id', assetId);
-
-    if (error) throw error;
-  }, []);
+    await invokeMediaAdmin('reorder', props, assetId, newSortOrder);
+  }, [props]);
 
   return {
     uploading,

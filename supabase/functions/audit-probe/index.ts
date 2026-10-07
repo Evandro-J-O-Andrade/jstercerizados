@@ -57,6 +57,60 @@ export default async function handler(req: Request) {
     })),
   };
 
+  // 3b. bootstrap_company_from_auth_user definition
+  const { data: bcfa2, error: bcfa2Err } = await supabase
+    .from('pg_proc')
+    .select('proname, prosrc')
+    .eq('proname', 'bootstrap_company_from_auth_user')
+    .limit(5);
+  result.bootstrap_company_from_auth_user = {
+    rows: bcfa2 ?? [],
+    error: bcfa2Err?.message ?? null,
+    has_signup_context: (bcfa2 ?? []).some((p: any) =>
+      /signup_context/i.test(p.prosrc ?? ''),
+    ),
+    has_signup_origin: (bcfa2 ?? []).some((p: any) =>
+      /signup_origin/i.test(p.prosrc ?? ''),
+    ),
+  };
+
+  // 3c. GAP-01: signup_context vs signup_origin detection
+  const allBootstrapRows = [
+    ...(bcfa ?? []),
+    ...(bcfa2 ?? []),
+  ];
+  result.gap01_signup_contract = {
+    candidate_uses_signup_context: (bcfa ?? []).some((p: any) =>
+      /raw_user_meta_data\s*->>\s*'signup_context'/i.test(p.prosrc ?? ''),
+    ),
+    candidate_uses_signup_origin: (bcfa ?? []).some((p: any) =>
+      /raw_user_meta_data\s*->>\s*'signup_origin'/i.test(p.prosrc ?? ''),
+    ),
+    company_uses_signup_context: (bcfa2 ?? []).some((p: any) =>
+      /raw_user_meta_data\s*->>\s*'signup_context'/i.test(p.prosrc ?? ''),
+    ),
+    company_uses_signup_origin: (bcfa2 ?? []).some((p: any) =>
+      /raw_user_meta_data\s*->>\s*'signup_origin'/i.test(p.prosrc ?? ''),
+    ),
+    contract_is_split: (() => {
+      const candidate = (bcfa ?? []).find((p: any) => p.prosrc ?? '');
+      const company = (bcfa2 ?? []).find((p: any) => p.prosrc ?? '');
+      const cCtx = candidate
+        ? /raw_user_meta_data\s*->>\s*'signup_context'/i.test(candidate.prosrc)
+        : false;
+      const cOrg = candidate
+        ? /raw_user_meta_data\s*->>\s*'signup_origin'/i.test(candidate.prosrc)
+        : false;
+      const mCtx = company
+        ? /raw_user_meta_data\s*->>\s*'signup_context'/i.test(company.prosrc)
+        : false;
+      const mOrg = company
+        ? /raw_user_meta_data\s*->>\s*'signup_origin'/i.test(company.prosrc)
+        : false;
+      return { candidate: { signup_context: cCtx, signup_origin: cOrg }, company: { signup_context: mCtx, signup_origin: mOrg } };
+    })(),
+  };
+
   // 4. first_login_state columns
   const { data: flsCols, error: flsErr } = await supabase
     .from('information_schema.columns')

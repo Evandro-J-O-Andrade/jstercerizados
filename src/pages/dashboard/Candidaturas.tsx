@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { UserCheck, Plus, Pencil, Trash2, Search, Eye } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { applicationsRepository } from '@/repositories/applications.repository';
-import { jobsRepository } from '@/repositories/jobs.repository';
+import { jobsRepository } from '@/modules/recrutamento/repositories/jobs.repository';
 import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import { cn } from '@/utils';
 import type {
@@ -74,15 +74,15 @@ export default function Candidaturas() {
       setError(null);
 
       try {
-        const [appsData, jobsData, candidatesData] = await Promise.all([
+        const [appsData, jobsResult, candidatesData] = await Promise.all([
           applicationsRepository.findAll(currentTenantId),
-          jobsRepository.findAll(currentTenantId, { status: 'published' }),
+          jobsRepository.list({ tenant_id: currentTenantId, status: 'published' }),
           candidatesRepository.findAll(currentTenantId),
         ]);
         if (!cancelled) {
           setApplications(appsData);
           setJobs(
-            jobsData.map((job) => ({
+            (jobsResult.data || []).map((job) => ({
               id: job.id,
               title: job.title,
             })),
