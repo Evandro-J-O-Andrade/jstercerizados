@@ -165,7 +165,7 @@ function RoutesAndLayout() {
                     'company_representative',
                   ]}
                 >
-<AppShell />
+                  <AppShell />
                 </ProtectedRoute>
               </AuthRoute>
             }
@@ -605,9 +605,9 @@ function RoutesAndLayout() {
                     <Route path="/servicos" element={<PublicServicos />} />
                     <Route
                       path="/servicos/:slug"
-element={<ServicoDetalhe />}
-                     />
-                     <Route
+                      element={<ServicoDetalhe />}
+                    />
+                    <Route
                       path="/trabalhe-conosco"
                       element={<TrabalheConosco />}
                     />

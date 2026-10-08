@@ -1,12 +1,24 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Empresas from '@/pages/dashboard/Empresas';
+import Empresas from '@/modules/empresas/pages/EmpresasListPage';
 import { useAuth } from '@/contexts/AuthContext';
 import { companiesRepository } from '@/repositories/companies.repository';
 
 vi.mock('@/contexts/AuthContext');
 vi.mock('@/repositories/companies.repository');
+
+// IntersectionObserver is not available in jsdom by default — provide a minimal mock
+if (typeof (globalThis as { IntersectionObserver?: unknown }).IntersectionObserver === 'undefined') {
+  (globalThis as { IntersectionObserver: unknown }).IntersectionObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords(): never[] {
+      return [];
+    }
+  };
+}
 
 const mockUseAuth = vi.mocked(useAuth);
 const mockCompaniesRepository = vi.mocked(companiesRepository);

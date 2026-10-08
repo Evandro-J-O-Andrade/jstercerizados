@@ -2354,8 +2354,8 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
           },
         ],
       },
-     ],
-},
+    ],
+  },
   {
     id: 'candidato',
     title: 'Área do Candidato',
