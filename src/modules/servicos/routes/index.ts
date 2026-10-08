@@ -2,7 +2,9 @@ import type { ComponentType } from 'react';
 import { lazy } from 'react';
 import type { ModuleRoute } from '@/platform/router/types';
 
-const ServicosPage = lazy(() => import('@/pages/dashboard/Servicos'));
+const ServicosPage = lazy(
+  () => import('@/modules/servicos/pages/ServicosListPage'),
+);
 
 export const servicosRoutes: ModuleRoute[] = [
   {
@@ -13,25 +15,25 @@ export const servicosRoutes: ModuleRoute[] = [
   },
   {
     path: 'catalogo',
-    label: 'Catálogo de Serviços',
+    label: 'Catalogo de Servicos',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['service_orders.read'],
   },
   {
     path: 'ordens',
-    label: 'Ordens de Serviço',
+    label: 'Ordens de Servico',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['service_orders.read'],
   },
   {
     path: 'ordens/criar',
-    label: 'Nova Ordem de Serviço',
+    label: 'Nova Ordem de Servico',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['service_orders.create'],
   },
   {
     path: 'execucoes',
-    label: 'Execuções',
+    label: 'Execucoes',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['service_orders.read'],
   },
@@ -43,13 +45,13 @@ export const servicosRoutes: ModuleRoute[] = [
   },
   {
     path: 'ocorrencias',
-    label: 'Ocorrências',
+    label: 'Ocorrencias',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['service_occurrences.read'],
   },
   {
     path: 'avaliacoes',
-    label: 'Avaliações de Clientes',
+    label: 'Avaliacoes de Clientes',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['customer_ratings.read'],
   },
