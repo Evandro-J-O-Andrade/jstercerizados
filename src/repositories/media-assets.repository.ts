@@ -4,7 +4,17 @@ import type { MediaAsset } from '@/components/media/MediaUploader.types';
 
 type MediaAssetsRow = Database['public']['Tables']['media_assets']['Row'];
 
-export type MediaEntityType = 'company' | 'service' | 'partner' | 'supplier' | 'job' | 'blog_post' | 'page' | 'avatar' | 'document';
+export type MediaEntityType =
+  | 'company'
+  | 'service'
+  | 'partner'
+  | 'supplier'
+  | 'job'
+  | 'blog_post'
+  | 'page'
+  | 'avatar'
+  | 'document'
+  | 'ava';
 export type MediaPurpose = 'logo' | 'hero' | 'card' | 'gallery';
 
 export class MediaAssetsRepository extends SupabaseRepository {
@@ -43,7 +53,10 @@ export class MediaAssetsRepository extends SupabaseRepository {
       .order('sort_order', { ascending: true });
 
     if (purpose === 'logo' || purpose === 'hero' || purpose === 'card') {
-      query = query.eq('is_primary', purpose === 'logo' || purpose === 'hero' || purpose === 'card');
+      query = query.eq(
+        'is_primary',
+        purpose === 'logo' || purpose === 'hero' || purpose === 'card',
+      );
     }
 
     const { data, error } = await query;

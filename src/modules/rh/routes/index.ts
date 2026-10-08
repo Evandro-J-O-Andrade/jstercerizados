@@ -3,11 +3,15 @@ import type { ModuleRoute } from '@/platform/router/types';
 import { lazy } from 'react';
 
 const DashboardRh = lazy(() => import('@/pages/dashboard/DashboardRh'));
-const CandidatosPage = lazy(() => import('@/pages/dashboard/Candidatos'));
-const CandidatoDetalhe = lazy(
-  () => import('@/pages/dashboard/CandidatoDetalhe'),
+const CandidatosPage = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoCandidatos'),
 );
-const RecrutamentoVagasPage = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoVagas'));
+const CandidatoDetalhe = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoCandidatoDetalhe'),
+);
+const RecrutamentoVagasPage = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoVagas'),
+);
 const FuncionariosPage = lazy(() => import('@/pages/dashboard/Funcionarios'));
 const FuncionarioDetalhe = lazy(
   () => import('@/pages/dashboard/FuncionarioDetalhe'),
@@ -15,32 +19,15 @@ const FuncionarioDetalhe = lazy(
 const ProcessosSeletivosPage = lazy(
   () => import('@/pages/dashboard/ProcessosSeletivos'),
 );
-const CandidaturasPage = lazy(() => import('@/pages/dashboard/Candidaturas'));
-const CandidatoHabilidades = lazy(
-  () => import('@/pages/dashboard/CandidatoHabilidades'),
+const CandidaturasPage = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoCandidaturas'),
 );
-const CandidatoFormacao = lazy(
-  () => import('@/pages/dashboard/CandidatoFormacao'),
+const JobMatches = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoMatches'),
 );
-const CandidatoExperiencias = lazy(
-  () => import('@/pages/dashboard/CandidatoExperiencias'),
-);
-const CandidatoIdiomas = lazy(
-  () => import('@/pages/dashboard/CandidatoIdiomas'),
-);
-const CandidatoDocumentos = lazy(
-  () => import('@/pages/dashboard/CandidatoDocumentos'),
-);
-const CandidatoPreferencias = lazy(
-  () => import('@/pages/dashboard/CandidatoPreferencias'),
-);
-const CandidatoVisualizacoes = lazy(
-  () => import('@/pages/dashboard/CandidatoVisualizacoes'),
-);
-const JobMatches = lazy(() => import('@/pages/dashboard/JobMatches'));
 const DocumentosRhPage = lazy(() => import('@/pages/dashboard/DocumentosRh'));
 const BancoDeTalentosPage = lazy(
-  () => import('@/pages/dashboard/BancoDeTalentos'),
+  () => import('@/modules/recrutamento/pages/RecrutamentoTalentPool'),
 );
 const EtapasPage = lazy(() => import('@/pages/dashboard/Etapas'));
 
@@ -73,48 +60,6 @@ export const rhRoutes: ModuleRoute[] = [
     path: 'candidatos/:id',
     label: 'Detalhe do Candidato',
     element: CandidatoDetalhe as ComponentType,
-    requiredPermissions: ['candidates.read'],
-  },
-  {
-    path: 'candidatos/habilidades',
-    label: 'Habilidades',
-    element: CandidatoHabilidades as ComponentType,
-    requiredPermissions: ['candidates.read'],
-  },
-  {
-    path: 'candidatos/formacao',
-    label: 'Formação',
-    element: CandidatoFormacao as ComponentType,
-    requiredPermissions: ['candidates.read'],
-  },
-  {
-    path: 'candidatos/experiencias',
-    label: 'Experiências',
-    element: CandidatoExperiencias as ComponentType,
-    requiredPermissions: ['candidates.read'],
-  },
-  {
-    path: 'candidatos/idiomas',
-    label: 'Idiomas',
-    element: CandidatoIdiomas as ComponentType,
-    requiredPermissions: ['candidates.read'],
-  },
-  {
-    path: 'candidatos/documentos',
-    label: 'Documentos',
-    element: CandidatoDocumentos as ComponentType,
-    requiredPermissions: ['candidates.read'],
-  },
-  {
-    path: 'candidatos/preferencias',
-    label: 'Preferências',
-    element: CandidatoPreferencias as ComponentType,
-    requiredPermissions: ['candidates.read'],
-  },
-  {
-    path: 'candidatos/visualizacoes',
-    label: 'Visualizações',
-    element: CandidatoVisualizacoes as ComponentType,
     requiredPermissions: ['candidates.read'],
   },
   {

@@ -1,12 +1,5 @@
-﻿import { useState } from 'react';
-import {
-  Plus,
-  Trash2,
-  Power,
-  PowerOff,
-  MapPin,
-  Briefcase,
-} from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Trash2, Power, PowerOff, MapPin, Briefcase } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -28,7 +21,7 @@ const FREQUENCY_LABELS: Record<JobAlertFrequency, string> = {
 };
 
 export default function CandidateAlertas() {
-const {
+  const {
     jobAlerts,
     isLoading,
     error,
@@ -358,7 +351,7 @@ const {
                       </div>
 
                       <div className="text-muted-foreground mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
-                        {alert.keywords && <span>ðŸ”Ž {alert.keywords}</span>}
+                        {alert.keywords && <span>🔎 {alert.keywords}</span>}
                         {(alert.city || alert.state) && (
                           <span className="inline-flex items-center gap-1">
                             <MapPin className="h-3 w-3" />
@@ -374,7 +367,7 @@ const {
                         )}
                         {(alert.salary_min || alert.salary_max) && (
                           <span>
-                            R$ {alert.salary_min ?? '?'} — R${' '}
+                            R$ {alert.salary_min ?? '?'} — R$
                             {alert.salary_max ?? '?'}
                           </span>
                         )}
@@ -425,4 +418,3 @@ const {
     </>
   );
 }
-

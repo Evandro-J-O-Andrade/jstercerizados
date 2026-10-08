@@ -92,6 +92,7 @@ export type MatchAlgorithmVersion = '1.0';
 export interface Job {
   id: string;
   tenant_id: string;
+  company_id: string | null;
   company_relationship_id: string | null;
   title: string;
   slug: string;
@@ -439,6 +440,7 @@ export interface Tenant {
 
 export interface JobFilters {
   tenant_id?: string;
+  company_id?: string;
   company_relationship_id?: string;
   status?: JobStatus | JobStatus[];
   contract_type?: ContractType | ContractType[];
@@ -643,7 +645,8 @@ export interface RepositoryListResult<T> {
 
 export interface CreateJobInput {
   tenant_id: string;
-  company_relationship_id: string;
+  company_id: string | null;
+  company_relationship_id: string | null;
   title: string;
   slug: string;
   description?: string;

@@ -284,7 +284,7 @@ export default function VisaoGeral() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <DashboardSection
             title="Vagas recentes"
-            description="Ãšltimas vagas publicadas."
+            description="Últimas vagas publicadas."
             icon={BriefcaseBusiness}
             actions={
               <Button
@@ -306,9 +306,7 @@ export default function VisaoGeral() {
                           {job.title}
                         </p>
                         <p className="text-muted-foreground mt-0.5 text-xs">
-                          {[job.city, job.state]
-                            .filter(Boolean)
-                            .join(', ') ||
+                          {[job.city, job.state].filter(Boolean).join(', ') ||
                             job.location_detail ||
                             'Sem localização'}
                         </p>
@@ -329,7 +327,7 @@ export default function VisaoGeral() {
 
           <DashboardSection
             title="Candidatos recentes"
-            description="Ãšltimos candidatos cadastrados."
+            description="Últimos candidatos cadastrados."
             icon={Users}
             actions={
               <Button
@@ -380,4 +378,3 @@ export default function VisaoGeral() {
     </div>
   );
 }
-

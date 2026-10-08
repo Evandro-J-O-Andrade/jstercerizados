@@ -3,7 +3,6 @@ import { lazy } from 'react';
 import type { ModuleRoute } from '@/platform/router/types';
 
 const EstoquePage = lazy(() => import('@/pages/dashboard/Estoque'));
-const FornecedoresPage = lazy(() => import('@/pages/dashboard/Fornecedores'));
 const AlmoxarifadoPage = lazy(() => import('@/pages/dashboard/Almoxarifado'));
 
 export const estoqueRoutes: ModuleRoute[] = [
@@ -37,12 +36,6 @@ export const estoqueRoutes: ModuleRoute[] = [
     label: 'Almoxarifados',
     element: AlmoxarifadoPage as unknown as ComponentType,
     requiredPermissions: ['stock.read'],
-  },
-  {
-    path: 'fornecedores',
-    label: 'Fornecedores',
-    element: FornecedoresPage as unknown as ComponentType,
-    requiredPermissions: ['suppliers.read'],
   },
   {
     path: 'compras',

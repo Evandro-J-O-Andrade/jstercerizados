@@ -5,8 +5,16 @@ import { useState } from 'react';
 import { ModulePage } from '@/components/modules/ModulePage';
 import { jobsRepository } from '@/modules/recrutamento/repositories';
 import { Briefcase } from 'lucide-react';
-import type { JobListItem, JobStatus, CreateJobInput, UpdateJobInput } from '@/modules/recrutamento/types';
-import type { ModuleDefinition, ModuleCategory } from '@/components/portal/ModuleRegistry';
+import type {
+  JobListItem,
+  JobStatus,
+  CreateJobInput,
+  UpdateJobInput,
+} from '@/modules/recrutamento/types';
+import type {
+  ModuleDefinition,
+  ModuleCategory,
+} from '@/components/portal/ModuleRegistry';
 import { JOB_STATUS_LABELS } from '@/modules/recrutamento/constants/jobStatus';
 import { CONTRACT_TYPE_LABELS } from '@/modules/recrutamento/constants/contractType';
 import { WORK_MODE_LABELS } from '@/modules/recrutamento/constants/workMode';
@@ -21,25 +29,29 @@ const JOBS_COLUMNS = [
     key: 'status',
     header: 'Status',
     sortable: true,
-    render: (item: JobListItem) => JOB_STATUS_LABELS[item.status] ?? item.status,
+    render: (item: JobListItem) =>
+      JOB_STATUS_LABELS[item.status] ?? item.status,
   },
   {
     key: 'contract_type',
     header: 'Contrato',
     sortable: true,
-    render: (item: JobListItem) => CONTRACT_TYPE_LABELS[item.contract_type] ?? item.contract_type,
+    render: (item: JobListItem) =>
+      CONTRACT_TYPE_LABELS[item.contract_type] ?? item.contract_type,
   },
   {
     key: 'work_mode',
     header: 'Modalidade',
     sortable: true,
-    render: (item: JobListItem) => WORK_MODE_LABELS[item.work_mode] ?? item.work_mode,
+    render: (item: JobListItem) =>
+      WORK_MODE_LABELS[item.work_mode] ?? item.work_mode,
   },
   {
     key: 'seniority',
     header: 'Senioridade',
     sortable: true,
-    render: (item: JobListItem) => item.seniority ? SENIORITY_LABELS[item.seniority] : '-',
+    render: (item: JobListItem) =>
+      item.seniority ? SENIORITY_LABELS[item.seniority] : '-',
   },
   {
     key: 'city',
@@ -55,7 +67,10 @@ const JOBS_COLUMNS = [
     key: 'published_at',
     header: 'Publicado em',
     sortable: true,
-    render: (item: JobListItem) => item.published_at ? new Date(item.published_at).toLocaleDateString('pt-BR') : '-',
+    render: (item: JobListItem) =>
+      item.published_at
+        ? new Date(item.published_at).toLocaleDateString('pt-BR')
+        : '-',
   },
 ];
 
@@ -119,7 +134,8 @@ const JOBS_FILTERS = [
 ];
 
 const DEFAULT_FORM: JobFormData = {
-  company_relationship_id: '',
+  company_id: null,
+  company_relationship_id: null,
   title: '',
   slug: '',
   description: '',
@@ -147,15 +163,25 @@ interface JobFormProps {
 }
 
 function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
-  const handleChange = (key: keyof JobFormData, value: string | number | undefined) => {
-    (setForm as React.Dispatch<React.SetStateAction<JobFormData>>)((prev: JobFormData): JobFormData => ({ ...prev, [key]: value }));
+  const handleChange = (
+    key: keyof JobFormData,
+    value: string | number | undefined | null,
+  ) => {
+    (setForm as React.Dispatch<React.SetStateAction<JobFormData>>)(
+      (prev: JobFormData): JobFormData => ({
+        ...prev,
+        [key]: value === '' ? null : value,
+      }),
+    );
   };
 
   return (
-    <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+    <div className="max-h-[70vh] space-y-4 overflow-y-auto">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="text-foreground text-sm font-medium">Título *</label>
+          <label className="text-foreground text-sm font-medium">
+            Título *
+          </label>
           <input
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.title}
@@ -168,18 +194,38 @@ function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
           <input
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.slug}
-            onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+            onChange={(e) =>
+              handleChange(
+                'slug',
+                e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''),
+              )
+            }
             required
           />
         </div>
         <div>
-          <label className="text-foreground text-sm font-medium">Empresa (relationship_id) *</label>
+          <label className="text-foreground text-sm font-medium">
+            Empresa (company_id) *
+          </label>
           <input
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
-            value={form.company_relationship_id}
-            onChange={(e) => handleChange('company_relationship_id', e.target.value)}
-            placeholder="UUID do relacionamento"
+            value={form.company_id ?? ''}
+            onChange={(e) => handleChange('company_id', e.target.value)}
+            placeholder="UUID da empresa (companies.id)"
             required
+          />
+        </div>
+        <div>
+          <label className="text-foreground text-sm font-medium">
+            Relacionamento (relationship_id)
+          </label>
+          <input
+            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            value={form.company_relationship_id ?? ''}
+            onChange={(e) =>
+              handleChange('company_relationship_id', e.target.value)
+            }
+            placeholder="UUID do relacionamento (opcional)"
           />
         </div>
         <div>
@@ -187,7 +233,9 @@ function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
           <select
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.status}
-            onChange={(e) => handleChange('status', e.target.value as JobStatus)}
+            onChange={(e) =>
+              handleChange('status', e.target.value as JobStatus)
+            }
           >
             <option value="draft">Rascunho</option>
             <option value="published">Publicado</option>
@@ -198,7 +246,9 @@ function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
           </select>
         </div>
         <div>
-          <label className="text-foreground text-sm font-medium">Tipo de Contrato</label>
+          <label className="text-foreground text-sm font-medium">
+            Tipo de Contrato
+          </label>
           <select
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.contract_type}
@@ -213,7 +263,9 @@ function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
           </select>
         </div>
         <div>
-          <label className="text-foreground text-sm font-medium">Modalidade</label>
+          <label className="text-foreground text-sm font-medium">
+            Modalidade
+          </label>
           <select
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.work_mode}
@@ -225,7 +277,9 @@ function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
           </select>
         </div>
         <div>
-          <label className="text-foreground text-sm font-medium">Senioridade</label>
+          <label className="text-foreground text-sm font-medium">
+            Senioridade
+          </label>
           <select
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.seniority}
@@ -240,7 +294,9 @@ function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
           </select>
         </div>
         <div>
-          <label className="text-foreground text-sm font-medium">Carga Horária</label>
+          <label className="text-foreground text-sm font-medium">
+            Carga Horária
+          </label>
           <input
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.work_hours}
@@ -261,12 +317,16 @@ function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
           <input
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.state}
-            onChange={(e) => handleChange('state', e.target.value.toUpperCase())}
+            onChange={(e) =>
+              handleChange('state', e.target.value.toUpperCase())
+            }
             maxLength={2}
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="text-foreground text-sm font-medium">Detalhe da Localização</label>
+          <label className="text-foreground text-sm font-medium">
+            Detalhe da Localização
+          </label>
           <input
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.location_detail}
@@ -275,7 +335,9 @@ function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="text-foreground text-sm font-medium">Tipo de Salário</label>
+          <label className="text-foreground text-sm font-medium">
+            Tipo de Salário
+          </label>
           <select
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.salary_type}
@@ -287,58 +349,80 @@ function JobForm({ form, setForm, editMode: _editMode }: JobFormProps) {
           </select>
         </div>
         <div>
-          <label className="text-foreground text-sm font-medium">Salário Mínimo</label>
+          <label className="text-foreground text-sm font-medium">
+            Salário Mínimo
+          </label>
           <input
             type="number"
             step="0.01"
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.salary_min ?? ''}
-            onChange={(e) => handleChange('salary_min', e.target.value ? Number(e.target.value) : undefined)}
+            onChange={(e) =>
+              handleChange(
+                'salary_min',
+                e.target.value ? Number(e.target.value) : undefined,
+              )
+            }
             placeholder="Ex: 5000"
           />
         </div>
         <div>
-          <label className="text-foreground text-sm font-medium">Salário Máximo</label>
+          <label className="text-foreground text-sm font-medium">
+            Salário Máximo
+          </label>
           <input
             type="number"
             step="0.01"
             className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
             value={form.salary_max ?? ''}
-            onChange={(e) => handleChange('salary_max', e.target.value ? Number(e.target.value) : undefined)}
+            onChange={(e) =>
+              handleChange(
+                'salary_max',
+                e.target.value ? Number(e.target.value) : undefined,
+              )
+            }
             placeholder="Ex: 7000"
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="text-foreground text-sm font-medium">Descrição</label>
+          <label className="text-foreground text-sm font-medium">
+            Descrição
+          </label>
           <textarea
-            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm min-h-[100px]"
+            className="border-border bg-background mt-1 min-h-[100px] w-full rounded-md border px-3 py-2 text-sm"
             value={form.description}
             onChange={(e) => handleChange('description', e.target.value)}
             rows={4}
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="text-foreground text-sm font-medium">Responsabilidades</label>
+          <label className="text-foreground text-sm font-medium">
+            Responsabilidades
+          </label>
           <textarea
-            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm min-h-[80px]"
+            className="border-border bg-background mt-1 min-h-[80px] w-full rounded-md border px-3 py-2 text-sm"
             value={form.responsibilities}
             onChange={(e) => handleChange('responsibilities', e.target.value)}
             rows={3}
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="text-foreground text-sm font-medium">Requisitos</label>
+          <label className="text-foreground text-sm font-medium">
+            Requisitos
+          </label>
           <textarea
-            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm min-h-[80px]"
+            className="border-border bg-background mt-1 min-h-[80px] w-full rounded-md border px-3 py-2 text-sm"
             value={form.requirements}
             onChange={(e) => handleChange('requirements', e.target.value)}
             rows={3}
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="text-foreground text-sm font-medium">Benefícios</label>
+          <label className="text-foreground text-sm font-medium">
+            Benefícios
+          </label>
           <textarea
-            className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm min-h-[80px]"
+            className="border-border bg-background mt-1 min-h-[80px] w-full rounded-md border px-3 py-2 text-sm"
             value={form.benefits}
             onChange={(e) => handleChange('benefits', e.target.value)}
             rows={3}
@@ -371,7 +455,8 @@ export default function RecrutamentoVagas() {
 
   const handleToggleStatus = async (item: JobListItem) => {
     if (!currentTenantId) return;
-    const nextStatus: JobStatus = item.status === 'published' ? 'paused' : 'published';
+    const nextStatus: JobStatus =
+      item.status === 'published' ? 'paused' : 'published';
     await jobsRepository.updateStatus(item.id, nextStatus);
     setRefreshKey((k) => k + 1);
   };
@@ -383,25 +468,66 @@ export default function RecrutamentoVagas() {
       icon={Briefcase}
       breadcrumbItems={[{ label: 'Recrutamento' }, { label: 'Vagas' }]}
       module={moduleDef}
-      permissions={[
-        { id: 'recrutamento:vagas:read', name: 'Read', module: 'recrutamento', resource: 'vagas', action: 'read', created_at: new Date().toISOString() },
-        canCreate && { id: 'recrutamento:vagas:create', name: 'Create', module: 'recrutamento', resource: 'vagas', action: 'create', created_at: new Date().toISOString() },
-        canUpdate && { id: 'recrutamento:vagas:update', name: 'Update', module: 'recrutamento', resource: 'vagas', action: 'update', created_at: new Date().toISOString() },
-        canDelete && { id: 'recrutamento:vagas:delete', name: 'Delete', module: 'recrutamento', resource: 'vagas', action: 'delete', created_at: new Date().toISOString() },
-      ].filter(Boolean) as any}
+      permissions={
+        [
+          {
+            id: 'recrutamento:vagas:read',
+            name: 'Read',
+            module: 'recrutamento',
+            resource: 'vagas',
+            action: 'read',
+            created_at: new Date().toISOString(),
+          },
+          canCreate && {
+            id: 'recrutamento:vagas:create',
+            name: 'Create',
+            module: 'recrutamento',
+            resource: 'vagas',
+            action: 'create',
+            created_at: new Date().toISOString(),
+          },
+          canUpdate && {
+            id: 'recrutamento:vagas:update',
+            name: 'Update',
+            module: 'recrutamento',
+            resource: 'vagas',
+            action: 'update',
+            created_at: new Date().toISOString(),
+          },
+          canDelete && {
+            id: 'recrutamento:vagas:delete',
+            name: 'Delete',
+            module: 'recrutamento',
+            resource: 'vagas',
+            action: 'delete',
+            created_at: new Date().toISOString(),
+          },
+        ].filter(Boolean) as any
+      }
       columns={JOBS_COLUMNS}
       filters={JOBS_FILTERS}
       fetchData={async (_tenantId) => {
-        const result = await jobsRepository.list({ tenant_id: currentTenantId || '', sort_by: 'created_at', sort_order: 'desc', limit: 100 });
+        const result = await jobsRepository.list({
+          tenant_id: currentTenantId || '',
+          sort_by: 'created_at',
+          sort_order: 'desc',
+          limit: 100,
+        });
         return result.data || [];
       }}
       createItem={async (_tenantId, input) => {
-        const result = await jobsRepository.create({ ...input, tenant_id: currentTenantId || '' });
+        const result = await jobsRepository.create({
+          ...input,
+          tenant_id: currentTenantId || '',
+        });
         if (result.error) throw result.error;
         return result.data!;
       }}
       updateItem={async (_tenantId, id, input) => {
-        const result = await jobsRepository.update({ id, ...input } as UpdateJobInput);
+        const result = await jobsRepository.update({
+          id,
+          ...input,
+        } as UpdateJobInput);
         if (result.error) throw result.error;
         return result.data!;
       }}
@@ -410,7 +536,9 @@ export default function RecrutamentoVagas() {
       }}
       getItemId={(item) => item.id}
       defaultForm={DEFAULT_FORM}
-      renderForm={(form, setForm, editMode) => <JobForm form={form} setForm={setForm} editMode={editMode} />}
+      renderForm={(form, setForm, editMode) => (
+        <JobForm form={form} setForm={setForm} editMode={editMode} />
+      )}
       onToggleStatus={canToggle ? handleToggleStatus : undefined}
       getToggleState={(item) => item.status === 'published'}
       emptyMessage="Nenhuma vaga encontrada."

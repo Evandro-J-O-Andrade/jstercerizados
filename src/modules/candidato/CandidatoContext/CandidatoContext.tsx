@@ -49,22 +49,29 @@ export interface CandidateContextValue {
   toggleFavorite: (jobId: string) => Promise<{ error?: string }>;
   refetchFavorites: () => Promise<void>;
   refetchAlerts: () => Promise<void>;
-  createAlert: (input: Omit<CandidateJobAlertInput, 'tenant_id' | 'person_id'>) => Promise<{ error?: string }>;
-  updateAlert: (id: string, input: Partial<CandidateJobAlertInput>) => Promise<{ error?: string }>;
+  createAlert: (
+    input: Omit<CandidateJobAlertInput, 'tenant_id' | 'person_id'>,
+  ) => Promise<{ error?: string }>;
+  updateAlert: (
+    id: string,
+    input: Partial<CandidateJobAlertInput>,
+  ) => Promise<{ error?: string }>;
   deleteAlert: (id: string) => Promise<{ error?: string }>;
 }
 
 const CandidatoContext = createContext<CandidateContextValue | null>(null);
 
 const LEGACY_TABLE_PATTERNS =
-  /relation .* does not exist|table.*not found|schema cache|PGRST/i;
+  /relation .* does not exist|table.*not found|schema cache|PGRST205|PGRST/i;
 
 function isLegacyTableError(error: unknown): boolean {
   if (!error) return false;
   const msg =
-    typeof error === 'object' && error !== null
-      ? JSON.stringify(error)
-      : String(error);
+    typeof error === 'object' && error !== null && 'message' in error
+      ? String((error as Record<string, unknown>).message)
+      : typeof error === 'object' && error !== null
+        ? JSON.stringify(error)
+        : String(error);
   return LEGACY_TABLE_PATTERNS.test(msg);
 }
 
@@ -188,16 +195,17 @@ export function CandidatoProvider({ children }: { children: ReactNode }) {
           );
           setPreferences(prefs);
         } catch (prefError) {
-          if (import.meta.env.DEV) {
-            console.warn(
-              '[CandidateContext] preferences query failed (table may not exist yet)',
-              prefError,
-            );
-          }
-          if (!isLegacyTableError(prefError)) {
+          if (isLegacyTableError(prefError)) {
+            setPreferences(null);
+          } else {
+            if (import.meta.env.DEV) {
+              console.warn(
+                '[CandidateContext] preferences query failed',
+                prefError,
+              );
+            }
             throw prefError;
           }
-          setPreferences(null);
         }
       } else {
         setPreferences(null);
@@ -223,9 +231,8 @@ export function CandidatoProvider({ children }: { children: ReactNode }) {
   const refetchAlerts = useCallback(async () => {
     if (!tenantId) return;
     try {
-      const alerts = await candidateJobAlertsRepository.listForCurrentPerson(
-        tenantId,
-      );
+      const alerts =
+        await candidateJobAlertsRepository.listForCurrentPerson(tenantId);
       setJobAlerts(alerts || []);
     } catch (e) {
       if (!isLegacyTableError(e)) {
@@ -347,4 +354,3 @@ export function useCandidato(): CandidateContextValue {
   }
   return ctx;
 }
-

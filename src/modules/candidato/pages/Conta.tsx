@@ -24,14 +24,8 @@ const CANDIDATO_HOME = '/candidato';
 
 export default function CandidateConta() {
   const { person, logout } = useAuth();
-const {
-    candidate,
-    jobAlerts,
-    refetch,
-    isLoading,
-    error,
-    deleteAlert,
-  } = useCandidato();
+  const { candidate, jobAlerts, refetch, isLoading, error, deleteAlert } =
+    useCandidato();
   const { addToast } = useToast();
 
   const handleDeleteAlert = async (id: string) => {
@@ -176,9 +170,7 @@ const {
                         className="border-border flex items-center justify-between rounded border p-3"
                       >
                         <div className="flex-1">
-                          <p className="text-sm font-medium">
-                            {alert.name}
-                          </p>
+                          <p className="text-sm font-medium">{alert.name}</p>
                           {alert.frequency && (
                             <p className="text-muted-foreground text-xs">
                               Frequência: {alert.frequency}
@@ -186,7 +178,7 @@ const {
                           )}
                           {alert.last_sent_at && (
                             <p className="text-muted-foreground text-xs">
-                              Ãšltimo envio:{' '}
+                              Último envio:{' '}
                               {new Date(alert.last_sent_at).toLocaleDateString(
                                 'pt-BR',
                               )}
@@ -195,7 +187,7 @@ const {
                         </div>
                         <div className="flex items-center gap-2">
                           {alert.is_active ? (
-                            <CheckCircle className="text-green-500 h-4 w-4" />
+                            <CheckCircle className="h-4 w-4 text-green-500" />
                           ) : (
                             <XCircle className="text-muted-foreground h-4 w-4" />
                           )}
@@ -219,4 +211,3 @@ const {
     </>
   );
 }
-

@@ -1,6 +1,6 @@
 /**
  * Jobs Repository
- * 
+ *
  * Handles all database operations for jobs (vagas de emprego).
  * Uses Supabase client with RLS policies for tenant isolation.
  */
@@ -23,6 +23,7 @@ function mapJobRow(row: Record<string, unknown>): Job {
   return {
     id: row.id as string,
     tenant_id: row.tenant_id as string,
+    company_id: row.company_id as string | null,
     company_relationship_id: row.company_relationship_id as string | null,
     title: row.title as string,
     slug: row.slug as string,
@@ -68,10 +69,8 @@ function mapJobListItemRow(row: Record<string, unknown>): JobListItem {
 }
 
 function buildJobQuery(supabase: any, filters: JobFilters) {
-  let query = supabase
-    .from('jobs')
-    .select(
-      `
+  let query = supabase.from('jobs').select(
+    `
       *,
       companies (
         name,
@@ -79,29 +78,43 @@ function buildJobQuery(supabase: any, filters: JobFilters) {
         logo_url
       )
     `,
-      { count: 'exact' },
-    );
+    { count: 'exact' },
+  );
 
   if (filters.tenant_id) {
     query = query.eq('tenant_id', filters.tenant_id);
   }
+  if (filters.company_id) {
+    query = query.eq('company_id', filters.company_id);
+  }
   if (filters.company_relationship_id) {
-    query = query.eq('company_relationship_id', filters.company_relationship_id);
+    query = query.eq(
+      'company_relationship_id',
+      filters.company_relationship_id,
+    );
   }
   if (filters.status) {
-    const statuses = Array.isArray(filters.status) ? filters.status : [filters.status];
+    const statuses = Array.isArray(filters.status)
+      ? filters.status
+      : [filters.status];
     query = query.in('status', statuses);
   }
   if (filters.contract_type) {
-    const types = Array.isArray(filters.contract_type) ? filters.contract_type : [filters.contract_type];
+    const types = Array.isArray(filters.contract_type)
+      ? filters.contract_type
+      : [filters.contract_type];
     query = query.in('contract_type', types);
   }
   if (filters.work_mode) {
-    const modes = Array.isArray(filters.work_mode) ? filters.work_mode : [filters.work_mode];
+    const modes = Array.isArray(filters.work_mode)
+      ? filters.work_mode
+      : [filters.work_mode];
     query = query.in('work_mode', modes);
   }
   if (filters.seniority) {
-    const seniorities = Array.isArray(filters.seniority) ? filters.seniority : [filters.seniority];
+    const seniorities = Array.isArray(filters.seniority)
+      ? filters.seniority
+      : [filters.seniority];
     query = query.in('seniority', seniorities);
   }
   if (filters.city) {
@@ -111,7 +124,9 @@ function buildJobQuery(supabase: any, filters: JobFilters) {
     query = query.eq('state', filters.state);
   }
   if (filters.search) {
-    query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,requirements.ilike.%${filters.search}%`);
+    query = query.or(
+      `title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,requirements.ilike.%${filters.search}%`,
+    );
   }
   if (filters.date_from) {
     query = query.gte('created_at', filters.date_from);
@@ -124,7 +139,9 @@ function buildJobQuery(supabase: any, filters: JobFilters) {
   const sortOrder = filters.sort_order || 'desc';
   query = query.order(sortBy, { ascending: sortOrder === 'asc' });
 
-  const page = filters.limit ? Math.floor((filters.offset || 0) / filters.limit) + 1 : 1;
+  const page = filters.limit
+    ? Math.floor((filters.offset || 0) / filters.limit) + 1
+    : 1;
   const pageSize = filters.limit || 20;
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
@@ -137,7 +154,9 @@ export const jobsRepository = {
   /**
    * List jobs with filters and pagination
    */
-  async list(filters: JobFilters = {}): Promise<RepositoryListResult<JobListItem>> {
+  async list(
+    filters: JobFilters = {},
+  ): Promise<RepositoryListResult<JobListItem>> {
     try {
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
@@ -186,15 +205,15 @@ export const jobsRepository = {
    * When tenantId is empty/null, the query runs WITHOUT a tenant_id filter.
    * This preserves the public-slug lookup behavior used by /vagas/:slug.
    */
-  async getBySlug(tenantId: string | null, slug: string): Promise<RepositoryResult<Job>> {
+  async getBySlug(
+    tenantId: string | null,
+    slug: string,
+  ): Promise<RepositoryResult<Job>> {
     try {
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 
-      let query = supabase
-        .from('jobs')
-        .select('*')
-        .eq('slug', slug);
+      let query = supabase.from('jobs').select('*').eq('slug', slug);
 
       if (tenantId && tenantId.trim() !== '') {
         query = query.eq('tenant_id', tenantId);
@@ -224,6 +243,7 @@ export const jobsRepository = {
         .from('jobs')
         .insert({
           tenant_id: input.tenant_id,
+          company_id: input.company_id,
           company_relationship_id: input.company_relationship_id,
           title: input.title,
           slug: input.slug,
@@ -286,13 +306,17 @@ export const jobsRepository = {
   /**
    * Update job status
    */
-  async updateStatus(id: string, status: Job['status']): Promise<RepositoryResult<Job>> {
+  async updateStatus(
+    id: string,
+    status: Job['status'],
+  ): Promise<RepositoryResult<Job>> {
     try {
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 
       const updates: Partial<Job> = { status };
-      if (status === 'published') updates.published_at = new Date().toISOString();
+      if (status === 'published')
+        updates.published_at = new Date().toISOString();
       if (status === 'closed') updates.closed_at = new Date().toISOString();
       if (status === 'filled') updates.filled_at = new Date().toISOString();
 
@@ -321,7 +345,9 @@ export const jobsRepository = {
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 
-      const { data, error } = await supabase.rpc('increment_job_views', { job_id: id });
+      const { data, error } = await supabase.rpc('increment_job_views', {
+        job_id: id,
+      });
 
       if (error) {
         return { data: null, error };
@@ -341,7 +367,9 @@ export const jobsRepository = {
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 
-      const { data, error } = await supabase.rpc('increment_job_applications', { job_id: id });
+      const { data, error } = await supabase.rpc('increment_job_applications', {
+        job_id: id,
+      });
 
       if (error) {
         return { data: null, error };
@@ -384,14 +412,17 @@ export const jobsRepository = {
    * current production schema, so the old company_relationships!inner
    * join produced HTTP 400 from PostgREST.
    */
-  async getByProcessId(processId: string): Promise<RepositoryListResult<JobListItem>> {
+  async getByProcessId(
+    processId: string,
+  ): Promise<RepositoryListResult<JobListItem>> {
     try {
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 
       const { data, error } = await supabase
         .from('jobs')
-        .select(`
+        .select(
+          `
           *,
           companies (
             name,
@@ -399,14 +430,19 @@ export const jobsRepository = {
             logo_url
           ),
           recruitment_processes!inner (id)
-        `)
+        `,
+        )
         .eq('recruitment_processes.id', processId);
 
       if (error) {
         return { data: [], error, count: 0 };
       }
 
-      return { data: (data || []).map(mapJobListItemRow), error: null, count: data?.length || 0 };
+      return {
+        data: (data || []).map(mapJobListItemRow),
+        error: null,
+        count: data?.length || 0,
+      };
     } catch (error) {
       return { data: [], error: error as Error, count: 0 };
     }
@@ -415,7 +451,10 @@ export const jobsRepository = {
   /**
    * Get published jobs for public listing (candidate portal)
    */
-  async getPublished(tenantId: string, filters: Omit<JobFilters, 'tenant_id' | 'status'> = {}): Promise<RepositoryListResult<JobListItem>> {
+  async getPublished(
+    tenantId: string,
+    filters: Omit<JobFilters, 'tenant_id' | 'status'> = {},
+  ): Promise<RepositoryListResult<JobListItem>> {
     return this.list({
       ...filters,
       tenant_id: tenantId,
@@ -426,14 +465,16 @@ export const jobsRepository = {
   /**
    * Get job stats for dashboard
    */
-  async getStats(tenantId: string): Promise<RepositoryResult<{
-    total: number;
-    draft: number;
-    published: number;
-    paused: number;
-    closed: number;
-    filled: number;
-  }>> {
+  async getStats(tenantId: string): Promise<
+    RepositoryResult<{
+      total: number;
+      draft: number;
+      published: number;
+      paused: number;
+      closed: number;
+      filled: number;
+    }>
+  > {
     try {
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');

@@ -1,3 +1,1 @@
-import DashboardFinanceiroPage from '@/pages/dashboard/FinanceiroPage';
-
-export { DashboardFinanceiroPage as FinanceiroDashboardPage };
+export { default as FinanceiroDashboardPage } from './FinanceiroDashboardPage';

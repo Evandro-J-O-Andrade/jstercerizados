@@ -138,7 +138,7 @@ export class CompaniesRepository extends SupabaseRepository {
   }
 
   async findAll(
-    tenantId: string,
+    tenantId?: string | null,
     filters?: { status?: string; search?: string },
   ): Promise<Company[]> {
     if (!this.supabase) return [];
@@ -146,8 +146,9 @@ export class CompaniesRepository extends SupabaseRepository {
     let query = this.supabase
       .from('companies')
       .select('*')
-      .eq('tenant_id', tenantId)
       .order('created_at', { ascending: false });
+
+    if (tenantId) query = query.eq('tenant_id', tenantId);
 
     if (filters?.status) query = query.eq('status', filters.status);
     if (filters?.search)

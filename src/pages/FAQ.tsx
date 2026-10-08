@@ -14,7 +14,7 @@ import { staggerItem } from '@/animations/fade';
 const FAQ_CATEGORIES = [
   {
     label: 'Conta e Acesso',
-    icon: '🔐',
+    icon: '🔑',
     items: [
       {
         question: 'Como criar uma conta?',
@@ -332,7 +332,7 @@ export default function FAQ() {
                 Ainda tem dúvidas?
               </h2>
               <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-lg">
-                Nossa equipe está pronta para atender você. Entre em contato
+                Nossa equipe está pronta para atender vocês. Entre em contato
                 pelo WhatsApp ou preencha o formulário.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">

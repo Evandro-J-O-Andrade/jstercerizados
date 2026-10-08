@@ -1,100 +1,82 @@
 ﻿import { useAuth } from '@/contexts/AuthContext';
 import { useCandidato } from '@/modules/candidato/CandidatoContext';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
 import { ContentBoundary } from '@/components/feedback/ContentBoundary';
-import {
-  MetroTileGrid,
-  computePuzzleLayout,
-} from '@/components/portal/MetroTiles';
 import { LayoutDashboard } from 'lucide-react';
-import { useMemo, useCallback } from 'react';
-import { computeCandidateDashboardTiles } from './dashboard-tiles';
+import {
+  ProfileSummary,
+  ProfileCompletion,
+  RecommendedJobs,
+  ApplicationsSummary,
+  UpcomingInterviews,
+  AlertsSummary,
+  QuickActions,
+} from './components';
 
 const CANDIDATO_HOME = '/candidato';
 
 export default function DashboardCandidato() {
   const { person } = useAuth();
-  const {
-    applications,
-    publishedJobs,
-    favorites,
-    jobAlerts,
-    matchResults,
-    candidate,
-    candidateContext,
-    isLoading,
-    error,
-    refetch,
-  } = useCandidato();
+  const { isLoading, error, refetch, candidate } = useCandidato();
 
   const firstName = person?.full_name?.split(' ')[0] || 'Candidato';
-
-  const { modules, stats } = useMemo(
-    () =>
-      computeCandidateDashboardTiles({
-        applications,
-        publishedJobs,
-        favorites,
-        jobAlerts,
-        matchResults,
-        candidate,
-        candidateContext,
-      }),
-    [
-      applications,
-      publishedJobs,
-      favorites,
-      jobAlerts,
-      matchResults,
-      candidate,
-      candidateContext,
-    ],
-  );
-
-  const tileLayout = useMemo(() => computePuzzleLayout(modules), [modules]);
-
-  const handleReorder = useCallback(() => {
-    // MetroTileGrid já persiste a ordem em localStorage. Não há estado
-    // externo a sincronizar aqui.
-  }, []);
 
   const status = isLoading
     ? 'loading'
     : error
       ? 'error'
-      : modules.length === 0
+      : !candidate
         ? 'empty'
         : 'success';
 
   return (
-    <ModuleWorkspace
-      title="Área do Candidato"
-      description={`Olá, ${firstName}. Acesse suas ferramentas abaixo.`}
-      icon={LayoutDashboard}
-      breadcrumbItems={[]}
-      homeRoute={CANDIDATO_HOME}
-      className="flex h-full min-h-0 flex-col"
-    >
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="border-border bg-background/50 border-b px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 text-primary rounded-xl p-2">
+              <LayoutDashboard className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-foreground text-xl font-semibold">
+                Área do Candidato
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                Olá, {firstName}. Acesse suas ferramentas abaixo.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <ContentBoundary
         status={status}
         error={error}
         onRetry={() => void refetch()}
         homeRoute={CANDIDATO_HOME}
-        emptyTitle="Nenhuma ferramenta disponível"
-        emptyDescription="Seu perfil ainda não possui módulos liberados."
+        emptyTitle="Perfil não encontrado"
+        emptyDescription="Complete seu cadastro para acessar o painel do candidato."
         className="flex min-h-0 flex-1 flex-col overflow-hidden"
       >
-        <div className="min-h-0 flex-1 overflow-hidden">
-          <MetroTileGrid
-            modules={modules}
-            onReorder={handleReorder}
-            tileLayout={tileLayout}
-            moduleStats={stats}
-            userId={person?.id || ''}
-            tenantId={null}
-          />
+        <div className="flex min-h-0 flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+          <div className="mx-auto max-w-7xl space-y-6">
+            <ProfileSummary />
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              <div className="space-y-6 lg:col-span-2">
+                <RecommendedJobs />
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <ApplicationsSummary />
+                  <UpcomingInterviews />
+                </div>
+                <AlertsSummary />
+              </div>
+              <div className="space-y-6">
+                <ProfileCompletion />
+                <QuickActions />
+              </div>
+            </div>
+          </div>
         </div>
       </ContentBoundary>
-    </ModuleWorkspace>
+    </div>
   );
 }
