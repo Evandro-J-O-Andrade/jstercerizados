@@ -1,0 +1,15 @@
+export const CONTABILIDADE_PERMISSIONS = {
+  dashboardRead: 'accounting.dashboard.read',
+  entriesRead: 'accounting.entries.read',
+  entriesCreate: 'accounting.entries.create',
+  entriesUpdate: 'accounting.entries.update',
+  entriesDelete: 'accounting.entries.delete',
+  chartOfAccountsRead: 'accounting.chart_of_accounts.read',
+  chartOfAccountsCreate: 'accounting.chart_of_accounts.create',
+  chartOfAccountsUpdate: 'accounting.chart_of_accounts.update',
+  chartOfAccountsDelete: 'accounting.chart_of_accounts.delete',
+  trialBalanceRead: 'accounting.trial_balance.read',
+  reconciliationRead: 'accounting.reconciliation.read',
+  reportsRead: 'accounting.reports.read',
+  reportsExport: 'accounting.reports.export',
+} as const;
