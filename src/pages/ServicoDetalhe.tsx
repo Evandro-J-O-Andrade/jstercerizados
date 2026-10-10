@@ -24,6 +24,7 @@ import { NotFoundState } from '@/components/fallback/NotFoundState';
 import { usePublicServiceBySlug } from '@/hooks/useServices';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
 import { SERVICE_IMAGES } from '@/content/assets';
+import { resolveServiceGallery } from '@/lib/images/image-resolver';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 
@@ -680,29 +681,25 @@ export default function ServicoDetalhe() {
             variants={staggerReveal(0.1)}
             className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
           >
-            {(
-              service.gallery ?? [
-                '/images/servicos/gallery-01.svg',
-                '/images/servicos/gallery-02.svg',
-                '/images/servicos/gallery-03.svg',
-                '/images/servicos/gallery-04.svg',
-              ]
-            ).map((img, index) => (
-              <motion.div
-                key={index}
-                variants={staggerItem('up')}
-                whileHover={{ scale: 1.03 }}
-                className="relative aspect-square overflow-hidden rounded-2xl"
-              >
-                <img
-                  src={img}
-                  alt={`${service.title} - Imagem ${index + 1}`}
-                  className="h-full w-full object-cover opacity-80 transition-opacity duration-300 hover:opacity-100"
-                  loading="lazy"
-                />
-                <div className="from-background/60 absolute inset-0 bg-gradient-to-t to-transparent" />
-              </motion.div>
-            ))}
+            {resolveServiceGallery(service.gallery, { slug: service.slug }).map(
+              (img, index) => (
+                <motion.div
+                  key={index}
+                  variants={staggerItem('up')}
+                  whileHover={{ scale: 1.03 }}
+                  className="relative aspect-square overflow-hidden rounded-2xl"
+                >
+                  <SafeImage
+                    src={img}
+                    alt={`${service.title} - Imagem ${index + 1}`}
+                    className="h-full w-full object-cover opacity-80 transition-opacity duration-300 hover:opacity-100"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div className="from-background/60 absolute inset-0 bg-gradient-to-t to-transparent" />
+                </motion.div>
+              ),
+            )}
           </motion.div>
         </Container>
       </Section>

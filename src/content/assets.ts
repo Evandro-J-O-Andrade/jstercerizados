@@ -10,7 +10,8 @@ export const SERVICE_IMAGES = {
   maoDeObraEfetiva:
     '/images/servicos/mao-de-obra-efetiva/mao-de-obra-efetiva.jpg',
   terceirizacao: '/images/servicos/terceirizacao/terceirizacao-real.webp',
-  controleAcesso: '/images/servicos/controle-acesso/controle-de-acesso.jpg',
+  controleAcesso:
+    '/images/servicos/controle-acesso/galeria/controle-de-acesso.jpg',
   solucaoRh: '/images/servicos/solucao-rh.jfif',
   timeRh: '/images/servicos/solucao-rh.jfif',
   bancoTalentoReal: '/images/servicos/banco-de-talentos/banco-de-talentos.jpg',
@@ -21,7 +22,7 @@ export const SERVICE_IMAGES = {
     '/images/servicos/mao-de-obra-temporaria/mao-de-obra-temporaria.jpg',
   terceirizacaoReal: '/images/servicos/terceirizacao/terceirizacao-real.webp',
   servicosReal: '/images/hero/servicos-hero.webp',
-  zeladoriaReal: '/images/servicos/zeladoria/zeladoria.jpg',
+  zeladoriaReal: '/images/servicos/zeladoria/zeladoria-real.png',
   faxinaReal: '/images/servicos/faxina-diarista/faxina.webp',
   limpezaPesadaReal: '/images/servicos/limpeza-pesada/limpeza-pesada.webp',
   limpezaFachadaReal:
@@ -41,16 +42,18 @@ export const SERVICE_IMAGES = {
   processoRh: '/images/servicos/solucao-rh.jfif',
   avaliacaoPerfilReal: '/images/servicos/avaliacao-perfil/avaliacao-perfil.jpg',
   huntingReal: '/images/servicos/hunting/executive-search.jpg',
-  controleAcessoReal: '/images/servicos/controle-acesso/controle-de-acesso.jpg',
+  controleAcessoReal:
+    '/images/servicos/controle-acesso/galeria/controle-de-acesso.jpg',
   processoRhReal: '/images/servicos/processo-de-rh/processo-de-rh.jpg',
   maoDeObraTemporariaReal:
     '/images/servicos/mao-de-obra-temporaria/mao-de-obra-temporaria.jpg',
   maoDeObraEfetivaReal:
     '/images/servicos/mao-de-obra-efetiva/mao-de-obra-efetiva.jpg',
-  bancoTalentoRealJpg: '/images/servicos/banco-talento.jfif',
+  bancoTalentoRealJpg:
+    '/images/servicos/banco-de-talentos/banco-de-talentos -real.jpg',
   terceirizacaoRealJpg:
     '/images/servicos/terceirizacao/terceirizacao-real.webp',
-  zeladoriaRealJpg: '/images/servicos/zeladoria/zeladoria.jpg',
+  zeladoriaRealJpg: '/images/servicos/zeladoria/zeladoria-real.png',
   limpezaRealJpg: '/images/servicos/limpeza/limpeza.jpg',
   limpezaAntes: '/images/servicos/limpeza/limpeza.jpg',
   portariaReal: '/images/servicos/portaria/recepcao-e-portaria.jpg',
