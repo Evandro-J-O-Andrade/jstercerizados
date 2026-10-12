@@ -29,7 +29,7 @@ Date: 2026-10-12
   - _superseded: 2
     - 20260902000000_platform_hardening_v1.sql
     - 20260902000001_reconcile_services_cms.sql
-- Stated divergence (audit note): '101 repo vs 95 applied' with references to reconcile_services_cms/_superseded/blocked — classify vs nested dirs
+- Stated divergence (audit note): '101 repo vs 95 applied' with references to reconcile_services_cms/_superseded/blocked - classify vs nested dirs
 
 ## Status
 
