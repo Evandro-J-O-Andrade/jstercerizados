@@ -23,8 +23,10 @@ import { ServiceRequestForm } from '@/components/forms/ServiceRequestForm';
 import { NotFoundState } from '@/components/fallback/NotFoundState';
 import { usePublicServiceBySlug } from '@/hooks/useServices';
 import { COMPANY, WHATSAPP_MESSAGES, getWhatsAppUrl } from '@/config';
-import { SERVICE_IMAGES } from '@/content/assets';
-import { resolveServiceGallery } from '@/lib/images/image-resolver';
+import {
+  resolveServiceGallery,
+  resolveServiceCover,
+} from '@/lib/images/image-resolver';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 
@@ -105,11 +107,10 @@ export default function ServicoDetalhe() {
     return <PageLoader />;
   }
 
-  const heroImage =
-    service.image && !service.image.includes('fallbacks')
-      ? service.image
-      : (SERVICE_IMAGES[service.slug as keyof typeof SERVICE_IMAGES] ??
-        SERVICE_IMAGES.facilitiesFallback);
+  const heroImage = resolveServiceCover(service.image, {
+    slug: service.slug,
+    fallbackType: 'servicos',
+  });
 
   const processSteps =
     service.processSteps && service.processSteps.length > 0

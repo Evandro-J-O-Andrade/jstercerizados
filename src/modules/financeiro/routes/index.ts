@@ -42,9 +42,9 @@ const ConciliacaoPage = lazy(() =>
     default: m.ConciliacaoPage,
   })),
 );
-const CategoriasPage = lazy(() =>
-  import('@/modules/financeiro/categorias').then((m) => ({
-    default: m.CategoriasPage,
+const CATEGORIESPage = lazy(() =>
+  import('@/modules/financeiro/categoria').then((m) => ({
+    default: m.CATEGORIESPage,
   })),
 );
 const ParcelamentosPage = lazy(() =>
@@ -110,9 +110,9 @@ export const financeiroRoutes: ModuleRoute[] = [
     icon: 'Banknote',
   },
   {
-    path: 'categorias',
-    label: 'Categorias Financeiras',
-    element: CategoriasPage as unknown as ComponentType,
+    path: 'categoria',
+    label: 'CATEGORIES Financeiras',
+    element: CATEGORIESPage as unknown as ComponentType,
     requiredPermissions: ['finance.read'],
   },
   {

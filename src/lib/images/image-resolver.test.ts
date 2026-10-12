@@ -35,6 +35,12 @@ describe('image-resolver', () => {
     expect(gallery).toContain('https://example.com/img.jpg');
   });
 
+  it('URL real deve ter prioridade sobre mapeamento por slug', () => {
+    const realUrl = '/images/servicos/processo-de-rh/processo-de-rh.jpg';
+    const cover = resolveServiceCover(realUrl, { slug: 'processo-de-rh' });
+    expect(cover).toBe(realUrl);
+  });
+
   it('falha de carregamento e fallback (via resolve)', () => {
     const cover = resolveServiceCover('', { fallbackType: 'servicos' });
     expect(cover).toContain('/images/servicos/fallbacks/servicos.png');

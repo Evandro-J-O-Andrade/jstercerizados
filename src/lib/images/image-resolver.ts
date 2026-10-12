@@ -73,13 +73,35 @@ export function resolveServiceCover(
     fallbackType?: keyof typeof IMAGE_FALLBACKS;
   },
 ): string {
+  // 1. URL/caminho válido (real image from DB/page content) - must take priority
+  if (isLocalImagePath(input)) {
+    return (input as string).trim();
+  }
+
+  // 2. Mapeamento local por slug
   if (opts?.slug) {
     const mapped = SERVICE_IMAGE_MAP[opts.slug];
     if (mapped?.cover) {
       return mapped.cover;
     }
   }
-  return resolveImagePath(input, opts);
+
+  // 3. SERVICE_IMAGES legado
+  if (opts?.slug) {
+    const key = opts.slug as keyof typeof SERVICE_IMAGES;
+    const legacy = SERVICE_IMAGES[key];
+    if (typeof legacy === 'string' && legacy.trim().length > 0) {
+      return legacy.trim();
+    }
+  }
+
+  // 4. fallback por categoria
+  if (opts?.fallbackType && IMAGE_FALLBACKS[opts.fallbackType]) {
+    return IMAGE_FALLBACKS[opts.fallbackType];
+  }
+
+  // 5. fallback global
+  return IMAGE_FALLBACKS.global;
 }
 
 export function resolveServiceGallery(
