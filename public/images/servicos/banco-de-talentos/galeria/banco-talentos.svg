@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(215,35%,18%)"/>
+      <stop offset="100%" stop-color="hsl(215,40%,12%)"/>
+    </gradient>
+    <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="hsl(43,74%,45%)"/>
+      <stop offset="100%" stop-color="hsl(43,74%,35%)"/>
+    </gradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg2)"/>
+  <g opacity="0.35">
+    <rect x="200" y="150" width="400" height="300" rx="16" fill="hsla(0,0%,100%,0.05)"/>
+    <rect x="230" y="200" width="60" height="240" fill="url(#barGrad)" rx="4"/>
+    <rect x="310" y="200" width="60" height="160" fill="url(#barGrad)" rx="4"/>
+    <rect x="390" y="200" width="60" height="200" fill="url(#barGrad)" rx="4"/>
+    <rect x="470" y="200" width="60" height="120" fill="url(#barGrad)" rx="4"/>
+    <circle cx="620" cy="420" r="30" fill="hsl(43,74%,40%)"/>
+    <path d="M600,420 L640,420 M620,400 L620,440" stroke="hsl(215,35%,10%)" stroke-width="3"/>
+  </g>
+  <text x="400" y="560" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="system-ui" font-size="24" font-weight="500">Banco de Talentos</text>
+</svg>

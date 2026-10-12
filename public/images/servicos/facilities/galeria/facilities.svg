@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(215,35%,18%)"/>
+      <stop offset="50%" stop-color="hsl(215,35%,14%)"/>
+      <stop offset="100%" stop-color="hsl(215,35%,10%)"/>
+    </linearGradient>
+    <linearGradient id="overlay" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="60%" stop-color="hsl(215,35%,8%)"/>
+      <stop offset="100%" stop-color="hsl(215,35%,6%)"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(43,90%,55%)"/>
+      <stop offset="100%" stop-color="hsl(43,74%,40%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <rect x="0" y="0" width="800" height="600" fill="url(#overlay)"/>
+  <rect x="80" y="100" width="320" height="400" rx="12" fill="hsl(215,35%,12%)" opacity="0.6"/>
+  <rect x="440" y="120" width="300" height="360" rx="12" fill="hsl(215,35%,10%)" opacity="0.5"/>
+  <rect x="110" y="140" width="160" height="120" rx="8" fill="hsl(215,35%,16%)" opacity="0.4"/>
+  <rect x="290" y="160" width="90" height="90" fill="hsl(215,35%,14%)" opacity="0.3"/>
+  <circle cx="190" cy="200" r="30" fill="hsl(43,74%,40%)" opacity="0.12"/>
+  <path d="M175 190 L190 205 L205 190" stroke="url(#goldGrad)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <rect x="460" y="160" width="260" height="140" rx="8" fill="hsl(215,35%,16%)" opacity="0.4"/>
+  <rect x="460" y="320" width="260" height="120" rx="8" fill="hsl(215,35%,15%)" opacity="0.3"/>
+  <circle cx="590" cy="230" r="22" fill="hsl(43,74%,40%)" opacity="0.08"/>
+  <circle cx="240" cy="380" r="25" fill="hsl(43,74%,40%)" opacity="0.06"/>
+</svg>
