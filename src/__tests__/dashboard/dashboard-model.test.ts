@@ -59,7 +59,7 @@ describe('dashboard metric model', () => {
     expect(
       filterDashboardMetrics(
         [jobsMetric, candidatesMetric],
-        [{ resource: 'jobs', action: 'read' }],
+        [{ name: 'jobs.read' }],
         false,
       ),
     ).toEqual([jobsMetric]);

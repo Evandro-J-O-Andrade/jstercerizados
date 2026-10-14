@@ -33,7 +33,7 @@ export class RoleRepository extends SupabaseRepository {
       .insert({
         name: input.name,
         description: input.description ?? null,
-        scope: input.scope,
+        is_global: input.is_global,
       })
       .select('*')
       .single();
@@ -55,7 +55,7 @@ export class RoleRepository extends SupabaseRepository {
         ...(input.description !== undefined && {
           description: input.description,
         }),
-        ...(input.scope !== undefined && { scope: input.scope }),
+        ...(input.is_global !== undefined && { is_global: input.is_global }),
       })
       .eq('id', id)
       .select('*')

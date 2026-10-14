@@ -7,7 +7,7 @@ import type {
   FirstLoginState,
   LegalAcceptance,
 } from '@/types/auth';
-import { normalizeRoleScope } from '@/utils/rbac-normalize';
+import { normalizeRoleScope, isGlobalScope } from '@/utils/rbac-normalize';
 
 export interface UserIdentity {
   id: string;
@@ -17,7 +17,7 @@ export interface UserIdentity {
   firstName: string;
   displayName: string;
   avatarUrl?: string;
-  role: { id: string; name: string; scope: 'global' | 'tenant' } | null;
+  role: { id: string; name: string; is_global: boolean } | null;
   roleLabel: string;
   tenant: { id: string; name: string } | null;
   tenantLabel: string;
@@ -130,8 +130,8 @@ function resolveActiveRole(
       (ra) => ra.tenant_id === currentTenantId,
     );
     if (tenantRoles.length > 1) {
-      const globalRole = tenantRoles.find(
-        (ra) => roleById.get(ra.role_id)?.scope === 'global',
+      const globalRole = tenantRoles.find((ra) =>
+        isGlobalScope(roleById.get(ra.role_id)?.is_global ?? false),
       );
       if (globalRole) return roleById.get(globalRole.role_id) ?? null;
     }
@@ -152,7 +152,7 @@ function resolveActiveRole(
   }
 
   const adminMasterRole = Array.from(roleById.values()).find(
-    (r) => r.name === 'admin_master' && r.scope === 'global',
+    (r) => r.name === 'admin_master' && isGlobalScope(r.is_global),
   );
   if (adminMasterRole) {
     return adminMasterRole;
@@ -199,7 +199,7 @@ export function deriveUserIdentity(
     ? {
         id: resolvedRole.id,
         name: resolvedRole.name,
-        scope: normalizeRoleScope(resolvedRole.scope) as 'global' | 'tenant',
+        is_global: resolvedRole.is_global,
       }
     : null;
 
@@ -208,7 +208,7 @@ export function deriveUserIdentity(
     ? { id: activeTenant.id, name: activeTenant.name }
     : null;
 
-  const roleScope = role?.scope || 'tenant';
+  const roleScope = role?.is_global ? 'global' : 'tenant';
   const tenantName =
     tenant?.name || (currentTenantId ? 'Tenant' : 'Plataforma');
   const contextLabel = computeContextLabel(roleScope, tenantName);
@@ -218,13 +218,13 @@ export function deriveUserIdentity(
   const roleLabel = role ? formatRoleLabel(role.name) : 'Usuário';
   const tenantLabel = tenant?.name || 'Plataforma';
 
-  const roleScopes = new Set(roles.map((r) => r.scope));
+  const roleScopes = new Set(roles.map((r) => normalizeRoleScope(r.is_global)));
   const hasTenantMembership = memberships.some((m) => m.status === 'active');
   const scopes: ('global' | 'tenant')[] = [];
   if (roleScopes.has('global')) {
     scopes.push('global');
     const hasAdminMaster = roles.some(
-      (r) => r.scope === 'global' && r.name === 'admin_master',
+      (r) => isGlobalScope(r.is_global) && r.name === 'admin_master',
     );
     if (hasAdminMaster) {
       scopes.push('tenant');

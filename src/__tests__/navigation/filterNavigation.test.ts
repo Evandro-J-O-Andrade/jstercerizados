@@ -65,7 +65,7 @@ describe('filterNavigation', () => {
         }),
       ],
       [],
-      [{ resource: 'jobs', action: 'read' } as Permission],
+      [{ name: 'jobs.read' } as Permission],
       ['candidato'],
     );
     expect(out.sidebarItems.find((i) => i.key === 'vagas')).toBeDefined();
@@ -107,7 +107,7 @@ describe('filterNavigation', () => {
         }),
       ],
       [],
-      [{ resource: 'jobs', action: 'read' } as Permission],
+      [{ name: 'jobs.read' } as Permission],
       ['admin_master', 'candidato'],
     );
     expect(out.sidebarItems.find((i) => i.key === 'vagas')).toBeDefined();

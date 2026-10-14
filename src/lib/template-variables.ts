@@ -34,11 +34,13 @@ export function buildTemplateContext(
   const roleNames = userIdentity.role ? [userIdentity.role] : [];
   const rolesStr =
     roleNames
-      .map((r: { name: string; scope: string }) => `${r.name} (${r.scope})`)
+      .map(
+        (r: { name: string; is_global: boolean }) =>
+          `${r.name} (${r.is_global ? 'global' : 'tenant'})`,
+      )
       .join(', ') || '';
 
-  const permissionsStr =
-    permissions.map((p) => `${p.resource}.${p.action}`).join(', ') || '';
+  const permissionsStr = permissions.map((p) => p.name).join(', ') || '';
 
   return {
     username: userIdentity.displayName || '',

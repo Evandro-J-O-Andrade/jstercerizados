@@ -1,4 +1,5 @@
 import type { Permission } from '@/types/auth';
+import { getPermissionKey } from '@/utils/rbac-normalize';
 
 export type ModuleCategory =
   | 'inicio'
@@ -2405,7 +2406,7 @@ export function hasModulePermission(
 ): boolean {
   if (!requiredPermissions || requiredPermissions.length === 0) return true;
   return requiredPermissions.some((perm) =>
-    permissions.some((p) => `${p.resource}.${p.action}` === perm),
+    permissions.some((p) => getPermissionKey(p) === perm),
   );
 }
 

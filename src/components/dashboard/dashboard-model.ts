@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import type { Permission } from '@/types/auth';
+import { getPermissionKey } from '@/utils/rbac-normalize';
 
 export type DashboardMetricTone =
   'primary' | 'success' | 'warning' | 'danger' | 'neutral';
@@ -51,8 +52,7 @@ export function filterDashboardMetrics(
     }
 
     return permissions.some(
-      (permission) =>
-        `${permission.resource}.${permission.action}` === metric.permission,
+      (permission) => getPermissionKey(permission) === metric.permission,
     );
   });
 }

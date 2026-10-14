@@ -7,10 +7,9 @@ import type { Permission, Role, RolePermission } from '../types';
 
 export interface AuthorizationDecision {
   granted: boolean;
-  resource: string;
-  action: string;
+  permissionName: string;
   reason?: string;
-  scope: 'global' | 'tenant';
+  isGlobal: boolean;
 }
 
 /**
@@ -50,22 +49,12 @@ export function computeEffectivePermissions(
     const role = roles.find((r) => r.id === rp.role_id);
     if (!role) continue;
 
-    const perm = permissionRecords.find((p) => {
-      const code = `${p.resource}.${p.action}`;
-      return code === rp.permission_id;
-    });
+    const perm = permissionRecords.find((p) => p.id === rp.permission_id);
 
     if (perm) {
-      const exists = effective.some(
-        (e) => e.resource === perm.resource && e.action === perm.action,
-      );
+      const exists = effective.some((e) => e.id === perm.id);
       if (!exists) {
-        effective.push({
-          resource: perm.resource,
-          action: perm.action,
-          granted: true,
-          scope: role.scope,
-        });
+        effective.push(perm);
       }
     }
   }
@@ -79,28 +68,37 @@ export function computeEffectivePermissions(
  */
 export function decidePermission(
   effectivePermissions: Permission[],
-  resource: string,
-  action: string,
+  permissionName: string,
+  roles: Role[] = [],
+  rolePermissions: RolePermission[] = [],
+  permissionRecords: Permission[] = [],
 ): AuthorizationDecision {
-  const perm = effectivePermissions.find(
-    (p) => p.resource === resource && p.action === action,
-  );
+  const perm = effectivePermissions.find((p) => p.name === permissionName);
 
-  if (perm && perm.granted) {
+  if (perm) {
+    // Find which role granted this permission to determine scope
+    let isGlobal = false;
+    const rp = rolePermissions.find((rp) => {
+      const p = permissionRecords.find((p) => p.id === rp.permission_id);
+      return p?.name === permissionName;
+    });
+    if (rp) {
+      const role = roles.find((r) => r.id === rp.role_id);
+      if (role) isGlobal = role.is_global;
+    }
+
     return {
       granted: true,
-      resource,
-      action,
-      scope: perm.scope,
+      permissionName,
+      isGlobal,
     };
   }
 
   return {
     granted: false,
-    resource,
-    action,
-    reason: `Permission ${resource}.${action} not granted`,
-    scope: 'tenant',
+    permissionName,
+    reason: `Permission ${permissionName} not granted`,
+    isGlobal: false,
   };
 }
 
@@ -114,11 +112,9 @@ export function hasAnyPermission(
 ): boolean {
   if (requiredPermissions.length === 0) return true;
 
-  return requiredPermissions.some((req) => {
-    const [resource, action] = req.split('.');
-    const decision = decidePermission(effectivePermissions, resource, action);
-    return decision.granted;
-  });
+  return requiredPermissions.some((req) =>
+    effectivePermissions.some((p) => p.name === req),
+  );
 }
 
 /**
@@ -130,9 +126,30 @@ export function hasAllPermissions(
 ): boolean {
   if (requiredPermissions.length === 0) return true;
 
-  return requiredPermissions.every((req) => {
-    const [resource, action] = req.split('.');
-    const decision = decidePermission(effectivePermissions, resource, action);
-    return decision.granted;
-  });
+  return requiredPermissions.every((req) =>
+    effectivePermissions.some((p) => p.name === req),
+  );
 }
+
+/**
+ * Gets the scope (global/tenant) of a specific permission based on the role that granted it.
+ */
+export function getPermissionScope(
+  permissionName: string,
+  roles: Role[],
+  rolePermissions: RolePermission[],
+  permissionRecords: Permission[],
+): 'global' | 'tenant' | null {
+  const rp = rolePermissions.find((rp) => {
+    const perm = permissionRecords.find((p) => p.id === rp.permission_id);
+    return perm?.name === permissionName;
+  });
+
+  if (!rp) return null;
+
+  const role = roles.find((r) => r.id === rp.role_id);
+  return role?.is_global ? 'global' : 'tenant';
+}
+
+// Re-export types for convenience
+export type { Permission, Role, RolePermission } from '../types';

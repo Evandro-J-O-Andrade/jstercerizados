@@ -43,10 +43,10 @@ function AccountSwitcherModal({
   availableMemberships: {
     id: string;
     tenant_id: string;
-    role_id: string;
+    membership_role: string;
     status: string;
   }[];
-  roles: { id: string; name: string; scope: 'global' | 'tenant' }[];
+  roles: { id: string; name: string; is_global: boolean }[];
   activeTenantId: string | null;
   switchAccount: (tenantId: string) => Promise<void>;
   navigate: (to: string) => void;
@@ -84,7 +84,7 @@ function AccountSwitcherModal({
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {availableMemberships.map((membership) => {
               const membershipRoles = roles.filter(
-                (r) => r.id === membership.role_id,
+                (r) => r.id === membership.membership_role,
               );
               const roleName = membershipRoles[0]?.name ?? 'Usuário';
               const isActive = membership.tenant_id === activeTenantId;

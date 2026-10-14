@@ -17,6 +17,7 @@ import { EmptyState } from '@/components/fallback';
 import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
 import { Clock, LayoutDashboard, ShieldAlert } from 'lucide-react';
 import { cn } from '@/utils';
+import { getPermissionKey } from '@/utils/rbac-normalize';
 import type { ModuleRoute } from './types';
 
 interface ModuleRouterProps {
@@ -57,7 +58,7 @@ function renderModuleRoute(
     !route.requiredPermissions ||
     route.requiredPermissions.length === 0 ||
     route.requiredPermissions.some((perm) =>
-      activePermissions.some((p) => `${p.resource}.${p.action}` === perm),
+      activePermissions.some((p) => getPermissionKey(p) === perm),
     );
 
   const path = route.path.startsWith('/') ? route.path.slice(1) : route.path;

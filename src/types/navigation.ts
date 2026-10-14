@@ -56,7 +56,7 @@ export function filterNavigation(
   permissions: Permission[],
   roleNames: string[],
 ): FilteredNavigation {
-  const permSet = new Set(permissions.map((p) => `${p.resource}.${p.action}`));
+  const permSet = new Set(permissions.map((p) => p.name));
 
   const passesPermission = (key: string | null): boolean => {
     if (!key) return true;
