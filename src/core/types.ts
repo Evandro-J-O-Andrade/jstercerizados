@@ -8,18 +8,21 @@ export type UUID = string;
 
 /** A permission is a resource.action pair */
 export interface Permission {
-  resource: string;
-  action: string;
-  granted: boolean;
-  scope: 'global' | 'tenant';
+  id: UUID;
+  name: string;
+  module: string;
+  description?: string | null;
+  created_at: string;
 }
 
 /** A role in the system */
 export interface Role {
   id: UUID;
   name: string;
-  scope: 'global' | 'tenant';
-  level: number;
+  is_global: boolean;
+  description?: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 /** A role-to-permission assignment.
@@ -37,7 +40,7 @@ export interface TenantMembership {
   id: UUID;
   tenant_id: UUID;
   person_id: UUID;
-  role_id: UUID;
+  membership_role: string;
   status: 'active' | 'inactive' | 'pending';
   created_at: string;
 }
@@ -58,43 +61,48 @@ export interface AuthUser {
 }
 
 /** Route entry for a cell */
-export interface RouteEntry {
+export interface CellRoute {
   path: string;
-  element: string; // component name or lazy import path
+  label: string;
   requiredPermissions?: string[];
 }
 
-/** Cell contract — what every cell must declare */
+/** Cell contract for the registry */
 export interface CellContract {
   id: string;
   name: string;
-  version: string;
+  routes: CellRoute[];
+  permissions: string[];
   enabled: boolean;
-  routes: RouteEntry[];
-  requiredPermissions: string[];
-  dependencies: string[];
-  tables: string[];
 }
 
-/** Execution context for an operation */
+/** Dispatcher action */
+export interface DispatcherAction {
+  type: string;
+  payload: unknown;
+  metadata?: Record<string, unknown>;
+}
+
+/** Execution context for the dispatcher */
 export interface ExecutionContext {
-  tenantId: UUID;
-  userId: UUID;
-  routeId: string;
-  moduleId: string;
+  personId: UUID;
+  tenantId: UUID | null;
+  roleIds: UUID[];
+  permissions: string[];
+}
+
+/** Audit log entry */
+export interface AuditLogEntry {
+  id: UUID;
+  person_id: UUID;
   action: string;
-  resourceId?: string;
-  correlationId: string;
+  resource: string;
+  resource_id: UUID | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
 }
 
-/** Result of route resolution */
-export interface RouteResolution {
-  matched: boolean;
-  cellId?: string;
-  reason?: string;
-}
-
-/** Identity context — authenticated user + person + tenant */
+/** Identity context for the authenticated session */
 export interface IdentityContext {
   authUser: AuthUser | null;
   person: Person | null;
@@ -105,19 +113,18 @@ export interface IdentityContext {
   isLoading: boolean;
 }
 
-/** Authorization context — effective permissions */
-export interface AuthorizationContext {
-  roles: Role[];
-  effectivePermissions: Permission[];
-  roleAssignments: { role_id: UUID; tenant_id: UUID | null }[];
-  isAdminMaster: boolean;
-}
+/** Error codes for the core */
+export type CoreErrorCode =
+  | 'UNAUTHORIZED'
+  | 'FORBIDDEN'
+  | 'NOT_FOUND'
+  | 'CONFLICT'
+  | 'VALIDATION_ERROR'
+  | 'INTERNAL_ERROR'
+  | 'TENANT_ISOLATION_VIOLATION';
 
-/** Core error with structured fields for observability */
-export interface CoreError {
-  code: string;
-  message: string;
-  correlationId: string;
-  timestamp: string;
-  context?: Record<string, unknown>;
+/** Core result wrapper */
+export interface CoreResult<T> {
+  data: T | null;
+  error: { code: CoreErrorCode; message: string } | null;
 }

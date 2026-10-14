@@ -44,7 +44,7 @@ export interface AccountIdentity {
 export interface AccountContextType {
   identity: AccountIdentity;
   userIdentity: UserIdentity;
-  activeRole: { id: string; name: string; scope: 'global' | 'tenant' } | null;
+  activeRole: { id: string; name: string; is_global: boolean } | null;
   activePermissions: Permission[];
   availableModules: ModuleDefinition[];
   availableFeatures: ModuleFeature[];
@@ -56,7 +56,7 @@ export interface AccountContextType {
   availableMemberships: {
     id: string;
     tenant_id: string;
-    role_id: string;
+    membership_role: string;
     status: string;
   }[];
   switchAccount: (tenantId: string) => Promise<void>;
@@ -156,7 +156,7 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
     return {
       id: identity.role.id,
       name: identity.role.name,
-      scope: identity.role.scope,
+      is_global: identity.role.is_global,
     };
   }, [identity.role]);
 
@@ -169,7 +169,7 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
         personId: identity.id,
         roleName: identity.role?.name || 'Usuário',
         roleLabel: identity.roleLabel,
-        roleScope: identity.role?.scope || 'tenant',
+        roleScope: identity.role?.is_global ? 'global' : 'tenant',
         tenantName: identity.tenant?.name || 'Plataforma',
         tenantLabel: identity.tenantLabel,
         contextLabel: identity.contextLabel,
@@ -190,7 +190,7 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
       availableMemberships: tenantMemberships.map((m) => ({
         id: m.id,
         tenant_id: m.tenant_id,
-        role_id: m.role_id,
+        membership_role: m.membership_role,
         status: m.status,
       })),
       switchAccount: handleSwitchAccount,

@@ -63,8 +63,7 @@ function createPermission(name: string) {
   return {
     id: name,
     name,
-    resource: name.split('.')[0],
-    action: name.split('.')[1],
+    module: name.split('.')[0],
     description: null,
     created_at: new Date().toISOString(),
   };
@@ -83,8 +82,10 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
     const adminRole = {
       id: 'role-admin-master',
       name: 'admin_master',
-      scope: 'global',
+      is_global: true,
       description: 'Administrador global do sistema',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     mockAuthGetSession.mockResolvedValueOnce({
@@ -100,6 +101,8 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
         full_name: 'Evandro',
         email: 'evandro@example.com',
         status: 'active',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       },
       error: null,
     });
@@ -107,7 +110,15 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
     const mockMembershipChain = createChain();
     mockMembershipChain.order.mockResolvedValue({
       data: [
-        { id: 'membership-1', tenant_id: 'tenant-1', person_id: 'person-1' },
+        {
+          id: 'membership-1',
+          tenant_id: 'tenant-1',
+          person_id: 'person-1',
+          membership_role: 'tenant_admin',
+          status: 'active',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
       ],
       error: null,
     });
@@ -120,7 +131,17 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
 
     const mockRoleAssignmentChain = createChain();
     mockRoleAssignmentChain.eq.mockResolvedValue({
-      data: [{ id: 'ra-1', role_id: adminRole.id, person_id: 'person-1' }],
+      data: [
+        {
+          id: 'ra-1',
+          role_id: adminRole.id,
+          person_id: 'person-1',
+          tenant_id: null,
+          assigned_by: null,
+          expires_at: null,
+          created_at: new Date().toISOString(),
+        },
+      ],
       error: null,
     });
 
@@ -163,10 +184,13 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
         {
           id: 'la-1',
           person_id: 'person-1',
+          tenant_id: 'tenant-1',
           document_type: 'terms',
           document_version: '1.0',
           accepted_at: new Date().toISOString(),
-          metadata: null,
+          ip: null,
+          user_agent: null,
+          metadata: {},
         },
       ],
       error: null,

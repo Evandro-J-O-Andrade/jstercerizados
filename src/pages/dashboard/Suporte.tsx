@@ -176,8 +176,6 @@ export default function Suporte() {
           id: 'support_tickets.read',
           name: 'support_tickets.read',
           module: 'support',
-          resource: 'support_tickets',
-          action: 'read',
           created_at: new Date().toISOString(),
         },
       ]}

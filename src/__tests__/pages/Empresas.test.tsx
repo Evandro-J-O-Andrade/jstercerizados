@@ -9,15 +9,19 @@ vi.mock('@/contexts/AuthContext');
 vi.mock('@/repositories/companies.repository');
 
 // IntersectionObserver is not available in jsdom by default — provide a minimal mock
-if (typeof (globalThis as { IntersectionObserver?: unknown }).IntersectionObserver === 'undefined') {
-  (globalThis as { IntersectionObserver: unknown }).IntersectionObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-    takeRecords(): never[] {
-      return [];
-    }
-  };
+if (
+  typeof (globalThis as { IntersectionObserver?: unknown })
+    .IntersectionObserver === 'undefined'
+) {
+  (globalThis as { IntersectionObserver: unknown }).IntersectionObserver =
+    class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+      takeRecords(): never[] {
+        return [];
+      }
+    };
 }
 
 const mockUseAuth = vi.mocked(useAuth);
@@ -31,7 +35,7 @@ interface BaseAuth {
   currentTenantId: string;
   tenants: Array<{ id: string; name: string }>;
   roles: never[];
-  permissions: Array<{ resource: string; action: string }>;
+  permissions: Array<{ name: string }>;
   roleAssignments: never[];
   firstLoginState: null;
   legalAcceptances: never[];
@@ -64,10 +68,10 @@ const baseAuth: BaseAuth = {
   tenants: [{ id: 'tenant-1', name: 'J&S' }],
   roles: [],
   permissions: [
-    { resource: 'companies', action: 'read' },
-    { resource: 'companies', action: 'create' },
-    { resource: 'companies', action: 'update' },
-    { resource: 'companies', action: 'delete' },
+    { name: 'companies.read' },
+    { name: 'companies.create' },
+    { name: 'companies.update' },
+    { name: 'companies.delete' },
   ],
   roleAssignments: [],
   firstLoginState: null,
@@ -126,7 +130,7 @@ describe('Empresas — UI States & Permissions', () => {
     renderEmpresas();
 
     await waitFor(() => {
-      expect(screen.getByText('Nenhuma empresa cadastrada')).toBeInTheDocument();
+      expect(screen.getByText('Nenhuma empresa')).toBeInTheDocument();
     });
   });
 
@@ -186,7 +190,7 @@ describe('Empresas — UI States & Permissions', () => {
     mockCompaniesRepository.findAll.mockResolvedValue([]);
 
     renderEmpresas({
-      permissions: [{ resource: 'companies', action: 'read' }],
+      permissions: [{ name: 'companies.read' }],
       hasAnyPermission: vi.fn(() => false),
     });
 
@@ -213,14 +217,16 @@ describe('Empresas — UI States & Permissions', () => {
     renderEmpresas();
 
     await waitFor(() => {
-      expect(screen.getByText('Nenhuma empresa cadastrada')).toBeInTheDocument();
+      expect(screen.getByText('Nenhuma empresa')).toBeInTheDocument();
     });
 
     const novaButtons = screen.getAllByText('Nova empresa');
     novaButtons[0].click();
 
     await waitFor(() => {
-      expect(screen.getByText('Nova empresa', { selector: 'h3' })).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('Nome da empresa'),
+      ).toBeInTheDocument();
     });
   });
 
@@ -230,7 +236,7 @@ describe('Empresas — UI States & Permissions', () => {
     renderEmpresas();
 
     await waitFor(() => {
-      expect(screen.getByText('Nenhuma empresa cadastrada')).toBeInTheDocument();
+      expect(screen.getByText('Nenhuma empresa')).toBeInTheDocument();
     });
 
     const novaButtons = screen.getAllByText('Nova empresa');

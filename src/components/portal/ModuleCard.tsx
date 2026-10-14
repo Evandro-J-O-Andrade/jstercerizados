@@ -3,6 +3,7 @@ import { Home } from 'lucide-react';
 import { cn } from '@/utils';
 import type { ModuleDefinition } from './ModuleRegistry';
 import type { Permission } from '@/types/auth';
+import { getPermissionKey } from '@/utils/rbac-normalize';
 import { ICON_MAP } from './PortalSidebar';
 import { Card } from '@/components/ui/Card';
 
@@ -55,7 +56,7 @@ export function ModuleCard(props: ModuleCardProps) {
       !module.requiredPermissions || module.requiredPermissions.length === 0
         ? false
         : !module.requiredPermissions.some((perm) =>
-            permissions.some((p) => `${p.resource}.${p.action}` === perm),
+            permissions.some((p) => getPermissionKey(p) === perm),
           );
     route = module.route;
     title = module.title;

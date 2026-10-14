@@ -10,7 +10,7 @@ import {
 import { getSupabaseClient } from '@/lib/supabase';
 import type { User, Session } from '@supabase/supabase-js';
 import { normalizeError } from '@/lib/error-normalizer';
-import { normalizePermissions } from '@/utils/rbac-normalize';
+import { normalizePermission } from '@/utils/rbac-normalize';
 import { isTurnstileEnabled } from '@/utils/turnstile-config';
 import type {
   Person,
@@ -127,15 +127,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const initialSessionProcessedRef = useRef(false);
   const isMountedRef = useRef(true);
   const authLoadInFlightRef = useRef(false);
+  const loadOperationIdRef = useRef(0);
 
   const loadAuthData = useCallback(async (authUserId?: string) => {
+    const currentOperationId = ++loadOperationIdRef.current;
+
     try {
       const supabase = getSupabaseClient();
       if (!supabase || !isMountedRef.current) {
         return;
       }
 
-      console.log('[AUTH:IDENTITY] loadAuthData start', authUserId);
+      console.log('[AUTH:IDENTITY] loadAuthData start', {
+        authUserId,
+        operationId: currentOperationId,
+      });
 
       const { data: personData, error: personError } = await supabase
         .from('people')
@@ -185,6 +191,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         count: tenantsData.length,
       });
 
+      // Fetch all role_assignments, then filter by tenant and expiration
       const { data: roleAssignmentData, error: roleAssignmentError } =
         await supabase
           .from('role_assignments')
@@ -203,9 +210,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
       }
 
+      // Filter assignments: valid globals (tenant_id IS NULL + role.is_global) + valid current tenant
+      const now = new Date().toISOString();
+      const currentTenantIdForFilter = primaryTenantId;
+
+      const validAssignments = (roleAssignmentData || []).filter(
+        (ra: RoleAssignment) => {
+          // Check expiration
+          if (ra.expires_at && ra.expires_at < now) {
+            return false; // expired
+          }
+          // Global role assignment (tenant_id IS NULL)
+          if (ra.tenant_id === null) {
+            return true; // Will validate role.is_global when roles are loaded
+          }
+          // Tenant-scoped assignment for current tenant
+          if (ra.tenant_id === currentTenantIdForFilter) {
+            return true;
+          }
+          // Assignment for another tenant — EXCLUDE
+          return false;
+        },
+      );
+
       const roleIds = Array.from(
         new Set(
-          (roleAssignmentData || [])
+          validAssignments
             .map((ra: RoleAssignment) => ra.role_id)
             .filter(Boolean),
         ),
@@ -218,25 +248,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select('*')
         .in('id', roleIds);
 
-      const adminMaster = (rolesData || []).some(
-        (r: Role) => r.scope === 'global' && r.name === 'admin_master',
+      // Separate global and tenant roles
+      const globalRoles = (rolesData || []).filter(
+        (r: Role) => r.is_global === true,
+      );
+      const tenantRoles = (rolesData || []).filter(
+        (r: Role) => r.is_global === false,
+      );
+
+      // Validate global assignments: only keep those where role.is_global=true
+      const globalRoleIds = new Set(globalRoles.map((r) => r.id));
+      const validGlobalAssignments = validAssignments.filter(
+        (ra) => ra.tenant_id === null && globalRoleIds.has(ra.role_id),
+      );
+
+      // Validate tenant assignments: only keep those where role.is_global=false and tenant matches
+      const tenantRoleIds = new Set(tenantRoles.map((r) => r.id));
+      const validTenantAssignments = validAssignments.filter(
+        (ra) =>
+          ra.tenant_id === currentTenantIdForFilter &&
+          tenantRoleIds.has(ra.role_id),
+      );
+
+      // Combine validated role IDs
+      const validatedRoleIds = Array.from(
+        new Set([
+          ...validGlobalAssignments.map((ra) => ra.role_id),
+          ...validTenantAssignments.map((ra) => ra.role_id),
+        ]),
+      ).filter((id): id is string => Boolean(id));
+
+      // Re-filter rolesData to only validated roles
+      const validatedRoles = (rolesData || []).filter((r) =>
+        validatedRoleIds.includes(r.id),
+      );
+
+      const adminMaster = validatedRoles.some(
+        (r: Role) => r.is_global === true && r.name === 'admin_master',
       );
 
       console.log('[AUTH:IDENTITY] roles loaded', {
-        count: (rolesData || []).length,
-        names: (rolesData || []).map((r: Role) => r.name),
+        count: validatedRoles.length,
+        names: validatedRoles.map((r: Role) => r.name),
       });
 
-      let isCandidate = (rolesData || []).some(
+      let isCandidate = validatedRoles.some(
         (r: Role) => r.name === 'candidato',
       );
 
-      const isEmpresa = (rolesData || []).some(
+      const isEmpresa = validatedRoles.some(
         (r: Role) => r.name === 'company_representative',
       );
 
-      // Fallback: if role_assignments query failed (e.g., due to is_admin_master()
-      // function crash on schema drift), check candidates table directly
+      // Fallback: if role_assignments query failed, check candidates table directly
       if (roleAssignmentError && !isCandidate) {
         console.log(
           '[AUTH:IDENTITY] role_assignments query failed, using fallback for candidate detection',
@@ -260,11 +324,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       let permissionsData: Permission[] = [];
-      if (roleIds.length > 0) {
+      if (validatedRoleIds.length > 0) {
         const { data: rolePerms } = await supabase
           .from('role_permissions')
           .select('permission_id')
-          .in('role_id', roleIds);
+          .in('role_id', validatedRoleIds);
 
         const permissionIds = Array.from(
           new Set(
@@ -280,7 +344,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .select('*')
             .in('id', permissionIds);
 
-          const normalizedPermissions = normalizePermissions(perms || []);
+          const normalizedPermissions = (perms || [])
+            .map(normalizePermission)
+            .filter((p): p is Permission => p !== null);
 
           permissionsData = normalizedPermissions;
         }
@@ -321,14 +387,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('person_id', personData.id)
         .order('accepted_at', { ascending: false });
 
+      // Check if this operation is still current before updating state
+      if (
+        !isMountedRef.current ||
+        currentOperationId !== loadOperationIdRef.current
+      ) {
+        console.log('[AUTH:IDENTITY] Stale operation discarded', {
+          operationId: currentOperationId,
+        });
+        return;
+      }
+
       if (isMountedRef.current) {
         setPerson(personData as Person);
         setTenantMemberships((membershipData || []) as TenantMembership[]);
         setCurrentTenantId(primaryTenantId);
         setTenants(tenantsData);
-        setRoles((rolesData || []) as Role[]);
+        setRoles(validatedRoles as Role[]);
         setPermissions(permissionsData);
-        setRoleAssignments((roleAssignmentData || []) as RoleAssignment[]);
+        // Store only the validated assignments for audit
+        setRoleAssignments([
+          ...validGlobalAssignments,
+          ...validTenantAssignments,
+        ] as RoleAssignment[]);
         setFirstLoginState((firstLoginData as FirstLoginState) || null);
         setLegalAcceptances((legalAcceptancesData || []) as LegalAcceptance[]);
         setIsAdminMaster(adminMaster);
@@ -341,10 +422,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         primaryTenantId,
         isCandidate,
         permissionCount: permissionsData.length,
+        operationId: currentOperationId,
       });
     } catch (error) {
-      console.error('[AUTH:IDENTITY] loadAuthData failed', error);
-      if (isMountedRef.current) {
+      // Only update error state if this operation is still current
+      if (
+        isMountedRef.current &&
+        currentOperationId === loadOperationIdRef.current
+      ) {
+        console.error('[AUTH:IDENTITY] loadAuthData failed', error);
         setPerson(null);
         setTenantMemberships([]);
         setCurrentTenantId(null);
@@ -1060,9 +1146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const hasPermission = useCallback(
     (permissionKey: string): boolean => {
-      return permissions.some(
-        (p) => `${p.resource}.${p.action}` === permissionKey,
-      );
+      return permissions.some((p) => p.name === permissionKey);
     },
     [permissions],
   );
@@ -1116,8 +1200,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
+      // CRITICAL: Clear protected state BEFORE starting new load
+      // This prevents stale permissions from being exposed during async load
+      setPermissions([]);
+      setRoles([]);
+      setRoleAssignments([]);
+      setIsAdminMaster(false);
+      setIsCandidate(false);
+      setIsEmpresa(false);
+
       setCurrentTenantId(tenantId);
-      await loadAuthData(user.id);
+
+      try {
+        await loadAuthData(user.id);
+      } catch (error) {
+        // On failure, ensure protected state stays cleared
+        // Identity state (person, memberships) preserved for error handling
+        setPermissions([]);
+        setRoles([]);
+        setRoleAssignments([]);
+        setIsAdminMaster(false);
+        setIsCandidate(false);
+        setIsEmpresa(false);
+        throw error;
+      }
     },
     [user, person, loadAuthData],
   );
@@ -1257,7 +1363,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             phone: profileData.phone ?? '',
             ...(profileData.signupContext && {
               signup_context: profileData.signupContext,
-              signup_origin: profileData.signupContext === 'empresa' ? 'company_signup' : 'self_signup',
+              signup_origin:
+                profileData.signupContext === 'empresa'
+                  ? 'company_signup'
+                  : 'self_signup',
             }),
             ...(profileData.companyName && {
               company_name: profileData.companyName,

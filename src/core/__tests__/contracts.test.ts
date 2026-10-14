@@ -1,15 +1,15 @@
 /**
  * Core contracts test suite — isolated unit tests for each contract.
  * These tests verify contract behavior WITHOUT integrating into the app.
- * Source: c8ce3ee (agent baseline checkpoint)
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   computeEffectivePermissions,
   decidePermission,
   hasAnyPermission,
   hasAllPermissions,
+  getPermissionScope,
 } from '../authorization/AuthorizationContract';
 import {
   validateTenantContext,
@@ -27,10 +27,7 @@ import {
   buildIdentityContext,
   canExecuteBusinessOperation,
 } from '../identity/IdentityContract';
-import {
-  CellRegistry,
-  cellRegistry,
-} from '../registry/CellRegistryContract';
+import { CellRegistry, cellRegistry } from '../registry/CellRegistryContract';
 import type {
   Permission,
   Role,
@@ -44,8 +41,22 @@ import type {
 
 describe('AuthorizationContract', () => {
   const mockRoles: Role[] = [
-    { id: 'role-1', name: 'admin', scope: 'tenant', level: 10 },
-    { id: 'role-2', name: 'viewer', scope: 'tenant', level: 1 },
+    {
+      id: 'role-1',
+      name: 'admin',
+      is_global: false,
+      description: null,
+      created_at: '',
+      updated_at: '',
+    },
+    {
+      id: 'role-2',
+      name: 'viewer',
+      is_global: false,
+      description: null,
+      created_at: '',
+      updated_at: '',
+    },
   ];
 
   const mockRolePermissions: RolePermission[] = [
@@ -55,8 +66,20 @@ describe('AuthorizationContract', () => {
   ];
 
   const mockPermissions: Permission[] = [
-    { resource: 'jobs', action: 'read', granted: true, scope: 'tenant' },
-    { resource: 'jobs', action: 'write', granted: true, scope: 'tenant' },
+    {
+      id: 'jobs.read',
+      name: 'jobs.read',
+      module: 'jobs',
+      description: null,
+      created_at: '',
+    },
+    {
+      id: 'jobs.write',
+      name: 'jobs.write',
+      module: 'jobs',
+      description: null,
+      created_at: '',
+    },
   ];
 
   it('computes effective permissions from role chain', () => {
@@ -67,8 +90,8 @@ describe('AuthorizationContract', () => {
       false,
     );
     expect(effective).toHaveLength(2);
-    expect(effective.find((p) => p.resource === 'jobs' && p.action === 'read')).toBeDefined();
-    expect(effective.find((p) => p.resource === 'jobs' && p.action === 'write')).toBeDefined();
+    expect(effective.find((p) => p.name === 'jobs.read')).toBeDefined();
+    expect(effective.find((p) => p.name === 'jobs.write')).toBeDefined();
   });
 
   it('does not duplicate permissions', () => {
@@ -92,7 +115,13 @@ describe('AuthorizationContract', () => {
       mockPermissions,
       false,
     );
-    const decision = decidePermission(effective, 'jobs', 'read');
+    const decision = decidePermission(
+      effective,
+      'jobs.read',
+      mockRoles,
+      mockRolePermissions,
+      mockPermissions,
+    );
     expect(decision.granted).toBe(true);
   });
 
@@ -103,7 +132,13 @@ describe('AuthorizationContract', () => {
       mockPermissions,
       false,
     );
-    const decision = decidePermission(effective, 'jobs', 'delete');
+    const decision = decidePermission(
+      effective,
+      'jobs.delete',
+      mockRoles,
+      mockRolePermissions,
+      mockPermissions,
+    );
     expect(decision.granted).toBe(false);
     expect(decision.reason).toContain('not granted');
   });
@@ -115,7 +150,9 @@ describe('AuthorizationContract', () => {
       mockPermissions,
       false,
     );
-    expect(hasAnyPermission(effective, ['jobs.read', 'jobs.delete'])).toBe(true);
+    expect(hasAnyPermission(effective, ['jobs.read', 'jobs.delete'])).toBe(
+      true,
+    );
   });
 
   it('hasAnyPermission returns false if none granted', () => {
@@ -125,7 +162,9 @@ describe('AuthorizationContract', () => {
       mockPermissions,
       false,
     );
-    expect(hasAnyPermission(effective, ['jobs.delete', 'users.write'])).toBe(false);
+    expect(hasAnyPermission(effective, ['jobs.delete', 'users.write'])).toBe(
+      false,
+    );
   });
 
   it('hasAllPermissions returns true only if all granted', () => {
@@ -135,8 +174,12 @@ describe('AuthorizationContract', () => {
       mockPermissions,
       false,
     );
-    expect(hasAllPermissions(effective, ['jobs.read', 'jobs.write'])).toBe(true);
-    expect(hasAllPermissions(effective, ['jobs.read', 'jobs.delete'])).toBe(false);
+    expect(hasAllPermissions(effective, ['jobs.read', 'jobs.write'])).toBe(
+      true,
+    );
+    expect(hasAllPermissions(effective, ['jobs.read', 'jobs.delete'])).toBe(
+      false,
+    );
   });
 
   it('empty required permissions returns true (no restrictions)', () => {
@@ -148,6 +191,48 @@ describe('AuthorizationContract', () => {
     );
     expect(hasAnyPermission(effective, [])).toBe(true);
     expect(hasAllPermissions(effective, [])).toBe(true);
+  });
+
+  it('getPermissionScope returns correct scope for global role', () => {
+    const globalRoles: Role[] = [
+      {
+        id: 'role-global',
+        name: 'admin_master',
+        is_global: true,
+        description: null,
+        created_at: '',
+        updated_at: '',
+      },
+    ];
+    const globalRolePermissions: RolePermission[] = [
+      { role_id: 'role-global', permission_id: 'global.perm' },
+    ];
+    const globalPermissions: Permission[] = [
+      {
+        id: 'global.perm',
+        name: 'global.perm',
+        module: 'global',
+        description: null,
+        created_at: '',
+      },
+    ];
+    const scope = getPermissionScope(
+      'global.perm',
+      globalRoles,
+      globalRolePermissions,
+      globalPermissions,
+    );
+    expect(scope).toBe('global');
+  });
+
+  it('getPermissionScope returns correct scope for tenant role', () => {
+    const scope = getPermissionScope(
+      'jobs.read',
+      mockRoles,
+      mockRolePermissions,
+      mockPermissions,
+    );
+    expect(scope).toBe('tenant');
   });
 });
 
@@ -165,7 +250,7 @@ describe('TenantContract', () => {
       id: 'm-1',
       tenant_id: 'tenant-a',
       person_id: 'person-1',
-      role_id: 'role-1',
+      membership_role: 'tenant_admin',
       status: 'active',
       created_at: '2024-01-01T00:00:00Z',
     },
@@ -173,26 +258,38 @@ describe('TenantContract', () => {
       id: 'm-2',
       tenant_id: 'tenant-b',
       person_id: 'person-1',
-      role_id: 'role-2',
+      membership_role: 'viewer',
       status: 'inactive',
       created_at: '2024-01-01T00:00:00Z',
     },
   ];
 
   it('validates active tenant membership', () => {
-    const result = validateTenantContext(mockPerson, mockMemberships, 'tenant-a');
+    const result = validateTenantContext(
+      mockPerson,
+      mockMemberships,
+      'tenant-a',
+    );
     expect(result.isValid).toBe(true);
     expect(result.membership?.tenant_id).toBe('tenant-a');
   });
 
   it('rejects inactive tenant membership', () => {
-    const result = validateTenantContext(mockPerson, mockMemberships, 'tenant-b');
+    const result = validateTenantContext(
+      mockPerson,
+      mockMemberships,
+      'tenant-b',
+    );
     expect(result.isValid).toBe(false);
     expect(result.reason).toContain('not an active membership');
   });
 
   it('rejects unknown tenant', () => {
-    const result = validateTenantContext(mockPerson, mockMemberships, 'tenant-c');
+    const result = validateTenantContext(
+      mockPerson,
+      mockMemberships,
+      'tenant-c',
+    );
     expect(result.isValid).toBe(false);
   });
 
@@ -209,15 +306,21 @@ describe('TenantContract', () => {
   });
 
   it('assertTenantMatch throws on mismatch', () => {
-    expect(() => assertTenantMatch('tenant-a', 'tenant-b')).toThrow('Tenant mismatch');
+    expect(() => assertTenantMatch('tenant-a', 'tenant-b')).toThrow(
+      'Tenant mismatch',
+    );
   });
 
   it('assertTenantMatch throws on missing context', () => {
-    expect(() => assertTenantMatch(null, 'tenant-a')).toThrow('No tenant context');
+    expect(() => assertTenantMatch(null, 'tenant-a')).toThrow(
+      'No tenant context',
+    );
   });
 
   it('assertTenantMatch throws on missing request', () => {
-    expect(() => assertTenantMatch('tenant-a', null)).toThrow('No tenantId in request');
+    expect(() => assertTenantMatch('tenant-a', null)).toThrow(
+      'No tenantId in request',
+    );
   });
 });
 
@@ -225,11 +328,9 @@ describe('ExecutionContract', () => {
   it('validates complete context', () => {
     const ctx = {
       tenantId: 't-1',
-      userId: 'u-1',
-      routeId: 'route-1',
-      moduleId: 'mod-1',
-      action: 'read',
-      correlationId: 'corr-1',
+      personId: 'p-1',
+      roleIds: ['r-1'],
+      permissions: ['perm.read'],
     };
     const result = validateExecutionContext(ctx);
     expect(result.valid).toBe(true);
@@ -250,15 +351,18 @@ describe('ExecutionContract', () => {
     expect(id1).toMatch(/^corr_[a-z0-9]+_[a-z0-9]+$/);
   });
 
-  it('builds execution context with correlation ID', () => {
-    const ctx = buildExecutionContext('t-1', 'u-1', 'route-1', 'mod-1', 'read', 'res-1');
+  it('builds execution context', () => {
+    const ctx = buildExecutionContext('t-1', 'p-1', ['r-1'], ['perm.read']);
     expect(ctx.tenantId).toBe('t-1');
-    expect(ctx.userId).toBe('u-1');
-    expect(ctx.correlationId).toMatch(/^corr_/);
+    expect(ctx.personId).toBe('p-1');
+    expect(ctx.roleIds).toEqual(['r-1']);
+    expect(ctx.permissions).toEqual(['perm.read']);
   });
 
   it('assertValidContext throws on invalid', () => {
-    expect(() => assertValidContext({ tenantId: 't-1' })).toThrow('Invalid execution context');
+    expect(() => assertValidContext({ tenantId: 't-1' })).toThrow(
+      'Invalid execution context',
+    );
   });
 });
 
@@ -277,7 +381,7 @@ describe('IdentityContract', () => {
       id: 'm-1',
       tenant_id: 'tenant-a',
       person_id: 'person-1',
-      role_id: 'role-1',
+      membership_role: 'tenant_admin',
       status: 'active',
       created_at: '2024-01-01T00:00:00Z',
     },
@@ -314,7 +418,9 @@ describe('IdentityContract', () => {
   });
 
   it('resolveActiveTenant rejects inactive tenant', () => {
-    const inactive: TenantMembership[] = [{ ...mockMemberships[0], status: 'inactive' }];
+    const inactive: TenantMembership[] = [
+      { ...mockMemberships[0], status: 'inactive' },
+    ];
     const result = resolveActiveTenant(inactive, 'tenant-a');
     expect(result.tenantId).toBeNull();
   });
@@ -325,7 +431,12 @@ describe('IdentityContract', () => {
   });
 
   it('buildIdentityContext constructs full context', () => {
-    const identity = buildIdentityContext(mockAuthUser, mockPerson, mockMemberships, 'tenant-a');
+    const identity = buildIdentityContext(
+      mockAuthUser,
+      mockPerson,
+      mockMemberships,
+      'tenant-a',
+    );
     expect(identity.authUser).toEqual(mockAuthUser);
     expect(identity.person).toEqual(mockPerson);
     expect(identity.currentTenantId).toBe('tenant-a');
@@ -390,12 +501,15 @@ describe('CellRegistryContract', () => {
   const mockCell = {
     id: 'financeiro/contas-pagar',
     name: 'Contas a Pagar',
-    version: '1.0.0',
+    routes: [
+      {
+        path: '/financeiro/contas-pagar',
+        label: 'Contas a Pagar',
+        requiredPermissions: ['financeiro.contas-pagar.read'],
+      },
+    ],
+    permissions: ['financeiro.contas-pagar.read'],
     enabled: true,
-    routes: [{ path: '/financeiro/contas-pagar', element: 'ContasPagar' }],
-    requiredPermissions: ['financeiro.contas-pagar.read'],
-    dependencies: ['financeiro/bancos'],
-    tables: ['accounts_payable'],
   };
 
   let registry: CellRegistry;
@@ -428,7 +542,11 @@ describe('CellRegistryContract', () => {
   });
 
   it('returns only enabled cells', () => {
-    const disabledCell = { ...mockCell, id: 'financeiro/bancos', enabled: false };
+    const disabledCell = {
+      ...mockCell,
+      id: 'financeiro/bancos',
+      enabled: false,
+    };
     registry.register(mockCell);
     registry.register(disabledCell);
     expect(registry.getEnabled()).toHaveLength(1);
@@ -436,7 +554,11 @@ describe('CellRegistryContract', () => {
 
   it('filters by module prefix', () => {
     registry.register(mockCell);
-    registry.register({ ...mockCell, id: 'financeiro/centros-custo', name: 'Centros' });
+    registry.register({
+      ...mockCell,
+      id: 'financeiro/centros-custo',
+      name: 'Centros',
+    });
     registry.register({ ...mockCell, id: 'recrutamento/vagas', name: 'Vagas' });
     expect(registry.getByModule('financeiro')).toHaveLength(2);
   });

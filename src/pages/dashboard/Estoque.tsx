@@ -113,8 +113,6 @@ export default function Estoque() {
           id: 'products.read',
           name: 'products.read',
           module: 'stock',
-          resource: 'products',
-          action: 'read',
           created_at: new Date().toISOString(),
         },
       ]}

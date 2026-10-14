@@ -31,6 +31,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
 import { useModuleContext } from '@/contexts/ModuleContext';
 import { formatRoleLabel } from '@/contexts/UserIdentity';
+import { getPermissionKey } from '@/utils/rbac-normalize';
 import {
   type ModuleFeature,
   getAvailableModuleFeatures,
@@ -135,7 +136,7 @@ export function PortalSidebar({
       )
         return true;
       return feature.requiredPermissions.some((p) =>
-        permissions.some((perm) => `${perm.resource}.${perm.action}` === p),
+        permissions.some((perm) => getPermissionKey(perm) === p),
       );
     };
 
@@ -577,7 +578,9 @@ export function PortalSidebar({
                 </p>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {availableMemberships.map((membership) => {
-                    const role = roles.find((r) => r.id === membership.role_id);
+                    const role = roles.find(
+                      (r) => r.id === membership.membership_role,
+                    );
                     const roleName = formatRoleLabel(role?.name || 'Usuário');
                     const isActive = membership.tenant_id === activeTenantId;
                     return (

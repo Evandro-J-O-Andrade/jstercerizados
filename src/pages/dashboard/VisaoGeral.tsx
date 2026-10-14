@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import { jobsRepository } from '@/modules/recrutamento/repositories/jobs.repository';
 import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
 import { companiesRepository } from '@/repositories/companies.repository';
+import { getPermissionKey } from '@/utils/rbac-normalize';
 import type { JobListItem, Candidate } from '@/modules/recrutamento/types';
 import type { Company } from '@/types/domain/company';
 
@@ -186,7 +187,7 @@ export default function VisaoGeral() {
         (action) =>
           isAdminMaster ||
           activePermissions.some(
-            (item) => `${item.resource}.${item.action}` === action.permission,
+            (item) => getPermissionKey(item) === action.permission,
           ),
       ),
     [activePermissions, isAdminMaster],

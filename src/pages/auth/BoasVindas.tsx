@@ -28,7 +28,7 @@ type AreaInfo = {
 };
 
 function getAreaInfo(
-  roles: { name: string; scope: string }[],
+  roles: { name: string; is_global: boolean }[],
   isAdminMaster: boolean,
 ): AreaInfo {
   if (isAdminMaster) {

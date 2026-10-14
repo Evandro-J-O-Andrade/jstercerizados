@@ -14,15 +14,17 @@ export interface ValidationResult {
  * Validates that all required fields are present.
  * This is STRUCTURAL validation — it does NOT check permissions.
  */
-export function validateExecutionContext(context: Partial<ExecutionContext>): ValidationResult {
+export function validateExecutionContext(
+  context: Partial<ExecutionContext>,
+): ValidationResult {
   const errors: string[] = [];
 
   if (!context.tenantId) errors.push('Missing tenantId');
-  if (!context.userId) errors.push('Missing userId');
-  if (!context.routeId) errors.push('Missing routeId');
-  if (!context.moduleId) errors.push('Missing moduleId');
-  if (!context.action) errors.push('Missing action');
-  if (!context.correlationId) errors.push('Missing correlationId');
+  if (!context.personId) errors.push('Missing personId');
+  if (!context.roleIds || context.roleIds.length === 0)
+    errors.push('Missing roleIds');
+  if (!context.permissions || context.permissions.length === 0)
+    errors.push('Missing permissions');
 
   return { valid: errors.length === 0, errors };
 }
@@ -38,24 +40,19 @@ export function generateCorrelationId(): string {
 
 /**
  * Builds an ExecutionContext from validated inputs.
- * The caller is responsible for ensuring tenantId and userId are authorized.
+ * The caller is responsible for ensuring tenantId and personId are authorized.
  */
 export function buildExecutionContext(
-  tenantId: UUID,
-  userId: UUID,
-  routeId: string,
-  moduleId: string,
-  action: string,
-  resourceId?: string,
+  tenantId: UUID | null,
+  personId: UUID,
+  roleIds: UUID[],
+  permissions: string[],
 ): ExecutionContext {
   return {
     tenantId,
-    userId,
-    routeId,
-    moduleId,
-    action,
-    resourceId,
-    correlationId: generateCorrelationId(),
+    personId,
+    roleIds,
+    permissions,
   };
 }
 

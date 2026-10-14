@@ -22,7 +22,7 @@ export default function RolesPermissoesPage() {
   const [roleForm, setRoleForm] = useState({
     name: '',
     description: '',
-    scope: 'tenant' as 'global' | 'tenant',
+    is_global: false,
   });
   const [permissionForm, setPermissionForm] = useState({
     resource: '',
@@ -84,7 +84,7 @@ export default function RolesPermissoesPage() {
 
   const openRoleCreate = () => {
     setSelectedRole(null);
-    setRoleForm({ name: '', description: '', scope: 'tenant' });
+    setRoleForm({ name: '', description: '', is_global: false });
   };
 
   const openRoleEdit = (role: Role) => {
@@ -92,7 +92,7 @@ export default function RolesPermissoesPage() {
     setRoleForm({
       name: role.name,
       description: role.description || '',
-      scope: role.scope,
+      is_global: role.is_global,
     });
   };
 
@@ -105,7 +105,7 @@ export default function RolesPermissoesPage() {
           {
             name: roleForm.name,
             description: roleForm.description || null,
-            scope: roleForm.scope,
+            is_global: roleForm.is_global,
           },
           '',
         );
@@ -117,14 +117,14 @@ export default function RolesPermissoesPage() {
           {
             name: roleForm.name,
             description: roleForm.description || null,
-            scope: roleForm.scope,
+            is_global: roleForm.is_global,
           },
           '',
         );
         setRoles((prev) => [...prev, created]);
       }
       setSelectedRole(null);
-      setRoleForm({ name: '', description: '', scope: 'tenant' });
+      setRoleForm({ name: '', description: '', is_global: false });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao salvar role');
     }
@@ -223,7 +223,7 @@ export default function RolesPermissoesPage() {
                       {role.name}
                     </p>
                     <p className="text-muted-foreground text-xs">
-                      {role.scope}
+                      {role.is_global ? 'Global' : 'Tenant'}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -234,13 +234,13 @@ export default function RolesPermissoesPage() {
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
-                     <button
-                       type="button"
-                       onClick={() => setDeleteConfirm(role.id)}
-                       className="text-destructive hover:text-destructive/80"
-                     >
-                       <Trash2 className="h-4 w-4" />
-                     </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteConfirm(role.id)}
+                      className="text-destructive hover:text-destructive/80"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -273,16 +273,16 @@ export default function RolesPermissoesPage() {
                   </label>
                   <select
                     className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={roleForm.scope}
+                    value={roleForm.is_global ? 'global' : 'tenant'}
                     onChange={(e) =>
                       setRoleForm({
                         ...roleForm,
-                        scope: e.target.value as 'global' | 'tenant',
+                        is_global: e.target.value === 'global',
                       })
                     }
                   >
-                    <option value="tenant">tenant</option>
-                    <option value="global">global</option>
+                    <option value="tenant">Tenant</option>
+                    <option value="global">Global</option>
                   </select>
                 </div>
                 <div className="sm:col-span-2">
@@ -312,7 +312,7 @@ export default function RolesPermissoesPage() {
                       setRoleForm({
                         name: '',
                         description: '',
-                        scope: 'tenant',
+                        is_global: false,
                       });
                     }}
                   >
@@ -442,4 +442,3 @@ export default function RolesPermissoesPage() {
     </ModuleWorkspace>
   );
 }
-

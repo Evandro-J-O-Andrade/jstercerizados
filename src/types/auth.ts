@@ -14,7 +14,7 @@ export interface TenantMembership {
   id: string;
   person_id: string;
   tenant_id: string;
-  role_id: string;
+  membership_role: string;
   status: 'active' | 'inactive' | 'pending';
   invited_by?: string | null;
   joined_at?: string | null;
@@ -27,7 +27,7 @@ export interface Role {
   id: string;
   name: string;
   description?: string | null;
-  scope: 'global' | 'tenant';
+  is_global: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -56,8 +56,6 @@ export interface Permission {
   id: string;
   name: string;
   module: string;
-  resource: string;
-  action: string;
   description?: string | null;
   created_at: string;
 }

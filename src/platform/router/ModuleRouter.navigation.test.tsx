@@ -43,7 +43,7 @@ function LocationDisplay() {
 describe('ModuleRouter navigation', () => {
   it('renders the candidate root dashboard without the generic empty prompt', () => {
     mocks.useAccount.mockReturnValue({
-      activePermissions: [{ resource: 'candidates.self', action: 'read' }],
+      activePermissions: [{ name: 'candidates.self.read' }],
       effectiveScopes: 'tenant',
     });
 
@@ -84,10 +84,7 @@ describe('ModuleRouter navigation', () => {
 
   it('changes module feature routes without a document reload', () => {
     mocks.useAccount.mockReturnValue({
-      activePermissions: [
-        { resource: 'jobs', action: 'read' },
-        { resource: 'candidates', action: 'read' },
-      ],
+      activePermissions: [{ name: 'jobs.read' }, { name: 'candidates.read' }],
       effectiveScopes: 'tenant',
     });
 
@@ -117,10 +114,7 @@ describe('ModuleRouter navigation', () => {
 
   it('contains a page render failure inside its module boundary', () => {
     mocks.useAccount.mockReturnValue({
-      activePermissions: [
-        { resource: 'jobs', action: 'read' },
-        { resource: 'candidates', action: 'read' },
-      ],
+      activePermissions: [{ name: 'jobs.read' }, { name: 'candidates.read' }],
       effectiveScopes: 'tenant',
     });
 

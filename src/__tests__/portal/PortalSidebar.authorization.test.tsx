@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { PORTAL_MODULES } from '@/components/portal/ModuleRegistry';
 
 const mockPermissionsRef = {
-  current: [] as Array<{ resource: string; action: string }>,
+  current: [] as Array<{ name: string }>,
 };
 const mockIsAdminMasterRef = { current: true };
 const mockIdentityRef = {
@@ -26,7 +26,7 @@ const mockIdentityRef = {
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({
     person: { id: 'p1', full_name: 'Maria Souza', email: 'm@x.com' },
-    roles: [{ id: 'r1', name: 'admin_master', scope: 'global' }],
+    roles: [{ id: 'r1', name: 'admin_master', is_global: true }],
     get permissions() {
       return mockPermissionsRef.current;
     },
@@ -35,22 +35,14 @@ vi.mock('@/contexts/AuthContext', () => ({
     },
     logout: vi.fn(),
     hasPermission: vi.fn((perm: string) =>
-      mockPermissionsRef.current.some(
-        (p) => `${p.resource}.${p.action}` === perm,
-      ),
+      mockPermissionsRef.current.some((p) => p.name === perm),
     ),
     hasAnyPermission: vi.fn((perms: string[]) =>
-      perms.some((p) =>
-        mockPermissionsRef.current.some(
-          (mp) => `${mp.resource}.${mp.action}` === p,
-        ),
-      ),
+      perms.some((p) => mockPermissionsRef.current.some((mp) => mp.name === p)),
     ),
     hasAllPermissions: vi.fn((perms: string[]) =>
       perms.every((p) =>
-        mockPermissionsRef.current.some(
-          (mp) => `${mp.resource}.${mp.action}` === p,
-        ),
+        mockPermissionsRef.current.some((mp) => mp.name === p),
       ),
     ),
   }),
@@ -65,8 +57,7 @@ vi.mock('@/contexts/AccountContext', () => ({
       return {
         id: 'r1',
         name: mockIsAdminMasterRef.current ? 'admin_master' : 'tenant_admin',
-        scope: (mockIsAdminMasterRef.current ? 'global' : 'tenant') as
-          'global' | 'tenant',
+        is_global: mockIsAdminMasterRef.current,
       };
     },
     get activeTenantId() {
@@ -74,7 +65,12 @@ vi.mock('@/contexts/AccountContext', () => ({
     },
     get availableMemberships() {
       return [
-        { id: 'm1', tenant_id: 'tenant-1', role_id: 'r1', status: 'active' },
+        {
+          id: 'm1',
+          tenant_id: 'tenant-1',
+          membership_role: 'r1',
+          status: 'active',
+        },
       ];
     },
     get availableModules() {
@@ -148,7 +144,7 @@ import { ModuleProvider } from '@/contexts/ModuleContext';
 function renderSidebar(
   path: string = '/dashboard',
   overrides: Partial<{
-    permissions: Array<{ resource: string; action: string }>;
+    permissions: Array<{ name: string }>;
     isAdminMaster: boolean;
   }> = {},
 ) {
@@ -185,10 +181,7 @@ describe('PortalSidebar - Authorization Tests', () => {
   describe('Teste 1: Usuário autorizado entra em módulo', () => {
     it('deve mostrar módulo ativo, sidebar visível e links autorizados', () => {
       renderSidebar('/dashboard/crm', {
-        permissions: [
-          { resource: 'companies', action: 'read' },
-          { resource: 'companies', action: 'create' },
-        ],
+        permissions: [{ name: 'companies.read' }, { name: 'companies.create' }],
         isAdminMaster: false,
       });
 
@@ -210,7 +203,7 @@ describe('PortalSidebar - Authorization Tests', () => {
   describe('Teste 3: Usuário autorizado possui somente algumas features', () => {
     it('deve mostrar apenas as features permitidas', () => {
       renderSidebar('/dashboard/crm', {
-        permissions: [{ resource: 'companies', action: 'read' }],
+        permissions: [{ name: 'companies.read' }],
         isAdminMaster: false,
       });
 
@@ -226,7 +219,7 @@ describe('PortalSidebar - Authorization Tests', () => {
   describe('Teste 4: Usuário navega diretamente pela URL', () => {
     it('PermissionGuard deve bloquear/liberar, ModuleContext identifica módulo, Sidebar correspondente aparece', () => {
       renderSidebar('/dashboard/recrutamento', {
-        permissions: [{ resource: 'jobs', action: 'read' }],
+        permissions: [{ name: 'jobs.read' }],
         isAdminMaster: false,
       });
 
@@ -238,10 +231,7 @@ describe('PortalSidebar - Authorization Tests', () => {
   describe('Teste 5: Troca de módulo', () => {
     it('CRM → sidebar CRM', () => {
       renderSidebar('/dashboard/crm', {
-        permissions: [
-          { resource: 'companies', action: 'read' },
-          { resource: 'jobs', action: 'read' },
-        ],
+        permissions: [{ name: 'companies.read' }, { name: 'jobs.read' }],
         isAdminMaster: false,
       });
 
@@ -250,10 +240,7 @@ describe('PortalSidebar - Authorization Tests', () => {
 
     it('Recrutamento → sidebar Recrutamento', () => {
       renderSidebar('/dashboard/recrutamento', {
-        permissions: [
-          { resource: 'companies', action: 'read' },
-          { resource: 'jobs', action: 'read' },
-        ],
+        permissions: [{ name: 'companies.read' }, { name: 'jobs.read' }],
         isAdminMaster: false,
       });
 
@@ -264,7 +251,7 @@ describe('PortalSidebar - Authorization Tests', () => {
   describe('Teste 6: Troca de tenant', () => {
     it('permissions recalculadas para CRM', () => {
       renderSidebar('/dashboard/crm', {
-        permissions: [{ resource: 'companies', action: 'read' }],
+        permissions: [{ name: 'companies.read' }],
         isAdminMaster: false,
       });
 
@@ -273,11 +260,10 @@ describe('PortalSidebar - Authorization Tests', () => {
 
     it('permissions recalculadas para Recrutamento (vagas)', () => {
       renderSidebar('/dashboard/vagas', {
-        permissions: [{ resource: 'jobs', action: 'read' }],
+        permissions: [{ name: 'jobs.read' }],
         isAdminMaster: false,
       });
 
-      // Vagas appears in header subtitle, nav title, and feature list - use getAllByText
       expect(screen.getAllByText('Vagas').length).toBeGreaterThan(0);
     });
   });

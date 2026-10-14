@@ -12,7 +12,7 @@ alwaysApply: true
 executar migration, alterar banco, criar componente, modificar rota, fazer commit,
 deployment, merge ou qualquer outra ação no projeto:
 
-> **LEIA PRIMEIRO todas as diretrizes e documentações relevantes disponíveis na worktree atual.**
+> **LEIA PRIMEIRO todas as diretrizes e documentações relevantes disponíveis na worktree atual e nos aquivos mark down .md.**
 
 Nunca inicie uma tarefa baseado apenas na mensagem atual do usuário.
 
@@ -154,11 +154,11 @@ Nunca afirmar que algo está implementado sem evidência no código e, quando ap
 
 ## Regra Final
 
-**DOCUMENTAÇÃO PRIMEIRO.**  
-**CÓDIGO DEPOIS.**  
-**IMPLEMENTAÇÃO SOMENTE APÓS VERIFICAÇÃO E AUTORIZAÇÃO.**  
-**COMMIT SOMENTE COM AUTORIZAÇÃO.**  
-**PUSH SOMENTE COM AUTORIZAÇÃO.**  
+**DOCUMENTAÇÃO PRIMEIRO.**
+**CÓDIGO DEPOIS.**
+**IMPLEMENTAÇÃO SOMENTE APÓS VERIFICAÇÃO E AUTORIZAÇÃO.**
+**COMMIT SOMENTE COM AUTORIZAÇÃO.**
+**PUSH SOMENTE COM AUTORIZAÇÃO.**
 **DEPLOY SOMENTE COM AUTORIZAÇÃO.**
 
 Quando houver dúvida: **PARE, DOCUMENTE, PERGUNTE ANTES DE ALTERAR.**

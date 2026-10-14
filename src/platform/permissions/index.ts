@@ -8,6 +8,7 @@ export {
 } from '@/utils/rbac';
 export type { Permission } from '@/types/auth';
 
+import { getPermissionKey } from '@/utils/rbac-normalize';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function usePermissionCheck() {
@@ -15,9 +16,7 @@ export function usePermissionCheck() {
 
   const checkPermission = (permissionKey: string): boolean => {
     if (!permissionKey) return true;
-    return permissions.some(
-      (p) => `${p.resource}.${p.action}` === permissionKey,
-    );
+    return permissions.some((p) => getPermissionKey(p) === permissionKey);
   };
 
   const checkPermissions = (
