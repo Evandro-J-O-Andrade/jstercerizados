@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(215,35%,18%)"/>
+      <stop offset="100%" stop-color="hsl(215,40%,12%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <g opacity="0.3">
+    <path d="M300,350 C350,300 450,300 500,350 C550,400 550,450 500,500 C450,550 350,550 300,500 C250,450 250,400 300,350 Z" fill="hsl(43,74%,45%)"/>
+    <circle cx="400" cy="350" r="40" fill="hsl(43,74%,40%)"/>
+    <circle cx="370" cy="340" r="8" fill="hsl(215,35%,10%)"/>
+    <circle cx="430" cy="340" r="8" fill="hsl(215,35%,10%)"/>
+    <path d="M380,380 C380,390 420,390 420,380" stroke="hsl(215,35%,10%)" stroke-width="3"/>
+  </g>
+  <text x="400" y="560" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-family="system-ui" font-size="24" font-weight="500">Recrutamento &amp; Seleção</text>
+</svg>

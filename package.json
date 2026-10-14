@@ -94,16 +94,5 @@
   },
   "engines": {
     "node": ">=22"
-  },
-  "overrides": {
-    "nanoid": "3.3.18",
-    "minimatch@^10.0.0": {
-      "brace-expansion": "^5.0.12"
-    }
-  },
-  "pnpm": {
-    "overrides": {
-      "source-map-js": "1.2.2"
-    }
   }
 }

@@ -2,3 +2,6 @@ allowBuilds:
   '@openrouter/sdk': true
   esbuild: true
   hostinger: true
+
+overrides:
+  source-map-js: 1.2.2
