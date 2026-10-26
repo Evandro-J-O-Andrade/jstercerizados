@@ -342,7 +342,9 @@ serve(async (req: Request) => {
     }
 
     // 12. Generate storage path
-    const fileExt = file.name.split('.').pop()?.toLowerCase() || 'webp';
+    const fileExt = isCandidateAvatar
+      ? (file.type === 'image/jpeg' ? 'jpg' : file.type === 'image/png' ? 'png' : 'webp')
+      : (file.name.split('.').pop()?.toLowerCase() || 'webp');
     const uuid = crypto.randomUUID();
     const bucketId = isCandidateAvatar ? 'avatars' : 'public-media';
     const storagePath = isCandidateAvatar
