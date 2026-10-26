@@ -197,11 +197,12 @@ serve(async (req: Request) => {
       );
     }
 
-    // 7. Validate file size
-    if (file.size > MAX_FILE_SIZE) {
+    // 7. Validate file size (avatars bucket has a 5 MB limit).
+    const maxFileSize = isCandidateAvatar ? 5 * 1024 * 1024 : MAX_FILE_SIZE;
+    if (file.size > maxFileSize) {
       return errorResponse(
         'FILE_TOO_LARGE',
-        `Arquivo muito grande. Máximo ${MAX_FILE_SIZE / 1024 / 1024} MB.`,
+        `Arquivo muito grande. Máximo ${maxFileSize / 1024 / 1024} MB.`,
         413,
         req,
       );
