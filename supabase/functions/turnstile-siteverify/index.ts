@@ -8,6 +8,7 @@ const ALLOWED_ORIGINS = [
   'https://www.jsempregos.com.br',
   'https://jstercerizados.pages.dev',
   'http://localhost:3000',
+  'http://localhost:3001',
   'http://localhost',
 ];
 
@@ -30,16 +31,19 @@ function parseAllowedHostnames(): string[] {
 
 function corsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get('origin') ?? '';
-  const allowed = ALLOWED_ORIGINS.includes(origin)
-    ? origin
-    : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowed,
+  const headers: Record<string, string> = {
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers':
       'authorization, x-client-info, apikey, content-type',
     'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin',
   };
+
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin;
+  }
+
+  return headers;
 }
 
 function json(data: unknown, status: number, req: Request): Response {
