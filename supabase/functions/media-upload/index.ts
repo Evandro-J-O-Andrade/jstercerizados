@@ -4,6 +4,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const ALLOWED_ORIGINS = [
   'https://jsempregos.com.br',
   'https://www.jsempregos.com.br',
+  'https://jsterceirizados.com.br',
+  'https://www.jsterceirizados.com.br',
   'https://jstercerizados.pages.dev',
   'http://localhost:3000',
   'http://localhost',
@@ -132,6 +134,7 @@ serve(async (req: Request) => {
     const entityType = formData.get('entity_type') as string;
     const entityId = formData.get('entity_id') as string;
     const purpose = formData.get('purpose') as string;
+    const isCandidateAvatar = entityType === 'candidate' && purpose === 'avatar';
     const altText = formData.get('alt_text') as string | null;
     const sortOrderStr = formData.get('sort_order') as string | null;
 
@@ -146,7 +149,7 @@ serve(async (req: Request) => {
 
     // 3. Validate entity_type
     const resource = ENTITY_TO_RESOURCE[entityType];
-    if (!resource) {
+    if (!resource && !isCandidateAvatar) {
       return errorResponse(
         'INVALID_ENTITY_TYPE',
         `Invalid entity_type: ${entityType}`,
@@ -241,24 +244,27 @@ serve(async (req: Request) => {
     }
     const tenantId = membership.tenant_id;
 
-    // 9. Check permission via RPC (uses user_has_permission internally)
-    const { data: hasPermission, error: permError } = await userClient.rpc(
-      'user_has_permission',
-      {
-        p_auth_user_id: authUserId,
-        p_resource: resource,
-        p_action: 'write',
-        p_tenant_id: tenantId,
-      },
-    );
-
-    if (permError || !hasPermission) {
-      return errorResponse(
-        'PERMISSION_DENIED',
-        `Sem permissão para upload de mídia em ${resource}.`,
-        403,
-        req,
+    // 9. CMS media requires its existing tenant-scoped permission contract.
+    // Candidate avatars use an explicit self-ownership check below instead.
+    if (!isCandidateAvatar) {
+      const { data: hasPermission, error: permError } = await userClient.rpc(
+        'user_has_permission',
+        {
+          p_auth_user_id: authUserId,
+          p_resource: resource!,
+          p_action: 'write',
+          p_tenant_id: tenantId,
+        },
       );
+
+      if (permError || !hasPermission) {
+        return errorResponse(
+          'PERMISSION_DENIED',
+          `Sem permissão para upload de mídia em ${resource}.`,
+          403,
+          req,
+        );
+      }
     }
 
     // 10. Verify entity exists and belongs to tenant
@@ -273,7 +279,9 @@ serve(async (req: Request) => {
             ? 'company_relationships'
             : entityType === 'supplier'
               ? 'company_relationships'
-              : null;
+              : entityType === 'candidate'
+                ? 'candidates'
+                : null;
 
     if (!entityTable) {
       return errorResponse(
@@ -289,7 +297,11 @@ serve(async (req: Request) => {
       .select('id')
       .eq('id', entityId);
 
-    if (entityType === 'company' || entityType === 'service') {
+    if (isCandidateAvatar) {
+      entityQuery = entityQuery.eq('person_id', personId);
+    }
+
+    if (entityType === 'company' || entityType === 'service' || isCandidateAvatar) {
       entityQuery = entityQuery.eq('tenant_id', tenantId);
     } else {
       // partner/supplier: verify via company_relationships tenant_id
@@ -331,12 +343,15 @@ serve(async (req: Request) => {
     // 12. Generate storage path
     const fileExt = file.name.split('.').pop()?.toLowerCase() || 'webp';
     const uuid = crypto.randomUUID();
-    const storagePath = `${entityType}/${entityId}/${purpose}/${uuid}.${fileExt}`;
+    const bucketId = isCandidateAvatar ? 'avatars' : 'public-media';
+    const storagePath = isCandidateAvatar
+      ? `${authUserId}/${uuid}.${fileExt}`
+      : `${entityType}/${entityId}/${purpose}/${uuid}.${fileExt}`;
 
     // 13. Upload to Storage using service_role
     const fileBuffer = await file.arrayBuffer();
     const { error: uploadError } = await adminClient.storage
-      .from('public-media')
+      .from(bucketId)
       .upload(storagePath, fileBuffer, {
         contentType: file.type,
         upsert: false,
@@ -354,7 +369,7 @@ serve(async (req: Request) => {
 
     // 14. Get public URL
     const { data: urlData } = adminClient.storage
-      .from('public-media')
+      .from(bucketId)
       .getPublicUrl(storagePath);
     const fileUrl = urlData.publicUrl;
 
@@ -379,7 +394,7 @@ serve(async (req: Request) => {
       .from('media_assets')
       .insert({
         tenant_id: tenantId,
-        bucket_id: 'public-media',
+        bucket_id: bucketId,
         storage_path: storagePath,
         file_url: fileUrl,
         file_name: `${uuid}.${fileExt}`,
@@ -387,7 +402,7 @@ serve(async (req: Request) => {
         file_size_bytes: file.size,
         width: null, // not extracting dimensions (no sharp)
         height: null,
-        entity_type: entityType,
+        entity_type: isCandidateAvatar ? 'candidate' : entityType,
         entity_id: entityId,
         uploaded_by: personId,
         alt_text: altText,
@@ -402,7 +417,7 @@ serve(async (req: Request) => {
 
     if (assetError || !asset) {
       // Cleanup storage on DB failure
-      await adminClient.storage.from('public-media').remove([storagePath]);
+      await adminClient.storage.from(bucketId).remove([storagePath]);
       console.error('[media-upload] media_assets insert error:', assetError);
       return errorResponse(
         'DB_INSERT_FAILED',
@@ -413,7 +428,7 @@ serve(async (req: Request) => {
     }
 
     // 17. If primary purpose, call set_primary_media RPC
-    if (PRIMARY_PURPOSES.includes(purpose)) {
+    if (!isCandidateAvatar && PRIMARY_PURPOSES.includes(purpose)) {
       const { error: primaryError } = await adminClient.rpc(
         'set_primary_media',
         {
@@ -426,7 +441,7 @@ serve(async (req: Request) => {
       if (primaryError) {
         console.error('[media-upload] set_primary_media error:', primaryError);
         // Atomic rollback: delete storage object and media_assets record
-        await adminClient.storage.from('public-media').remove([storagePath]);
+        await adminClient.storage.from(bucketId).remove([storagePath]);
         await adminClient.from('media_assets').delete().eq('id', asset.id);
         return errorResponse(
           'SET_PRIMARY_FAILED',
@@ -437,7 +452,23 @@ serve(async (req: Request) => {
       }
     }
 
-    // 18. Sync companies.logo_url for logo purpose
+    // 18. Persist candidate avatar URL on the authenticated person's own record.
+    if (isCandidateAvatar) {
+      const { error: avatarSyncError } = await adminClient
+        .from('people')
+        .update({ avatar_url: fileUrl })
+        .eq('id', personId)
+        .eq('auth_user_id', authUserId);
+
+      if (avatarSyncError) {
+        await adminClient.from('media_assets').delete().eq('id', asset.id);
+        await adminClient.storage.from(bucketId).remove([storagePath]);
+        console.error('[media-upload] avatar URL sync error:', avatarSyncError);
+        return errorResponse('AVATAR_SYNC_FAILED', 'Falha ao salvar a foto no perfil. Upload revertido.', 500, req);
+      }
+    }
+
+    // 19. Sync companies.logo_url for logo purpose
     let logoSyncSuccess = true;
     if (purpose === 'logo' && entityType === 'company') {
       const { error: logoSyncError } = await adminClient
