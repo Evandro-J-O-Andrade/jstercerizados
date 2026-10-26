@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+﻿import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -14,7 +14,8 @@ import { candidatesRepository } from '@/modules/candidato/repositories/candidate
 import type { Person } from '@/types/auth';
 import { SEO } from '@/components/ui/SEO';
 import { COMPANY } from '@/config';
-import { User, Briefcase, Save, Loader2 } from 'lucide-react';
+import { getSupabaseClient } from '@/lib/supabase';
+import { User, Briefcase, Save, Loader2, Camera } from 'lucide-react';
 
 const profileSchema = z.object({
   full_name: z
@@ -49,11 +50,68 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function CandidatePerfil() {
-  const { person, updateProfile } = useAuth();
+  const { person, user, updateProfile, refreshAuthData } = useAuth();
   const { candidate, refetch } = useCandidato();
   const { addToast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      addToast({ type: 'error', message: 'Formato não suportado. Use JPG, PNG ou WebP.' });
+      input.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      addToast({ type: 'error', message: 'A foto deve ter no máximo 5 MB.' });
+      input.value = '';
+      return;
+    }
+    if (!candidate) {
+      addToast({ type: 'error', message: 'Não foi possível localizar seu cadastro de candidato.' });
+      input.value = '';
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      const supabase = getSupabaseClient();
+      if (!supabase) throw new Error('Supabase não está configurado.');
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('entity_type', 'candidate');
+      formData.append('entity_id', candidate.id);
+      formData.append('purpose', 'avatar');
+
+      const { data, error } = await supabase.functions.invoke('media-upload', {
+        body: formData,
+        method: 'POST',
+      });
+      if (error) throw new Error(error.message || 'Falha ao enviar a foto.');
+      if (!data?.success || !data?.asset?.file_url) {
+        throw new Error(data?.error || 'O servidor não confirmou o envio da foto.');
+      }
+
+      await refreshAuthData(user?.id);
+      addToast({ type: 'success', message: 'Foto do perfil atualizada com sucesso.' });
+    } catch (error) {
+      addToast({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Não foi possível atualizar a foto.',
+      });
+    } finally {
+      setIsUploadingAvatar(false);
+      input.value = '';
+    }
+  };
 
   const {
     register,
@@ -176,6 +234,60 @@ export default function CandidatePerfil() {
             Suas informações pessoais e profissionais.
           </p>
         </header>
+
+        <Card className="p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            {person?.avatar_url ? (
+              <img
+                src={person.avatar_url}
+                alt={`Foto de perfil de ${person.full_name}`}
+                className="h-24 w-24 rounded-full border border-border object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div className="flex h-24 w-24 items-center justify-center rounded-full border border-border bg-muted">
+                <User className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
+              </div>
+            )}
+            <div className="flex-1">
+              <h2 className="text-foreground text-base font-semibold">Foto do perfil</h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Use uma foto nítida para ajudar as empresas a reconhecer seu perfil.
+              </p>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                onChange={handleAvatarFileChange}
+                disabled={isUploadingAvatar || !candidate}
+                aria-label="Selecionar foto de perfil"
+              />
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={isUploadingAvatar || !candidate}
+                >
+                  {isUploadingAvatar ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Enviando foto...
+                    </>
+                  ) : (
+                    <>
+                      <Camera className="mr-2 h-4 w-4" />
+                      Alterar foto
+                    </>
+                  )}
+                </Button>
+                <span className="text-muted-foreground text-xs">JPG, PNG ou WebP · até 5 MB</span>
+              </div>
+            </div>
+          </div>
+        </Card>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Card className="p-6">
