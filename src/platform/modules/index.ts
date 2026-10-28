@@ -1,4 +1,5 @@
 export {
+  CELL_REGISTRY,
   PORTAL_MODULES,
   MODULE_PERMISSION_MAP,
   CATEGORY_META,
@@ -9,10 +10,10 @@ export {
   getModuleActions,
   groupModulesByCategory,
   getModuleById,
-} from '@/components/portal/ModuleRegistry';
+} from '@/platform/cells/CellRegistry';
 export type {
   ModuleDefinition,
   ModuleFeature,
   ModuleAction,
   ModuleCategory,
-} from '@/components/portal/ModuleRegistry';
+} from '@/platform/cells/CellRegistry';
