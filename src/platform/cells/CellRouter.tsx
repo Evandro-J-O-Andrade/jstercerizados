@@ -16,7 +16,9 @@ function CellAccessDenied() {
       className="flex min-h-[40dvh] items-center justify-center p-6"
     >
       <div className="max-w-md text-center">
-        <h2 className="text-foreground text-xl font-semibold">Acesso não autorizado</h2>
+        <h2 className="text-foreground text-xl font-semibold">
+          Acesso não autorizado
+        </h2>
         <p className="text-muted-foreground mt-2">
           Seu perfil não possui as permissões necessárias para esta funcionalidade.
         </p>
@@ -25,7 +27,10 @@ function CellAccessDenied() {
   );
 }
 
-function renderCellRoute(route: ModuleRoute, permissions: ReturnType<typeof useAuth>['permissions']) {
+function renderCellRoute(
+  route: ModuleRoute,
+  permissions: ReturnType<typeof useAuth>['permissions'],
+) {
   const required = route.requiredPermissions ?? [];
   const allowed =
     required.length === 0 ||
@@ -55,5 +60,9 @@ function renderCellRoute(route: ModuleRoute, permissions: ReturnType<typeof useA
 export function CellRouter({ routes }: CellRouterProps) {
   const { permissions } = useAuth();
 
-  return <Routes>{routes.map((route) => renderCellRoute(route, permissions))}</Routes>;
+  return (
+    <Routes>
+      {routes.map((route) => renderCellRoute(route, permissions))}
+    </Routes>
+  );
 }
