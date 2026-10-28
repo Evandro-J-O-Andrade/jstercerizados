@@ -27,6 +27,7 @@ import IaPage from '@/pages/dashboard/IaPage';
 import IntegracoesPage from '@/pages/dashboard/IntegracoesPage';
 import SegurancaPage from '@/pages/dashboard/SegurancaPage';
 import { ModuleRouter } from '@/platform/router';
+import { CellRouter } from '@/platform/cells/CellRouter';
 import { moduleRouteRegistries } from '@/platform/router/module-routes';
 import { MODULE_PERMISSION_MAP } from '@/components/portal/ModuleRegistry';
 import FiscalPage from '@/pages/dashboard/FiscalPage';
@@ -88,6 +89,7 @@ const PrimeiroAcessoTermos = lazy(
 );
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
 import { CandidatoContainer } from '@/modules/candidato/CandidatoContainer';
+import { CandidatoRoutes } from '@/modules/candidato/CandidatoRoutes/CandidatoRoutes';
 import { CandidatoProvider } from '@/modules/candidato/CandidatoContext';
 import ProcessosSeletivosPage from '@/pages/dashboard/ProcessosSeletivos';
 import EtapasPage from '@/pages/dashboard/Etapas';
@@ -575,12 +577,7 @@ function RoutesAndLayout() {
             <Route
               path="*"
               element={
-                <ModuleRouter
-                  moduleRegistries={moduleRouteRegistries}
-                  moduleIds={['candidato']}
-                  moduleRouteBase="/candidato"
-                  skipLayout
-                />
+                <CellRouter routes={CandidatoRoutes} />
               }
             />
           </Route>
