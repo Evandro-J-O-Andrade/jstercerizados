@@ -27,6 +27,8 @@ describe('normalizePermission', () => {
   });
 
   it('não inventa uma permissão quando o registro não possui chave válida', () => {
-    expect(normalizePermission({ id: 'permission-3', description: 'Sem chave' })).toBeNull();
+    expect(
+      normalizePermission({ id: 'permission-3', description: 'Sem chave' }),
+    ).toBeNull();
   });
 });
