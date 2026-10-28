@@ -8,7 +8,7 @@ interface CandidateRouteProps {
 }
 
 export function CandidateRoute({ children }: CandidateRouteProps) {
-  const { isAuthenticated, isCandidate, isLoading } = useAuth();
+  const { isAuthenticated, isCandidate, isAdminMaster, isLoading } = useAuth();
 
   if (isLoading) {
     return <RouteLoadingFallback />;
@@ -18,11 +18,8 @@ export function CandidateRoute({ children }: CandidateRouteProps) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!isCandidate) {
-    const fallback = window.location.pathname.startsWith('/candidato')
-      ? '/dashboard'
-      : '/login';
-    return <Navigate to={fallback} replace />;
+  if (!isCandidate && !isAdminMaster) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <AuthRoute>{children}</AuthRoute>;

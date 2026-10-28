@@ -15,6 +15,8 @@ export function AuthRoute({ children }: AuthRouteProps) {
     legalAcceptances,
     recoveryMode,
     tenantMemberships,
+    isAdminMaster,
+    isCandidate,
   } = useAuth();
 
   if (isLoading) {
@@ -23,6 +25,14 @@ export function AuthRoute({ children }: AuthRouteProps) {
 
   if (!isAuthenticated || !person) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (recoveryMode) {
+    return <Navigate to="/redefinir-senha" replace />;
+  }
+
+  if (firstLoginState?.must_change_password) {
+    return <Navigate to="/primeiro-acesso/senha" replace />;
   }
 
   const hasAcceptedTerms = legalAcceptances.some(
@@ -44,19 +54,13 @@ export function AuthRoute({ children }: AuthRouteProps) {
     return <Navigate to="/auth/welcome" replace />;
   }
 
-  if (recoveryMode) {
-    return <Navigate to="/redefinir-senha" replace />;
-  }
-
   const hasMembership = Array.isArray(tenantMemberships)
     ? tenantMemberships.length > 0
     : false;
-  if (!hasMembership) {
-    return <Navigate to="/onboarding" replace />;
-  }
 
-  if (firstLoginState?.must_change_password) {
-    return <Navigate to="/primeiro-acesso/senha" replace />;
+  // Usuários corporativos exigem membership ativa; Candidatos e Admin Master global são isentos
+  if (!hasMembership && !isAdminMaster && !isCandidate) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return <>{children}</>;

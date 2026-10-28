@@ -21,6 +21,8 @@ import type {
   FirstLoginState,
   LegalAcceptance,
 } from '@/types/auth';
+import { dispatcherMaster, type DispatchContext } from '@/core/dispatcher';
+import { generateCorrelationId } from '@/core/execution/ExecutionContract';
 
 interface AuthContextType {
   user: User | null;
@@ -1240,95 +1242,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resolvePostLoginDestination = useCallback(
     (overrideWelcomeCompleted?: boolean): string => {
-      console.log('[AUTH:FLOW] resolvePostLoginDestination', {
-        isAdminMaster,
-        isCandidate,
-        tenantMemberships: tenantMemberships.length,
-        firstLoginState: firstLoginState
-          ? {
-              welcome_completed_at: firstLoginState.welcome_completed_at,
-              first_login_completed: firstLoginState.first_login_completed,
-              must_change_password: firstLoginState.must_change_password,
-              terms_version: firstLoginState.terms_version,
-            }
-          : null,
-        overrideWelcomeCompleted,
-        hasAcceptedTerms:
-          legalAcceptances.some((a) => a.document_type === 'terms') ||
-          firstLoginState?.terms_version != null,
-      });
-
-      if (recoveryMode) {
-        console.log('[AUTH:FLOW] redirect → /redefinir-senha (recovery)');
-        return '/redefinir-senha';
-      }
-
-      if (tenantMemberships.length === 0) {
-        console.log('[AUTH:FLOW] redirect → /onboarding (sem membership)');
-        return '/onboarding';
-      }
-
-      if (firstLoginState?.must_change_password) {
-        console.log(
-          '[AUTH:FLOW] redirect → /primeiro-acesso/senha (must_change_password)',
-        );
-        return '/primeiro-acesso/senha';
-      }
+      const welcomeCompleted =
+        Boolean(overrideWelcomeCompleted) ||
+        Boolean(firstLoginState?.welcome_completed_at);
 
       const hasAcceptedTerms =
         legalAcceptances.some((a) => a.document_type === 'terms') ||
         firstLoginState?.terms_version != null;
 
-      if (!hasAcceptedTerms) {
-        console.log('[AUTH:FLOW] redirect → /auth/terms (termos pendentes)');
-        return '/auth/terms';
-      }
+      const hasMembership = tenantMemberships.length > 0;
+      const mustChangePassword = Boolean(firstLoginState?.must_change_password);
 
-      const welcomeCompleted = Boolean(firstLoginState?.welcome_completed_at);
-
-      if (!welcomeCompleted) {
-        console.debug('[AUTH:DESTINATION] → /auth/welcome (pendente)');
-        return '/auth/welcome';
-      }
-
-      const roleToDashboard: Record<string, string> = {
-        admin_master: '/dashboard/admin',
-        platform_admin: '/dashboard/admin',
-        support_engineer: '/dashboard/suporte',
-        tenant_admin: '/dashboard/admin',
-        rh_manager: '/dashboard/rh',
-        recruiter: '/dashboard/recrutamento',
-        finance_manager: '/dashboard/financeiro',
-        finance: '/dashboard/financeiro',
-        support_agent: '/dashboard/suporte',
-        commercial: '/dashboard/empresas',
-        stock_manager: '/dashboard/estoque',
-        fiscal: '/dashboard/fiscal',
-        operations_manager: '/dashboard/operacoes',
-        operations_operator: '/dashboard/operacoes',
-        company_representative: '/dashboard/empresas',
-        suporte: '/dashboard/suporte',
-        media: '/dashboard/media',
-        servicos: '/dashboard/servicos',
-        pos: '/dashboard/pos',
-        contabilidade: '/dashboard/contabilidade',
-        candidato: '/candidato',
+      const dispatchContext: DispatchContext = {
+        correlationId: generateCorrelationId(),
+        personId: person?.id || '',
+        tenantId: currentTenantId,
+        roleIds: roles.map((r) => r.id),
+        permissionKeys: permissions.map((p) => p.name),
+        effectivePermissions: permissions,
+        isAdminMaster,
       };
 
-      for (const role of roles) {
-        const dashboard = roleToDashboard[role.name];
-        if (dashboard) {
-          console.debug(
-            `[AUTH:DESTINATION] → ${dashboard} (role: ${role.name})`,
-          );
-          return dashboard;
-        }
-      }
+      const destination = dispatcherMaster.resolveDestination(
+        dispatchContext,
+        welcomeCompleted,
+        mustChangePassword,
+        hasAcceptedTerms,
+        hasMembership,
+        {
+          recoveryMode,
+          roleNames: roles.map((r) => r.name),
+          isCandidate,
+        },
+      );
 
       console.debug(
-        '[AUTH:DESTINATION] → /dashboard (sem dashboard de célula específico)',
+        '[AUTH:DESTINATION] DispatcherMaster resolved ->',
+        destination,
       );
-      return '/dashboard';
+      return destination;
     },
     [
       isAdminMaster,

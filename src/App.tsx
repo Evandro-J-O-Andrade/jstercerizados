@@ -29,8 +29,6 @@ import SegurancaPage from '@/pages/dashboard/SegurancaPage';
 import { ModuleRouter } from '@/platform/router';
 import { moduleRouteRegistries } from '@/platform/router/module-routes';
 import { MODULE_PERMISSION_MAP } from '@/components/legacy/portal/ModuleRegistry';
-import FiscalPage from '@/pages/dashboard/FiscalPage';
-import Estoque from '@/pages/dashboard/Estoque';
 import Almoxarifado from '@/pages/dashboard/Almoxarifado';
 import GlobalDashboardPage from '@/pages/dashboard/GlobalDashboardPage';
 import VisaoGeral from '@/pages/dashboard/VisaoGeral';
@@ -84,7 +82,6 @@ const EntrarEmpresa = lazy(() =>
 );
 const CadastroCandidato = lazy(() => import('@/pages/CadastroCandidato'));
 const CadastroEmpresa = lazy(() => import('@/pages/CadastroEmpresa'));
-const SuporteDashboardPage = lazy(() => import('@/modules/suporte/dashboard'));
 const RecuperarSenha = lazy(() => import('@/pages/RecuperarSenha'));
 const RedefinirSenha = lazy(() => import('@/pages/RedefinirSenha'));
 const AlterarSenha = lazy(() => import('@/pages/AlterarSenha'));
@@ -383,19 +380,23 @@ function RoutesAndLayout() {
               }
             />
             <Route
-              path="fiscal"
+              path="fiscal/*"
               element={
-                <PermissionGuard permission={MODULE_PERMISSION_MAP.fiscal}>
-                  <FiscalPage />
-                </PermissionGuard>
+                <ModuleRouter
+                  moduleRegistries={moduleRouteRegistries}
+                  moduleIds={['fiscal']}
+                  moduleRouteBase="/dashboard/fiscal"
+                />
               }
             />
             <Route
-              path="estoque"
+              path="estoque/*"
               element={
-                <PermissionGuard permission={MODULE_PERMISSION_MAP.estoque}>
-                  <Estoque />
-                </PermissionGuard>
+                <ModuleRouter
+                  moduleRegistries={moduleRouteRegistries}
+                  moduleIds={['estoque']}
+                  moduleRouteBase="/dashboard/estoque"
+                />
               }
             />
             <Route
@@ -409,11 +410,43 @@ function RoutesAndLayout() {
               }
             />
             <Route
-              path="suporte"
+              path="suporte/*"
               element={
-                <PermissionGuard permission={MODULE_PERMISSION_MAP.suporte}>
-                  <SuporteDashboardPage />
-                </PermissionGuard>
+                <ModuleRouter
+                  moduleRegistries={moduleRouteRegistries}
+                  moduleIds={['suporte']}
+                  moduleRouteBase="/dashboard/suporte"
+                />
+              }
+            />
+            <Route
+              path="financeiro/*"
+              element={
+                <ModuleRouter
+                  moduleRegistries={moduleRouteRegistries}
+                  moduleIds={['financeiro']}
+                  moduleRouteBase="/dashboard/financeiro"
+                />
+              }
+            />
+            <Route
+              path="empresas/*"
+              element={
+                <ModuleRouter
+                  moduleRegistries={moduleRouteRegistries}
+                  moduleIds={['empresas']}
+                  moduleRouteBase="/dashboard/empresas"
+                />
+              }
+            />
+            <Route
+              path="contabilidade/*"
+              element={
+                <ModuleRouter
+                  moduleRegistries={moduleRouteRegistries}
+                  moduleIds={['contabilidade']}
+                  moduleRouteBase="/dashboard/contabilidade"
+                />
               }
             />
             <Route
