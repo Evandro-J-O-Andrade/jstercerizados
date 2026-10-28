@@ -1,4 +1,4 @@
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Users, Search, Plus } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';

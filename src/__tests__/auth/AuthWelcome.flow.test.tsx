@@ -167,6 +167,9 @@ describe('post-login welcome flow', () => {
       isLoading: false,
       isAuthenticated: true,
       person,
+      roles: [{ name: 'candidato', scope: 'tenant' }],
+      isCandidate: true,
+      tenantMemberships: [{ id: 'm1', tenant_id: 't1' }],
       firstLoginState: {
         first_login_completed: true,
         welcome_completed_at: '2026-10-04T10:00:00Z',

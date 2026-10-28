@@ -8,8 +8,8 @@ import {
 import { stockRepository } from '@/repositories/stock.repository';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Product, ProductCreateInput } from '@/types/domain/stock';
-import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
-import { getModuleById } from '@/components/portal/ModuleRegistry';
+import type { ModuleDefinition } from '@/components/legacy/portal/ModuleRegistry';
+import { getModuleById } from '@/components/legacy/portal/ModuleRegistry';
 
 const COLUMNS: ColumnDef<Product>[] = [
   { key: 'name', header: 'Nome', sortable: true },

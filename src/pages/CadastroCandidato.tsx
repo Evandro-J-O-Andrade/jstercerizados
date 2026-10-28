@@ -75,7 +75,7 @@ export default function CandidateRegister() {
           'Cadastro realizado com sucesso. Verifique seu e-mail para confirmar a conta.',
         );
       } else {
-        navigate('/dashboard');
+        navigate('/candidato');
       }
     } catch (err) {
       submittedRef.current = true;

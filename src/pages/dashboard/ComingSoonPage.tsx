@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocation } from 'react-router-dom';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/fallback';
 import { Clock } from 'lucide-react';

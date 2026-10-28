@@ -9,10 +9,10 @@ export {
   getModuleActions,
   groupModulesByCategory,
   getModuleById,
-} from '@/components/portal/ModuleRegistry';
+} from '@/components/legacy/portal/ModuleRegistry';
 export type {
   ModuleDefinition,
   ModuleFeature,
   ModuleAction,
   ModuleCategory,
-} from '@/components/portal/ModuleRegistry';
+} from '@/components/legacy/portal/ModuleRegistry';

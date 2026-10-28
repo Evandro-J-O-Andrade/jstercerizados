@@ -1,5 +1,5 @@
 import { getSupabaseClient } from '@/lib/supabase';
-import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+import type { ModuleDefinition } from '@/components/legacy/portal/ModuleRegistry';
 
 export interface ModuleStats {
   primaryMetric?: { label: string; value: string | number };

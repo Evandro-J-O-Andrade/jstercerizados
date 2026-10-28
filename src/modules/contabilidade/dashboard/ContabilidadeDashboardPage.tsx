@@ -2,15 +2,16 @@
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import {
+  Building2,
   Download,
   TrendingDown,
   TrendingUp,
   Wallet,
-  Building2,
   FileText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import {
   DashboardCard,
   DashboardErrorState,
@@ -136,16 +137,15 @@ export default function ContabilidadeDashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-foreground text-xl font-semibold">
-            Contabilidade
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Plano de contas, lançamentos e fechamento contábil.
-          </p>
-        </div>
+    <ModuleWorkspace
+      title="Contabilidade"
+      description="Plano de contas, lançamentos e fechamento contábil."
+      icon={Building2}
+      homeRoute="/dashboard/contabilidade"
+      breadcrumbItems={[
+        { label: 'Contabilidade', href: '/dashboard/contabilidade' },
+      ]}
+      actions={
         <Button
           variant="secondary"
           onClick={() =>
@@ -158,151 +158,155 @@ export default function ContabilidadeDashboardPage() {
           <Download className="mr-2 h-4 w-4" />
           Exportar
         </Button>
-      </div>
+      }
+    >
+      <div className="space-y-6">
+        {visibleMetrics.length > 0 ? (
+          <DashboardMetricGrid>
+            {visibleMetrics.map((metric) => (
+              <DashboardCard key={metric.id} metric={metric} />
+            ))}
+          </DashboardMetricGrid>
+        ) : (
+          <DashboardErrorState message="Nenhum indicador contábil está liberado para o seu perfil." />
+        )}
 
-      {visibleMetrics.length > 0 ? (
-        <DashboardMetricGrid>
-          {visibleMetrics.map((metric) => (
-            <DashboardCard key={metric.id} metric={metric} />
-          ))}
-        </DashboardMetricGrid>
-      ) : (
-        <DashboardErrorState message="Nenhum indicador contábil está liberado para o seu perfil." />
-      )}
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="p-4">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-semibold">
-              Últimos lançamentos
-            </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                (window.location.href = '/dashboard/contabilidade/lancamentos')
-              }
-            >
-              Ver todos
-            </Button>
-          </div>
-          {entries.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              Nenhum lançamento cadastrado.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {entries.slice(0, 5).map((entry) => (
-                <div
-                  key={entry.id}
-                  className="border-border flex items-center justify-between rounded-lg border p-3"
-                >
-                  <div>
-                    <p className="text-foreground text-sm font-medium">
-                      {entry.description}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      {new Date(entry.date).toLocaleDateString('pt-BR')}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-destructive text-sm font-semibold">
-                      D: {formatCurrency(entry.debit)}
-                    </p>
-                    <p className="text-success text-sm font-semibold">
-                      C: {formatCurrency(entry.credit)}
-                    </p>
-                  </div>
-                </div>
-              ))}
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card className="p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-foreground text-sm font-semibold">
+                Últimos lançamentos
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  (window.location.href =
+                    '/dashboard/contabilidade/lancamentos')
+                }
+              >
+                Ver todos
+              </Button>
             </div>
-          )}
-        </Card>
-
-        <Card className="p-4">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-semibold">
-              Plano de contas
-            </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                (window.location.href = '/dashboard/contabilidade/plano-contas')
-              }
-            >
-              Ver todos
-            </Button>
-          </div>
-          {accounts.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              Nenhuma conta cadastrada.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {accounts.slice(0, 5).map((account) => (
-                <div
-                  key={account.id}
-                  className="border-border flex items-center justify-between rounded-lg border p-3"
-                >
-                  <div>
-                    <p className="text-foreground text-sm font-medium">
-                      {account.code} - {account.name}
-                    </p>
-                    <p className="text-muted-foreground text-xs capitalize">
-                      {account.type}
-                    </p>
+            {entries.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Nenhum lançamento cadastrado.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {entries.slice(0, 5).map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="border-border flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div>
+                      <p className="text-foreground text-sm font-medium">
+                        {entry.description}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {new Date(entry.date).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-destructive text-sm font-semibold">
+                        D: {formatCurrency(entry.debit)}
+                      </p>
+                      <p className="text-success text-sm font-semibold">
+                        C: {formatCurrency(entry.credit)}
+                      </p>
+                    </div>
                   </div>
-                  <span className="text-muted-foreground text-xs">
-                    {account.status === 'active' ? 'Ativo' : 'Inativo'}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-      </div>
+                ))}
+              </div>
+            )}
+          </Card>
 
-      <Card className="p-4">
-        <h3 className="text-foreground mb-3 text-sm font-semibold">
-          Acesso rápido
-        </h3>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            {
-              label: 'Lançamentos',
-              href: '/dashboard/contabilidade/lancamentos',
-              icon: FileText,
-            },
-            {
-              label: 'Plano de contas',
-              href: '/dashboard/contabilidade/plano-contas',
-              icon: Building2,
-            },
-            {
-              label: 'Balancetes',
-              href: '/dashboard/contabilidade/balancetes',
-              icon: TrendingUp,
-            },
-            {
-              label: 'Fechamento',
-              href: '/dashboard/contabilidade/fechamento',
-              icon: Wallet,
-            },
-          ].map((mod) => (
-            <a
-              key={mod.label}
-              href={mod.href}
-              className="border-border hover:bg-muted flex flex-col items-center gap-2 rounded-lg border p-4 transition-colors"
-            >
-              <mod.icon className="text-muted-foreground h-6 w-6" />
-              <span className="text-center text-sm font-medium">
-                {mod.label}
-              </span>
-            </a>
-          ))}
+          <Card className="p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-foreground text-sm font-semibold">
+                Plano de contas
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  (window.location.href =
+                    '/dashboard/contabilidade/plano-contas')
+                }
+              >
+                Ver todos
+              </Button>
+            </div>
+            {accounts.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Nenhuma conta cadastrada.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {accounts.slice(0, 5).map((account) => (
+                  <div
+                    key={account.id}
+                    className="border-border flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div>
+                      <p className="text-foreground text-sm font-medium">
+                        {account.code} - {account.name}
+                      </p>
+                      <p className="text-muted-foreground text-xs capitalize">
+                        {account.type}
+                      </p>
+                    </div>
+                    <span className="text-muted-foreground text-xs">
+                      {account.status === 'active' ? 'Ativo' : 'Inativo'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
         </div>
-      </Card>
-    </div>
+
+        <Card className="p-4">
+          <h3 className="text-foreground mb-3 text-sm font-semibold">
+            Acesso rápido
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                label: 'Lançamentos',
+                href: '/dashboard/contabilidade/lancamentos',
+                icon: FileText,
+              },
+              {
+                label: 'Plano de contas',
+                href: '/dashboard/contabilidade/plano-contas',
+                icon: Building2,
+              },
+              {
+                label: 'Balancetes',
+                href: '/dashboard/contabilidade/balancetes',
+                icon: TrendingUp,
+              },
+              {
+                label: 'Fechamento',
+                href: '/dashboard/contabilidade/fechamento',
+                icon: Wallet,
+              },
+            ].map((mod) => (
+              <a
+                key={mod.label}
+                href={mod.href}
+                className="border-border hover:bg-muted flex flex-col items-center gap-2 rounded-lg border p-4 transition-colors"
+              >
+                <mod.icon className="text-muted-foreground h-6 w-6" />
+                <span className="text-center text-sm font-medium">
+                  {mod.label}
+                </span>
+              </a>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </ModuleWorkspace>
   );
 }

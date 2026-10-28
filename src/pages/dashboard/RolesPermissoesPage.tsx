@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Shield, Plus, Pencil, Trash2 } from 'lucide-react';
@@ -105,6 +105,7 @@ export default function RolesPermissoesPage() {
           {
             name: roleForm.name,
             description: roleForm.description || null,
+            scope: roleForm.is_global ? 'global' : 'tenant',
             is_global: roleForm.is_global,
           },
           '',
@@ -117,6 +118,7 @@ export default function RolesPermissoesPage() {
           {
             name: roleForm.name,
             description: roleForm.description || null,
+            scope: roleForm.is_global ? 'global' : 'tenant',
             is_global: roleForm.is_global,
           },
           '',

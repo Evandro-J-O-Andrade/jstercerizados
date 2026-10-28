@@ -26,6 +26,7 @@ import {
   type DashboardMetric,
 } from '@/components/dashboard/dashboard-model';
 import { ConfirmDialog } from '@/components/feedback';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import {
   accountsPayableRepository,
   accountsReceivableRepository,
@@ -320,16 +321,15 @@ export default function FinanceiroDashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-foreground text-xl font-semibold">
-            Dashboard Financeiro
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Visão geral: contas a pagar, receber, fluxo de caixa e indicadores.
-          </p>
-        </div>
+    <ModuleWorkspace
+      title="Dashboard Financeiro"
+      description="Visão geral: contas a pagar, receber, fluxo de caixa e indicadores."
+      icon={Wallet}
+      homeRoute="/dashboard/financeiro"
+      breadcrumbItems={[
+        { label: 'Dashboard Financeiro', href: '/dashboard/financeiro' },
+      ]}
+      actions={
         <div className="flex gap-2">
           <Button
             variant="secondary"
@@ -352,228 +352,233 @@ export default function FinanceiroDashboardPage() {
             Novo lançamento
           </Button>
         </div>
-      </div>
-
-      {visibleMetrics.length > 0 ? (
-        <DashboardMetricGrid>
-          {visibleMetrics.map((metric) => (
-            <DashboardCard key={metric.id} metric={metric} />
-          ))}
-        </DashboardMetricGrid>
-      ) : (
-        <EmptyState
-          title="Nenhum indicador financeiro disponível"
-          description="Seu perfil não possui indicadores financeiros liberados para visualização."
-        />
-      )}
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="p-4">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-semibold">
-              Contas a pagar recentes
-            </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                addToast({
-                  type: 'info',
-                  message: 'Navegar para Contas a Pagar',
-                })
-              }
-            >
-              <Eye className="mr-1 h-4 w-4" />
-              Ver todas
-            </Button>
-          </div>
-          {recentPayables.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              Nenhuma conta a pagar cadastrada.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {recentPayables.map((item) => (
-                <div
-                  key={item.id}
-                  className="border-border flex items-center justify-between rounded-lg border p-3"
-                >
-                  <div>
-                    <p className="text-foreground text-sm font-medium">
-                      {item.description}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      Vencimento: {formatDate(item.due_date)}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-red-700">
-                      {formatCurrency(item.amount)}
-                    </p>
-                    <Badge variant={statusVariant(item.status)}>
-                      {statusLabel[item.status] || item.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-
-        <Card className="p-4">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-foreground text-sm font-semibold">
-              Contas a receber recentes
-            </h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                addToast({
-                  type: 'info',
-                  message: 'Navegar para Contas a Receber',
-                })
-              }
-            >
-              <Eye className="mr-1 h-4 w-4" />
-              Ver todas
-            </Button>
-          </div>
-          {recentReceivables.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              Nenhuma conta a receber cadastrada.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {recentReceivables.map((item) => (
-                <div
-                  key={item.id}
-                  className="border-border flex items-center justify-between rounded-lg border p-3"
-                >
-                  <div>
-                    <p className="text-foreground text-sm font-medium">
-                      {item.description}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      Vencimento: {formatDate(item.due_date)}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-green-700">
-                      {formatCurrency(item.amount)}
-                    </p>
-                    <Badge variant={statusVariant(item.status)}>
-                      {statusLabel[item.status] || item.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-      </div>
-
-      <Card className="p-4">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-foreground text-sm font-semibold">
-            Fluxo de caixa recente
-          </h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              addToast({ type: 'info', message: 'Navegar para Fluxo de Caixa' })
-            }
-          >
-            <Eye className="mr-1 h-4 w-4" />
-            Ver todos
-          </Button>
-        </div>
-        {recentCashFlows.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            Nenhum lançamento de fluxo de caixa registrado.
-          </p>
-        ) : (
-          <div className="space-y-2">
-            {recentCashFlows.map((item) => (
-              <div
-                key={item.id}
-                className="border-border flex items-center justify-between rounded-lg border p-3"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`rounded-lg p-2 ${
-                      item.type === 'income'
-                        ? 'bg-green-50 text-green-700'
-                        : item.type === 'expense'
-                          ? 'bg-red-50 text-red-700'
-                          : 'bg-blue-50 text-blue-700'
-                    }`}
-                  >
-                    {item.type === 'income' ? (
-                      <ArrowDownCircle className="h-4 w-4" />
-                    ) : item.type === 'expense' ? (
-                      <ArrowUpCircle className="h-4 w-4" />
-                    ) : (
-                      <TrendingUp className="h-4 w-4" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-foreground text-sm font-medium">
-                      {item.description || 'Sem descrição'}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      {formatDate(item.date)} • {item.category || '—'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <p
-                    className={`text-sm font-semibold ${
-                      item.type === 'income'
-                        ? 'text-green-700'
-                        : item.type === 'expense'
-                          ? 'text-red-700'
-                          : 'text-blue-700'
-                    }`}
-                  >
-                    {item.type === 'expense'
-                      ? '-'
-                      : item.type === 'income'
-                        ? '+'
-                        : '±'}
-                    {formatCurrency(item.amount)}
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setDeleteId(item.id);
-                      setDeleteType('cashflow');
-                    }}
-                  >
-                    Excluir
-                  </Button>
-                </div>
-              </div>
+      }
+    >
+      <div className="space-y-6">
+        {visibleMetrics.length > 0 ? (
+          <DashboardMetricGrid>
+            {visibleMetrics.map((metric) => (
+              <DashboardCard key={metric.id} metric={metric} />
             ))}
-          </div>
+          </DashboardMetricGrid>
+        ) : (
+          <EmptyState
+            title="Nenhum indicador financeiro disponível"
+            description="Seu perfil não possui indicadores financeiros liberados para visualização."
+          />
         )}
-      </Card>
 
-      <ConfirmDialog
-        open={!!deleteId}
-        title="Excluir registro?"
-        message="Essa ação removerá o registro."
-        confirmLabel="Excluir"
-        cancelLabel="Cancelar"
-        variant="danger"
-        onConfirm={handleDelete}
-        onCancel={() => {
-          setDeleteId(null);
-          setDeleteType(null);
-        }}
-      />
-    </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card className="p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-foreground text-sm font-semibold">
+                Contas a pagar recentes
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  addToast({
+                    type: 'info',
+                    message: 'Navegar para Contas a Pagar',
+                  })
+                }
+              >
+                <Eye className="mr-1 h-4 w-4" />
+                Ver todas
+              </Button>
+            </div>
+            {recentPayables.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Nenhuma conta a pagar cadastrada.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {recentPayables.map((item) => (
+                  <div
+                    key={item.id}
+                    className="border-border flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div>
+                      <p className="text-foreground text-sm font-medium">
+                        {item.description}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        Vencimento: {formatDate(item.due_date)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-red-700">
+                        {formatCurrency(item.amount)}
+                      </p>
+                      <Badge variant={statusVariant(item.status)}>
+                        {statusLabel[item.status] || item.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          <Card className="p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-foreground text-sm font-semibold">
+                Contas a receber recentes
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  addToast({
+                    type: 'info',
+                    message: 'Navegar para Contas a Receber',
+                  })
+                }
+              >
+                <Eye className="mr-1 h-4 w-4" />
+                Ver todas
+              </Button>
+            </div>
+            {recentReceivables.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Nenhuma conta a receber cadastrada.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {recentReceivables.map((item) => (
+                  <div
+                    key={item.id}
+                    className="border-border flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div>
+                      <p className="text-foreground text-sm font-medium">
+                        {item.description}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        Vencimento: {formatDate(item.due_date)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-green-700">
+                        {formatCurrency(item.amount)}
+                      </p>
+                      <Badge variant={statusVariant(item.status)}>
+                        {statusLabel[item.status] || item.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+
+        <Card className="p-4">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-foreground text-sm font-semibold">
+              Fluxo de caixa recente
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+                addToast({
+                  type: 'info',
+                  message: 'Navegar para Fluxo de Caixa',
+                })
+              }
+            >
+              <Eye className="mr-1 h-4 w-4" />
+              Ver todos
+            </Button>
+          </div>
+          {recentCashFlows.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              Nenhum lançamento de fluxo de caixa registrado.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {recentCashFlows.map((item) => (
+                <div
+                  key={item.id}
+                  className="border-border flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`rounded-lg p-2 ${
+                        item.type === 'income'
+                          ? 'bg-green-50 text-green-700'
+                          : item.type === 'expense'
+                            ? 'bg-red-50 text-red-700'
+                            : 'bg-blue-50 text-blue-700'
+                      }`}
+                    >
+                      {item.type === 'income' ? (
+                        <ArrowDownCircle className="h-4 w-4" />
+                      ) : item.type === 'expense' ? (
+                        <ArrowUpCircle className="h-4 w-4" />
+                      ) : (
+                        <TrendingUp className="h-4 w-4" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-foreground text-sm font-medium">
+                        {item.description || 'Sem descrição'}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {formatDate(item.date)} • {item.category || '—'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <p
+                      className={`text-sm font-semibold ${
+                        item.type === 'income'
+                          ? 'text-green-700'
+                          : item.type === 'expense'
+                            ? 'text-red-700'
+                            : 'text-blue-700'
+                      }`}
+                    >
+                      {item.type === 'expense'
+                        ? '-'
+                        : item.type === 'income'
+                          ? '+'
+                          : '±'}
+                      {formatCurrency(item.amount)}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setDeleteId(item.id);
+                        setDeleteType('cashflow');
+                      }}
+                    >
+                      Excluir
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <ConfirmDialog
+          open={!!deleteId}
+          title="Excluir registro?"
+          message="Essa ação removerá o registro."
+          confirmLabel="Excluir"
+          cancelLabel="Cancelar"
+          variant="danger"
+          onConfirm={handleDelete}
+          onCancel={() => {
+            setDeleteId(null);
+            setDeleteType(null);
+          }}
+        />
+      </div>
+    </ModuleWorkspace>
   );
 }

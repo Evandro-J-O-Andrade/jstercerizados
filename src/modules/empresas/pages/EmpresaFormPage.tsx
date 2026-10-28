@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Building2, ArrowLeft, AlertCircle } from 'lucide-react';
 import { companiesRepository } from '@/repositories/companies.repository';
@@ -58,7 +58,7 @@ export default function EmpresaFormPage() {
           if (data) {
             setCompany(data);
           } else {
-            setError('Empresa não encontrada');
+            setError('Empresa n�o encontrada');
           }
         } catch (err) {
           console.error('[EmpresaFormPage] Failed to load:', err);
@@ -79,7 +79,7 @@ export default function EmpresaFormPage() {
 
   const handleSubmit = async (formData: CompanyFormData) => {
     if (!activeTenantId) {
-      setError('Tenant não identificado');
+      setError('Tenant n�o identificado');
       return;
     }
 

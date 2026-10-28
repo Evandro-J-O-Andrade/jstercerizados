@@ -4,4 +4,5 @@ export { fiscalService };
 export { fiscalModuleMeta } from './types';
 export { fiscalRoutes } from './routes';
 export { FISCAL_PERMISSIONS } from './permissions';
+export { fiscalCellContract } from './cellContract';
 export type { FiscalModuleMeta } from './types';

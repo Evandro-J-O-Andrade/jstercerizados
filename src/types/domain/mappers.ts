@@ -38,6 +38,7 @@ export function mapCandidate(
 ): Candidate {
   return {
     ...row,
+    avatar_url: (row.metadata?.avatar_url as string | null) ?? null,
     person: extras?.person,
     experiences: extras?.experiences ?? [],
     education: extras?.education ?? [],

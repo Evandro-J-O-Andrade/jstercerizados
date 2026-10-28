@@ -1,6 +1,6 @@
 'use client';
 
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Plug, Plus } from 'lucide-react';

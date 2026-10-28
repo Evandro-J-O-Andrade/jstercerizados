@@ -5,7 +5,7 @@ import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { DashboardMetricGrid } from '@/components/dashboard/DashboardMetricGrid';
 import { DashboardSection } from '@/components/dashboard/DashboardSection';
 import { ContentBoundary } from '@/components/feedback/ContentBoundary';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/contexts/AuthContext';

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
 import { Monitor, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -168,4 +168,3 @@ export default function SessoesPage() {
     </ModuleWorkspace>
   );
 }
-

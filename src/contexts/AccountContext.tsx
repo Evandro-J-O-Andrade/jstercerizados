@@ -8,7 +8,7 @@ import {
   type ModuleDefinition,
   type ModuleFeature,
   type ModuleCategory,
-} from '@/components/portal/ModuleRegistry';
+} from '@/components/legacy/portal/ModuleRegistry';
 import { deriveUserIdentity, type UserIdentity } from './UserIdentity';
 import type { Permission } from '@/types/auth';
 

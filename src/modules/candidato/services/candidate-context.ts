@@ -60,16 +60,15 @@ function deriveJobAccessTier(
   ) {
     return 'early_access';
   }
-  if (
-    profileState === 'complete_profile' ||
-    profileState === 'basic_profile'
-  ) {
+  if (profileState === 'complete_profile' || profileState === 'basic_profile') {
     return 'internal';
   }
   return 'public';
 }
 
-function deriveFeatureAccess(profileState: CandidateProfileState): FeatureAccess {
+function deriveFeatureAccess(
+  profileState: CandidateProfileState,
+): FeatureAccess {
   const isAtLeastBasic =
     profileState === 'basic_profile' ||
     profileState === 'complete_profile' ||
@@ -82,8 +81,7 @@ function deriveFeatureAccess(profileState: CandidateProfileState): FeatureAccess
     profileState === 'active_matching';
 
   const isAtLeastResume =
-    profileState === 'complete_resume' ||
-    profileState === 'active_matching';
+    profileState === 'complete_resume' || profileState === 'active_matching';
 
   const isActiveMatching = profileState === 'active_matching';
 
@@ -107,7 +105,9 @@ export function calculateCandidateContext(
   input: CandidateContextInput,
 ): CandidateContext {
   const candidate = input.candidate;
-  const completionPercentage = computeCompletionPercentage(input.profileCompletion);
+  const completionPercentage = computeCompletionPercentage(
+    input.profileCompletion,
+  );
   const profileState = deriveProfileState(completionPercentage, input);
   const jobAccessTier = deriveJobAccessTier(profileState);
   const featureAccess = deriveFeatureAccess(profileState);
@@ -124,16 +124,16 @@ export function calculateCandidateContext(
     hasResume: input.hasResume,
     hasDocuments: input.hasDocuments,
     hasPreferences: input.hasPreferences,
-    isEligibleForMatching:
-      profileState === 'active_matching' && input.applicationCount === 0,
+    isEligibleForMatching: profileState === 'active_matching',
     canBeContactedByRecruiters:
       profileState === 'complete_resume' || profileState === 'active_matching',
   };
 }
 
-export function getProfileStateInfo(
-  state: CandidateProfileState,
-): { label: string; description: string } {
+export function getProfileStateInfo(state: CandidateProfileState): {
+  label: string;
+  description: string;
+} {
   const info = CANDIDATE_PROFILE_STATES[state];
   return {
     label: info.label,
@@ -141,13 +141,13 @@ export function getProfileStateInfo(
   };
 }
 
-export function getJobAccessTierInfo(
-  tier: JobAccessTier,
-): { label: string; description: string } {
+export function getJobAccessTierInfo(tier: JobAccessTier): {
+  label: string;
+  description: string;
+} {
   const info = JOB_ACCESS_TIERS[tier];
   return {
     label: info.label,
     description: info.description,
   };
 }
-

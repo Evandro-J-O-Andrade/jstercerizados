@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { ModuleSidebar } from '@/components/portal/ModuleSidebar';
-import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
+import { ModuleSidebar } from '@/components/legacy/portal/ModuleSidebar';
+import type { ModuleDefinition } from '@/components/legacy/portal/ModuleRegistry';
 import type { Permission } from '@/types/auth';
 import { ModulePage as SharedModulePage } from '@/shared/crud';
 import type {

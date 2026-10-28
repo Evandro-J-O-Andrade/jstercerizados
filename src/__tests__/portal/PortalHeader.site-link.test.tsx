@@ -61,7 +61,7 @@ vi.mock('@/contexts/ThemeContext', () => ({
   }),
 }));
 
-import { PortalHeader } from '@/components/portal/PortalHeader';
+import { PortalHeader } from '@/components/legacy/portal/PortalHeader';
 
 function renderHeader() {
   return render(

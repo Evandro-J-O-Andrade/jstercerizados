@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -135,37 +135,49 @@ vi.mock('@/modules/candidato/repositories/candidates.repository', () => ({
   candidatesRepository: { update: vi.fn() },
 }));
 
-vi.mock('@/modules/candidato/repositories/candidate-experiences.repository', () => ({
-  candidateExperiencesRepository: {
-    delete: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-  },
-}));
+vi.mock(
+  '@/modules/candidato/repositories/candidate-experiences.repository',
+  () => ({
+    candidateExperiencesRepository: {
+      delete: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+  }),
+);
 
-vi.mock('@/modules/candidato/repositories/candidate-education.repository', () => ({
-  candidateEducationRepository: {
-    delete: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-  },
-}));
+vi.mock(
+  '@/modules/candidato/repositories/candidate-education.repository',
+  () => ({
+    candidateEducationRepository: {
+      delete: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+  }),
+);
 
-vi.mock('@/modules/candidato/repositories/candidate-courses.repository', () => ({
-  candidateCoursesRepository: {
-    delete: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-  },
-}));
+vi.mock(
+  '@/modules/candidato/repositories/candidate-courses.repository',
+  () => ({
+    candidateCoursesRepository: {
+      delete: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+  }),
+);
 
-vi.mock('@/modules/candidato/repositories/candidate-languages.repository', () => ({
-  candidateLanguagesRepository: {
-    delete: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-  },
-}));
+vi.mock(
+  '@/modules/candidato/repositories/candidate-languages.repository',
+  () => ({
+    candidateLanguagesRepository: {
+      delete: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+  }),
+);
 
 vi.mock('@/modules/candidato/repositories/candidate-skills.repository', () => ({
   candidateSkillsRepository: {
@@ -175,17 +187,23 @@ vi.mock('@/modules/candidato/repositories/candidate-skills.repository', () => ({
   },
 }));
 
-vi.mock('@/modules/candidato/repositories/candidate-documents.repository', () => ({
-  candidateDocumentsRepository: {
-    delete: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-  },
-}));
+vi.mock(
+  '@/modules/candidato/repositories/candidate-documents.repository',
+  () => ({
+    candidateDocumentsRepository: {
+      delete: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+  }),
+);
 
-vi.mock('@/modules/candidato/repositories/candidate-preferences.repository', () => ({
-  candidatePreferencesRepository: { create: vi.fn(), update: vi.fn() },
-}));
+vi.mock(
+  '@/modules/candidato/repositories/candidate-preferences.repository',
+  () => ({
+    candidatePreferencesRepository: { create: vi.fn(), update: vi.fn() },
+  }),
+);
 
 vi.mock('@/config', () => ({
   COMPANY: { name: 'J&S Empregos LTDA' },
@@ -194,8 +212,8 @@ vi.mock('@/config', () => ({
 import {
   MetroTileGrid,
   computePuzzleLayout,
-} from '@/components/portal/MetroTiles';
-import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
+} from '@/components/legacy/portal/MetroTiles';
+import type { ModuleDefinition } from '@/components/legacy/portal/ModuleRegistry';
 
 function makeModules(count: number): ModuleDefinition[] {
   const categories = [
@@ -222,7 +240,7 @@ function getVisibleTileCount(container: HTMLElement): number {
   return container.querySelectorAll('[style*="grid-column"]').length;
 }
 
-describe('MetroTileGrid — Virtualização', () => {
+describe('MetroTileGrid � Virtualiza��o', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -337,4 +355,3 @@ describe('MetroTileGrid — Virtualização', () => {
     }
   });
 });
-

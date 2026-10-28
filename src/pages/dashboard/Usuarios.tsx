@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Card } from '@/components/ui/Card';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { useAuth } from '@/contexts/AuthContext';
 import { usersRepository } from '@/repositories/users.repository';
 import { cn } from '@/utils';

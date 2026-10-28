@@ -40,7 +40,10 @@ export class CandidatesRepository extends SupabaseRepository {
 
     const { data, error } = await query;
     if (error) throw error;
-    return (data || []) as Candidate[];
+    return (data || []).map((row: any) => ({
+      ...row,
+      avatar_url: row.metadata?.avatar_url ?? null,
+    })) as Candidate[];
   }
 
   async findById(id: string, tenantId: string): Promise<Candidate | null> {
@@ -65,7 +68,12 @@ export class CandidatesRepository extends SupabaseRepository {
       .maybeSingle();
 
     if (error) throw error;
-    return data as Candidate | null;
+    return data
+      ? ({
+          ...data,
+          avatar_url: data.metadata?.avatar_url ?? null,
+        } as Candidate)
+      : null;
   }
 
   async findByPersonId(
@@ -93,7 +101,12 @@ export class CandidatesRepository extends SupabaseRepository {
       .maybeSingle();
 
     if (error) throw error;
-    return (data as Candidate | null) ?? null;
+    return data
+      ? ({
+          ...data,
+          avatar_url: data.metadata?.avatar_url ?? null,
+        } as Candidate)
+      : null;
   }
 
   async create(input: CandidateCreateInput): Promise<Candidate> {
@@ -162,6 +175,12 @@ export class CandidatesRepository extends SupabaseRepository {
     if (input.source !== undefined) payload.source = input.source;
     if (input.status !== undefined) payload.status = input.status;
     if (input.metadata !== undefined) payload.metadata = input.metadata;
+    if (input.avatar_url !== undefined) {
+      payload.metadata = {
+        ...(payload.metadata as Record<string, unknown>),
+        avatar_url: input.avatar_url,
+      };
+    }
     if (input.created_by !== undefined) payload.created_by = input.created_by;
 
     const { data, error } = await this.supabase
@@ -184,7 +203,10 @@ export class CandidatesRepository extends SupabaseRepository {
       .single();
 
     if (error) throw error;
-    return data as Candidate;
+    return {
+      ...data,
+      avatar_url: data.metadata?.avatar_url ?? null,
+    } as Candidate;
   }
 
   async delete(id: string, tenantId: string): Promise<void> {
@@ -201,5 +223,3 @@ export class CandidatesRepository extends SupabaseRepository {
 }
 
 export const candidatesRepository = new CandidatesRepository();
-
-

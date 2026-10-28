@@ -1,4 +1,4 @@
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Construction } from 'lucide-react';
 
@@ -47,4 +47,3 @@ export default function UnderConstruction({
     </ModuleWorkspace>
   );
 }
-

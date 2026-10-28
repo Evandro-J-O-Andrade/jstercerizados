@@ -1,6 +1,6 @@
 'use client';
 
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { DashboardSection } from '@/components/dashboard';
 import { Button } from '@/components/ui/Button';
 import { Sparkles, Plus } from 'lucide-react';

@@ -6,12 +6,13 @@ import { PermissionGuard } from '@/platform/permissions';
 import {
   getAvailableModules,
   getAvailableFeatures,
+  type ModuleCategory,
   type ModuleDefinition,
   type ModuleFeature,
   MODULE_PERMISSION_MAP,
 } from '@/platform/modules';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { ModuleSidebar } from '@/components/portal/ModuleSidebar';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
+import { ModuleSidebar } from '@/components/legacy/portal/ModuleSidebar';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { EmptyState } from '@/components/fallback';
 import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
@@ -275,7 +276,24 @@ export function ModuleRouter({
 
   const launcherRoutes = (
     moduleIds
-      ? availableModules.filter((m) => moduleIds.includes(m.id))
+      ? moduleIds
+          .filter((id) => Boolean(moduleRegistries[id]))
+          .map((id) => {
+            const mod = availableModules.find((m) => m.id === id);
+            return (
+              mod ||
+              ({
+                id,
+                title: id,
+                description: '',
+                icon: 'briefcase',
+                route: '',
+                category: 'inicio' as ModuleCategory,
+                scope: 'tenant',
+                requiredPermissions: [],
+              } as ModuleDefinition)
+            );
+          })
       : availableModules.filter(
           (module) =>
             module.route !== base &&

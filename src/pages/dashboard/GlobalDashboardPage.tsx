@@ -12,8 +12,8 @@ import {
   UserPlus,
   Wrench,
 } from 'lucide-react';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { ModuleCard } from '@/components/portal/ModuleCard';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
+import { ModuleCard } from '@/components/legacy/portal/ModuleCard';
 import {
   DashboardCard,
   DashboardErrorState,

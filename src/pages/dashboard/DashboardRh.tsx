@@ -1,4 +1,4 @@
-﻿import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   BriefcaseBusiness,
   Building2,
@@ -8,7 +8,7 @@ import {
   UserPlus,
   Users,
 } from 'lucide-react';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import {
   DashboardCard,
@@ -141,7 +141,7 @@ export default function DashboardRh() {
       },
       {
         id: 'employees',
-        label: 'Funcionários',
+        label: 'Funcion�rios',
         value: stats.totalEmployees,
         description: `${stats.activeEmployees} ativos`,
         icon: Users,
@@ -174,9 +174,9 @@ export default function DashboardRh() {
       },
       {
         id: 'recent-admissions',
-label: 'Admissões recentes',
+        label: 'Admiss�es recentes',
         value: stats.recentAdmissions,
-        description: 'Últimos 30 dias',
+        description: '�ltimos 30 dias',
         icon: CalendarCheck,
         tone: 'success',
         permission: 'people.read',
@@ -184,9 +184,9 @@ label: 'Admissões recentes',
       },
       {
         id: 'recent-candidates',
-label: 'Novos candidatos',
+        label: 'Novos candidatos',
         value: stats.recentCandidates,
-        description: 'Últimos 30 dias',
+        description: '�ltimos 30 dias',
         icon: UserPlus,
         tone: 'primary',
         permission: 'candidates.read',
@@ -201,7 +201,7 @@ label: 'Novos candidatos',
                 (stats.totalApplications / stats.totalCandidates).toFixed(2),
               )
             : 0,
-        description: 'Média de candidaturas por candidato',
+        description: 'M�dia de candidaturas por candidato',
         icon: TrendingUp,
         tone: 'neutral',
         permission: 'applications.read',
@@ -214,7 +214,7 @@ label: 'Novos candidatos',
           stats.activeClients > 0
             ? Number((stats.openJobs / stats.activeClients).toFixed(2))
             : 0,
-        description: 'Média por cliente ativo',
+        description: 'M�dia por cliente ativo',
         icon: BriefcaseBusiness,
         tone: 'warning',
         permission: 'jobs.read',
@@ -243,14 +243,15 @@ label: 'Novos candidatos',
   return (
     <ModuleWorkspace
       title="Dashboard RH"
-      description="Visão geral do módulo de Recursos Humanos"
+      description="Vis�o geral do m�dulo de Recursos Humanos"
       icon={TrendingUp}
-      breadcrumbItems={[{ label: 'Dashboard RH' }]}
+      homeRoute="/dashboard/rh"
+      breadcrumbItems={[{ label: 'Dashboard RH', href: '/dashboard/rh' }]}
       actions={
         isAdminMaster ? (
           <Button variant="primary" size="sm">
             <Plus className="h-4 w-4" />
-            Nova ação
+            Nova a��o
           </Button>
         ) : undefined
       }
@@ -267,10 +268,9 @@ label: 'Novos candidatos',
             ))}
           </DashboardMetricGrid>
         ) : (
-          <DashboardErrorState message="Nenhum indicador de RH está liberado para o seu perfil." />
+          <DashboardErrorState message="Nenhum indicador de RH est� liberado para o seu perfil." />
         )}
       </div>
     </ModuleWorkspace>
   );
 }
-

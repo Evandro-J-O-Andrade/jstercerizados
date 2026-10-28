@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Wrench, Plus } from 'lucide-react';
 import { getSupabaseClient } from '@/lib/supabase';

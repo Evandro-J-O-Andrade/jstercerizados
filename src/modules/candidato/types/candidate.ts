@@ -15,6 +15,7 @@ export interface Candidate {
   source: string | null;
   status: CandidateStatus;
   metadata: Record<string, unknown>;
+  avatar_url: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -53,6 +54,7 @@ export interface CandidateUpdateInput {
   source?: string | null;
   status?: CandidateStatus;
   metadata?: Record<string, unknown>;
+  avatar_url?: string | null;
   created_by?: string | null;
 }
 

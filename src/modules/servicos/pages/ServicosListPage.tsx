@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import {
@@ -17,8 +17,8 @@ import type {
   ServiceOrderCreateInput,
   ServiceExecutionCreateInput,
 } from '@/types/domain/service';
-import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
-import { getModuleById } from '@/components/portal/ModuleRegistry';
+import type { ModuleDefinition } from '@/components/legacy/portal/ModuleRegistry';
+import { getModuleById } from '@/components/legacy/portal/ModuleRegistry';
 import { ServiceForm } from '@/modules/servicos/components/ServiceForm';
 import { SERVICOS_PERMISSIONS } from '@/modules/servicos/permissions';
 
@@ -62,7 +62,7 @@ const SERVICES_FILTERS: FilterDef[] = [
 ];
 
 const ORDERS_COLUMNS: ColumnDef<ServiceOrder>[] = [
-  { key: 'company_service_id', header: 'Serviço', sortable: true },
+  { key: 'company_service_id', header: 'Servi�o', sortable: true },
   { key: 'status', header: 'Status', sortable: true },
   {
     key: 'scheduled_at',
@@ -101,7 +101,7 @@ const EXECUTIONS_COLUMNS: ColumnDef<ServiceExecution>[] = [
   { key: 'service_order_id', header: 'Ordem', sortable: true },
   {
     key: 'started_at',
-    header: 'Início',
+    header: 'In�cio',
     render: (item) =>
       item.started_at ? new Date(item.started_at).toLocaleString('pt-BR') : '-',
     sortable: true,
@@ -135,7 +135,7 @@ function OrderForm({
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-foreground text-sm font-medium">Serviço</label>
+        <label className="text-foreground text-sm font-medium">Servi�o</label>
         <input
           className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
           value={form.company_service_id}
@@ -174,7 +174,7 @@ function OrderForm({
       </div>
       <div>
         <label className="text-foreground text-sm font-medium">
-          Período início
+          Per�odo in�cio
         </label>
         <input
           type="date"
@@ -185,7 +185,7 @@ function OrderForm({
       </div>
       <div>
         <label className="text-foreground text-sm font-medium">
-          Período fim
+          Per�odo fim
         </label>
         <input
           type="date"
@@ -204,7 +204,7 @@ function OrderForm({
       </div>
       <div>
         <label className="text-foreground text-sm font-medium">
-          Observações
+          Observa��es
         </label>
         <textarea
           className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
@@ -227,7 +227,7 @@ function ExecutionForm({
     <div className="space-y-4">
       <div>
         <label className="text-foreground text-sm font-medium">
-          Ordem de serviço
+          Ordem de servi�o
         </label>
         <input
           className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
@@ -248,7 +248,7 @@ function ExecutionForm({
         />
       </div>
       <div>
-        <label className="text-foreground text-sm font-medium">Início</label>
+        <label className="text-foreground text-sm font-medium">In�cio</label>
         <input
           type="datetime-local"
           className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
@@ -356,18 +356,18 @@ export default function ServicosListPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-foreground text-xl font-semibold">Serviços</h1>
+          <h1 className="text-foreground text-xl font-semibold">Servi�os</h1>
           <p className="text-muted-foreground text-sm">
-            Catálogo, ordens e execuções.
+            Cat�logo, ordens e execu��es.
           </p>
         </div>
       </div>
 
       <div className="border-border flex gap-2 overflow-x-auto border-b">
         {[
-          { key: 'services', label: 'Serviços' },
+          { key: 'services', label: 'Servi�os' },
           { key: 'orders', label: 'Ordens' },
-          { key: 'executions', label: 'Execuções' },
+          { key: 'executions', label: 'Execu��es' },
         ].map((t) => (
           <button
             key={t.key}
@@ -385,8 +385,8 @@ export default function ServicosListPage() {
 
       {tab === 'services' && (
         <ModulePage
-          title="Serviços"
-          description="Catálogo de serviços."
+          title="Servi�os"
+          description="Cat�logo de servi�os."
           module={moduleDef}
           permissions={
             [
@@ -445,7 +445,7 @@ export default function ServicosListPage() {
             servicesRepository.deleteService(tenantId, id)
           }
           getItemId={(item) => item.id}
-          emptyMessage="Nenhum serviço cadastrado."
+          emptyMessage="Nenhum servi�o cadastrado."
           onEditStart={(item) => setEditingService(item as Service)}
           onModalClose={() => setEditingService(null)}
           modalOpen={serviceModalOpen}
@@ -487,7 +487,7 @@ export default function ServicosListPage() {
 
       {tab === 'orders' && (
         <ModulePage
-          title="Ordens de Serviço"
+          title="Ordens de Servi�o"
           description="Ordens e acompanhamento."
           module={moduleDef}
           permissions={
@@ -560,8 +560,8 @@ export default function ServicosListPage() {
 
       {tab === 'executions' && (
         <ModulePage
-          title="Execuções"
-          description="Execuções de serviço."
+          title="Execu��es"
+          description="Execu��es de servi�o."
           module={moduleDef}
           permissions={
             [
@@ -623,7 +623,7 @@ export default function ServicosListPage() {
             servicesRepository.deleteExecution(tenantId, id)
           }
           getItemId={(item) => item.id}
-          emptyMessage="Nenhuma execução registrada."
+          emptyMessage="Nenhuma execu��o registrada."
           renderForm={(form, setForm) => (
             <ExecutionForm
               form={form as ServiceExecutionCreateInput}

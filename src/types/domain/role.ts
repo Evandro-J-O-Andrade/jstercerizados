@@ -1,7 +1,9 @@
 export interface Role {
   id: string;
   name: string;
+  slug: string;
   description: string | null;
+  scope: 'global' | 'tenant';
   is_global: boolean;
   created_at: string;
   updated_at: string;
@@ -10,11 +12,13 @@ export interface Role {
 export interface RoleCreateInput {
   name: string;
   description?: string | null;
-  is_global: boolean;
+  scope: 'global' | 'tenant';
+  is_global?: boolean;
 }
 
 export interface RoleUpdateInput {
   name?: string;
   description?: string | null;
+  scope?: 'global' | 'tenant';
   is_global?: boolean;
 }

@@ -1,15 +1,15 @@
 import { useMemo } from 'react';
 import { LayoutDashboard, AlertCircle } from 'lucide-react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { ModuleSidebar } from '@/components/portal/ModuleSidebar';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
+import { ModuleSidebar } from '@/components/legacy/portal/ModuleSidebar';
 import { EmptyState } from '@/components/fallback';
 import { useAccount } from '@/contexts/AccountContext';
 import { cn } from '@/utils';
 import {
   PORTAL_MODULES,
   getAvailableFeatures,
-} from '@/components/portal/ModuleRegistry';
+} from '@/components/legacy/portal/ModuleRegistry';
 
 interface ModuleDashboardPageProps {
   moduleId: string;

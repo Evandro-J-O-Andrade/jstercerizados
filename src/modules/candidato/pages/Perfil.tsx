@@ -11,6 +11,7 @@ import { useToast } from '@/components/feedback/ToastContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCandidato } from '@/modules/candidato/CandidatoContext';
 import { candidatesRepository } from '@/modules/candidato/repositories/candidates.repository';
+import { AvatarUpload } from '@/modules/candidato/components';
 import type { Person } from '@/types/auth';
 import { SEO } from '@/components/ui/SEO';
 import { COMPANY } from '@/config';
@@ -143,6 +144,30 @@ export default function CandidatePerfil() {
     }
   };
 
+  const handleAvatarUpdate = async (avatarUrl: string | null) => {
+    if (!candidate) return;
+    setIsSaving(true);
+    try {
+      await candidatesRepository.update(candidate.id, candidate.tenant_id, {
+        avatar_url: avatarUrl,
+      });
+      await refetch();
+      addToast({
+        type: 'success',
+        message: avatarUrl
+          ? 'Avatar atualizado com sucesso!'
+          : 'Avatar removido.',
+      });
+    } catch {
+      addToast({
+        type: 'error',
+        message: 'Erro ao atualizar avatar. Tente novamente.',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleCancel = () => {
     if (!person || !candidate) return;
     reset({
@@ -178,7 +203,14 @@ export default function CandidatePerfil() {
         </header>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Card className="p-6">
+          <AvatarUpload
+            candidateId={candidate?.id ?? ''}
+            currentUrl={candidate?.avatar_url ?? null}
+            onConfirm={handleAvatarUpdate}
+            isLoading={isSaving}
+          />
+
+          <Card className="mt-6 p-6">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <User className="text-muted-foreground h-5 w-5" />
@@ -332,4 +364,3 @@ export default function CandidatePerfil() {
     </>
   );
 }
-

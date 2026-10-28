@@ -9,8 +9,11 @@ const ALLOWED_ORIGINS = [
   'http://localhost',
 ];
 
-const ALLOWED_MIME_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+// MIME types permitidos: imagens para public-media, PDF para private-documents
+const ALLOWED_IMAGE_MIME_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+const ALLOWED_DOC_MIME_TYPES = ['application/pdf'];
+const MAX_FILE_SIZE_IMAGE = 10 * 1024 * 1024; // 10 MB
+const MAX_FILE_SIZE_DOC = 20 * 1024 * 1024; // 20 MB
 const MAX_GALLERY_ITEMS = 10;
 
 const ENTITY_TO_RESOURCE: Record<string, string> = {
@@ -18,19 +21,39 @@ const ENTITY_TO_RESOURCE: Record<string, string> = {
   service: 'services.media',
   partner: 'partners.media',
   supplier: 'suppliers.media',
+  person: 'people.media',
 };
 
-const PRIMARY_PURPOSES = ['logo', 'hero', 'card'];
+const PRIMARY_PURPOSES = ['logo', 'hero', 'card', 'avatar'];
+
+const BUCKET_FOR_PURPOSE: Record<string, string> = {
+  logo: 'public-media',
+  hero: 'public-media',
+  card: 'public-media',
+  gallery: 'public-media',
+  avatar: 'avatars',
+  cover: 'public-media',
+  cv: 'private-documents',
+};
 
 const MAGIC_BYTES: Record<string, Uint8Array[]> = {
-  'image/png': [new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])],
+  'image/png': [
+    new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+  ],
   'image/jpeg': [
     new Uint8Array([0xff, 0xd8, 0xff, 0xdb]),
     new Uint8Array([0xff, 0xd8, 0xff, 0xe0]),
     new Uint8Array([0xff, 0xd8, 0xff, 0xe1]),
   ],
-  'image/webp': [new Uint8Array([0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50])],
+  'image/webp': [
+    new Uint8Array([
+      0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
+    ]),
+  ],
+  'application/pdf': [new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d])],
 };
+
+const N8N_WEBHOOK_URL = Deno.env.get('N8N_WEBHOOK_URL');
 
 function corsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get('origin') ?? '';
@@ -62,16 +85,52 @@ function errorResponse(
   return json({ success: false, error: message, code }, status, req);
 }
 
-function validateMagicBytes(file: File, declaredMime: string): Promise<boolean> {
+async function computeSha256(buffer: ArrayBuffer): Promise<string> {
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function validateMagicBytes(
+  file: File,
+  declaredMime: string,
+): Promise<boolean> {
   const expectedSignatures = MAGIC_BYTES[declaredMime];
   if (!expectedSignatures) return Promise.resolve(false);
 
-  return file.slice(0, 12).arrayBuffer().then((buffer) => {
-    const header = new Uint8Array(buffer);
-    return expectedSignatures.some((sig) =>
-      sig.every((byte, i) => header[i] === byte),
-    );
-  });
+  return file
+    .slice(0, 12)
+    .arrayBuffer()
+    .then((buffer) => {
+      const header = new Uint8Array(buffer);
+      return expectedSignatures.some((sig) =>
+        sig.every((byte, i) => header[i] === byte),
+      );
+    });
+}
+
+async function notifyN8nWebhook(payload: unknown): Promise<void> {
+  if (!N8N_WEBHOOK_URL) {
+    console.error('[media-upload] N8N_WEBHOOK_URL not configured');
+    return;
+  }
+  try {
+    await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Source': 'media-upload',
+        'X-Request-Id': crypto.randomUUID(),
+      },
+      body: JSON.stringify({
+        ...payload,
+        source: 'media-upload',
+        sentAt: new Date().toISOString(),
+      }),
+    });
+  } catch (err) {
+    console.error('[media-upload] n8n webhook failed:', err);
+  }
 }
 
 serve(async (req: Request) => {
@@ -163,6 +222,7 @@ serve(async (req: Request) => {
       'gallery',
       'avatar',
       'cover',
+      'cv',
     ];
     if (!validPurposes.includes(purpose)) {
       return errorResponse(
@@ -173,11 +233,18 @@ serve(async (req: Request) => {
       );
     }
 
-    // 5. Validate MIME type (reject SVG for user uploads)
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    // 5. Validate MIME type based on purpose
+    const isDoc = purpose === 'cv';
+    const allowedMimes = isDoc
+      ? ALLOWED_DOC_MIME_TYPES
+      : ALLOWED_IMAGE_MIME_TYPES;
+    const maxSize = isDoc ? MAX_FILE_SIZE_DOC : MAX_FILE_SIZE_IMAGE;
+
+    if (!allowedMimes.includes(file.type)) {
+      const expected = isDoc ? 'PDF' : 'PNG, JPG ou WebP';
       return errorResponse(
         'INVALID_MIME_TYPE',
-        'Formato não suportado. Use PNG, JPG ou WebP.',
+        `Formato não suportado. Use ${expected}.`,
         400,
         req,
       );
@@ -195,10 +262,10 @@ serve(async (req: Request) => {
     }
 
     // 7. Validate file size
-    if (file.size > MAX_FILE_SIZE) {
+    if (file.size > maxSize) {
       return errorResponse(
         'FILE_TOO_LARGE',
-        `Arquivo muito grande. Máximo ${MAX_FILE_SIZE / 1024 / 1024} MB.`,
+        `Arquivo muito grande. Máximo ${maxSize / 1024 / 1024} MB.`,
         413,
         req,
       );
@@ -221,7 +288,7 @@ serve(async (req: Request) => {
     }
     const personId = person.id;
 
-    // 8. Resolve tenant_id from active membership
+    // 9. Resolve tenant_id from active membership
     const { data: membership, error: membershipError } = await userClient
       .from('tenant_memberships')
       .select('tenant_id')
@@ -241,7 +308,7 @@ serve(async (req: Request) => {
     }
     const tenantId = membership.tenant_id;
 
-    // 9. Check permission via RPC (uses user_has_permission internally)
+    // 10. Check permission via RPC (uses user_has_permission internally)
     const { data: hasPermission, error: permError } = await userClient.rpc(
       'user_has_permission',
       {
@@ -261,9 +328,7 @@ serve(async (req: Request) => {
       );
     }
 
-    // 10. Verify entity exists and belongs to tenant
-    // Contract: entity_id = companies.id for company/service
-    //           entity_id = company_relationships.id for partner/supplier
+    // 11. Verify entity exists and belongs to tenant
     const entityTable =
       entityType === 'company'
         ? 'companies'
@@ -273,7 +338,9 @@ serve(async (req: Request) => {
             ? 'company_relationships'
             : entityType === 'supplier'
               ? 'company_relationships'
-              : null;
+              : entityType === 'person'
+                ? 'people'
+                : null;
 
     if (!entityTable) {
       return errorResponse(
@@ -289,9 +356,10 @@ serve(async (req: Request) => {
       .select('id')
       .eq('id', entityId);
 
+    // person: verify via tenant_memberships (already done above)
     if (entityType === 'company' || entityType === 'service') {
       entityQuery = entityQuery.eq('tenant_id', tenantId);
-    } else {
+    } else if (entityType !== 'person') {
       // partner/supplier: verify via company_relationships tenant_id
       entityQuery = entityQuery.eq('tenant_id', tenantId);
     }
@@ -307,14 +375,14 @@ serve(async (req: Request) => {
       );
     }
 
-    // 11. Check gallery limit (for gallery purpose)
+    // 12. Check gallery limit (for gallery purpose)
     if (purpose === 'gallery') {
       const { count, error: countError } = await userClient
         .from('media_assets')
         .select('*', { count: 'exact', head: true })
         .eq('entity_type', entityType)
         .eq('entity_id', entityId)
-        .is('metadata->>archived', null); // exclude archived
+        .is('metadata->>archived', null);
 
       if (countError) {
         console.error('[media-upload] Gallery count error:', countError);
@@ -328,15 +396,19 @@ serve(async (req: Request) => {
       }
     }
 
-    // 12. Generate storage path
+    // 13. Generate storage path
     const fileExt = file.name.split('.').pop()?.toLowerCase() || 'webp';
     const uuid = crypto.randomUUID();
+    const bucketName = BUCKET_FOR_PURPOSE[purpose];
     const storagePath = `${entityType}/${entityId}/${purpose}/${uuid}.${fileExt}`;
 
-    // 13. Upload to Storage using service_role
+    // 14. Read file buffer and compute integrity hash
     const fileBuffer = await file.arrayBuffer();
+    const fileHash = await computeSha256(fileBuffer);
+
+    // 15. Upload to Storage using service_role
     const { error: uploadError } = await adminClient.storage
-      .from('public-media')
+      .from(bucketName)
       .upload(storagePath, fileBuffer, {
         contentType: file.type,
         upsert: false,
@@ -352,18 +424,17 @@ serve(async (req: Request) => {
       );
     }
 
-    // 14. Get public URL
+    // 16. Get public URL (or signed URL for private buckets)
     const { data: urlData } = adminClient.storage
-      .from('public-media')
+      .from(bucketName)
       .getPublicUrl(storagePath);
     const fileUrl = urlData.publicUrl;
 
-    // 15. Determine sort_order
+    // 17. Determine sort_order
     let sortOrder = 0;
     if (sortOrderStr) {
       sortOrder = parseInt(sortOrderStr, 10);
     } else if (purpose === 'gallery') {
-      // Auto-increment: get max sort_order for this entity
       const { data: maxOrder } = await userClient
         .from('media_assets')
         .select('sort_order')
@@ -374,18 +445,19 @@ serve(async (req: Request) => {
       sortOrder = (maxOrder?.[0]?.sort_order ?? -1) + 1;
     }
 
-    // 16. Insert media_assets record
+    // 18. Insert media_assets record
     const { data: asset, error: assetError } = await adminClient
       .from('media_assets')
       .insert({
         tenant_id: tenantId,
-        bucket_id: 'public-media',
+        bucket_id: bucketName,
         storage_path: storagePath,
         file_url: fileUrl,
         file_name: `${uuid}.${fileExt}`,
         mime_type: file.type,
         file_size_bytes: file.size,
-        width: null, // not extracting dimensions (no sharp)
+        file_hash: fileHash,
+        width: null,
         height: null,
         entity_type: entityType,
         entity_id: entityId,
@@ -402,7 +474,7 @@ serve(async (req: Request) => {
 
     if (assetError || !asset) {
       // Cleanup storage on DB failure
-      await adminClient.storage.from('public-media').remove([storagePath]);
+      await adminClient.storage.from(bucketName).remove([storagePath]);
       console.error('[media-upload] media_assets insert error:', assetError);
       return errorResponse(
         'DB_INSERT_FAILED',
@@ -412,7 +484,7 @@ serve(async (req: Request) => {
       );
     }
 
-    // 17. If primary purpose, call set_primary_media RPC
+    // 19. If primary purpose, call set_primary_media RPC
     if (PRIMARY_PURPOSES.includes(purpose)) {
       const { error: primaryError } = await adminClient.rpc(
         'set_primary_media',
@@ -425,8 +497,7 @@ serve(async (req: Request) => {
 
       if (primaryError) {
         console.error('[media-upload] set_primary_media error:', primaryError);
-        // Atomic rollback: delete storage object and media_assets record
-        await adminClient.storage.from('public-media').remove([storagePath]);
+        await adminClient.storage.from(bucketName).remove([storagePath]);
         await adminClient.from('media_assets').delete().eq('id', asset.id);
         return errorResponse(
           'SET_PRIMARY_FAILED',
@@ -437,7 +508,7 @@ serve(async (req: Request) => {
       }
     }
 
-    // 18. Sync companies.logo_url for logo purpose
+    // 20. Sync companies.logo_url for logo purpose
     let logoSyncSuccess = true;
     if (purpose === 'logo' && entityType === 'company') {
       const { error: logoSyncError } = await adminClient
@@ -447,12 +518,31 @@ serve(async (req: Request) => {
         .eq('tenant_id', tenantId);
 
       if (logoSyncError) {
-        console.error('[media-upload] companies.logo_url sync error:', logoSyncError);
+        console.error(
+          '[media-upload] companies.logo_url sync error:',
+          logoSyncError,
+        );
         logoSyncSuccess = false;
       }
     }
 
-    // 19. Return success
+    // 21. Notify n8n webhook
+    await notifyN8nWebhook({
+      action: 'media_uploaded',
+      entity_type: entityType,
+      entity_id: entityId,
+      purpose,
+      tenant_id: tenantId,
+      person_id: personId,
+      asset_id: asset.id,
+      file_url: fileUrl,
+      file_name: `${uuid}.${fileExt}`,
+      mime_type: file.type,
+      file_size_bytes: file.size,
+      file_hash: fileHash,
+    });
+
+    // 22. Return success
     return json(
       {
         success: true,
@@ -463,14 +553,15 @@ serve(async (req: Request) => {
           file_url: asset.file_url,
           file_name: asset.file_name,
           mime_type: asset.mime_type,
-          width: asset.width,
-          height: asset.height,
+          file_size_bytes: asset.file_size_bytes,
+          file_hash: asset.file_hash,
           is_primary: asset.is_primary,
           sort_order: asset.sort_order,
           alt_text: asset.alt_text,
           created_at: asset.created_at,
         },
         logo_sync: logoSyncSuccess,
+        bucket: bucketName,
       },
       200,
       req,

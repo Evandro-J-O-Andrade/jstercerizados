@@ -210,7 +210,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
       }
 
-      // Filter assignments: valid globals (tenant_id IS NULL + role.is_global) + valid current tenant
+      // Filter assignments: valid globals (tenant_id IS NULL + role.scope='global') + valid current tenant
       const now = new Date().toISOString();
       const currentTenantIdForFilter = primaryTenantId;
 
@@ -222,7 +222,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           // Global role assignment (tenant_id IS NULL)
           if (ra.tenant_id === null) {
-            return true; // Will validate role.is_global when roles are loaded
+            return true; // Will validate role.scope when roles are loaded
           }
           // Tenant-scoped assignment for current tenant
           if (ra.tenant_id === currentTenantIdForFilter) {
@@ -248,48 +248,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select('*')
         .in('id', roleIds);
 
-      // Separate global and tenant roles
+      // Separar funções pelo escopo real do banco (coluna scope, não is_global).
       const globalRoles = (rolesData || []).filter(
-        (r: Role) => r.is_global === true,
+        (role: Role) => role.scope === 'global',
       );
+
       const tenantRoles = (rolesData || []).filter(
-        (r: Role) => r.is_global === false,
+        (role: Role) => role.scope === 'tenant',
       );
 
-      // Validate global assignments: only keep those where role.is_global=true
-      const globalRoleIds = new Set(globalRoles.map((r) => r.id));
+      const globalRoleIds = new Set(globalRoles.map((role) => role.id));
+
       const validGlobalAssignments = validAssignments.filter(
-        (ra) => ra.tenant_id === null && globalRoleIds.has(ra.role_id),
+        (assignment) =>
+          assignment.tenant_id === null &&
+          globalRoleIds.has(assignment.role_id),
       );
 
-      // Validate tenant assignments: only keep those where role.is_global=false and tenant matches
-      const tenantRoleIds = new Set(tenantRoles.map((r) => r.id));
+      const tenantRoleIds = new Set(tenantRoles.map((role) => role.id));
+
       const validTenantAssignments = validAssignments.filter(
-        (ra) =>
-          ra.tenant_id === currentTenantIdForFilter &&
-          tenantRoleIds.has(ra.role_id),
+        (assignment) =>
+          assignment.tenant_id === currentTenantIdForFilter &&
+          tenantRoleIds.has(assignment.role_id),
       );
 
       // Combine validated role IDs
       const validatedRoleIds = Array.from(
         new Set([
-          ...validGlobalAssignments.map((ra) => ra.role_id),
-          ...validTenantAssignments.map((ra) => ra.role_id),
+          ...validGlobalAssignments.map((assignment) => assignment.role_id),
+          ...validTenantAssignments.map((assignment) => assignment.role_id),
         ]),
       ).filter((id): id is string => Boolean(id));
 
       // Re-filter rolesData to only validated roles
-      const validatedRoles = (rolesData || []).filter((r) =>
-        validatedRoleIds.includes(r.id),
+      const validatedRoles = (rolesData || []).filter((role) =>
+        validatedRoleIds.includes(role.id),
       );
 
       const adminMaster = validatedRoles.some(
-        (r: Role) => r.is_global === true && r.name === 'admin_master',
+        (role: Role) => role.scope === 'global' && role.name === 'admin_master',
       );
 
       console.log('[AUTH:IDENTITY] roles loaded', {
         count: validatedRoles.length,
         names: validatedRoles.map((r: Role) => r.name),
+        scopes: validatedRoles.map((r: Role) => r.scope),
+        adminMaster,
       });
 
       let isCandidate = validatedRoles.some(
@@ -361,6 +366,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isCandidate,
         isEmpresa,
         adminMaster,
+        roles: validatedRoles.map((r: Role) => ({
+          name: r.name,
+          scope: r.scope,
+        })),
       });
 
       const { data: firstLoginData } = await supabase
@@ -421,6 +430,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         personId: personData.id,
         primaryTenantId,
         isCandidate,
+        isAdminMaster: adminMaster,
         permissionCount: permissionsData.length,
         operationId: currentOperationId,
       });
@@ -1274,29 +1284,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return '/auth/terms';
       }
 
-      if (overrideWelcomeCompleted) {
-        if (isCandidate) {
-          console.log(
-            '[AUTH:FLOW] redirect → /candidato (candidato, welcome completed)',
-          );
-          return '/candidato';
-        }
-        if (isAdminMaster) {
-          console.log(
-            '[AUTH:FLOW] redirect → /dashboard (admin, welcome completed)',
-          );
-          return '/dashboard';
-        }
-        // Default for non-admin, non-candidate users with admin roles
-        console.log(
-          '[AUTH:FLOW] redirect → /dashboard (default, welcome completed)',
-        );
-        return '/dashboard';
+      const welcomeCompleted = Boolean(firstLoginState?.welcome_completed_at);
+
+      if (!welcomeCompleted) {
+        console.debug('[AUTH:DESTINATION] → /auth/welcome (pendente)');
+        return '/auth/welcome';
       }
 
-      // Keep welcome in the post-login handoff; protected-route refreshes use AuthRoute.
-      console.log('[AUTH:FLOW] redirect → /auth/welcome (post-login)');
-      return '/auth/welcome';
+      const roleToDashboard: Record<string, string> = {
+        admin_master: '/dashboard/admin',
+        platform_admin: '/dashboard/admin',
+        support_engineer: '/dashboard/suporte',
+        tenant_admin: '/dashboard/admin',
+        rh_manager: '/dashboard/rh',
+        recruiter: '/dashboard/recrutamento',
+        finance_manager: '/dashboard/financeiro',
+        finance: '/dashboard/financeiro',
+        support_agent: '/dashboard/suporte',
+        commercial: '/dashboard/empresas',
+        stock_manager: '/dashboard/estoque',
+        fiscal: '/dashboard/fiscal',
+        operations_manager: '/dashboard/operacoes',
+        operations_operator: '/dashboard/operacoes',
+        company_representative: '/dashboard/empresas',
+        suporte: '/dashboard/suporte',
+        media: '/dashboard/media',
+        servicos: '/dashboard/servicos',
+        pos: '/dashboard/pos',
+        contabilidade: '/dashboard/contabilidade',
+        candidato: '/candidato',
+      };
+
+      for (const role of roles) {
+        const dashboard = roleToDashboard[role.name];
+        if (dashboard) {
+          console.debug(
+            `[AUTH:DESTINATION] → ${dashboard} (role: ${role.name})`,
+          );
+          return dashboard;
+        }
+      }
+
+      console.debug(
+        '[AUTH:DESTINATION] → /dashboard (sem dashboard de célula específico)',
+      );
+      return '/dashboard';
     },
     [
       isAdminMaster,

@@ -19,6 +19,8 @@ export interface Permission {
 export interface Role {
   id: UUID;
   name: string;
+  slug: string;
+  scope: 'global' | 'tenant';
   is_global: boolean;
   description?: string | null;
   created_at: string;

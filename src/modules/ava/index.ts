@@ -5,3 +5,4 @@ export * from './container';
 export * from './dashboard';
 export * from './components';
 export * from './permissions';
+export { avaCellContract } from './cellContract';

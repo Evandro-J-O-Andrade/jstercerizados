@@ -11,6 +11,8 @@ import { contabilidadeRoutes } from '@/modules/contabilidade/routes';
 import { posRoutes } from '@/modules/pos/routes';
 import { operacoesRoutes } from '@/modules/operacoes/routes';
 import { empresasRoutes } from '@/modules/empresas/routes';
+import { adminRoutes } from '@/modules/admin/routes';
+import { mediaRoutes } from '@/modules/media/routes';
 
 export const moduleRouteRegistries: Record<string, ModuleRoute[]> = {
   rh: rhRoutes,
@@ -24,5 +26,7 @@ export const moduleRouteRegistries: Record<string, ModuleRoute[]> = {
   contabilidade: contabilidadeRoutes,
   operacoes: operacoesRoutes,
   empresas: empresasRoutes,
+  admin: adminRoutes,
+  media: mediaRoutes,
   pos: posRoutes,
 };

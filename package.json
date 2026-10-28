@@ -52,7 +52,7 @@
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@playwright/test": "^1.62.1",
-    "@supabase/server": "^1.4.1",
+    "@supabase/server": "^1.9.2",
     "@supabase/ssr": "^0.12.4",
     "@tailwindcss/postcss": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",

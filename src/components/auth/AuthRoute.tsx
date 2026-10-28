@@ -13,6 +13,8 @@ export function AuthRoute({ children }: AuthRouteProps) {
     person,
     firstLoginState,
     legalAcceptances,
+    recoveryMode,
+    tenantMemberships,
   } = useAuth();
 
   if (isLoading) {
@@ -40,6 +42,21 @@ export function AuthRoute({ children }: AuthRouteProps) {
 
   if (!welcomeCompleted) {
     return <Navigate to="/auth/welcome" replace />;
+  }
+
+  if (recoveryMode) {
+    return <Navigate to="/redefinir-senha" replace />;
+  }
+
+  const hasMembership = Array.isArray(tenantMemberships)
+    ? tenantMemberships.length > 0
+    : false;
+  if (!hasMembership) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  if (firstLoginState?.must_change_password) {
+    return <Navigate to="/primeiro-acesso/senha" replace />;
   }
 
   return <>{children}</>;

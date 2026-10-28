@@ -71,7 +71,7 @@ vi.mock('framer-motion', () => ({
   ),
 }));
 
-import { PortalSidebar } from '@/components/portal/PortalSidebar';
+import { PortalSidebar } from '@/components/legacy/portal/PortalSidebar';
 
 function renderSidebar() {
   return render(

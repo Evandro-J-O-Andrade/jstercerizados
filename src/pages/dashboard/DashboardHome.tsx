@@ -2,8 +2,8 @@ import { useMemo, useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAccount } from '@/contexts/AccountContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
-import { ModuleCardGrid } from '@/components/portal/ModuleCardGrid';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
+import { ModuleCardGrid } from '@/components/legacy/portal/ModuleCardGrid';
 import { fetchAllModuleStats, type ModuleStats } from '@/lib/module-stats';
 import { LayoutDashboard } from 'lucide-react';
 

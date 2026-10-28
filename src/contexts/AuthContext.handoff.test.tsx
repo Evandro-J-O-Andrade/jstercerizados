@@ -82,7 +82,7 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
     const adminRole = {
       id: 'role-admin-master',
       name: 'admin_master',
-      is_global: true,
+      scope: 'global',
       description: 'Administrador global do sistema',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

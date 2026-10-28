@@ -11,8 +11,8 @@ import type {
   SupportTicket,
   SupportTicketCreateInput,
 } from '@/types/domain/support';
-import type { ModuleDefinition } from '@/components/portal/ModuleRegistry';
-import { getModuleById } from '@/components/portal/ModuleRegistry';
+import type { ModuleDefinition } from '@/components/legacy/portal/ModuleRegistry';
+import { getModuleById } from '@/components/legacy/portal/ModuleRegistry';
 
 const COLUMNS: ColumnDef<SupportTicket>[] = [
   { key: 'title', header: 'Título', sortable: true },

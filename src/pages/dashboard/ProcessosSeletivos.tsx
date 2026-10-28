@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { ClipboardList, Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -52,7 +52,12 @@ export default function ProcessosSeletivos() {
 
         if (!cancelled) {
           setItems(processesData);
-          setJobs((jobsResult.data || []).map((job) => ({ id: job.id, title: job.title })));
+          setJobs(
+            (jobsResult.data || []).map((job) => ({
+              id: job.id,
+              title: job.title,
+            })),
+          );
         }
       } catch (err) {
         if (!cancelled) {

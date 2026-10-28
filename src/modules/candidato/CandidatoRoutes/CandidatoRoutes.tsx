@@ -2,8 +2,10 @@
 import { lazy } from 'react';
 import { CANDIDATO_PERMISSIONS } from '../permissions';
 
-const CandidatoDashboard = lazy(
-  () => import('@/modules/candidato/DashboardCandidato').then(m => ({ default: m.DashboardCandidato })),
+const CandidatoDashboard = lazy(() =>
+  import('@/modules/candidato/DashboardCandidato').then((m) => ({
+    default: m.DashboardCandidato,
+  })),
 );
 const CandidatoVagas = lazy(() => import('@/modules/candidato/pages/Vagas'));
 const CandidatoVagasRecomendadas = lazy(
@@ -14,6 +16,9 @@ const CandidatoBuscarVagas = lazy(
 );
 const CandidatoCandidaturas = lazy(
   () => import('@/modules/candidato/pages/Candidaturas'),
+);
+const CandidatoKanban = lazy(
+  () => import('@/modules/candidato/pages/CandidaturasKanban'),
 );
 const CandidatoFavoritas = lazy(
   () => import('@/modules/candidato/pages/Favoritas'),
@@ -30,9 +35,7 @@ const CandidatoExperiencia = lazy(
 const CandidatoFormacao = lazy(
   () => import('@/modules/candidato/pages/Formacao'),
 );
-const CandidatoCursos = lazy(
-  () => import('@/modules/candidato/pages/Cursos'),
-);
+const CandidatoCursos = lazy(() => import('@/modules/candidato/pages/Cursos'));
 const CandidatoHabilidades = lazy(
   () => import('@/modules/candidato/pages/Habilidades'),
 );
@@ -45,12 +48,8 @@ const CandidatoDocumentos = lazy(
 const CandidatoPreferencias = lazy(
   () => import('@/modules/candidato/pages/Preferencias'),
 );
-const CandidatoConta = lazy(
-  () => import('@/modules/candidato/pages/Conta'),
-);
-const CandidatoPerfil = lazy(
-  () => import('@/modules/candidato/pages/Perfil'),
-);
+const CandidatoConta = lazy(() => import('@/modules/candidato/pages/Conta'));
+const CandidatoPerfil = lazy(() => import('@/modules/candidato/pages/Perfil'));
 const CandidatoEntrevistas = lazy(
   () => import('@/modules/candidato/pages/Entrevistas'),
 );
@@ -93,6 +92,12 @@ export const CandidatoRoutes: ModuleRoute[] = [
     path: 'candidaturas',
     label: 'Minhas Candidaturas',
     element: CandidatoCandidaturas,
+    requiredPermissions: [CANDIDATO_PERMISSIONS.candidaturas],
+  },
+  {
+    path: 'kanban',
+    label: 'Kanban de Candidaturas',
+    element: CandidatoKanban,
     requiredPermissions: [CANDIDATO_PERMISSIONS.candidaturas],
   },
   {

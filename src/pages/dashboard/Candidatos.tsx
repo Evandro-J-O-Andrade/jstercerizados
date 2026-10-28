@@ -1,6 +1,6 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Users, Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,7 +22,7 @@ const CANDIDATE_STATUS = [
 ] as const;
 
 const SALARY_TYPE_OPTIONS = [
-  { value: 'negotiate', label: 'Negociável' },
+  { value: 'negotiate', label: 'Negoci�vel' },
   { value: 'range', label: 'Faixa' },
   { value: 'monthly', label: 'Mensal' },
 ] as const;
@@ -305,7 +305,7 @@ export default function Candidatos() {
                     Status
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-right text-xs font-semibold tracking-wider uppercase">
-                    Ações
+                    A��es
                   </th>
                 </tr>
               </thead>
@@ -319,10 +319,10 @@ export default function Candidatos() {
                       {candidate.person?.full_name || 'Sem nome'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {candidate.headline || '—'}
+                      {candidate.headline || '�'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {candidate.source || '—'}
+                      {candidate.source || '�'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span
@@ -342,26 +342,26 @@ export default function Candidatos() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                          {canUpdate && (
-                            <button
-                              type="button"
-                              onClick={() => openEdit(candidate)}
-                              className="text-muted-foreground hover:text-foreground"
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </button>
-                          )}
-                          {canDelete && (
-                            <button
-                              type="button"
-                              onClick={() => setDeleteConfirm(candidate.id)}
-                              className="text-destructive hover:text-destructive/80"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          )}
-                        </div>
+                      <div className="flex items-center justify-end gap-2">
+                        {canUpdate && (
+                          <button
+                            type="button"
+                            onClick={() => openEdit(candidate)}
+                            className="text-muted-foreground hover:text-foreground"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            type="button"
+                            onClick={() => setDeleteConfirm(candidate.id)}
+                            className="text-destructive hover:text-destructive/80"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -407,7 +407,7 @@ export default function Candidatos() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Salário mínimo
+                    Sal�rio m�nimo
                   </label>
                   <input
                     type="number"
@@ -423,7 +423,7 @@ export default function Candidatos() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Salário máximo
+                    Sal�rio m�ximo
                   </label>
                   <input
                     type="number"
@@ -439,7 +439,7 @@ export default function Candidatos() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Tipo de salário
+                    Tipo de sal�rio
                   </label>
                   <select
                     className="w-full rounded-lg border px-3 py-2 text-sm"
@@ -526,7 +526,7 @@ export default function Candidatos() {
       <ConfirmDialog
         open={!!deleteConfirm}
         title="Remover candidato?"
-        message="Tem certeza que deseja remover este candidato? Essa ação não pode ser desfeita."
+        message="Tem certeza que deseja remover este candidato? Essa a��o n�o pode ser desfeita."
         confirmLabel="Remover"
         variant="danger"
         onConfirm={handleDelete}
@@ -535,4 +535,3 @@ export default function Candidatos() {
     </ModuleWorkspace>
   );
 }
-

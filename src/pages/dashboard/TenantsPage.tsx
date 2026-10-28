@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Building2, Plus, Pencil, Trash2 } from 'lucide-react';

@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Building2, ArrowLeft, Edit, Trash2, AlertCircle } from 'lucide-react';
 import { companiesRepository } from '@/repositories/companies.repository';
@@ -57,7 +57,7 @@ export default function EmpresaDetailPage() {
         if (data) {
           setCompany(data);
         } else {
-          setError('Empresa não encontrada');
+          setError('Empresa n�o encontrada');
         }
       } catch (err) {
         console.error('[EmpresaDetailPage] Failed to load:', err);
@@ -130,7 +130,7 @@ export default function EmpresaDetailPage() {
     return (
       <ModuleWorkspace title="Erro" description="" icon={AlertCircle}>
         <div className="text-destructive text-sm">
-          {error || 'Empresa não encontrada'}
+          {error || 'Empresa n�o encontrada'}
         </div>
         <Button variant="outline" onClick={handleBack} className="mt-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -143,7 +143,7 @@ export default function EmpresaDetailPage() {
   return (
     <ModuleWorkspace
       title={company.trading_name || company.name || 'Empresa'}
-      description={`CNPJ: ${company.cnpj || 'Não informado'}`}
+      description={`CNPJ: ${company.cnpj || 'N�o informado'}`}
       icon={Building2}
       breadcrumbItems={[
         { label: 'Empresas', href: '/dashboard/empresas' },
@@ -198,20 +198,20 @@ export default function EmpresaDetailPage() {
                 Nome Fantasia
               </dt>
               <dd className="text-foreground mt-1 font-medium">
-                {company.trading_name || '—'}
+                {company.trading_name || '�'}
               </dd>
             </div>
             <div>
               <dt className="text-muted-foreground text-sm font-medium">
-                Razão Social
+                Raz�o Social
               </dt>
-              <dd className="text-foreground mt-1">{company.name || '—'}</dd>
+              <dd className="text-foreground mt-1">{company.name || '�'}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground text-sm font-medium">
                 CNPJ
               </dt>
-              <dd className="text-foreground mt-1">{company.cnpj || '—'}</dd>
+              <dd className="text-foreground mt-1">{company.cnpj || '�'}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground text-sm font-medium">
@@ -234,51 +234,51 @@ export default function EmpresaDetailPage() {
             </div>
             <div className="md:col-span-2">
               <dt className="text-muted-foreground text-sm font-medium">
-                Endereço
+                Endere�o
               </dt>
               <dd className="text-foreground mt-1">
-                {company.address ? JSON.stringify(company.address) : '—'}
+                {company.address ? JSON.stringify(company.address) : '�'}
               </dd>
             </div>
             <div className="md:col-span-2">
               <dt className="text-muted-foreground text-sm font-medium">
-                Descrição
+                Descri��o
               </dt>
               <dd className="text-foreground mt-1">
-                {company.description || '—'}
+                {company.description || '�'}
               </dd>
             </div>
             <div>
               <dt className="text-muted-foreground text-sm font-medium">
                 Telefone
               </dt>
-              <dd className="text-foreground mt-1">{company.phone || '—'}</dd>
+              <dd className="text-foreground mt-1">{company.phone || '�'}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground text-sm font-medium">
                 E-mail
               </dt>
-              <dd className="text-foreground mt-1">{company.email || '—'}</dd>
+              <dd className="text-foreground mt-1">{company.email || '�'}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground text-sm font-medium">
                 Website
               </dt>
-              <dd className="text-foreground mt-1">{company.website || '—'}</dd>
+              <dd className="text-foreground mt-1">{company.website || '�'}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground text-sm font-medium">
                 Setor
               </dt>
               <dd className="text-foreground mt-1">
-                {company.industry || '—'}
+                {company.industry || '�'}
               </dd>
             </div>
             <div>
               <dt className="text-muted-foreground text-sm font-medium">
                 Porte
               </dt>
-              <dd className="text-foreground mt-1">{company.size || '—'}</dd>
+              <dd className="text-foreground mt-1">{company.size || '�'}</dd>
             </div>
             <div className="md:col-span-2">
               <dt className="text-muted-foreground text-sm font-medium">

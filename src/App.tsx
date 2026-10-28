@@ -28,7 +28,7 @@ import IntegracoesPage from '@/pages/dashboard/IntegracoesPage';
 import SegurancaPage from '@/pages/dashboard/SegurancaPage';
 import { ModuleRouter } from '@/platform/router';
 import { moduleRouteRegistries } from '@/platform/router/module-routes';
-import { MODULE_PERMISSION_MAP } from '@/components/portal/ModuleRegistry';
+import { MODULE_PERMISSION_MAP } from '@/components/legacy/portal/ModuleRegistry';
 import FiscalPage from '@/pages/dashboard/FiscalPage';
 import Estoque from '@/pages/dashboard/Estoque';
 import Almoxarifado from '@/pages/dashboard/Almoxarifado';
@@ -37,6 +37,12 @@ import VisaoGeral from '@/pages/dashboard/VisaoGeral';
 import AuthTerms from '@/pages/auth/Termos';
 import AuthWelcome from '@/pages/auth/BoasVindas';
 import AuthCallback from '@/pages/auth/AuthCallback';
+import { registerAllCells } from '@/core/cells';
+import { AdminProvider } from '@/modules/admin/AdminContext';
+
+// Registra todas as células operacionais do CHECK BOULER 24H no CellRegistry
+// e no DispatcherMaster na inicialização da aplicação.
+registerAllCells();
 
 const Home = lazy(() => import('@/pages/Home'));
 const Sobre = lazy(() => import('@/pages/Sobre'));
@@ -411,6 +417,28 @@ function RoutesAndLayout() {
               }
             />
             <Route
+              path="admin/*"
+              element={
+                <AdminProvider>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['admin']}
+                    moduleRouteBase="/dashboard/admin"
+                  />
+                </AdminProvider>
+              }
+            />
+            <Route
+              path="media/*"
+              element={
+                <ModuleRouter
+                  moduleRegistries={moduleRouteRegistries}
+                  moduleIds={['media']}
+                  moduleRouteBase="/dashboard/media"
+                />
+              }
+            />
+            <Route
               path="ava"
               element={
                 <AvaProvider>
@@ -559,10 +587,7 @@ function RoutesAndLayout() {
             path="/candidato/*"
             element={
               <AuthRoute>
-                <ProtectedRoute
-                  allowedRoles={['candidato']}
-                  allowedPermissions={['candidates.self.read']}
-                >
+                <ProtectedRoute allowedRoles={['candidato']}>
                   <CandidatoProvider>
                     <ModuleProvider>
                       <CandidatoContainer />

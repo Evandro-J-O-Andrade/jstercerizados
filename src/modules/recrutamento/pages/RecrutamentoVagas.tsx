@@ -14,7 +14,7 @@ import type {
 import type {
   ModuleDefinition,
   ModuleCategory,
-} from '@/components/portal/ModuleRegistry';
+} from '@/components/legacy/portal/ModuleRegistry';
 import { JOB_STATUS_LABELS } from '@/modules/recrutamento/constants/jobStatus';
 import { CONTRACT_TYPE_LABELS } from '@/modules/recrutamento/constants/contractType';
 import { WORK_MODE_LABELS } from '@/modules/recrutamento/constants/workMode';

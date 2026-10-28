@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { PortalShell } from '@/components/portal/PortalShell';
+import { PortalShell } from '@/components/legacy/portal/PortalShell';
 
 export function AppShell() {
   return (

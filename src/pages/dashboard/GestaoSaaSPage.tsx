@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Activity, BarChart3, Building2, Users } from 'lucide-react';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import {
   DashboardCard,
   DashboardErrorState,

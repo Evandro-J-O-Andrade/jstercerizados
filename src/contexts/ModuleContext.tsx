@@ -10,7 +10,7 @@ import {
   PORTAL_MODULES,
   type ModuleDefinition,
   type ModuleFeature,
-} from '@/components/portal/ModuleRegistry';
+} from '@/components/legacy/portal/ModuleRegistry';
 
 interface ModuleContextType {
   currentModule: ModuleDefinition | null;

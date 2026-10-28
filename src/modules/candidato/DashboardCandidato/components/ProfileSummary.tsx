@@ -1,4 +1,4 @@
-import { Briefcase, MapPin, DollarSign } from 'lucide-react';
+import { MapPin, DollarSign, User } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { useCandidato } from '@/modules/candidato/CandidatoContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,13 +21,22 @@ export function ProfileSummary() {
   const salaryMin = candidate?.salary_expectation_min;
   const salaryMax = candidate?.salary_expectation_max;
   const salaryType = candidate?.salary_type;
+  const avatarUrl = candidate?.avatar_url ?? null;
 
   return (
     <Card className="bg-primary/5 border-primary/10 p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="bg-primary/10 text-primary rounded-xl p-3">
-            <Briefcase className="h-6 w-6" />
+          <div className="bg-primary/10 text-primary rounded-full p-3">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt="Avatar"
+                className="h-6 w-6 rounded-full object-cover"
+              />
+            ) : (
+              <User className="h-6 w-6" />
+            )}
           </div>
           <div>
             <h2 className="text-foreground text-xl font-semibold">

@@ -15,7 +15,7 @@ vi.mock('@/repositories/applications.repository', () => ({
   },
 }));
 
-vi.mock('@/components/portal/ModuleWorkspace', () => ({
+vi.mock('@/components/legacy/portal/ModuleWorkspace', () => ({
   ModuleWorkspace: ({ children, actions }: any) => (
     <div data-testid="module-workspace">
       {actions}

@@ -5,3 +5,4 @@ export * from './RecrutamentoContainer';
 export * from './RecrutamentoSidebar';
 export * from './DashboardRecrutamento';
 export * from './repositories';
+export { recrutamentoCellContract } from './cellContract';

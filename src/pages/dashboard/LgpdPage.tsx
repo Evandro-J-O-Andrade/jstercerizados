@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ModuleWorkspace } from '@/components/portal/ModuleWorkspace';
+import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
 import { FileCheck, Shield, UserCheck } from 'lucide-react';
 import { getSupabaseClient } from '@/lib/supabase';
@@ -142,4 +142,3 @@ export default function LgpdPage() {
     </ModuleWorkspace>
   );
 }
-

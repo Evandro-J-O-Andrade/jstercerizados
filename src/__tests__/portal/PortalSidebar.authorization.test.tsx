@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { PORTAL_MODULES } from '@/components/portal/ModuleRegistry';
+import { PORTAL_MODULES } from '@/components/legacy/portal/ModuleRegistry';
 
 const mockPermissionsRef = {
   current: [] as Array<{ name: string }>,
@@ -138,7 +138,7 @@ vi.mock('framer-motion', () => ({
   ),
 }));
 
-import { PortalSidebar } from '@/components/portal/PortalSidebar';
+import { PortalSidebar } from '@/components/legacy/portal/PortalSidebar';
 import { ModuleProvider } from '@/contexts/ModuleContext';
 
 function renderSidebar(
