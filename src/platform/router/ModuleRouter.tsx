@@ -4,13 +4,13 @@ import { Routes, Route, Outlet, Navigate, Link } from 'react-router-dom';
 import { useAccount } from '@/platform/context';
 import { PermissionGuard } from '@/platform/permissions';
 import {
-  getAvailableModules,
   getAvailableFeatures,
   type ModuleCategory,
   type ModuleDefinition,
   type ModuleFeature,
   MODULE_PERMISSION_MAP,
 } from '@/platform/modules';
+import { getAvailableModulesFromCellRegistry } from '@/core/cells/cell-to-module-definition';
 import { AdminModuleLayout } from '@/shell/AdminModuleLayout';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { EmptyState } from '@/components/fallback';
@@ -234,10 +234,7 @@ export function ModuleRouter({
 
   const base = moduleRouteBase || '/dashboard';
 
-  const availableModules = getAvailableModules(
-    activePermissions,
-    effectiveScopes,
-  );
+  const availableModules = getAvailableModulesFromCellRegistry(effectiveScopes);
 
   const launcherRoutes = (
     moduleIds

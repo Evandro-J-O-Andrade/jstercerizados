@@ -1,3 +1,12 @@
+/**
+ * ModuleContext.tsx — Contexto de módulo atual baseado na URL.
+ *
+ * Agora usa o CellRegistry (canônico) como fonte primária para resolução de
+ * módulos, com fallback para PORTAL_MODULES (legado). A nulificação
+ * propositada em /candidato e /candidato/ foi removida para que o módulo
+ * candidato seja resolvido corretamente em sua raiz.
+ */
+
 import {
   createContext,
   useContext,
@@ -6,11 +15,11 @@ import {
   type ReactNode,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import {
-  PORTAL_MODULES,
-  type ModuleDefinition,
-  type ModuleFeature,
-} from '@/platform/modules';
+import type {
+  ModuleDefinition,
+  ModuleFeature,
+} from '@/components/legacy/portal/ModuleRegistry';
+import { resolveModuleFromPathname } from '@/core/cells/cell-to-module-definition';
 
 interface ModuleContextType {
   currentModule: ModuleDefinition | null;
@@ -19,32 +28,6 @@ interface ModuleContextType {
 }
 
 const ModuleContext = createContext<ModuleContextType | undefined>(undefined);
-
-// Sort modules by route length (descending) so more specific routes match first
-const MODULES_BY_SPECIFICITY = [...PORTAL_MODULES].sort(
-  (a, b) => b.route.length - a.route.length,
-);
-
-// Flatten all features with their parent module for direct route matching
-const ALL_FEATURES: Array<{
-  module: ModuleDefinition;
-  feature: ModuleFeature;
-}> = [];
-for (const module of PORTAL_MODULES) {
-  if (module.features) {
-    for (const feature of module.features) {
-      ALL_FEATURES.push({ module, feature });
-      if (feature.features) {
-        for (const subFeature of feature.features) {
-          ALL_FEATURES.push({ module, feature: subFeature });
-        }
-      }
-    }
-  }
-}
-
-// Sort features by route length (descending)
-ALL_FEATURES.sort((a, b) => b.feature.route.length - a.feature.route.length);
 
 export function ModuleProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
@@ -58,64 +41,11 @@ export function ModuleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const pathname = location.pathname;
 
-    if (
-      pathname === '/dashboard' ||
-      pathname === '/dashboard/' ||
-      pathname === '/candidato' ||
-      pathname === '/candidato/'
-    ) {
-      setCurrentModule(null);
-      setCurrentFeature(null);
-      return;
-    }
+    // Resolve módulo baseado no pathname, usando CellRegistry como fonte canônica
+    const { module, feature } = resolveModuleFromPathname(pathname);
 
-    // First, try to match a feature route directly (most specific)
-    let foundModule: ModuleDefinition | null = null;
-    let foundFeature: ModuleFeature | null = null;
-
-    for (const { module, feature } of ALL_FEATURES) {
-      if (
-        pathname === feature.route ||
-        pathname.startsWith(`${feature.route}/`)
-      ) {
-        foundModule = module;
-        foundFeature = feature;
-        break;
-      }
-    }
-
-    // Legacy routes: URLs antigas que ainda são referenciadas por páginas
-    // versionadas e precisam continuar resolvendo para o módulo correto.
-    // Sem isto elas caem no fallback de módulo e são tratadas como `inicio`.
-    if (!foundModule) {
-      for (const { module, feature } of ALL_FEATURES) {
-        if (!feature.legacyRoutes?.length) continue;
-        for (const legacy of feature.legacyRoutes) {
-          if (pathname === legacy || pathname.startsWith(`${legacy}/`)) {
-            foundModule = module;
-            foundFeature = feature;
-            break;
-          }
-        }
-        if (foundModule) break;
-      }
-    }
-
-    // If no feature matched, fall back to module route matching
-    if (!foundModule) {
-      for (const module of MODULES_BY_SPECIFICITY) {
-        if (
-          pathname === module.route ||
-          pathname.startsWith(`${module.route}/`)
-        ) {
-          foundModule = module;
-          break;
-        }
-      }
-    }
-
-    setCurrentModule(foundModule);
-    setCurrentFeature(foundFeature);
+    setCurrentModule(module);
+    setCurrentFeature(feature);
   }, [location.pathname]);
 
   const isModuleLauncher = currentModule === null;
