@@ -76,7 +76,10 @@ export function PermissionGuard({
     : permissions;
 
   if (requiredPermissions.length === 0) {
-    return <>{children}</>;
+    if (fallback) {
+      return <>{fallback}</>;
+    }
+    return <DashboardForbidden />;
   }
 
   const hasAccess =

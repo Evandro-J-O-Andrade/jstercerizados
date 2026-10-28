@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -78,7 +78,7 @@ describe('ModuleRouter navigation', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('changes module feature routes without a document reload', () => {
+  it('changes module feature routes without a document reload', async () => {
     mocks.useAccount.mockReturnValue({
       activePermissions: [{ name: 'jobs.read' }, { name: 'candidates.read' }],
       effectiveScopes: 'tenant',
@@ -92,7 +92,16 @@ describe('ModuleRouter navigation', () => {
             path="/dashboard/*"
             element={
               <ModuleRouter
-                moduleRegistries={{}}
+                moduleRegistries={{
+                  recrutamento: [
+                    {
+                      path: 'vagas',
+                      label: 'Vagas',
+                      element: CandidateDashboardPage,
+                      requiredPermissions: [],
+                    },
+                  ],
+                }}
                 moduleIds={['recrutamento']}
               />
             }
@@ -101,14 +110,16 @@ describe('ModuleRouter navigation', () => {
       </MemoryRouter>,
     );
 
-    fireEvent.click(screen.getByRole('link', { name: /Vagas/ }));
+    fireEvent.click(screen.getAllByRole('link', { name: /Vagas/ })[0]);
 
-    expect(screen.getByTestId('current-location')).toHaveTextContent(
-      '/dashboard/recrutamento/vagas',
-    );
+    await waitFor(() => {
+      expect(screen.getByTestId('current-location')).toHaveTextContent(
+        '/dashboard/recrutamento/vagas',
+      );
+    });
   });
 
-  it('contains a page render failure inside its module boundary', () => {
+  it('contains a page render failure inside its module boundary', async () => {
     mocks.useAccount.mockReturnValue({
       activePermissions: [{ name: 'jobs.read' }, { name: 'candidates.read' }],
       effectiveScopes: 'tenant',
@@ -139,6 +150,8 @@ describe('ModuleRouter navigation', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByTestId('error-state')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId('error-state')).toBeInTheDocument();
+    });
   });
 });

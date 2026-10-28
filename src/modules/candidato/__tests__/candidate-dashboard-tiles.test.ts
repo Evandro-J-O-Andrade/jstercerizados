@@ -62,6 +62,7 @@ const EXPECTED_TILE_IDS = [
   'notificacoes',
   'configuracoes',
   'conta',
+  'kanban',
 ];
 
 const EXPECTED_ROUTES = [
@@ -84,13 +85,14 @@ const EXPECTED_ROUTES = [
   '/candidato/notificacoes',
   '/candidato/configuracoes',
   '/candidato/conta',
+  '/candidato/kanban',
 ];
 
 describe('computeCandidateDashboardTiles', () => {
-  it('returns 19 tiles with correct IDs and routes', () => {
+  it('returns 20 tiles with correct IDs and routes', () => {
     const { modules } = computeCandidateDashboardTiles(emptyContext);
 
-    expect(modules).toHaveLength(19);
+    expect(modules).toHaveLength(20);
     expect(modules.map((m) => m.id)).toEqual(EXPECTED_TILE_IDS);
     expect(modules.map((m) => m.route)).toEqual(EXPECTED_ROUTES);
   });
@@ -389,4 +391,3 @@ describe('computeCandidateDashboardTiles', () => {
     });
   });
 });
-

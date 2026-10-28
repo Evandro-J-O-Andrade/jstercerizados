@@ -34,9 +34,9 @@ function getProfileStateLabel(state: string): string {
   const labels: Record<string, string> = {
     new: 'Novo',
     incomplete_registration: 'Cadastro incompleto',
-    basic_profile: 'Perfil b�sico',
+    basic_profile: 'Perfil básico',
     complete_profile: 'Perfil completo',
-    complete_resume: 'Curr�culo completo',
+    complete_resume: 'Currículo completo',
     active_matching: 'Ativo no matching',
   };
   return labels[state] ?? state;
@@ -44,11 +44,11 @@ function getProfileStateLabel(state: string): string {
 
 function getProfileStateDescription(state: string): string {
   const descriptions: Record<string, string> = {
-    new: 'Candidato rec�m-criado, sem dados de perfil.',
-    incomplete_registration: 'Candidato iniciou cadastro mas n�o concluiu.',
-    basic_profile: 'Candidato completou dados pessoais b�sicos.',
+    new: 'Candidato recém-criado, sem dados de perfil.',
+    incomplete_registration: 'Candidato iniciou cadastro mas não concluiu.',
+    basic_profile: 'Candidato completou dados pessoais básicos.',
     complete_profile: 'Candidato completou perfil profissional.',
-    complete_resume: 'Candidato enviou curr�culo e documentos.',
+    complete_resume: 'Candidato enviou currículo e documentos.',
     active_matching: 'Candidato com perfil completo e ativo para matching.',
   };
   return descriptions[state] ?? 'Status desconhecido';
@@ -122,7 +122,7 @@ export function computeCandidateDashboardTiles(
     {
       id: 'buscar-vagas',
       title: 'Buscar Vagas',
-      description: 'Pesquise oportunidades por cargo, empresa ou localiza��o',
+      description: 'Pesquise oportunidades por cargo, empresa ou localizaçãão',
       icon: 'search',
       route: '/candidato/buscar-vagas',
       category: 'inicio',
@@ -132,7 +132,7 @@ export function computeCandidateDashboardTiles(
     {
       id: 'candidaturas',
       title: 'Minhas Candidaturas',
-      description: 'Acompanhe o andamento das suas inscri��es',
+      description: 'Acompanhe o andamento das suas inscriçãões',
       icon: 'file-text',
       route: '/candidato/candidaturas',
       category: 'inicio',
@@ -142,7 +142,7 @@ export function computeCandidateDashboardTiles(
     {
       id: 'entrevistas',
       title: 'Entrevistas',
-      description: `${interviewCount} processo(s) em andamento exigem sua aten��o`,
+      description: `${interviewCount} processo(s) em andamento exigem sua atençãão`,
       icon: 'clock',
       route: '/candidato/entrevistas',
       category: 'inicio',
@@ -151,7 +151,7 @@ export function computeCandidateDashboardTiles(
     },
     {
       id: 'historico',
-      title: 'Hist�rico de Candidaturas',
+      title: 'Histórico de Candidaturas',
       description: `${historyCount} candidatura(s) finalizada(s)`,
       icon: 'history',
       route: '/candidato/historico',
@@ -162,7 +162,7 @@ export function computeCandidateDashboardTiles(
     {
       id: 'favoritas',
       title: 'Vagas Favoritas',
-      description: 'Vagas salvas para refer�ncia r�pida',
+      description: 'Vagas salvas para referência rápida',
       icon: 'heart',
       route: '/candidato/favoritas',
       category: 'inicio',
@@ -171,7 +171,7 @@ export function computeCandidateDashboardTiles(
     },
     {
       id: 'curriculo',
-      title: 'Meu Curr�culo',
+      title: 'Meu Currículo',
       description: 'Complete seu perfil para mais oportunidades',
       icon: 'file-signature',
       route: '/candidato/curriculo',
@@ -181,8 +181,8 @@ export function computeCandidateDashboardTiles(
     },
     {
       id: 'experiencia',
-      title: 'Experi�ncias',
-      description: `${experiencesCount} experi�ncia(s) profissional(is) cadastrada(s)`,
+      title: 'Experiências',
+      description: `${experiencesCount} experiência(s) profissional(is) cadastrada(s)`,
       icon: 'briefcase',
       route: '/candidato/experiencia',
       category: 'inicio',
@@ -191,8 +191,8 @@ export function computeCandidateDashboardTiles(
     },
     {
       id: 'formacao',
-      title: 'Forma��o',
-      description: `${educationCount} forma��o(�es) acad�mica(s)`,
+      title: 'Formaçãão',
+      description: `${educationCount} formaçãão(ões) acadêmica(s)`,
       icon: 'graduation-cap',
       route: '/candidato/formacao',
       category: 'inicio',
@@ -202,7 +202,7 @@ export function computeCandidateDashboardTiles(
     {
       id: 'cursos',
       title: 'Cursos',
-      description: `${coursesCount} curso(s) e capacita��o(�es)`,
+      description: `${coursesCount} curso(s) e capacitaçãão(ões)`,
       icon: 'award',
       route: '/candidato/cursos',
       category: 'inicio',
@@ -212,7 +212,7 @@ export function computeCandidateDashboardTiles(
     {
       id: 'habilidades',
       title: 'Habilidades',
-      description: `${skillsCount} compet�ncia(s) t�cnica(s)`,
+      description: `${skillsCount} competência(s) técnica(s)`,
       icon: 'sparkles',
       route: '/candidato/habilidades',
       category: 'inicio',
@@ -241,8 +241,8 @@ export function computeCandidateDashboardTiles(
     },
     {
       id: 'preferencias',
-      title: 'Prefer�ncias',
-      description: 'Configura��es para receber vagas compat�veis',
+      title: 'Preferências',
+      description: 'Configuraçãões para receber vagas compatíveis',
       icon: 'target',
       route: '/candidato/preferencias',
       category: 'inicio',
@@ -252,7 +252,7 @@ export function computeCandidateDashboardTiles(
     {
       id: 'alertas',
       title: 'Alertas de Vagas',
-      description: 'Receba notifica��es de novas oportunidades',
+      description: 'Receba notificaçãões de novas oportunidades',
       icon: 'bell',
       route: '/candidato/alertas',
       category: 'inicio',
@@ -271,8 +271,8 @@ export function computeCandidateDashboardTiles(
     },
     {
       id: 'notificacoes',
-      title: 'Notifica��es',
-      description: 'Acesse suas notifica��es e atualiza��es',
+      title: 'Notificaçãões',
+      description: 'Acesse suas notificaçãões e atualizaçãões',
       icon: 'mail',
       route: '/candidato/notificacoes',
       category: 'inicio',
@@ -281,8 +281,8 @@ export function computeCandidateDashboardTiles(
     },
     {
       id: 'configuracoes',
-      title: 'Configura��es',
-      description: 'Gerencie sua conta e prefer�ncias',
+      title: 'Configuraçãões',
+      description: 'Gerencie sua conta e preferências',
       icon: 'settings',
       route: '/candidato/configuracoes',
       category: 'inicio',
@@ -292,9 +292,19 @@ export function computeCandidateDashboardTiles(
     {
       id: 'conta',
       title: 'Minha Conta',
-      description: 'Informa��es pessoais e dados da sua conta',
+      description: 'Informações pessoais e dados da sua conta',
       icon: 'user-check',
       route: '/candidato/conta',
+      category: 'inicio',
+      requiredPermissions: [],
+      scope: 'tenant',
+    },
+    {
+      id: 'kanban',
+      title: 'Kanban de Candidaturas',
+      description: 'Acompanhe o andamento das suas candidaturas por etapa',
+      icon: 'kanban',
+      route: '/candidato/kanban',
       category: 'inicio',
       requiredPermissions: [],
       scope: 'tenant',
@@ -303,25 +313,25 @@ export function computeCandidateDashboardTiles(
 
   const stats: Record<string, ModuleStats> = {
     'vagas-recomendadas': {
-      description: `${matchCount} recomenda��o(�es), ${strongMatchCount} com match forte.`,
+      description: `${matchCount} recomendação(ões), ${strongMatchCount} com match forte.`,
       itemCount: matchCount,
-      primaryMetric: { label: 'Recomenda��es', value: matchCount },
+      primaryMetric: { label: 'Recomendações', value: matchCount },
       secondaryMetrics: [
         { label: 'Match forte', value: strongMatchCount },
         { label: 'Favoritas', value: favoritesCount },
       ],
     },
     'buscar-vagas': {
-      description: `${publishedJobsCount} vagas dispon�veis para busca.`,
+      description: `${publishedJobsCount} vagas disponíveis para busca.`,
       itemCount: publishedJobsCount,
-      primaryMetric: { label: 'Dispon�veis', value: publishedJobsCount },
+      primaryMetric: { label: 'Disponíveis', value: publishedJobsCount },
       secondaryMetrics: [
         { label: 'Favoritas', value: favoritesCount },
         { label: 'Match forte', value: strongMatchCount },
       ],
     },
     candidaturas: {
-      description: `Voc� enviou ${applicationsCount} candidaturas.`,
+      description: `Você enviou ${applicationsCount} candidaturas.`,
       itemCount: applicationsCount,
       primaryMetric: { label: 'Enviadas', value: applicationsCount },
       secondaryMetrics: [
@@ -348,7 +358,7 @@ export function computeCandidateDashboardTiles(
       secondaryMetrics: [
         { label: 'Entrevista', value: applicationsByStage['interview'] ?? 0 },
         {
-          label: 'T�cnica',
+          label: 'Técnica',
           value: applicationsByStage['technical_interview'] ?? 0,
         },
         { label: 'Oferta', value: applicationsByStage['offer'] ?? 0 },
@@ -371,31 +381,31 @@ export function computeCandidateDashboardTiles(
       secondaryMetrics: [{ label: 'Match forte', value: strongMatchCount }],
     },
     curriculo: {
-      description: `Seu perfil est� ${completionPercentage}% completo (${profileStateLabel}).`,
+      description: `Seu perfil está ${completionPercentage}% completo (${profileStateLabel}).`,
       itemCount: completionPercentage,
       primaryMetric: { label: 'Completo', value: `${completionPercentage}%` },
       secondaryMetrics: [{ label: 'Estado', value: profileStateLabel }],
     },
     experiencia: {
-      description: `${experiencesCount} experi�ncia(s) profissional(is).`,
+      description: `${experiencesCount} experiência(s) profissional(is).`,
       itemCount: experiencesCount,
       primaryMetric: { label: 'Total', value: experiencesCount },
       secondaryMetrics: [],
     },
     formacao: {
-      description: `${educationCount} forma��o(�es) acad�mica(s).`,
+      description: `${educationCount} formaçãão(ões) acadêmica(s).`,
       itemCount: educationCount,
       primaryMetric: { label: 'Total', value: educationCount },
       secondaryMetrics: [],
     },
     cursos: {
-      description: `${coursesCount} curso(s) e capacita��o(�es).`,
+      description: `${coursesCount} curso(s) e capacitaçãão(ões).`,
       itemCount: coursesCount,
       primaryMetric: { label: 'Total', value: coursesCount },
       secondaryMetrics: [],
     },
     habilidades: {
-      description: `${skillsCount} compet�ncia(s) t�cnica(s).`,
+      description: `${skillsCount} competência(s) técnica(s).`,
       itemCount: skillsCount,
       primaryMetric: { label: 'Total', value: skillsCount },
       secondaryMetrics: [],
@@ -413,11 +423,11 @@ export function computeCandidateDashboardTiles(
       secondaryMetrics: [],
     },
     preferencias: {
-      description: 'Configura��es de vaga e matching.',
+      description: 'Configuraçãões de vaga e matching.',
       itemCount: 1,
       primaryMetric: {
         label: 'Configuradas',
-        value: candidateContext?.hasPreferences ? 'Sim' : 'N�o',
+        value: candidateContext?.hasPreferences ? 'Sim' : 'Não',
       },
       secondaryMetrics: [],
     },
@@ -436,9 +446,9 @@ export function computeCandidateDashboardTiles(
       ],
     },
     conta: {
-      description: 'Informa��es pessoais e dados da sua conta.',
+      description: 'Informaões pessoais e dados da sua conta.',
       itemCount: 1,
-      primaryMetric: { label: 'Status', value: candidate?.status ?? '�' },
+      primaryMetric: { label: 'Status', value: candidate?.status ?? 'ç' },
       secondaryMetrics: [],
     },
   };

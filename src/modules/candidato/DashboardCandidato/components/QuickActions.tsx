@@ -1,4 +1,12 @@
-import { FileText, Search, Sparkles, Bell, Calendar, User } from 'lucide-react';
+import {
+  FileText,
+  Search,
+  Sparkles,
+  Bell,
+  Calendar,
+  User,
+  Briefcase,
+} from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 
 export function QuickActions() {
@@ -32,6 +40,12 @@ export function QuickActions() {
       description: 'Configure notificações',
       icon: Bell,
       href: '/candidato/alertas',
+    },
+    {
+      title: 'Kanban de Candidaturas',
+      description: 'Acompanhe por etapa',
+      icon: Briefcase,
+      href: '/candidato/kanban',
     },
     {
       title: 'Perfil Profissional',

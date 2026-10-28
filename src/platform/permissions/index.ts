@@ -15,7 +15,7 @@ export function usePermissionCheck() {
   const { permissions, isLoading } = useAuth();
 
   const checkPermission = (permissionKey: string): boolean => {
-    if (!permissionKey) return true;
+    if (!permissionKey) return false;
     return permissions.some((p) => getPermissionKey(p) === permissionKey);
   };
 
@@ -23,7 +23,7 @@ export function usePermissionCheck() {
     permissionKeys: string[],
     mode: 'any' | 'all' = 'any',
   ): boolean => {
-    if (!permissionKeys || permissionKeys.length === 0) return true;
+    if (!permissionKeys || permissionKeys.length === 0) return false;
     if (mode === 'all') {
       return permissionKeys.every((key) => checkPermission(key));
     }

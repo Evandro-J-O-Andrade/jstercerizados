@@ -62,15 +62,18 @@ interface LoadingOverlayProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   fullScreen?: boolean;
+  'data-testid'?: string;
 }
 
 export function LoadingOverlay({
   size = 'md',
   className,
   fullScreen = false,
+  'data-testid': dataTestId,
 }: LoadingOverlayProps) {
   return (
     <motion.div
+      data-testid={dataTestId}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
