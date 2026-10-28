@@ -29,7 +29,7 @@ import SegurancaPage from '@/pages/dashboard/SegurancaPage';
 import { ModuleRouter } from '@/platform/router';
 import { CellRouter } from '@/platform/cells/CellRouter';
 import { moduleRouteRegistries } from '@/platform/router/module-routes';
-import { MODULE_PERMISSION_MAP } from '@/components/portal/ModuleRegistry';
+import { MODULE_PERMISSION_MAP } from '@/platform/modules';
 import FiscalPage from '@/pages/dashboard/FiscalPage';
 import Estoque from '@/pages/dashboard/Estoque';
 import Almoxarifado from '@/pages/dashboard/Almoxarifado';
