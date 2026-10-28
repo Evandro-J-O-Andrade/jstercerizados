@@ -29,7 +29,16 @@ export function normalizePermission(
   const id = raw.id as string | null;
   if (!id) return null;
 
-  const nameFromRaw = normalizePermissionName(raw.name);
+  // O schema canônico do Supabase usa `permissions.code`; versões antigas
+  // usavam `permissions.name`. Preserve compatibilidade sem inventar grants.
+  const nameFromRaw =
+    normalizePermissionName(raw.name) ??
+    normalizePermissionName(raw.code) ??
+    (() => {
+      const resource = normalizePermissionName(raw.resource);
+      const action = normalizePermissionName(raw.action);
+      return resource && action ? `${resource}.${action}` : null;
+    })();
   const name = nameFromRaw ?? '';
 
   if (!name) return null;
