@@ -11,12 +11,11 @@ import {
   type ModuleFeature,
   MODULE_PERMISSION_MAP,
 } from '@/platform/modules';
-import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
-import { ModuleSidebar } from '@/components/legacy/portal/ModuleSidebar';
+import { AdminModuleLayout } from '@/shell/AdminModuleLayout';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { EmptyState } from '@/components/fallback';
 import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
-import { Clock, LayoutDashboard, ShieldAlert } from 'lucide-react';
+import { Clock, ShieldAlert } from 'lucide-react';
 import { cn } from '@/utils';
 import { getPermissionKey } from '@/utils/rbac-normalize';
 import type { ModuleRoute } from './types';
@@ -158,40 +157,6 @@ function FeatureCard({ feature }: { feature: ModuleFeature }) {
   );
 }
 
-function ModuleLayout({
-  module,
-  children,
-}: {
-  module: ModuleDefinition;
-  children: ReactNode;
-}) {
-  const { activePermissions, effectiveScopes } = useAccount();
-  const features = getAvailableFeatures(
-    activePermissions,
-    module,
-    effectiveScopes,
-  );
-
-  const showSidebar = features.some((f) => f.route !== module.route);
-
-  return (
-    <ModuleWorkspace
-      title={module.title}
-      description={module.description}
-      icon={LayoutDashboard}
-      breadcrumbItems={[{ label: module.title }]}
-    >
-      {showSidebar && (
-        <ModuleSidebar module={module} permissions={activePermissions} />
-      )}
-      <div className="min-w-0 flex-1 p-6">
-        <Outlet />
-        {children}
-      </div>
-    </ModuleWorkspace>
-  );
-}
-
 function ModulePlaceholder() {
   return (
     <div className="min-w-0 flex-1 py-8">
@@ -330,11 +295,11 @@ export function ModuleRouter({
                   <ModuleFeatureRenderer module={module} />
                 </Suspense>
               ) : (
-                <ModuleLayout module={module}>
+                <AdminModuleLayout module={module}>
                   <Suspense fallback={<RouteLoadingFallback />}>
                     <ModuleFeatureRenderer module={module} />
                   </Suspense>
-                </ModuleLayout>
+                </AdminModuleLayout>
               )}
             </PermissionGuard>
           );

@@ -1,10 +1,10 @@
 import { Outlet } from 'react-router-dom';
-import { PortalShell } from '@/components/legacy/portal/PortalShell';
+import { AdminShell } from '@/shell/AdminShell';
 
 export function AppShell() {
   return (
-    <PortalShell>
+    <AdminShell>
       <Outlet />
-    </PortalShell>
+    </AdminShell>
   );
 }

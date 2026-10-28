@@ -13,14 +13,10 @@ vi.mock('@/platform/permissions', () => ({
   PermissionGuard: ({ children }: { children: ReactNode }) => children,
 }));
 
-vi.mock('@/components/legacy/portal/ModuleWorkspace', () => ({
-  ModuleWorkspace: ({ children }: { children: ReactNode }) => (
+vi.mock('@/core/shell/AdminModuleLayout', () => ({
+  AdminModuleLayout: ({ children }: { children: ReactNode }) => (
     <div>{children}</div>
   ),
-}));
-
-vi.mock('@/components/legacy/portal/ModuleSidebar', () => ({
-  ModuleSidebar: () => null,
 }));
 
 import { ModuleRouter } from './ModuleRouter';
