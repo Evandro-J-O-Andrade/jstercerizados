@@ -53,8 +53,7 @@ export default function ContasPagarPage() {
     description: '',
     amount: '',
     due_date: '',
-    payment_reference: '',
-    notes: '',
+    paid_at: '',
   });
 
   const load = useCallback(async () => {
@@ -66,9 +65,7 @@ export default function ContasPagarPage() {
       setPayables(data);
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : 'Erro ao carregar contas a pagar',
+        err instanceof Error ? err.message : 'Erro ao carregar contas a pagar',
       );
     } finally {
       setLoading(false);
@@ -84,8 +81,7 @@ export default function ContasPagarPage() {
       description: '',
       amount: '',
       due_date: '',
-      payment_reference: '',
-      notes: '',
+      paid_at: '',
     });
     setShowForm(true);
   };
@@ -96,8 +92,7 @@ export default function ContasPagarPage() {
       description: '',
       amount: '',
       due_date: '',
-      payment_reference: '',
-      notes: '',
+      paid_at: '',
     });
   };
 
@@ -117,14 +112,16 @@ export default function ContasPagarPage() {
         description: formData.description,
         amount,
         due_date: formData.due_date || new Date().toISOString().split('T')[0],
-        payment_reference: formData.payment_reference || null,
-        notes: formData.notes || null,
+        paid_at: formData.paid_at || null,
         status: 'open',
       });
 
       handleCloseForm();
       await load();
-      addToast({ type: 'success', message: 'Conta a pagar criada com sucesso!' });
+      addToast({
+        type: 'success',
+        message: 'Conta a pagar criada com sucesso!',
+      });
     } catch (err) {
       addToast({
         type: 'error',
@@ -139,7 +136,10 @@ export default function ContasPagarPage() {
       await accountsPayableRepository.remove(deleteId, currentTenantId);
       setPayables((prev) => prev.filter((item) => item.id !== deleteId));
       setDeleteId(null);
-      addToast({ type: 'success', message: 'Conta a pagar excluída com sucesso.' });
+      addToast({
+        type: 'success',
+        message: 'Conta a pagar excluída com sucesso.',
+      });
     } catch (err) {
       addToast({
         type: 'error',
@@ -152,11 +152,8 @@ export default function ContasPagarPage() {
     let data = payables;
     if (search) {
       const term = search.toLowerCase();
-      data = data.filter(
-        (item) =>
-          item.description?.toLowerCase().includes(term) ||
-          item.payment_reference?.toLowerCase().includes(term) ||
-          item.notes?.toLowerCase().includes(term),
+      data = data.filter((item) =>
+        item.description?.toLowerCase().includes(term),
       );
     }
     return data;
@@ -171,7 +168,11 @@ export default function ContasPagarPage() {
   };
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Carregando contas a pagar...</p>;
+    return (
+      <p className="text-muted-foreground text-sm">
+        Carregando contas a pagar...
+      </p>
+    );
   }
 
   if (error) {
@@ -189,7 +190,9 @@ export default function ContasPagarPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-foreground text-xl font-semibold">Contas a Pagar</h1>
+          <h1 className="text-foreground text-xl font-semibold">
+            Contas a Pagar
+          </h1>
           <p className="text-muted-foreground text-sm">
             Gerencie obrigações, vencimentos e pagamentos.
           </p>
@@ -233,20 +236,8 @@ export default function ContasPagarPage() {
                 </p>
                 <p className="text-muted-foreground text-xs">
                   Vencimento: {formatDate(item.due_date)}
-                  {item.paid_date &&
-                    ` • Pagamento: ${formatDate(item.paid_date)}`}
-                  {item.payment_reference && (
-                    <>
-                      {' • Ref: '}
-                      <span className="font-mono">{item.payment_reference}</span>
-                    </>
-                  )}
+                  {item.paid_at && ` • Pagamento: ${formatDate(item.paid_at)}`}
                 </p>
-                {item.notes && (
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    Obs: {item.notes}
-                  </p>
-                )}
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
@@ -277,11 +268,7 @@ export default function ContasPagarPage() {
               <h3 className="text-foreground text-lg font-semibold">
                 Nova conta a pagar
               </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCloseForm}
-              >
+              <Button variant="ghost" size="sm" onClick={handleCloseForm}>
                 Fechar
               </Button>
             </div>
@@ -292,7 +279,9 @@ export default function ContasPagarPage() {
                 </label>
                 <Input
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   placeholder="Descrição da conta"
                   required
                 />
@@ -306,7 +295,9 @@ export default function ContasPagarPage() {
                     type="number"
                     step="0.01"
                     value={formData.amount}
-                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, amount: e.target.value })
+                    }
                     placeholder="0,00"
                     required
                   />
@@ -318,38 +309,36 @@ export default function ContasPagarPage() {
                   <Input
                     type="date"
                     value={formData.due_date}
-                    onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, due_date: e.target.value })
+                    }
                     required
                   />
                 </div>
               </div>
               <div>
                 <label className="text-foreground text-sm font-medium">
-                  Referência de pagamento
+                  Data de pagamento
                 </label>
                 <Input
-                  value={formData.payment_reference}
-                  onChange={(e) => setFormData({ ...formData, payment_reference: e.target.value })}
-                  placeholder="Número do documento, boleto, etc."
-                />
-              </div>
-              <div>
-                <label className="text-foreground text-sm font-medium">
-                  Observações
-                </label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  placeholder="Observações opcionais"
-                  rows={3}
-                  className="border-border bg-background w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-blue-500"
+                  type="date"
+                  value={formData.paid_at}
+                  onChange={(e) =>
+                    setFormData({ ...formData, paid_at: e.target.value })
+                  }
+                  placeholder="Data do pagamento"
                 />
               </div>
               <div className="flex gap-2">
                 <Button type="submit" className="flex-1">
                   Salvar
                 </Button>
-                <Button type="button" variant="secondary" onClick={handleCloseForm} className="flex-1">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleCloseForm}
+                  className="flex-1"
+                >
                   Cancelar
                 </Button>
               </div>

@@ -1,6 +1,13 @@
 import { Suspense } from 'react';
 import type { ComponentType, ReactNode } from 'react';
-import { Routes, Route, Outlet, Navigate, Link } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  Outlet,
+  Navigate,
+  Link,
+  useLocation,
+} from 'react-router-dom';
 import { useAccount } from '@/platform/context';
 import { PermissionGuard } from '@/platform/permissions';
 import {
@@ -85,29 +92,34 @@ function renderModuleRoute(
 
 function ModuleFeatureRenderer({ module }: { module: ModuleDefinition }) {
   const { activePermissions, effectiveScopes } = useAccount();
+  const location = useLocation();
   const features = getAvailableFeatures(
     activePermissions,
     module,
     effectiveScopes,
   );
 
-  if (
-    features.length === 0 ||
-    features.every((f) => f.route === module.route)
-  ) {
+  const internalFeatures = features.filter((f) => f.route !== module.route);
+
+  // Exibe o catálogo de cards apenas na raiz do módulo.
+  // Nas rotas internas, renderiza apenas o conteúdo da página pelo <Outlet />.
+  if (internalFeatures.length === 0) {
     return <Outlet />;
   }
 
-  return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {features
-        .filter((f) => f.route !== module.route)
-        .map((feature) => (
+  const isModuleRoot = location.pathname === module.route;
+
+  if (isModuleRoot) {
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {internalFeatures.map((feature) => (
           <FeatureCard key={feature.id} feature={feature} />
         ))}
-      <Outlet />
-    </div>
-  );
+      </div>
+    );
+  }
+
+  return <Outlet />;
 }
 
 function FeatureCard({ feature }: { feature: ModuleFeature }) {

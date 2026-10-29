@@ -7,11 +7,13 @@ import {
   Menu,
   Bell,
   ChevronDown,
-  User,
   Shield,
   Globe,
   Sun,
   Moon,
+  Users,
+  Monitor,
+  Clock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -180,30 +182,29 @@ export function AdminHeader({
   return (
     <header
       className={cn(
-        'border-border/50 bg-background/70 sticky top-0 z-40 flex items-center justify-between border-b shadow-sm backdrop-blur-xl',
+        'border-border bg-background sticky top-0 z-40 flex items-center justify-between border-b shadow-sm backdrop-blur-md',
         className,
       )}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <Button
           variant="ghost"
           size="sm"
           onClick={onMenuClick}
-          className="lg:hidden"
-          aria-label="Abrir menu"
+          className="aria-label=Abrir menu lg:hidden"
         >
           <Menu className="h-5 w-5" />
         </Button>
-        <div className="hidden lg:block">
-          <div className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
-            {moduleTitle ? `${contextLabel} / ${moduleTitle}` : contextLabel}
+        <div className="hidden items-center gap-3 lg:flex">
+          <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-lg">
+            <Shield className="h-4 w-4" />
           </div>
-          <h1 className="text-foreground text-lg font-semibold">
-            Seja bem-vindo, {displayName}
-          </h1>
-          <p className="text-muted-foreground text-xs">
-            {tenantLabel} • {dateLabel} • {timeLabel}
-          </p>
+          <div className="hidden text-right lg:block">
+            <p className="text-foreground text-sm font-semibold">
+              {moduleTitle ? `${contextLabel} / ${moduleTitle}` : contextLabel}
+            </p>
+            <p className="text-muted-foreground text-xs">{tenantLabel}</p>
+          </div>
         </div>
         <div className="lg:hidden">
           <div className="text-foreground text-base font-semibold">
@@ -212,7 +213,17 @@ export function AdminHeader({
         </div>
       </div>
 
-      <div className="flex items-center gap-1 sm:gap-2">
+      <div className="hidden items-center gap-1 px-4 lg:flex">
+        <div className="text-muted-foreground flex items-center gap-2 text-xs">
+          <Clock className="h-3.5 w-3.5" />
+          <span>
+            {dateLabel} • {timeLabel}
+          </span>
+        </div>
+        <div className="bg-border/50 h-4 w-px" />
+      </div>
+
+      <div className="flex items-center gap-2 sm:gap-3">
         <Button
           variant="ghost"
           size="sm"
@@ -230,7 +241,7 @@ export function AdminHeader({
           className="text-muted-foreground hover:text-foreground relative hidden items-center justify-center rounded-lg px-2.5 py-2 sm:flex"
         >
           <Bell className="h-5 w-5" />
-          <span className="bg-primary absolute top-1 right-1 h-2 w-2 rounded-full" />
+          <span className="bg-destructive absolute top-1 right-1 h-2 w-2 rounded-full" />
         </Button>
 
         <div className="relative">
@@ -276,12 +287,23 @@ export function AdminHeader({
                   type="button"
                   onClick={() => {
                     setUserMenuOpen(false);
-                    navigate('/dashboard/configuracoes');
+                    navigate('/dashboard/usuarios');
                   }}
                   className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
                 >
-                  <User className="h-4 w-4" />
-                  Meu perfil
+                  <Users className="h-4 w-4" />
+                  Usuários do sistema
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    navigate('/dashboard/sessoes');
+                  }}
+                  className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
+                >
+                  <Monitor className="h-4 w-4" />
+                  Minhas sessões ativas
                 </button>
                 <button
                   type="button"
@@ -302,6 +324,7 @@ export function AdminHeader({
                   }}
                   className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
                 >
+                  <Globe className="h-4 w-4" />
                   Trocar conta
                 </button>
                 <button

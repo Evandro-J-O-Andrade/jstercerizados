@@ -5,11 +5,8 @@ export interface AccountPayable {
   description: string;
   amount: number;
   due_date: string;
-  paid_date: string | null;
+  paid_at: string | null;
   status: 'open' | 'paid' | 'overdue' | 'cancelled' | 'partially_paid';
-  payment_method: string | null;
-  payment_reference: string | null;
-  notes: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -21,11 +18,8 @@ export interface AccountPayableCreateInput {
   description: string;
   amount: number;
   due_date: string;
-  paid_date?: string | null;
+  paid_at?: string | null;
   status?: 'open' | 'paid' | 'overdue' | 'cancelled' | 'partially_paid';
-  payment_method?: string | null;
-  payment_reference?: string | null;
-  notes?: string | null;
   created_by?: string | null;
 }
 
@@ -34,11 +28,8 @@ export interface AccountPayableUpdateInput {
   description?: string;
   amount?: number;
   due_date?: string;
-  paid_date?: string | null;
+  paid_at?: string | null;
   status?: 'open' | 'paid' | 'overdue' | 'cancelled' | 'partially_paid';
-  payment_method?: string | null;
-  payment_reference?: string | null;
-  notes?: string | null;
 }
 
 export interface AccountReceivable {

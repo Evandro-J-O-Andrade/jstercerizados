@@ -14,6 +14,8 @@ interface Session {
   token: string;
   expires_at: string;
   created_at: string;
+  ip_address?: string | null;
+  user_agent?: string | null;
 }
 
 export default function SessoesPage() {
@@ -100,7 +102,13 @@ export default function SessoesPage() {
             <thead className="bg-muted/50">
               <tr>
                 <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                  Token
+                  Sessão
+                </th>
+                <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                  IP / Endereço
+                </th>
+                <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                  Dispositivo
                 </th>
                 <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
                   Expiração
@@ -129,8 +137,15 @@ export default function SessoesPage() {
                     key={session.id}
                     className="hover:bg-muted/30 transition-colors"
                   >
-                    <td className="text-foreground px-4 py-3 text-sm font-medium">
-                      {session.token}
+                    <td className="text-foreground max-w-xs truncate px-4 py-3 text-sm font-medium">
+                      <span className="text-muted-foreground">sess…</span>
+                      {session.token.slice(-4)}
+                    </td>
+                    <td className="text-muted-foreground max-w-xs truncate px-4 py-3 text-sm">
+                      {session.ip_address || '—'}
+                    </td>
+                    <td className="text-muted-foreground max-w-xs truncate px-4 py-3 text-sm">
+                      {session.user_agent || '—'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
                       {new Date(session.expires_at).toLocaleString('pt-BR')}

@@ -21,6 +21,7 @@ import OnboardingPage from '@/pages/dashboard/OnboardingPage';
 import AssinaturasPage from '@/pages/dashboard/AssinaturasPage';
 import GestaoSaaSPage from '@/pages/dashboard/GestaoSaaSPage';
 import RolesPermissoesPage from '@/pages/dashboard/RolesPermissoesPage';
+import UsuariosPage from '@/pages/dashboard/UsuariosPage';
 import AuditoriaPage from '@/pages/dashboard/AuditoriaPage';
 
 import IaPage from '@/pages/dashboard/IaPage';
@@ -536,6 +537,14 @@ function RoutesAndLayout() {
               }
             />
             <Route
+              path="usuarios"
+              element={
+                <PermissionGuard permission="people.read">
+                  <UsuariosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
               path="auditoria"
               element={
                 <PermissionGuard permission={MODULE_PERMISSION_MAP.auditoria}>
@@ -620,7 +629,9 @@ function RoutesAndLayout() {
             path="/candidato/*"
             element={
               <AuthRoute>
-                <ProtectedRoute allowedRoles={['candidato']}>
+                <ProtectedRoute
+                  allowedRoles={['candidato', 'admin_master', 'tenant_admin']}
+                >
                   <CandidatoProvider>
                     <ModuleProvider>
                       <CandidatoContainer />

@@ -6,6 +6,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   LayoutDashboard,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/utils';
@@ -13,6 +15,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { formatRoleLabel } from '@/contexts/UserIdentity';
 import { cellRegistry } from '@/core/registry/CellRegistryContract';
 import type { CellContract } from '@/core/types';
@@ -34,6 +37,7 @@ export function AdminSidebar({
   const { roles } = useAuth();
   const { identity, availableMemberships, activeTenantId, switchAccount } =
     useAccount();
+  const { resolvedTheme, toggleTheme } = useTheme();
 
   const [collapsed, setCollapsed] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
@@ -57,7 +61,9 @@ export function AdminSidebar({
   const roleLabel = identity.roleLabel;
 
   const getCellBaseRoute = (cellId: string) => {
-    return cellId === 'candidato' ? '/candidato' : `/dashboard/${cellId}`;
+    return cellId === 'candidato'
+      ? '/dashboard/recrutamento/candidatos'
+      : `/dashboard/${cellId}`;
   };
 
   const getRoutePath = (cellId: string, routePath: string) => {
@@ -106,7 +112,7 @@ export function AdminSidebar({
         )}
       >
         <div className="flex h-full flex-col">
-          <div className="flex items-center justify-between border-b p-4">
+          <div className="flex shrink-0 items-center justify-between border-b p-4">
             {!collapsed && (
               <div className="flex items-center gap-2">
                 <Shield className="text-primary h-6 w-6" />
@@ -152,7 +158,7 @@ export function AdminSidebar({
           </div>
 
           <nav
-            className="flex-1 space-y-1 overflow-y-auto p-2"
+            className="flex-1 shrink-0 space-y-1 overflow-y-auto p-2"
             aria-label="Módulos"
           >
             {!collapsed && (
@@ -245,10 +251,12 @@ export function AdminSidebar({
                 </div>
               </div>
             )}
+          </nav>
 
-            <div className="border-border border-t p-2">
-              {!collapsed ? (
-                <div className="mb-3 flex items-center gap-3 px-2">
+          <footer className="border-border/50 bg-background/50 shrink-0 border-t p-3 backdrop-blur">
+            {!collapsed && (
+              <div className="space-y-1.5">
+                <div className="mb-1 flex items-center gap-3 px-2">
                   <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
                     {displayName.charAt(0).toUpperCase()}
                   </div>
@@ -261,36 +269,42 @@ export function AdminSidebar({
                     </p>
                   </div>
                 </div>
-              ) : (
-                <div className="mb-3 flex justify-center">
-                  <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
-                    {displayName.charAt(0).toUpperCase()}
-                  </div>
-                </div>
-              )}
-              {!collapsed && (
-                <div className="text-muted-foreground mb-3 px-2 text-xs">
+                <div className="text-muted-foreground px-2 text-xs">
                   {dateLabel} • {timeLabel}
                 </div>
-              )}
-              <div className="space-y-0.5">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleNavigate('/')}
-                  className={cn(
-                    'text-muted-foreground hover:text-foreground',
-                    collapsed
-                      ? 'flex w-full items-center justify-center'
-                      : 'flex w-full items-center justify-start gap-2',
-                  )}
-                >
-                  <Globe className="h-4 w-4" />
-                  {!collapsed && <span>Voltar para o site</span>}
-                </Button>
               </div>
+            )}
+            <div className="space-y-0.5 px-2 pb-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleNavigate('/')}
+                className={cn(
+                  'text-muted-foreground hover:text-foreground w-full items-center justify-start gap-2',
+                )}
+              >
+                <Globe className="h-4 w-4" />
+                <span>Voltar para o site</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleTheme}
+                className={cn(
+                  'text-muted-foreground hover:text-foreground w-full items-center justify-start gap-2',
+                )}
+              >
+                {resolvedTheme === 'light' ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
+                <span>
+                  {resolvedTheme === 'light' ? 'Tema escuro' : 'Tema claro'}
+                </span>
+              </Button>
             </div>
-          </nav>
+          </footer>
         </div>
       </aside>
 

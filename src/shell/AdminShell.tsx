@@ -1,4 +1,4 @@
-import { type ReactNode, useState, useLayoutEffect } from 'react';
+import { type ReactNode, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { AccountProvider } from '@/contexts/AccountContext';
 import { ModuleProvider } from '@/contexts/ModuleContext';
@@ -12,19 +12,6 @@ interface AdminShellProps {
 
 function AdminShellInner({ moduleTitle, children }: AdminShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  useLayoutEffect(() => {
-    const previousBodyOverflow = document.body.style.overflow;
-    const previousHtmlOverflow = document.documentElement.style.overflow;
-
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = previousBodyOverflow;
-      document.documentElement.style.overflow = previousHtmlOverflow;
-    };
-  }, []);
 
   const currentModuleTitle = moduleTitle || 'J&S Empregos';
   const content = children ?? <Outlet />;
