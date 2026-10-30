@@ -19,6 +19,7 @@ export interface UserIdentity {
   avatarUrl?: string;
   role: { id: string; name: string; is_global: boolean } | null;
   roleLabel: string;
+  roleScope: 'global' | 'tenant';
   tenant: { id: string; name: string } | null;
   tenantLabel: string;
   memberships: TenantMembership[];
@@ -235,6 +236,7 @@ export function deriveUserIdentity(
     avatarUrl: undefined,
     role,
     roleLabel,
+    roleScope,
     tenant,
     tenantLabel,
     memberships,
