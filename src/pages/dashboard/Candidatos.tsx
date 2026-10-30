@@ -22,7 +22,7 @@ const CANDIDATE_STATUS = [
 ] as const;
 
 const SALARY_TYPE_OPTIONS = [
-  { value: 'negotiate', label: 'Negoci�vel' },
+  { value: 'negotiate', label: 'Negociável' },
   { value: 'range', label: 'Faixa' },
   { value: 'monthly', label: 'Mensal' },
 ] as const;
@@ -305,7 +305,7 @@ export default function Candidatos() {
                     Status
                   </th>
                   <th className="text-muted-foreground px-4 py-3 text-right text-xs font-semibold tracking-wider uppercase">
-                    A��es
+                    Ações
                   </th>
                 </tr>
               </thead>
@@ -319,10 +319,10 @@ export default function Candidatos() {
                       {candidate.person?.full_name || 'Sem nome'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {candidate.headline || '�'}
+                      {candidate.headline || '-'}
                     </td>
                     <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {candidate.source || '�'}
+                      {candidate.source || '-'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span
@@ -407,7 +407,7 @@ export default function Candidatos() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Sal�rio m�nimo
+                    Salário mínimo
                   </label>
                   <input
                     type="number"
@@ -423,7 +423,7 @@ export default function Candidatos() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Sal�rio m�ximo
+                    Salário máximo
                   </label>
                   <input
                     type="number"
@@ -439,7 +439,7 @@ export default function Candidatos() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Tipo de sal�rio
+                    Tipo de salário
                   </label>
                   <select
                     className="w-full rounded-lg border px-3 py-2 text-sm"
@@ -526,7 +526,7 @@ export default function Candidatos() {
       <ConfirmDialog
         open={!!deleteConfirm}
         title="Remover candidato?"
-        message="Tem certeza que deseja remover este candidato? Essa a��o n�o pode ser desfeita."
+        message="Tem certeza que deseja remover este candidato? Essa ação não pode ser desfeita."
         confirmLabel="Remover"
         variant="danger"
         onConfirm={handleDelete}

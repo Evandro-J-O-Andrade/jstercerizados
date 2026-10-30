@@ -62,7 +62,7 @@ const SERVICES_FILTERS: FilterDef[] = [
 ];
 
 const ORDERS_COLUMNS: ColumnDef<ServiceOrder>[] = [
-  { key: 'company_service_id', header: 'Servi�o', sortable: true },
+  { key: 'company_service_id', header: 'Serviço', sortable: true },
   { key: 'status', header: 'Status', sortable: true },
   {
     key: 'scheduled_at',
@@ -101,7 +101,7 @@ const EXECUTIONS_COLUMNS: ColumnDef<ServiceExecution>[] = [
   { key: 'service_order_id', header: 'Ordem', sortable: true },
   {
     key: 'started_at',
-    header: 'In�cio',
+    header: 'Início',
     render: (item) =>
       item.started_at ? new Date(item.started_at).toLocaleString('pt-BR') : '-',
     sortable: true,
@@ -135,7 +135,7 @@ function OrderForm({
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-foreground text-sm font-medium">Servi�o</label>
+        <label className="text-foreground text-sm font-medium">Serviço</label>
         <input
           className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
           value={form.company_service_id}
@@ -174,7 +174,7 @@ function OrderForm({
       </div>
       <div>
         <label className="text-foreground text-sm font-medium">
-          Per�odo in�cio
+          Período início
         </label>
         <input
           type="date"
@@ -185,7 +185,7 @@ function OrderForm({
       </div>
       <div>
         <label className="text-foreground text-sm font-medium">
-          Per�odo fim
+          Período fim
         </label>
         <input
           type="date"
@@ -204,7 +204,7 @@ function OrderForm({
       </div>
       <div>
         <label className="text-foreground text-sm font-medium">
-          Observa��es
+          Observações
         </label>
         <textarea
           className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
@@ -227,7 +227,7 @@ function ExecutionForm({
     <div className="space-y-4">
       <div>
         <label className="text-foreground text-sm font-medium">
-          Ordem de servi�o
+          Ordem de serviço
         </label>
         <input
           className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
@@ -248,7 +248,7 @@ function ExecutionForm({
         />
       </div>
       <div>
-        <label className="text-foreground text-sm font-medium">In�cio</label>
+        <label className="text-foreground text-sm font-medium">Início</label>
         <input
           type="datetime-local"
           className="border-border bg-background mt-1 w-full rounded-md border px-3 py-2 text-sm"
@@ -356,18 +356,18 @@ export default function ServicosListPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-foreground text-xl font-semibold">Servi�os</h1>
+          <h1 className="text-foreground text-xl font-semibold">Serviços</h1>
           <p className="text-muted-foreground text-sm">
-            Cat�logo, ordens e execu��es.
+            Catálogo, ordens e execuções.
           </p>
         </div>
       </div>
 
       <div className="border-border flex gap-2 overflow-x-auto border-b">
         {[
-          { key: 'services', label: 'Servi�os' },
+          { key: 'services', label: 'Serviços' },
           { key: 'orders', label: 'Ordens' },
-          { key: 'executions', label: 'Execu��es' },
+          { key: 'executions', label: 'Execuções' },
         ].map((t) => (
           <button
             key={t.key}
@@ -385,8 +385,8 @@ export default function ServicosListPage() {
 
       {tab === 'services' && (
         <ModulePage
-          title="Servi�os"
-          description="Cat�logo de servi�os."
+          title="Serviços"
+          description="Catálogo de serviços."
           module={moduleDef}
           permissions={
             [
@@ -445,7 +445,7 @@ export default function ServicosListPage() {
             servicesRepository.deleteService(tenantId, id)
           }
           getItemId={(item) => item.id}
-          emptyMessage="Nenhum servi�o cadastrado."
+          emptyMessage="Nenhum serviço cadastrado."
           onEditStart={(item) => setEditingService(item as Service)}
           onModalClose={() => setEditingService(null)}
           modalOpen={serviceModalOpen}
@@ -487,7 +487,7 @@ export default function ServicosListPage() {
 
       {tab === 'orders' && (
         <ModulePage
-          title="Ordens de Servi�o"
+          title="Ordens de Serviço"
           description="Ordens e acompanhamento."
           module={moduleDef}
           permissions={
@@ -560,8 +560,8 @@ export default function ServicosListPage() {
 
       {tab === 'executions' && (
         <ModulePage
-          title="Execu��es"
-          description="Execu��es de servi�o."
+          title="Execuções"
+          description="Execuções de serviço."
           module={moduleDef}
           permissions={
             [
@@ -623,7 +623,7 @@ export default function ServicosListPage() {
             servicesRepository.deleteExecution(tenantId, id)
           }
           getItemId={(item) => item.id}
-          emptyMessage="Nenhuma execu��o registrada."
+          emptyMessage="Nenhuma execução registrada."
           renderForm={(form, setForm) => (
             <ExecutionForm
               form={form as ServiceExecutionCreateInput}

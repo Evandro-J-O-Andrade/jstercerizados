@@ -1,0 +1,44 @@
+040009Atendimento/acompanhamento em reabilitação física, mental, visual, auditiva e múltiplas deficiências202610
+040013Atendimento/acompanhamento de diagnóstico de doenças endocrinas/metabólicas e nutricionais          202610
+040017Nefrologia                                                                                          202610
+040024Cirurgia do aparelho digestivo, orgãos anexos e parede abdominal(inclui pré e pós operatório)       202610
+040028Outras cirurgias plásticas/reparadoras                                                              202610
+040030Sequenciais                                                                                         202610
+040032Transplantes de orgãos, tecidos e células                                                           202610
+040033Medicamentos para transplante                                                                       202610
+040038OPM para transplantes                                                                               202610
+040041Central Nacional de Regulação de Alta Complexidade (CNRAC)                                          202610
+040044Redesignação e Acompanhamento                                                                       202610
+040049Implementar Cirg. CV Pediátrica                                                                     202610
+040055Transplante - Histocompatibilidade                                                                  202610
+040062Doenças Raras                                                                                       202610
+040063Cadeiras de Rodas                                                                                   202610
+040065Medicamentos em Urgência                                                                            202610
+040066Cirurgias Eletivas - Componente Único                                                               202610
+040067Atenção Especializada em Saúde Auditiva                                                             202610
+040068Terapias Especializadas em Angiologia                                                               202610
+040069Tratamento de Doença Macular                                                                        202610
+040070OPME Não Relacionados ao Ato Cirúrgico                                                              202610
+040071Diagnóstico/tratamento em oncologia                                                                 202610
+040072Diagnóstico de trombofilia em gestante                                                              202610
+040073Reabilitação Pós-COVID-19                                                                           202610
+040074Telemedicina em Urgência                                                                            202610
+040075Fisioterapia Cardiovascular                                                                         202610
+040076Hemodinâmica em atendimento de urgência                                                             202610
+040077Exames Sorológicos e Imunológicos                                                                   202610
+040078QualiSUS Cardio                                                                                     202610
+040079Pré-cirúrgico em Cirurgias Prioritárias                                                             202610
+040080Programa Agora Tem Especialistas -Componente Cirúrgico                                              202610
+040081Síndrome Respiratória Aguda Grave - SRAG                                                            202610
+040082Alta Complexidade em Cardiologia                                                                    202610
+040083Cirurgia da Face e do Sistema Estomatognático                                                       202610
+040084Neurocirurgias                                                                                      202610
+040085Exames coprológicos                                                                                 202610
+040086Programa Agora Tem Especialistas -Componente Ambulatorial                                           202610
+040087Saúde Bucal                                                                                         202610
+040088Radioterapia                                                                                        202610
+040089Recursos Vinculados a Parcela Única                                                                 202610
+040090Recursos Vinculados a Emendas Parlamentares                                                         202610
+040091Materno Infântil                                                                                    202610
+040092Saúde da Mulher                                                                                     202610
+040093Tratamento da anemia por deficiência de ferro                                                       202610

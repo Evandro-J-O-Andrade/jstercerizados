@@ -1,0 +1,67 @@
+001Inclui valor da anestesia                                                                           202610
+003Admite longa permanência                                                                            202610
+004Admite permanência à maior                                                                          202610
+005Admite liberação de quantidade na AIH                                                               202610
+006CNRAC                                                                                               202610
+007Permanência por dia                                                                                 202610
+008Não permite mudança de procedimento                                                                 202610
+009Exige CPF/CNS                                                                                       202610
+011Permite alta direta de UTI                                                                          202610
+012Exige idade no BPA (Consolidado)                                                                    202610
+013Verifica habilitação de terceiro                                                                    202610
+014Admite APAC de Continuidade                                                                         202610
+015Admitido apenas em Hosp.Espec/Psiquiatria                                                           202610
+017Exige Informação da OPM                                                                             202610
+020Monitoramento do CEO                                                                                202610
+021Não Exige CBO                                                                                       202610
+022Exige registro na APAC de dados complementares                                                      202610
+023Registro no SISCOLO                                                                                 202610
+024Registro no SISPRENATAL                                                                             202610
+025Registro no SISMAMA                                                                                 202610
+026Registro de Procedimentos Secundário Compativel                                                     202610
+029Admite período maior para a apresentação                                                            202610
+033APAC com validade fixa de 03 competências                                                           202610
+034Não exige CPF/CNS                                                                                   202610
+036Exige Autorização                                                                                   202610
+037Exige CNPJ do Fornecedor                                                                            202610
+038Exige Serviço/Classificação                                                                         202610
+040Registro no SISCAN                                                                                  202610
+041APAC com validade fixa de 12 competências                                                           202610
+042Não Admite Liberação de Crítica de Idade                                                            202610
+043Exige registro de CID de causas associadas (Secundário)                                             202610
+044Cirurgias Eletivas                                                                                  202610
+045Diárias de Leitos Complementares                                                                    202610
+046Tratamento Ambulatorial de Doenças Crônicas                                                         202610
+047Autorização com limite máximo de 6 meses.                                                           202610
+048Exige CID                                                                                           202610
+049Permite Informação de Equipe Cirúrgica                                                              202610
+050Permite o Registro de Informações do CPF/CNS do(s) Recém-Nascido(s)                                 202610
+051Programa Mais Acesso a Especialistas - Componente Cirurgias Hospitalares                            202610
+052Programa Mais Acesso a Especialistas - Componente Cirurgias Ambulatoriais.                          202610
+053Programa Mais Acesso a Especialistas (PMAE)                                                         202610
+054APAC com validade fixa de 2 competências.                                                           202610
+055Exige data do resultado diagnóstico de Neoplasia                                                    202610
+056Exige procedimento de tomografia computadorizada                                                    202610
+057Exige procedimento de ressonância magnética                                                         202610
+058Obrigatório CPF                                                                                     202610
+059Componente Complementar - Modalidade 2                                                              202610
+060Componente Complementar - Modalidade 3                                                              202610
+061Exige procedimento de Mamografia ou Ultrassonografia Mamária Bilateral                              202610
+062Exige procedimento de Colposcopia ou de Biópsia com o Anatomopatológico                             202610
+063Exige procedimento de diagnóstico em oftalmologia                                                   202610
+064Exige procedimento diagnóstico e procedimento clínico-restaurador.                                  202610
+065Apoio Diagnóstico e Terapêutico por Imagem                                                          202610
+066APAC Onco Exclusiva com Autorização Prévia                                                          202610
+067Exige Procedimento de Punção Lombar e/ou Tomografia                                                 202610
+068Exige procedimentos dos subgrupos 02.03 e/ou 02.02                                                  202610
+069Exige Procedimentos dos Subgrupos 02.06 e/ou 02.09                                                  202610
+070Exige procedimento de tomografia e/ou biópsia                                                       202610
+071Exige procedimento reabilitador                                                                     202610
+072Exige procedimento de Videolaringoscopia ou Laringoscopia                                           202610
+073Permite consulta de profissionais de nível superior (exceto médico)                                 202610
+074Exige procedimento de restauração de dente anterior ou posterior                                    202610
+075Exige 01 procedimento de tratamento ou retratamento endodôntico                                     202610
+076Exige 02 procedimentos de tratamento ou retratamento endodôntico;                                   202610
+077Exige 03 procedimentos de tratamento ou retratamento endodôntico                                    202610
+078Exige pelo menos 04 procedimentos de tratamento ou retratamento endodôntico.                        202610
+079Exige CID Oncológico.                                                                               202610

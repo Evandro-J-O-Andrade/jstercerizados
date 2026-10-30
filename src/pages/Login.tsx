@@ -65,7 +65,6 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
     isLoading,
     authError,
     person,
-    resolvePostLoginDestination,
   } = useAuth();
   const navigate = useNavigate();
 
@@ -79,16 +78,11 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated && person) {
-      const target = resolvePostLoginDestination();
-      navigate(target, { replace: true });
+      // Sempre navegar para a tela de boas-vindas após o login.
+      // O destino final é escolhido pelo usuário ao clicar em "Continuar".
+      navigate('/auth/welcome', { replace: true });
     }
-  }, [
-    isLoading,
-    isAuthenticated,
-    person,
-    navigate,
-    resolvePostLoginDestination,
-  ]);
+  }, [isLoading, isAuthenticated, person, navigate]);
 
   useEffect(() => {
     setError('');

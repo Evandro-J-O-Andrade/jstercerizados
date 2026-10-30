@@ -1,0 +1,1 @@
+export { default as DashboardMidia } from './DashboardMidia.tsx';

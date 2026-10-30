@@ -1,0 +1,94 @@
+﻿
+src\modules\candidato\permissions\index.ts:8:  alertas: 'candidate_job_alerts.manage',
+src\modules\candidato\repositories\candidate-portal\favoriteJobs.repository.ts:31:      .from('favorite_jobs')
+src\modules\candidato\repositories\candidate-portal\favoriteJobs.repository.ts:47:      .from('favorite_jobs')
+src\modules\candidato\repositories\candidate-portal\favoriteJobs.repository.ts:58:      .from('favorite_jobs')
+src\modules\candidato\repositories\candidate-portal\favoriteJobs.repository.ts:69:      .from('favorite_jobs')
+src\modules\candidato\repositories\candidate-portal\jobAlerts.repository.ts:43:      .from('candidate_job_alerts')
+src\modules\candidato\repositories\candidate-portal\jobAlerts.repository.ts:54:      .from('candidate_job_alerts')
+src\modules\candidato\repositories\candidate-portal\jobAlerts.repository.ts:81:      .from('candidate_job_alerts')
+src\modules\candidato\repositories\candidate-portal\jobAlerts.repository.ts:106:      .from('candidate_job_alerts')
+src\modules\candidato\sidebar\index.ts:90:    requiredPermission: 'candidate_job_alerts.manage',
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:5:--   - Add `favorite_jobs` table for candidatos to 
+mark vagas as favoritas
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:12:-- 1. favorite_jobs — Vagas favoritadas pelo 
+candidato
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:15:create table if not exists public.favorite_jobs (
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:41:  constraint favorite_jobs_unique unique (person_id, 
+job_id)
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:44:create index if not exists idx_favorite_jobs_person
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:45:  on public.favorite_jobs(person_id);
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:46:create index if not exists idx_favorite_jobs_job
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:47:  on public.favorite_jobs(job_id);
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:48:create index if not exists idx_favorite_jobs_tenant
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:49:  on public.favorite_jobs(tenant_id);
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:55:alter table public.favorite_jobs enable row level 
+security;
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:58:drop policy if exists favorite_jobs_self_read on 
+public.favorite_jobs;
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:59:create policy favorite_jobs_self_read
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:60:  on public.favorite_jobs for select
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:66:drop policy if exists favorite_jobs_self_insert on 
+public.favorite_jobs;
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:67:create policy favorite_jobs_self_insert
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:68:  on public.favorite_jobs for insert
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:75:drop policy if exists favorite_jobs_self_delete on 
+public.favorite_jobs;
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:76:create policy favorite_jobs_self_delete
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:77:  on public.favorite_jobs for delete
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:86:grant select, insert, delete on public.favorite_jobs 
+to authenticated;
+supabase\migrations\20260904220000_candidate_favorite_jobs.sql:92:comment on table public.favorite_jobs is
+supabase\migrations\20260905000000_candidate_job_alerts.sql:5:--   - Add `candidate_job_alerts` table: saved search 
+criteria for vagas
+supabase\migrations\20260905000000_candidate_job_alerts.sql:13:-- 1. candidate_job_alerts — Alertas de vagas por 
+candidato
+supabase\migrations\20260905000000_candidate_job_alerts.sql:16:create table if not exists public.candidate_job_alerts (
+supabase\migrations\20260905000000_candidate_job_alerts.sql:60:  constraint candidate_job_alerts_unique unique 
+(person_id, name)
+supabase\migrations\20260905000000_candidate_job_alerts.sql:63:create index if not exists 
+idx_candidate_job_alerts_person
+supabase\migrations\20260905000000_candidate_job_alerts.sql:64:  on public.candidate_job_alerts(person_id);
+supabase\migrations\20260905000000_candidate_job_alerts.sql:65:create index if not exists 
+idx_candidate_job_alerts_tenant
+supabase\migrations\20260905000000_candidate_job_alerts.sql:66:  on public.candidate_job_alerts(tenant_id);
+supabase\migrations\20260905000000_candidate_job_alerts.sql:67:create index if not exists 
+idx_candidate_job_alerts_active
+supabase\migrations\20260905000000_candidate_job_alerts.sql:68:  on public.candidate_job_alerts(tenant_id, is_active);
+supabase\migrations\20260905000000_candidate_job_alerts.sql:74:drop trigger if exists 
+trg_candidate_job_alerts_updated_at on public.candidate_job_alerts;
+supabase\migrations\20260905000000_candidate_job_alerts.sql:75:create trigger trg_candidate_job_alerts_updated_at
+supabase\migrations\20260905000000_candidate_job_alerts.sql:76:  before update on public.candidate_job_alerts
+supabase\migrations\20260905000000_candidate_job_alerts.sql:83:alter table public.candidate_job_alerts enable row 
+level security;
+supabase\migrations\20260905000000_candidate_job_alerts.sql:86:drop policy if exists candidate_job_alerts_self_read on 
+public.candidate_job_alerts;
+supabase\migrations\20260905000000_candidate_job_alerts.sql:87:create policy candidate_job_alerts_self_read
+supabase\migrations\20260905000000_candidate_job_alerts.sql:88:  on public.candidate_job_alerts for select
+supabase\migrations\20260905000000_candidate_job_alerts.sql:94:drop policy if exists candidate_job_alerts_self_insert 
+on public.candidate_job_alerts;
+supabase\migrations\20260905000000_candidate_job_alerts.sql:95:create policy candidate_job_alerts_self_insert
+supabase\migrations\20260905000000_candidate_job_alerts.sql:96:  on public.candidate_job_alerts for insert
+supabase\migrations\20260905000000_candidate_job_alerts.sql:103:drop policy if exists candidate_job_alerts_self_update 
+on public.candidate_job_alerts;
+supabase\migrations\20260905000000_candidate_job_alerts.sql:104:create policy candidate_job_alerts_self_update
+supabase\migrations\20260905000000_candidate_job_alerts.sql:105:  on public.candidate_job_alerts for update
+supabase\migrations\20260905000000_candidate_job_alerts.sql:115:drop policy if exists candidate_job_alerts_self_delete 
+on public.candidate_job_alerts;
+supabase\migrations\20260905000000_candidate_job_alerts.sql:116:create policy candidate_job_alerts_self_delete
+supabase\migrations\20260905000000_candidate_job_alerts.sql:117:  on public.candidate_job_alerts for delete
+supabase\migrations\20260905000000_candidate_job_alerts.sql:126:grant select, insert, update, delete on 
+public.candidate_job_alerts to authenticated;
+supabase\migrations\20260905000000_candidate_job_alerts.sql:134:  'candidate_job_alerts.manage',
+supabase\migrations\20260905000000_candidate_job_alerts.sql:135:  'candidate_job_alerts',
+supabase\migrations\20260905000000_candidate_job_alerts.sql:146:  AND p.code = 'candidate_job_alerts.manage'
+supabase\migrations\20260905000000_candidate_job_alerts.sql:153:comment on table public.candidate_job_alerts is
+supabase\migrations\20260906000000_candidate_portal_navigation.sql:139:  ('favorites',    'Vagas favoritas',   
+'/candidato/favoritas',    'Heart',     true,  false, 40, 'candidate_favorite_jobs.manage'),
+supabase\migrations\20260906000000_candidate_portal_navigation.sql:140:  ('alerts',       'Alertas de vagas',  
+'/candidato/alertas',      'Bell',      true,  false, 50, 'candidate_job_alerts.manage'),
+supabase\schema.sql:914:create table public.favorite_jobs (
+supabase\schema.sql:923:alter table public.favorite_jobs enable row level security;
+supabase\schema.sql:926:  on public.favorite_jobs for select
+
+

@@ -240,7 +240,7 @@ function getVisibleTileCount(container: HTMLElement): number {
   return container.querySelectorAll('[style*="grid-column"]').length;
 }
 
-describe('MetroTileGrid � Virtualiza��o', () => {
+describe('MetroTileGrid - Virtualização', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

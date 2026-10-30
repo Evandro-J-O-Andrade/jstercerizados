@@ -58,7 +58,7 @@ export default function EmpresaFormPage() {
           if (data) {
             setCompany(data);
           } else {
-            setError('Empresa n�o encontrada');
+            setError('Empresa não encontrada');
           }
         } catch (err) {
           console.error('[EmpresaFormPage] Failed to load:', err);
@@ -79,7 +79,7 @@ export default function EmpresaFormPage() {
 
   const handleSubmit = async (formData: CompanyFormData) => {
     if (!activeTenantId) {
-      setError('Tenant n�o identificado');
+      setError('Tenant não identificado');
       return;
     }
 

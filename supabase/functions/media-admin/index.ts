@@ -14,6 +14,7 @@ const ENTITY_TO_RESOURCE: Record<string, string> = {
   service: 'services.media',
   partner: 'partners.media',
   supplier: 'suppliers.media',
+  job: 'jobs.media',
 };
 
 function corsHeaders(req: Request): Record<string, string> {

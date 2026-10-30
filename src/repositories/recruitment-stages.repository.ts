@@ -25,7 +25,7 @@ export class RecruitmentStagesRepository extends SupabaseRepository {
       .from('recruitment_stages')
       .select('*')
       .eq('tenant_id', tenantId)
-      .order('order', { ascending: true });
+      .order('created_at', { ascending: true });
 
     if (filters?.processId)
       query = query.eq('recruitment_process_id', filters.processId);

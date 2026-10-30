@@ -22,6 +22,7 @@ const ENTITY_TO_RESOURCE: Record<string, string> = {
   partner: 'partners.media',
   supplier: 'suppliers.media',
   person: 'people.media',
+  job: 'jobs.media',
 };
 
 const PRIMARY_PURPOSES = ['logo', 'hero', 'card', 'avatar'];
@@ -340,7 +341,9 @@ serve(async (req: Request) => {
               ? 'company_relationships'
               : entityType === 'person'
                 ? 'people'
-                : null;
+                : entityType === 'job'
+                  ? 'jobs'
+                  : null;
 
     if (!entityTable) {
       return errorResponse(
@@ -357,7 +360,7 @@ serve(async (req: Request) => {
       .eq('id', entityId);
 
     // person: verify via tenant_memberships (already done above)
-    if (entityType === 'company' || entityType === 'service') {
+    if (entityType === 'company' || entityType === 'service' || entityType === 'job') {
       entityQuery = entityQuery.eq('tenant_id', tenantId);
     } else if (entityType !== 'person') {
       // partner/supplier: verify via company_relationships tenant_id
@@ -405,6 +408,42 @@ serve(async (req: Request) => {
     // 14. Read file buffer and compute integrity hash
     const fileBuffer = await file.arrayBuffer();
     const fileHash = await computeSha256(fileBuffer);
+
+    // 14.5. Deduplication: check if an asset with the same hash already exists for this tenant
+    const { data: existingAsset } = await adminClient
+      .from('media_assets')
+      .select('id, bucket_id, storage_path, file_url, file_name, mime_type, file_size_bytes, file_hash, entity_type, entity_id, purpose, is_primary, sort_order, alt_text, created_at, metadata')
+      .eq('tenant_id', tenantId)
+      .eq('file_hash', fileHash)
+      .maybeSingle();
+
+    if (existingAsset) {
+      // Return existing asset without re-uploading
+      return json(
+        {
+          success: true,
+          asset: {
+            id: existingAsset.id,
+            bucket_id: existingAsset.bucket_id,
+            storage_path: existingAsset.storage_path,
+            file_url: existingAsset.file_url,
+            file_name: existingAsset.file_name,
+            mime_type: existingAsset.mime_type,
+            file_size_bytes: existingAsset.file_size_bytes,
+            file_hash: existingAsset.file_hash,
+            is_primary: existingAsset.is_primary,
+            sort_order: existingAsset.sort_order,
+            alt_text: existingAsset.alt_text,
+            created_at: existingAsset.created_at,
+            metadata: existingAsset.metadata,
+          },
+          duplicate: true,
+          bucket: existingAsset.bucket_id,
+        },
+        200,
+        req,
+      );
+    }
 
     // 15. Upload to Storage using service_role
     const { error: uploadError } = await adminClient.storage

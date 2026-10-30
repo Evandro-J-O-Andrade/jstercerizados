@@ -1,0 +1,71 @@
+0401Pequenas cirurgias e cirurgias de pele, tecido subcutâneo e mucosa                                  202610
+0801Ações relacionadas ao estabelecimento                                                               202610
+0601Medicamentos de dispensação excepcional                                                             202610
+0201Coleta de material                                                                                  202610
+0101Ações coletivas/individuais em saúde                                                                202610
+0501Coleta e exames para fins de doação de orgãos, tecidos e células e de transplante                   202610
+0301Consultas / Atendimentos / Acompanhamentos                                                          202610
+0701Órteses, próteses e materiais especiais não relacionados ao ato cirúrgico                           202610
+0901Atenção em Oncologia                                                                                202610
+0102Vigilância em saúde                                                                                 202610
+0502Avaliação de morte encefálica                                                                       202610
+0602Medicamentos estratégicos                                                                           202610
+0302Fisioterapia                                                                                        202610
+0702Órteses, próteses e materiais especiais relacionados ao ato cirúrgico                               202610
+0802Ações relacionadas ao atendimento                                                                   202610
+0902Atenção em Cardiologia                                                                              202610
+0402Cirurgia de glândulas endócrinas                                                                    202610
+0202Diagnóstico em laboratório clínico                                                                  202610
+0403Cirurgia do sistema nervoso central e periférico                                                    202610
+0303Tratamentos clínicos (outras especialidades)                                                        202610
+0203Diagnóstico por anatomia patológica e citopatologia                                                 202610
+0903Atenção em Ortopedia                                                                                202610
+0803Autorização / regulação                                                                             202610
+0603Medicamentos de âmbito hospitalar e urgência                                                        202610
+0503Ações relacionadas à doação de orgãos e tecidos para transplante                                    202610
+0804Telessaúde                                                                                          202610
+0304Tratamento em oncologia                                                                             202610
+0404Cirurgia das vias aéreas superiores, da face, da cabeça e do pescoço                                202610
+0204Diagnóstico por radiologia                                                                          202610
+0504Processamento de tecidos para transplante                                                           202610
+0904Atenção em Otorrinolaringologia                                                                     202610
+0604Componente especializado da assistência farmacêutica                                                202610
+0305Tratamento em nefrologia                                                                            202610
+0505Transplante de orgãos, tecidos e células                                                            202610
+0405Cirurgia do aparelho da visão                                                                       202610
+0905Atenção em Oftalmologia                                                                             202610
+0205Diagnóstico por ultrasonografia                                                                     202610
+0605Assistência Farmacêutica em Oncologia                                                               202610
+0206Diagnóstico por tomografia                                                                          202610
+0406Cirurgia do aparelho circulatório                                                                   202610
+0906Atenção em Saúde Mulher                                                                             202610
+0306Hemoterapia                                                                                         202610
+0506Acompanhamento e intercorrências no pré e pós-transplante                                           202610
+0407Cirurgia do aparelho digestivo, orgãos anexos e parede abdominal                                    202610
+0307Tratamentos odontológicos                                                                           202610
+0207Diagnóstico por ressonância magnética                                                               202610
+0907Atenção à Saúde Bucal                                                                               202610
+0308Tratamento de lesões, envenenamentos e outros, decorrentes de causas externas                       202610
+0208Diagnóstico por medicina nuclear in vivo                                                            202610
+0908Atenção em Infectologia                                                                             202610
+0408Cirurgia do sistema osteomuscular                                                                   202610
+0209Diagnóstico por endoscopia                                                                          202610
+0309Terapias especializadas                                                                             202610
+0409Cirurgia do aparelho geniturinário                                                                  202610
+0909Atenção em Nefrologia                                                                               202610
+0210Diagnóstico por radiologia intervencionista                                                         202610
+0410Cirurgia de mama                                                                                    202610
+0310Parto e nascimento                                                                                  202610
+0211Métodos diagnósticos em especialidades                                                              202610
+0411Cirurgia obstétrica                                                                                 202610
+0311Cuidados Paliativos                                                                                 202610
+0212Diagnóstico e procedimentos especiais em hemoterapia                                                202610
+0412Cirurgia torácica                                                                                   202610
+0413Cirurgia reparadora                                                                                 202610
+0213Diagnóstico em vigilância epidemiológica e ambiental                                                202610
+0214Diagnóstico por teste rápido                                                                        202610
+0414Bucomaxilofacial                                                                                    202610
+0415Outras cirurgias                                                                                    202610
+0416Cirurgia em oncologia                                                                               202610
+0417Anestesiologia                                                                                      202610
+0418Cirurgia em nefrologia                                                                              202610

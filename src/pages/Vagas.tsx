@@ -404,6 +404,15 @@ export default function Vagas() {
                 >
                   <div className="gold-glow-wrapper group relative block h-full">
                     <div className="gold-glow-card card-base card-hover flex h-full min-h-[340px] flex-col rounded-2xl p-6 motion-reduce:transition-none">
+                      {vaga.imagemUrl && (
+                        <div className="mb-4">
+                          <img
+                            src={vaga.imagemUrl}
+                            alt={vaga.titulo}
+                            className="h-32 w-full object-cover rounded-xl bg-muted"
+                          />
+                        </div>
+                      )}
                       <div className="mb-4 flex items-start justify-between">
                         <div>
                           <h3 className="text-foreground group-hover/card:text-primary mb-1 text-xl font-bold transition-colors">

@@ -141,7 +141,7 @@ export default function DashboardRh() {
       },
       {
         id: 'employees',
-        label: 'Funcion�rios',
+        label: 'Funcionários',
         value: stats.totalEmployees,
         description: `${stats.activeEmployees} ativos`,
         icon: Users,
@@ -174,9 +174,9 @@ export default function DashboardRh() {
       },
       {
         id: 'recent-admissions',
-        label: 'Admiss�es recentes',
+        label: 'Admissões recentes',
         value: stats.recentAdmissions,
-        description: '�ltimos 30 dias',
+        description: 'Últimos 30 dias',
         icon: CalendarCheck,
         tone: 'success',
         permission: 'people.read',
@@ -186,7 +186,7 @@ export default function DashboardRh() {
         id: 'recent-candidates',
         label: 'Novos candidatos',
         value: stats.recentCandidates,
-        description: '�ltimos 30 dias',
+        description: 'Últimos 30 dias',
         icon: UserPlus,
         tone: 'primary',
         permission: 'candidates.read',
@@ -201,7 +201,7 @@ export default function DashboardRh() {
                 (stats.totalApplications / stats.totalCandidates).toFixed(2),
               )
             : 0,
-        description: 'M�dia de candidaturas por candidato',
+        description: 'Média de candidaturas por candidato',
         icon: TrendingUp,
         tone: 'neutral',
         permission: 'applications.read',
@@ -214,7 +214,7 @@ export default function DashboardRh() {
           stats.activeClients > 0
             ? Number((stats.openJobs / stats.activeClients).toFixed(2))
             : 0,
-        description: 'M�dia por cliente ativo',
+        description: 'Média por cliente ativo',
         icon: BriefcaseBusiness,
         tone: 'warning',
         permission: 'jobs.read',
@@ -243,7 +243,7 @@ export default function DashboardRh() {
   return (
     <ModuleWorkspace
       title="Dashboard RH"
-      description="Vis�o geral do m�dulo de Recursos Humanos"
+      description="Visão geral do módulo de Recursos Humanos"
       icon={TrendingUp}
       homeRoute="/dashboard/rh"
       breadcrumbItems={[{ label: 'Dashboard RH', href: '/dashboard/rh' }]}
@@ -251,7 +251,7 @@ export default function DashboardRh() {
         isAdminMaster ? (
           <Button variant="primary" size="sm">
             <Plus className="h-4 w-4" />
-            Nova a��o
+            Nova ação
           </Button>
         ) : undefined
       }
@@ -268,7 +268,7 @@ export default function DashboardRh() {
             ))}
           </DashboardMetricGrid>
         ) : (
-          <DashboardErrorState message="Nenhum indicador de RH est� liberado para o seu perfil." />
+          <DashboardErrorState message="Nenhum indicador de RH está liberado para o seu perfil." />
         )}
       </div>
     </ModuleWorkspace>

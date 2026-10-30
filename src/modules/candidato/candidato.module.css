@@ -1,0 +1,211 @@
+/* Candidato Cell — Estilos dedicados da célula do candidato (J&S Empregos LTDA) */
+
+.avatarWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.avatarImage {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid rgba(22, 163, 74, 0.2);
+  background: #f8fafc;
+}
+
+.avatarPlaceholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 2rem;
+  border: 4px dashed #cbd5e1;
+}
+
+.avatarEditButton {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s;
+}
+
+.avatarEditButton:hover {
+  background: #15803d;
+}
+
+.avatarRemoveButton {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.dashboardHeader {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  color: white;
+}
+
+.dashboardHeader h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.dashboardHeader p {
+  margin: 0.25rem 0 0;
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+
+.profileCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: #ffffff;
+  transition: box-shadow 0.2s;
+}
+
+.profileCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.completionBar {
+  height: 8px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.completionFill {
+  height: 100%;
+  border-radius: 4px;
+  background: #16a34a;
+  transition: width 0.5s ease-out;
+}
+
+.kanbanColumn {
+  background: #f1f5f9;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  min-height: 200px;
+}
+
+.kanbanCard {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.kanbanCard:hover {
+  border-color: #16a34a;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.1);
+}
+
+.jobCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: #ffffff;
+  transition: all 0.2s;
+}
+
+.jobCard:hover {
+  border-color: #16a34a;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.08);
+}
+
+.matchBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.matchBadge.high {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.matchBadge.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.matchBadge.low {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sidebarNavItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.sidebarNavItem:hover {
+  background: #f1f5f9;
+  color: #16a34a;
+}
+
+.sidebarNavItem.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.bottomNavItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.bottomNavItem.active {
+  color: #16a34a;
+}

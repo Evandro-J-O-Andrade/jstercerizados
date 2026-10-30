@@ -61,10 +61,12 @@ function mapJobListItemRow(row: Record<string, unknown>): JobListItem {
     | { name?: string; trading_name?: string; logo_url?: string }
     | null
     | undefined;
+  const metadata = job.metadata as Record<string, unknown> | undefined;
   return {
     ...job,
     company_name: companies?.name ?? companies?.trading_name ?? undefined,
     company_logo_url: companies?.logo_url ?? undefined,
+    imagem_url: metadata?.imagem_url as string | undefined,
   };
 }
 

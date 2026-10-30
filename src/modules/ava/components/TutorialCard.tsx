@@ -25,7 +25,7 @@ export function TutorialCard({ tutorial, onClick }: TutorialCardProps) {
     tutorial.videoKind === 'short'
       ? 'Curto'
       : tutorial.videoKind === 'quicktip'
-        ? 'Dica r�pida'
+        ? 'Dica rápida'
         : 'Completo';
 
   return (

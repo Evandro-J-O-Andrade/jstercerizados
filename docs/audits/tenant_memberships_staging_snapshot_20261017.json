@@ -1,0 +1,17 @@
+﻿{
+  "verified_at": "2026-10-17T20:59:32Z",
+  "schema": "public",
+  "table": "tenant_memberships",
+  "rls": { "relrowsecurity": true, "relforcerowsecurity": false },
+  "membership_role_distinct": ["member", "owner"],
+  "status_distinct": ["active"],
+  "policies": [
+    {"cmd":"DELETE","permissive":"PERMISSIVE","policyname":"tenant_memberships_admin_delete_guard","qual":"can_manage_role_assignment(tenant_id)","roles":"{authenticated}","with_check":null},
+    {"cmd":"INSERT","permissive":"PERMISSIVE","policyname":"tenant_memberships_admin_insert_permissive","qual":null,"roles":"{authenticated}","with_check":"can_manage_role_assignment(tenant_id)"},
+    {"cmd":"INSERT","permissive":"RESTRICTIVE","policyname":"tenant_memberships_admin_scope_guard","qual":null,"roles":"{authenticated}","with_check":"can_manage_role_assignment(tenant_id)"},
+    {"cmd":"SELECT","permissive":"PERMISSIVE","policyname":"tenant_memberships_member_read","qual":"(is_admin_master() OR is_tenant_member(tenant_id))","roles":"{public}","with_check":null},
+    {"cmd":"SELECT","permissive":"RESTRICTIVE","policyname":"tenant_memberships_visibility_guard","qual":"((person_id = current_person_id()) OR can_manage_role_assignment(tenant_id))","roles":"{authenticated}","with_check":null},
+    {"cmd":"UPDATE","permissive":"RESTRICTIVE","policyname":"tenant_memberships_admin_update_guard","qual":"can_manage_role_assignment(tenant_id)","roles":"{authenticated}","with_check":"can_manage_role_assignment(tenant_id)"},
+    {"cmd":"UPDATE","permissive":"PERMISSIVE","policyname":"tenant_memberships_admin_update_permissive","qual":"can_manage_role_assignment(tenant_id)","roles":"{authenticated}","with_check":"can_manage_role_assignment(tenant_id)"}
+  ]
+}

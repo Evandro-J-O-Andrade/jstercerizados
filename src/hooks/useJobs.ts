@@ -43,6 +43,7 @@ function mapJobListItemToVaga(job: JobListItem): Vaga {
     titulo: job.title,
     empresa: job.company_name,
     empresaLogo: job.company_logo_url,
+    imagemUrl: job.imagem_url ?? undefined,
     cidade: job.city ?? undefined,
     estado: job.state ?? undefined,
     tipo_contrato: job.contract_type ? contractTypeMap[job.contract_type] : undefined,

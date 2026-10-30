@@ -1,0 +1,7 @@
+01Atenção Básica (PAB)                                                                                202610
+02Assistência Farmacêutica                                                                            202610
+04Fundo de Ações Estratégicas e Compensações (FAEC)                                                   202610
+05Incentivo - MAC                                                                                     202610
+06Média e Alta Complexidade (MAC)                                                                     202610
+07Vigilância em Saúde                                                                                 202610
+08Gestão do SUS                                                                                       202610

@@ -94,20 +94,8 @@ export const applicationsRepository = {
               email,
               avatar_url
             )
-          ),
-          recruitment_processes!left (
-            id,
-            name
-          ),
-          recruitment_stages!left (
-            id,
-            name
           )
         `, { count: 'exact' });
-
-      if (filters.tenant_id) {
-        query = query.eq('tenant_id', filters.tenant_id);
-      }
       if (filters.job_id) {
         query = query.eq('job_id', filters.job_id);
       }
@@ -128,13 +116,13 @@ export const applicationsRepository = {
         query = query.eq('source', filters.source);
       }
       if (filters.date_from) {
-        query = query.gte('applied_at', filters.date_from);
+        query = query.gte('created_at', filters.date_from);
       }
       if (filters.date_to) {
-        query = query.lte('applied_at', filters.date_to);
+        query = query.lte('created_at', filters.date_to);
       }
 
-      const sortBy = filters.sort_by || 'applied_at';
+      const sortBy = filters.sort_by || 'created_at';
       const sortOrder = filters.sort_order || 'desc';
       query = query.order(sortBy, { ascending: sortOrder === 'asc' });
 
@@ -572,17 +560,12 @@ export const applicationsRepository = {
               logo_url
             )
           ),
-          recruitment_processes!left (
-            id,
-            name
-          ),
-          recruitment_stages!left (
-            id,
-            name
+          candidates!inner (
+            person_id
           )
         `)
-        .eq('person_id', personId)
-        .order('applied_at', { ascending: false });
+        .eq('candidates.person_id', personId)
+        .order('created_at', { ascending: false });
 
       if (error) {
         return { data: [], error, count: 0 };

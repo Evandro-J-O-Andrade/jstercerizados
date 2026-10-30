@@ -13,7 +13,7 @@ export class TalentPoolRepository extends SupabaseRepository {
       .from('talent_pool_memberships')
       .select('*')
       .eq('tenant_id', tenantId)
-      .order('joined_at', { ascending: false });
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
     return (data || []) as TalentPoolMembership[];

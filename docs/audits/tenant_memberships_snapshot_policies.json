@@ -1,0 +1,72 @@
+{
+  "captured_at": "2026-10-17T21:04:00Z",
+  "source_table": "public.tenant_memberships",
+  "source_schema": "public",
+  "source_environment": "staging okxqfyoqbhcmflpurfrw",
+  "capture_method": "consulta ao pg_policies e pg_policy do staging",
+  "evidencia": "deve corresponder ao estado real do staging antes de qualquer alteração",
+  "politicas": [
+    {
+      "cmd": "DELETE",
+      "permissive": "PERMISSIVE",
+      "policyname": "tenant_memberships_admin_delete_guard",
+      "qual": "can_manage_role_assignment(tenant_id)",
+      "roles": "{authenticated}",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "tenant_memberships_admin_insert_permissive",
+      "qual": null,
+      "roles": "{authenticated}",
+      "with_check": "can_manage_role_assignment(tenant_id)"
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "RESTRICTIVE",
+      "policyname": "tenant_memberships_admin_scope_guard",
+      "qual": null,
+      "roles": "{authenticated}",
+      "with_check": "can_manage_role_assignment(tenant_id)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "tenant_memberships_member_read",
+      "qual": "(is_admin_master() OR is_tenant_member(tenant_id))",
+      "roles": "{public}",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "RESTRICTIVE",
+      "policyname": "tenant_memberships_visibility_guard",
+      "qual": "((person_id = current_person_id()) OR can_manage_role_assignment(tenant_id))",
+      "roles": "{authenticated}",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "RESTRICTIVE",
+      "policyname": "tenant_memberships_admin_update_guard",
+      "qual": "can_manage_role_assignment(tenant_id)",
+      "roles": "{authenticated}",
+      "with_check": "can_manage_role_assignment(tenant_id)"
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "tenant_memberships_admin_update_permissive",
+      "qual": "can_manage_role_assignment(tenant_id)",
+      "roles": "{authenticated}",
+      "with_check": "can_manage_role_assignment(tenant_id)"
+    }
+  ],
+  "observacoes": [
+    "7 politicas registradas: DELETE(1), INSERT(2), SELECT(2), UPDATE(2)",
+    "Nenhuma alteracao RLS deve ser feita nesta fase; este arquivo e somente evidencia do estado atual.",
+    "Ponto critico: as duas politicas UPDATE usam can_manage_role_assignment(tenant_id); verificar que membro comum nao consegue promover/rebaixar outros membros.",
+    "Nenhuma alteracao no banco foi executada. Arquivo somente documenta o snapshot."
+  ]
+}

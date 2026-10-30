@@ -1,0 +1,8 @@
+﻿
+supabase\specs\sql\21_functions_triggers.sql:76:    current_setting('app.current_person_id', true)::uuid,
+supabase\specs\sql\21_functions_triggers.sql:141:    current_setting('app.current_person_id', true)::uuid,
+supabase\specs\sql\21_functions_triggers.sql:293:    current_setting('app.current_person_id', true)::uuid,
+supabase\specs\sql\21_functions_triggers.sql:400:    current_setting('app.current_person_id', true)::uuid,
+supabase\specs\sql\21_functions_triggers.sql:511:    current_setting('app.current_person_id', true)::uuid,
+
+

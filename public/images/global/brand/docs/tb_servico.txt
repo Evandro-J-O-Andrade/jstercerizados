@@ -1,0 +1,75 @@
+100Serviço de Atenção a Saúde no Sistema Penitenciário                                                                     202610
+101Estratégia de Saúde da Família                                                                                          202610
+102Estratégias de Agentes Comunitário de Saúde                                                                             202610
+103Serviço de Atendimento Móvel de Urgências                                                                               202610
+104Regulação Assistêncial dos Serviços de Saúde                                                                            202610
+105Serviço de Atenção em Neurologia/ Neurocirurgia                                                                         202610
+106Serviço de Atenção a DST/HIV/AIDS                                                                                       202610
+107Atenção à Saúde Auditiva                                                                                                202610
+108Atenção a Saúde do Trabalhador                                                                                          202610
+109Serviço de Atenção a Saúde dos Adolecentes em Conflito com a Lei, em Regime de Internação e Internação Provisória       202610
+110Serviço de Atenção a Saúde Reprodutiva                                                                                  202610
+111Serviço de Atenção ao Paciente com Tuberculose                                                                          202610
+112Serviço de Atenção ao Pré-Natal e Nascimento                                                                            202610
+113Serviço de Atenção Domiciliar                                                                                           202610
+114Serviço de Atenção em Saúde Bucal                                                                                       202610
+115Serviço de Atenção Psicossocial                                                                                         202610
+116Serviço de Atenção Cardiovascular/Cardiologia                                                                           202610
+117Serviço de Cirurgia Reparadora                                                                                          202610
+118Serviço de Cirurgia Torácica                                                                                            202610
+119Serviço de Controle de Tabagismo                                                                                        202610
+120Serviço de Diagnóstico por Anatomia Patológica e/ou Citopatologia                                                       202610
+121Diagnóstico por Imagem                                                                                                  202610
+122Serviço de Diagnóstico por Métodos Gráficos/Dinâmicos                                                                   202610
+123Serviço de Dispensação de Órteses, Próteses e Materiais Especiais                                                       202610
+124Serviço de Endocrinologia                                                                                               202610
+125Assistência Farmacêutica                                                                                                202610
+126Serviço de Fisioterapia                                                                                                 202610
+127Serviço de Atenção à Obesidade                                                                                          202610
+128Serviço de Hemoterapia                                                                                                  202610
+129Servico de Laboratório de Histocompatibilidade                                                                          202610
+130Atenção à Doença Renal Crônica                                                                                          202610
+131Serviço de Oftalmologia                                                                                                 202610
+132Serviço de Oncologia                                                                                                    202610
+133Serviço de Pneumologia                                                                                                  202610
+134Serviço de Práticas Integrativas e Complementares                                                                       202610
+135Serviço de Reabilitação                                                                                                 202610
+136Serviço de Suporte Nutricional                                                                                          202610
+137Serviço de Telemedicina                                                                                                 202610
+138Serviço de Traumato-Ortopedia                                                                                           202610
+139Serviço de Triagem Neonatal                                                                                             202610
+140Serviço de Urgência e Emergência                                                                                        202610
+141Serviço de Vigilância em Saúde                                                                                          202610
+142Serviço de Endoscopia                                                                                                   202610
+143Serviço Móvel de Urgência (exceto SAMU)                                                                                 202610
+144Serviço Posto de Coleta de Materiais Biológicos                                                                         202610
+145Serviço de Diagnóstico por Laboratório Clínico                                                                          202610
+146Serviço de Videolaparoscopia                                                                                            202610
+147Serviço de Apoio a Saúde da Família                                                                                     202610
+148Hospital-Dia                                                                                                            202610
+149Transplante                                                                                                             202610
+150Cirurgia Vascular                                                                                                       202610
+151Medicina Nuclear                                                                                                        202610
+152Atenção à Saúde da População Indígena                                                                                   202610
+153Atenção Especializada no Processo Transexualizador                                                                      202610
+154Serviço de Banco de Tecidos                                                                                             202610
+155Serviço de Traumatologia  Ortopedia                                                                                     202610
+157Serviço de Laboratorio de Protese Dentaria                                                                              202610
+158Serviço de Atenção Integral em Hanseniase                                                                               202610
+159Atenção Primária                                                                                                        202610
+160Teleconsultoria                                                                                                         202610
+161Consultório na Rua                                                                                                      202610
+162Serviço de Terapia Intensiva                                                                                            202610
+163Serviço de Cuidados Intermediários                                                                                      202610
+164Serviço de Órteses,Próteses e Materiais Especiais em Reabilitação                                                       202610
+165Atenção às Pessoas em Situação de Violência Sexual                                                                      202610
+166Serviço de  Análise Laboratorial  de Produtos Sujeitos á  Vigilância Sanitária                                          202610
+167Atendimento Itinerante de Asistência e Ensino em Saúde                                                                  202610
+168Atenção Às Pessoas com Doenças Raras                                                                                    202610
+169Serviço de Atenção em Urologia                                                                                          202610
+170Comissões e Comitês                                                                                                     202610
+171Cuidados Paliativos                                                                                                     202610
+172Atenção ao Luto Materno e Parental                                                                                      202610
+173Logística de Imunobiológicos                                                                                            202610
+174Imunização                                                                                                              202610
+175Cirúrgia Robótica                                                                                                       202610

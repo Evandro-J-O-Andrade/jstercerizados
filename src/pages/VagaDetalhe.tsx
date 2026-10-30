@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
@@ -7,6 +8,7 @@ import { Container } from '@/components/common/Container';
 import { JobApplicationForm } from '@/components/forms/JobApplicationForm';
 import { NotFoundState } from '@/components/fallback/NotFoundState';
 import { usePublicJobBySlugAsVaga } from '@/hooks/useJobs';
+import { getSupabaseClient } from '@/lib/supabase';
 import { COMPANY } from '@/config';
 import { SafeImage } from '@/components/ui/SafeImage';
 import {
@@ -64,6 +66,37 @@ export default function VagaDetalhe() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { job: vaga, isLoading, isNotFound } = usePublicJobBySlugAsVaga(slug);
+
+  // Redireciona slugs antigos para o novo endereço da vaga
+  useEffect(() => {
+    if (!slug || !isNotFound || isLoading) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const supabase = getSupabaseClient();
+        if (!supabase) return;
+
+        const { data, error } = await supabase
+          .from('job_slug_redirects')
+          .select('new_slug')
+          .eq('old_slug', slug)
+          .maybeSingle();
+
+        if (cancelled) return;
+
+        if (!error && data?.new_slug) {
+          navigate(`/vagas/${data.new_slug}`);
+        }
+      } catch {
+        // Não bloqueia o fluxo se a consulta falhar
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug, isNotFound, isLoading, navigate]);
 
   if (isLoading) {
     return (
@@ -247,6 +280,21 @@ export default function VagaDetalhe() {
                 </span>
               )}
             </motion.div>
+
+            {vaga.imagemUrl && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.6 }}
+                className="mb-8"
+              >
+                <img
+                  src={vaga.imagemUrl}
+                  alt={vaga.titulo}
+                  className="w-full h-64 object-cover rounded-2xl bg-muted shadow-sm"
+                />
+              </motion.div>
+            )}
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}

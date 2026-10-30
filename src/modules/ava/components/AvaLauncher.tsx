@@ -39,7 +39,7 @@ export function AvaLauncher({ tutorials, onTutorialClick }: AvaLauncherProps) {
       {isOpen && (
         <div className="bg-popover fixed right-4 bottom-4 z-40 w-72 rounded-lg border p-4 shadow-xl">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-foreground font-semibold">Tutoriais r�pidos</h3>
+            <h3 className="text-foreground font-semibold">Tutoriais rápidos</h3>
             <button
               type="button"
               onClick={() => setIsOpen(false)}

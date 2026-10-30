@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -163,30 +163,17 @@ export default function AuthWelcome() {
   } = useAuth();
   const { identity, userIdentity } = useAccount();
   const navigate = useNavigate();
-  const postLoginDestination =
-    !isLoading && isAuthenticated && person
-      ? resolvePostLoginDestination()
-      : null;
 
-  useEffect(() => {
-    if (isLoading) {
-      return;
-    }
+  if (!userIdentity) {
+    return <PageLoader />;
+  }
 
-    if (!isAuthenticated || !person) {
-      navigate('/login', { replace: true });
-      return;
-    }
-
-    if (postLoginDestination && postLoginDestination !== '/auth/welcome') {
-      navigate(postLoginDestination, { replace: true });
-    }
-  }, [isAuthenticated, isLoading, navigate, person, postLoginDestination]);
+  if (isLoading) {
+    return <PageLoader />;
+  }
 
   const isReturning = Boolean(firstLoginState?.welcome_completed_at);
-
   const area = getAreaInfo(roles, isAdminMaster);
-  const AreaIcon = area.icon;
 
   const handleContinue = async () => {
     if (isSubmitting || !person) {
@@ -196,9 +183,6 @@ export default function AuthWelcome() {
     setIsSubmitting(true);
     setError('');
 
-    // A boas-vindas é etapa transitória: a gravação de welcome_completed_at é
-    // bookkeeping e não pode impedir a entrada no sistema. Se a gravação
-    // falhar, o usuário ainda segue para o destino resolvido.
     try {
       const result = await updateFirstLoginState({
         welcome_completed_at: new Date().toISOString(),
@@ -206,14 +190,16 @@ export default function AuthWelcome() {
       });
 
       if (result.error) {
-        console.warn('[AUTH:WELCOME] falha ao registrar welcome_completed_at', {
-          error: result.error,
-        });
+        console.warn(
+          '[AUTH:WELCOME] falha ao registrar welcome_completed_at',
+          { error: result.error },
+        );
       }
     } catch (persistError) {
-      console.warn('[AUTH:WELCOME] exceção ao registrar welcome_completed_at', {
-        error: persistError,
-      });
+      console.warn(
+        '[AUTH:WELCOME] exceção ao registrar welcome_completed_at',
+        { error: persistError },
+      );
     }
 
     try {
@@ -225,11 +211,7 @@ export default function AuthWelcome() {
     }
   };
 
-  if (isLoading) {
-    return <PageLoader />;
-  }
-
-  if (!isAuthenticated || !person || postLoginDestination !== '/auth/welcome') {
+  if (!isAuthenticated || !person) {
     return null;
   }
 
@@ -245,10 +227,12 @@ export default function AuthWelcome() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-lg"
       >
-        <div className="mb-8 text-center">
-          <div className="bg-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
-            <AreaIcon className="text-primary h-8 w-8" />
-          </div>
+        <div className="mb-6 text-center">
+          <img
+            src="/images/boasvindas/boasvindas.png"
+            alt="Boas-vindas"
+            className="mx-auto mb-4 h-32 w-32 object-contain"
+          />
           <h1 className="text-foreground text-3xl font-bold">
             {isReturning
               ? `Bom te ver novamente, ${identity.firstName}! 👋`
@@ -261,7 +245,7 @@ export default function AuthWelcome() {
           </p>
         </div>
 
-        <div className="border-border/40 bg-card shadow-glass rounded-3xl border p-8">
+        <div className="border-border/40 bg-card shadow-glass rounded-3xl border p-6">
           <div className="text-center">
             <h2 className="text-foreground mb-2 text-xl font-semibold">
               Você está acessando sua{' '}

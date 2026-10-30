@@ -182,7 +182,7 @@ export function AdminHeader({
   return (
     <header
       className={cn(
-        'border-border bg-background sticky top-0 z-40 flex items-center justify-between border-b shadow-sm backdrop-blur-md',
+        'border-border bg-background sticky top-0 z-40 flex items-center justify-between border-b shadow-sm backdrop-blur-md h-16',
         className,
       )}
     >

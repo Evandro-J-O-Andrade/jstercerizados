@@ -1,0 +1,436 @@
+168001Atenção Especializada Em Doenças Raras                                                                                                                202610
+169001Urologia em Geral                                                                                                                                     202610
+170001Núcleo de Segurança do Paciente                                                                                                                       202610
+171001Abordagem Paliativa                                                                                                                                   202610
+172001Assistência Multiprofissional ao luto materno e parental                                                                                              202610
+173001Recebimento e Inspeção                                                                                                                                202610
+174001Indivíduos em Geral                                                                                                                                   202610
+175001Prostatectomia                                                                                                                                        202610
+100001Atendimento em presídio até 100 presos                                                                                                                202610
+101001Saúde da família                                                                                                                                      202610
+102001Estratégia de Agentes Comunitários de Saúde - EACS                                                                                                    202610
+103001Ambulância de transporte                                                                                                                              202610
+104001Central de Regulação de Internações Hospitalares                                                                                                      202610
+105001Neurocirurgia do trauma e anomalias do desenvolvimento                                                                                                202610
+106001Testagem e aconselhamento                                                                                                                             202610
+108001Atendimento Assistencial                                                                                                                              202610
+109001Unidade sócio-educativa com até 40 adolecentes                                                                                                        202610
+110001Atenção à infertilidade                                                                                                                               202610
+111001Diagnóstico e tratamento                                                                                                                              202610
+112001Acompanhamento do pré-natal                                                                                                                           202610
+113001Assitência Domiciliar                                                                                                                                 202610
+114001Dentística                                                                                                                                            202610
+115001Residência terapêutica em saúde mental                                                                                                                202610
+116001Eletrofisiologia                                                                                                                                      202610
+117001Tratamento da lipodistrofia do portador de HIV / AIDS                                                                                                 202610
+118001Cirurgia torácica                                                                                                                                     202610
+119001Abordagem e tratamento do fumante                                                                                                                     202610
+120001Exames anatomopatológicos                                                                                                                             202610
+121001Radiologia                                                                                                                                            202610
+122001Teste Ergométrico                                                                                                                                     202610
+124001Diagnóstico/Tratamento das doenças endócrinas, metabólicas e nutricionais                                                                             202610
+125001Dispensação de Medicamentos do Componente Especializado da Assistência Farmaceutica.                                                                  202610
+126001Assistência fisioterapêutica em alterações obstétricas, neonatais e uroginecológicas                                                                  202610
+127001Tratamento clínico, cirúrgico, reparador e acompanhamento ao obeso                                                                                    202610
+128001Procedimentos destinados à obtenção do sangue para fins de assitência hemoterápica                                                                    202610
+129001Exames de histocompatibilidade por meio de sorologia                                                                                                  202610
+130001Tratamento Dialítico-Hemodiálise                                                                                                                      202610
+131001Diagnóstico em oftalmologia                                                                                                                           202610
+132001Oncologia pediátrica                                                                                                                                  202610
+133001Tratamento de Doenças das Vias Aéreas Inferiores                                                                                                      202610
+134001Acupuntura                                                                                                                                            202610
+135001Reabilitação Visual                                                                                                                                   202610
+136001Enteral                                                                                                                                               202610
+137001Exame eletrocardiográfico por telemedicina                                                                                                            202610
+138001Diagnóstico e tratamento em cintura escapular                                                                                                         202610
+139001Tratamento de recém-nascido com hipotireoidismo e fenilcetonuria                                                                                      202610
+141001Vigilância epidemiológica                                                                                                                             202610
+142001Do aparelho digestivo                                                                                                                                 202610
+143001Transporte terrestre                                                                                                                                  202610
+144001Coleta realizada fora das estrutura laboratorial                                                                                                      202610
+145001Exames Bioquimicos                                                                                                                                    202610
+146001Diagnóstica                                                                                                                                           202610
+147001NASF 1                                                                                                                                                202610
+148001Saúde mental                                                                                                                                          202610
+149001Rim                                                                                                                                                   202610
+150001Fístula arteriovenosa sem enxerto                                                                                                                     202610
+151001Medicina nuclear in vivo                                                                                                                              202610
+152001Atenção Básica à Populações Indígenas                                                                                                                 202610
+153001Acompanhamento Clínico, pré e pós operatório e hormonioterapia.                                                                                       202610
+154001Banco de valvula cardiaca humana                                                                                                                      202610
+155001Serviço de Traumatologia e Ortopedia                                                                                                                  202610
+157001Laboratorio Regional de Protese Dentaria                                                                                                              202610
+158001Serviço de Atenção Integral em Hanseniase Tipo I                                                                                                      202610
+159001Atenção Primária                                                                                                                                      202610
+160001Teleconsultoria Assíncrona                                                                                                                            202610
+161001Equipe de Consultório na Rua - Modalidade I                                                                                                           202610
+162001ADULTO                                                                                                                                                202610
+163001NEONATAL CONVENCIONAL                                                                                                                                 202610
+164001Dispensação de OPM Auxiliares de Locomoção e Ortopédicas                                                                                              202610
+165001Referência para Atenção Integral às Pessoas em Situação de Violência Sexual                                                                           202610
+166001Água de Consumo                                                                                                                                       202610
+167001ODONTOLOGIA - PROJETO SAÚDE NA ESCOLA (PSE)                                                                                                           202610
+100002Atendimento em manicômio até 100 presos                                                                                                               202610
+174002Grupos Especiais                                                                                                                                      202610
+102002Estratégia de Agentes Comunitários de Saúde com Saúde Bucal - (modalidade I)                                                                          202610
+103002Unidade de suporte básico de vida terrestre (USB)                                                                                                     202610
+104002Cental de Regulação de Consultas e Exames                                                                                                             202610
+105002Coluna e nervos periféricos                                                                                                                           202610
+106002Diagnóstico e tratamento                                                                                                                              202610
+108002Centro de referência em saúde do trabalhador CEREST estadual                                                                                          202610
+109002Unidade sócio-educativa com de 41 a 100 adolecentes                                                                                                   202610
+110002Contracepção clínica                                                                                                                                  202610
+111002Tratamento multidrogas resistentes                                                                                                                    202610
+112002Acompanhamento do pré-natal de alto risco                                                                                                             202610
+113002Internação Domiciliar                                                                                                                                 202610
+114002Endodontia                                                                                                                                            202610
+115002Atendimento psicossocial                                                                                                                              202610
+116002Cirurgia cardiovascular (adulto)                                                                                                                      202610
+117002Tratamento em queimados                                                                                                                               202610
+120002Exames citopatológicos                                                                                                                                202610
+121002Ultra-sonografia                                                                                                                                      202610
+122002Teste de Holter                                                                                                                                       202610
+124002Cirurgia de glândulas endócrinas                                                                                                                      202610
+125002Farmácia Popular                                                                                                                                      202610
+126002Assistência fisioterapêutica em alterações oncológicas                                                                                                202610
+128002Diagnóstico em hemoterapia                                                                                                                            202610
+129002Exames de histocompatibilidade por sorologia e biologia                                                                                               202610
+131002Tratamento clínico do aparelho da visão                                                                                                               202610
+132002Hematologia                                                                                                                                           202610
+133002Diagnóstico em Pneumologia                                                                                                                            202610
+134002Fitoterapia                                                                                                                                           202610
+135002Reabilitação Intelectual                                                                                                                              202610
+136002Enteral/Parenteral                                                                                                                                    202610
+138002Diagnóstico e tratamento em membros superiores                                                                                                        202610
+139002Tratamento de recém-nascido com doenças falciformes                                                                                                   202610
+141002Vigilância sanitária                                                                                                                                  202610
+142002Do aparelho respiratório                                                                                                                              202610
+143002Transporte aéreo                                                                                                                                      202610
+145002Exames hematológicos e hemostasia                                                                                                                     202610
+146002Cirúrgica                                                                                                                                             202610
+147002NASF 2                                                                                                                                                202610
+148002AIDS                                                                                                                                                  202610
+149002Medula óssea                                                                                                                                          202610
+150002Fístula arteriovenosa com enxerto                                                                                                                     202610
+151002Medicina nuclear in vitro                                                                                                                             202610
+153002Cirurgia e Acompanhamento pré e pós oreratório                                                                                                        202610
+154002Banco de tecido musculo esqueletico                                                                                                                   202610
+155002Serviço de Traumatologia e Ortopedia Pediátrica (até 21 anos de idade)                                                                                202610
+158002Serviço de Atenção Integral em Hanseniase Tipo II                                                                                                     202610
+159002Atenção Básica com Saúde Bucal                                                                                                                        202610
+160002Teleconsultoria Síncrona                                                                                                                              202610
+161002Equipe de Consultório na Rua - Modalidade II                                                                                                          202610
+162002NEONATAL                                                                                                                                              202610
+163002NEONATAL CANGURU                                                                                                                                      202610
+164002Manutenção e Adaptação de OPM Auxiliares de Locomoção e Ortopédicas                                                                                   202610
+165002Serviço de Referência para Atenção Integral à Saúde de Adolescentes em Situação de Violência Sexual                                                   202610
+166002Água de Ambiental                                                                                                                                     202610
+167002ODONTOLOGIA - PROJETO BRASIL ALFABETIZADO (PBA)                                                                                                       202610
+168002Referência em Doenças Raras                                                                                                                           202610
+169002Litotripsia                                                                                                                                           202610
+171002Apoio Matricial em Cuidados Paliativos                                                                                                                202610
+173002Armazenamento e Controle                                                                                                                              202610
+101002Saúde bucal MI                                                                                                                                        202610
+100003Atendimento em presídio acima de 100 presos                                                                                                           202610
+173003Distribuição                                                                                                                                          202610
+102003Estratégia de Agentes Comunitários de Saúde com Saúde Bucal - (modalidade II)                                                                         202610
+103003Unidade de suporte avançado de vida terrestre (USA)                                                                                                   202610
+104003Central de Regulação de Urgências                                                                                                                     202610
+105003Tumores do sistema nervoso                                                                                                                            202610
+106003Diagnóstico, tratamento e capacitação técnica                                                                                                         202610
+108003Vigilância em Saúde do Trabalhador (VISAT)                                                                                                            202610
+109003Unidade sócio-educativa com de 101 a 180 adolecentes                                                                                                  202610
+110003Laqueadura                                                                                                                                            202610
+112003Parto                                                                                                                                                 202610
+113003Equipe Multidisciplinar de Atenção Domiciliar - EMAD                                                                                                  202610
+114003Periodontia clínica                                                                                                                                   202610
+115003Serviço Hospitalar para Atenção a Saúde Mental                                                                                                        202610
+116003Cirurgia cardiovascular (Pediátrico)                                                                                                                  202610
+117003Tratamento da lipoatrofia facial do portador de HIV / AIDS                                                                                            202610
+120003Monitoramento Externo da Qualidade dos Exames Citopatologicos do Colo do Útero                                                                        202610
+121003Tomografia computadorizada                                                                                                                            202610
+122003Exame Eletrocardiográfico                                                                                                                             202610
+125003Farmácia com manipulação homeopática                                                                                                                  202610
+126003Assistência fisioterapêutica em oftalmologia                                                                                                          202610
+128003Procedimentos especiais em hemoterapia                                                                                                                202610
+130003Confeccção/Intervenção de Acessos para Diálise                                                                                                        202610
+131003Tratamento cirúrgico do aparelho da visão                                                                                                             202610
+132003Oncologia clínica                                                                                                                                     202610
+133003Diagnóstico em Pneumologia por Telemedicina                                                                                                           202610
+134003Outras Práticas em Medicina Tradicional Chinesa                                                                                                       202610
+135003Reabilitação Física                                                                                                                                   202610
+136003Enteral/Parenteral, com manipulação/fabricação                                                                                                        202610
+138003Diagnóstico e tratamento em coluna vertebral e caixa torácica                                                                                         202610
+139003Tratamento de recém-nascido com fibrose cística                                                                                                       202610
+141003Vigilância ambiental                                                                                                                                  202610
+142003Do aparelho urinário                                                                                                                                  202610
+143003Transporte marítimo                                                                                                                                   202610
+145003Exames sorológicos e imunológicos                                                                                                                     202610
+147003NASF Intermunicipal                                                                                                                                   202610
+148003Geriátrico                                                                                                                                            202610
+149003Coração                                                                                                                                               202610
+151003Medicina nuclear in vivo por telemedicina                                                                                                             202610
+154003Banco de Multitecidos                                                                                                                                 202610
+155003Serviço de Traumatologia e Ortopedia de Urgência                                                                                                      202610
+158003Serviço de Atenção Integral em Hanseniase Tipo III                                                                                                    202610
+159003Academia da Saúde                                                                                                                                     202610
+160003Segunda Opinião Formativa                                                                                                                             202610
+161003Equipe de Consultório na Rua - Modalidade III                                                                                                         202610
+162003PEDIÁTRICO                                                                                                                                            202610
+163003PEDIÁTRICO                                                                                                                                            202610
+164003Dispensação de OPM Ortopédica                                                                                                                         202610
+165003Serviço de Referência para Atenção Integral à Saúde de Crianças em Situação de Violência Sexual                                                       202610
+166003Água de Hemodiálise                                                                                                                                   202610
+167003OFTALMOLOGIA - PROJETO SAÚDE NA ESCOLA (PSE)                                                                                                          202610
+168003Terapia Génica                                                                                                                                        202610
+171003Cuidados Paliativos Especializados                                                                                                                    202610
+101003Saúde bucal MII                                                                                                                                       202610
+100004Atendimento em manicômio acima de 100 presos                                                                                                          202610
+101004Saúde da Família para a População Ribeirinha                                                                                                          202610
+104004Unidade de autorizações de TFD intermunicipais                                                                                                        202610
+105004Neurocirurgia vascular                                                                                                                                202610
+106004Assistência Domiciliar Terapêutica em AIDS-ADT                                                                                                        202610
+107004Diagnóstico em Audiologia/Otologia                                                                                                                    202610
+109004Unidade sócio-educativa com mais de 180 adolecentes                                                                                                   202610
+110004Vasectomia                                                                                                                                            202610
+112004Parto em gestação de alto risco                                                                                                                       202610
+113004Equipe Multidisciplinar de Apoio - EMAP                                                                                                               202610
+114004Moldagem/Manutenção                                                                                                                                   202610
+115004Serviço Residencial Terapêutico Tipo I - SRT tipo I                                                                                                   202610
+116004Cirurgia vascular                                                                                                                                     202610
+121004Ressonância magnética                                                                                                                                 202610
+122004Exame Eletroencefalográfico                                                                                                                           202610
+125004Dispensação de medicamentos estratégicos                                                                                                              202610
+126004Assistência fisioterapêutica cardiovasculares e pneumo-funcionais                                                                                     202610
+128004Medicina transfusional                                                                                                                                202610
+130004Tratamento Nefrologia em Geral                                                                                                                        202610
+131004Projeto Olhar Brasil                                                                                                                                  202610
+132004Radioterapia                                                                                                                                          202610
+134004Práticas Corpo-mente                                                                                                                                  202610
+135004Reabilitação visual/mental/múltiplas deficiências                                                                                                     202610
+138004Diagnóstico e tratamento em cintura pélvica                                                                                                           202610
+139004Tratamento de recém-nascido com outras doenças congênitas                                                                                             202610
+140004Estabilização de paciente crítico/grave                                                                                                               202610
+141004Núcleo de vigilância hospitalar                                                                                                                       202610
+142004Do aparelho ginecológico                                                                                                                              202610
+145004Exames coprológicos                                                                                                                                   202610
+147004NASF 3                                                                                                                                                202610
+148004Fibrose cística                                                                                                                                       202610
+149004Pulmão                                                                                                                                                202610
+152004Saneamento a Populações Indígenas                                                                                                                     202610
+159004Estratégia de Saúde da Família                                                                                                                        202610
+160004TELEDIAGNOSTICO                                                                                                                                       202610
+162004QUEIMADOS                                                                                                                                             202610
+163004ADULTO                                                                                                                                                202610
+164004Manutenção e Adaptação de OPM Ortopédica                                                                                                              202610
+165004Serviço de Referência para Atenção Integral à Saúde de Homens em Situação de Violência Sexual                                                         202610
+166004Água Mineral                                                                                                                                          202610
+167004OFTALMOLOGIA - PROJETO BRASIL ALFABETIZADO (PBA)                                                                                                      202610
+173004Transporte                                                                                                                                            202610
+132005Oncologia cirúrgica                                                                                                                                   202610
+131005Diagnóstico em Oftalmologia por Telemedicina                                                                                                          202610
+135005Reabiliatação Auditiva                                                                                                                                202610
+138005Diagnóstico e tratamento em membros inferiores                                                                                                        202610
+139005Acompanhamento a pacientes com diagnósticos de Hiperplasia Adrenal Congênita                                                                          202610
+140005Atendimento ao paciente com Acidente Vascular Cerebral (AVC)                                                                                          202610
+141005Vigilância de Zoonoses                                                                                                                                202610
+145005Exames de uroanálise                                                                                                                                  202610
+148005Cirúrgico / Diagnóstico                                                                                                                               202610
+149005Córnea / Esclera                                                                                                                                      202610
+152005Atenção Especializada a Populações Indígenas                                                                                                          202610
+159005Saúde Bucal                                                                                                                                           202610
+160005TELE-EDUCACAO                                                                                                                                         202610
+162005DOENÇA CORONARIANA (UCO)                                                                                                                              202610
+164005Dispensação de OPM Auditiva                                                                                                                           202610
+165005Serviço de Referência para Atenção Integral à Saúde de Pessoas Idosas em Situação de Violência Sexual                                                 202610
+166005Alimentos                                                                                                                                             202610
+101005Saúde da Família para a População Ribeirinha-Saúde Bucal MI                                                                                           202610
+103005Unidade de Suporte Básico de vida: Equipe Embarcação                                                                                                  202610
+104005Unidade de autorizações de TFD interestaduais                                                                                                         202610
+105005Tratamento neurocirúrgico da dor funcional                                                                                                            202610
+106005Unidade Dispensadora de Medicamentos - UDM                                                                                                            202610
+107005Implante Coclear                                                                                                                                      202610
+109005Atenção Básica à Adolescentes em Unidade Socioeducativa                                                                                               202610
+112005Centro de parto normal                                                                                                                                202610
+113005Equipe de cuidados domiciliares                                                                                                                       202610
+114005Cirurgia oral                                                                                                                                         202610
+115005Serviço Residencial Terapêutico Tipo II - SRT tipo II                                                                                                 202610
+116005Cardiologia intervencionista (hemodinâmica)                                                                                                           202610
+122005Teste Ergométrico por Telemedicina                                                                                                                    202610
+125005Dispensação de medicamentos básicos                                                                                                                   202610
+126005Assistência fisioterapêutica nas disfunções músculo-esqueléticas (todas as origens)                                                                   202610
+130005Tratamento Diálitico Peritonial                                                                                                                       202610
+134005Homeopatia                                                                                                                                            202610
+131006Projeto Olhar Brasil - Programa Saúde na Escola (PSE)                                                                                                 202610
+134006Termalismo/Crenoterapia                                                                                                                               202610
+139006Acompanhamento a pacientes com diagnósticos de Deficiência Biotinidase                                                                                202610
+140006Pronto Atendimento Clínico                                                                                                                            202610
+145006Exames hormonais                                                                                                                                      202610
+148006Acompanhamento pós-transplante de medula óssea                                                                                                        202610
+149006Fígado                                                                                                                                                202610
+159006Núcleo Ampliado de Saúde da Família e Atenção Primária                                                                                                202610
+160006TELECONSULTA                                                                                                                                          202610
+161006TELECONSULTA                                                                                                                                          202610
+164006Manutenção e Adaptação de OPM Auditiva                                                                                                                202610
+165006Serviço de referência para interrupção de gravidez nos casos previstos em LEI                                                                         202610
+166006Células, Tecidos e Órgãos                                                                                                                             202610
+101006Saúde da Família Fluvial                                                                                                                              202610
+103006Veículos de intervenção rápida                                                                                                                        202610
+104006Central Estadual de Regulação da Alta Complexidade                                                                                                    202610
+105006Investigação e cirurgia de epilepsia                                                                                                                  202610
+107006Triagem Auditiva Neonatal                                                                                                                             202610
+112006Casa da Gestante, Bebê e Puérpera                                                                                                                     202610
+114006Cirurgia buco-maxilo-facial                                                                                                                           202610
+115006UA Adulto                                                                                                                                             202610
+116006Cardiologia Endovascular Extracardíaco                                                                                                                202610
+121006Radiologia intervencionista                                                                                                                           202610
+122006Teste Holter por Telemedicina                                                                                                                         202610
+125006Farmácia Hospitalar                                                                                                                                   202610
+126006Assistência fisioterapêutica em queimados                                                                                                             202610
+130006Tratamento em DRC                                                                                                                                     202610
+131007Projeto Olhar Brasil - Programa Brasil Alfabetizado (PBA)                                                                                             202610
+126007Assistência fisioterapêutica nas alterações em neurologia                                                                                             202610
+135007Oficina Ortopédica Fixa                                                                                                                               202610
+140007Pronto Atendimento Pediátrico                                                                                                                         202610
+145007Exames de  vigilância epidemiológica e  ambiental                                                                                                     202610
+149007Pâncreas                                                                                                                                              202610
+159007Atenção Primária para População Ribeirinha                                                                                                            202610
+160007TELEMONITORAMENTO                                                                                                                                     202610
+164007Dispensação de OPM Oftalmológica                                                                                                                      202610
+165007Atenção Ambulatorial  ás Pessoas em Situação de Violência Sexual                                                                                      202610
+166007Medicamentos                                                                                                                                          202610
+101007Saúde da Família Fluvial com Saúde Bucal                                                                                                              202610
+103007Outros veículos                                                                                                                                       202610
+104007Regulação Nacional de Alta Complexidade                                                                                                               202610
+105007Tratamento endovascular                                                                                                                               202610
+112007Ambulatório de Seguimento do RN e Criança Egresso de Unidade Neonatal                                                                                 202610
+114007Atendimento à pessoa com deficiência                                                                                                                  202610
+115007UA Infantojuvenil                                                                                                                                     202610
+116007Cardiologia Clínica                                                                                                                                   202610
+121007Radiologia por telemedicina                                                                                                                           202610
+122007Exame Eletrocardiografico por Telemedicina                                                                                                            202610
+123007OPM em odontologia                                                                                                                                    202610
+125007Farmácia Viva                                                                                                                                         202610
+134007Antroposofia Aplicada à Saúde                                                                                                                         202610
+134008Práticas Expressivas                                                                                                                                  202610
+126008Diagnóstico cinético funcional                                                                                                                        202610
+140008Pronto Atendimento Obstétrico                                                                                                                         202610
+145008Exames toxicológicos ou de monitorização terapêutica                                                                                                  202610
+149008Retirada de orgãos                                                                                                                                    202610
+152008Hospitalidade Indígena                                                                                                                                202610
+159008Consultório na Rua                                                                                                                                    202610
+160008TELEORIENTACAO                                                                                                                                        202610
+164008Adaptação de OPM Oftalmológica                                                                                                                        202610
+165008Coleta de  Vestígios de Violência Sexual                                                                                                              202610
+166008Saneantes Domissanitários                                                                                                                             202610
+101008ESF Tipo I, II, III, IV ou Transitória                                                                                                                202610
+103008Ambulância de resgate                                                                                                                                 202610
+104008Regulação Ambulatorial de Média Complexidade                                                                                                          202610
+105008Neurocirurgia funcional estereotáxica                                                                                                                 202610
+107008Atenção Especializada às Pessoas com Deficiência Auditiva                                                                                             202610
+112008Ambulatório  de Gestação e Puerpério de Alto Risco                                                                                                    202610
+114008Odontopediatria                                                                                                                                       202610
+115008Unidade de Atenção em Regime Residencial                                                                                                              202610
+116008Serviço de Atenção Cardiovascular/Cardiologia Angiologia                                                                                              202610
+121008Ultra-sonografia por telemedicina                                                                                                                     202610
+122008Exame Eletroencefalografico por Telemedicina                                                                                                          202610
+123008OPM buco-maxilo-facial                                                                                                                                202610
+135008Oficina Ortopédica Intinerante                                                                                                                        202610
+134009Ayurveda                                                                                                                                              202610
+122009Exame Eletroneuromiografia                                                                                                                            202610
+140009Pronto Atendimento Psiquiátrico                                                                                                                       202610
+145009Exames microbiológicos                                                                                                                                202610
+149009Pele                                                                                                                                                  202610
+152009Gestão da Atenção e Saneamento à Populações Indígenas                                                                                                 202610
+159009Atenção Primária para População Prisional                                                                                                             202610
+160009TELEINTERCONSULTA                                                                                                                                     202610
+164009Substitução/Troca de OPM                                                                                                                              202610
+166009Produtos para a Saúde                                                                                                                                 202610
+101009ESF Tipo I, II, III, IV ou Transitória com Saúde Bucal MI                                                                                             202610
+104009Regulação do Acesso a Ações e Serviços de Saúde                                                                                                       202610
+105009Polissonografia                                                                                                                                       202610
+114009Disfunsão temporomandibular                                                                                                                           202610
+115009Tratamento em Regime de Internação para Transtornos Mentais e Dependência Química                                                                     202610
+121009Tomografia computadorizada por telemedicina                                                                                                           202610
+135009Oficina Ortopédica Intinerante Fluvial                                                                                                                202610
+152010Saúde Bucal à Populações Indígenas                                                                                                                    202610
+149010Válvulas cardíacas                                                                                                                                    202610
+160010TELETRIAGEM                                                                                                                                           202610
+164010Dispensação de OPM em Gastroenterologia                                                                                                               202610
+166010Cosméticos                                                                                                                                            202610
+101010ESF Tipo I, II, III, IV ou Transitória com Saúde Bucal MII                                                                                            202610
+103010Motolância                                                                                                                                            202610
+114010Estomatologia                                                                                                                                         202610
+115010DESINST de Pessoas com Transtorno  Mental em Conflito com a Lei                                                                                       202610
+121010Ressonância magnética por telemedicina                                                                                                                202610
+122010Exame videoeletroencefalografia                                                                                                                       202610
+123010OPM em queimados                                                                                                                                      202610
+125010Manipulação, Reconstituição e Diluição de Medicamentos                                                                                                202610
+134010Práticas Naturais                                                                                                                                     202610
+135010Atenção Fonoaudiológica                                                                                                                               202610
+140010Pronto Atendimento Oftalmológico                                                                                                                      202610
+145010Exames em outros líquidos biológicos                                                                                                                  202610
+159010Atenção Primária para Adolescentes em Unidade Socioeducativa                                                                                          202610
+160011TELERREGULACAO                                                                                                                                        202610
+149011Osteocondroligamentos                                                                                                                                 202610
+166011Desinfestantes                                                                                                                                        202610
+101011ESF Transitória                                                                                                                                       202610
+103011Unidade de Suporte Avançado de vida: Equipe Embarcação                                                                                                202610
+114011Implantodondia                                                                                                                                        202610
+115011Promoção da Saúde Mental, Protagonismo e Cidadania                                                                                                    202610
+121011Radiologia intervencionista por telemedicina                                                                                                          202610
+122011Potenciais Evocados                                                                                                                                   202610
+123011OPM em nefrologia                                                                                                                                     202610
+134011Práticas Manuais                                                                                                                                      202610
+135011Atenção Fisioterapeutica                                                                                                                              202610
+140011Pronto Atendimento Odontológico                                                                                                                       202610
+145011Exames de genética                                                                                                                                    202610
+164011Dispensação de OPM em Urologia                                                                                                                        202610
+164012Confecção de OPM Auxiliares de Locomoção e Ortopédicas                                                                                                202610
+166012Imunobiológicos                                                                                                                                       202610
+101012Saúde da Família para a População Ribeirinha - Saúde Bucal MII                                                                                        202610
+103012Equipe Aeromédico                                                                                                                                     202610
+114012Odontogeriatria                                                                                                                                       202610
+121012Mamografia                                                                                                                                            202610
+149012Separação, avaliação biomicroscópica e conservação da córnea/esclera                                                                                  202610
+123012OPM - Projeto Olhar Brasil                                                                                                                            202610
+134012Práticas Psicodinâmicas                                                                                                                               202610
+135012Atenção à Saúde das Pessoas Ostomizadas I                                                                                                             202610
+140012Pronto Socorro Pediátrico                                                                                                                             202610
+145012Exames para triagem neonatal                                                                                                                          202610
+122012Potenciais Evocados por Telemedicina                                                                                                                  202610
+166013Insumos Farmacêuticos                                                                                                                                 202610
+101013ESB MI                                                                                                                                                202610
+114013Ortodontia                                                                                                                                            202610
+121013Mamografia por Telemedicina                                                                                                                           202610
+149013Contagem endotelial corneana                                                                                                                          202610
+134013Ozônioterapia                                                                                                                                         202610
+135013Atenção à Saúde das Pessoas Ostomizadas II                                                                                                            202610
+140013Pronto Socorro Obstétrico                                                                                                                             202610
+145013Exames imunohematológicos                                                                                                                             202610
+123013OPM Projeto Olhar Brasil - Programa Saúde na Escola (PSE)                                                                                             202610
+166014Material Biológico                                                                                                                                    202610
+101014ESB MII                                                                                                                                               202610
+114014Prótese Dentária                                                                                                                                      202610
+149014Acompanhamento de paciente transplantado                                                                                                              202610
+134014Aromaterapia                                                                                                                                          202610
+140014Pronto Socorro Cardiovascular                                                                                                                         202610
+123014OPM Projeto Olhar Brasil - Programa Brasil Alfabetizado (PBA)                                                                                         202610
+166015Sangue e Hemoderivados                                                                                                                                202610
+114015Radiologia Odontológica e Imaginologia                                                                                                                202610
+149015Ações para doação e captação de órgãos e tecidos                                                                                                      202610
+140015Pronto Socorro Neurologia/Neurocirurgia                                                                                                               202610
+134015Imposição de Mãos                                                                                                                                     202610
+166016Surtos de Toxinfecção                                                                                                                                 202610
+114016Acupuntura na Odontologia                                                                                                                             202610
+140016Pronto Socorro Traumato-Ortopédico                                                                                                                    202610
+149016Retirada de globo ocular humano para transplante                                                                                                      202610
+149017Transplante de Membrana Amniótica                                                                                                                     202610
+166017Diversos                                                                                                                                              202610
+114017Ortopedia funcional dos maxilares                                                                                                                     202610
+140017Pronto Socorro Odontológico                                                                                                                           202610
+114018Odontologia hospitalar                                                                                                                                202610
+140018Pronto Socorro Oftalmológico                                                                                                                          202610
+140019Pronto Socorro Geral/Clínico                                                                                                                          202610
+114019Patologia Oral e Máxilo Fácial                                                                                                                        202610
+114020Prótese Buco Maxilo Facial                                                                                                                            202610

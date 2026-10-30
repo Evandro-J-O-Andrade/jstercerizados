@@ -1,0 +1,10 @@
+01BPA (Consolidado)                                 202610
+02BPA (Individualizado)                             202610
+03AIH (Proc. Principal)                             202610
+04AIH (Proc. Especial)                              202610
+05AIH (Proc. Secundário)                            202610
+06APAC (Proc. Principal)                            202610
+07APAC (Proc. Secundário)                           202610
+08RAAS (Atenção Domiciliar)                         202610
+09RAAS (Atenção Psicossocial)                       202610
+10e-SUS APS (Atenção Primária à Saúde)              202610

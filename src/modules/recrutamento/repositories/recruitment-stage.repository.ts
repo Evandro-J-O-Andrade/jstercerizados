@@ -10,7 +10,7 @@ export const recruitmentStageRepository = {
       .from('recruitment_stages')
       .select('*')
       .eq('tenant_id', tenantId)
-      .order('order', { ascending: true });
+      .order('created_at', { ascending: true });
 
     if (error) throw error;
     return data || [];
@@ -24,7 +24,7 @@ export const recruitmentStageRepository = {
       .from('recruitment_stages')
       .select('*')
       .eq('recruitment_process_id', processId)
-      .order('order', { ascending: true });
+      .order('created_at', { ascending: true });
 
     if (error) throw error;
     return data || [];

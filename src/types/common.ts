@@ -121,6 +121,7 @@ export interface Vaga {
   titulo: string;
   empresa?: string;
   empresaLogo?: string;
+  imagemUrl?: string;
   cidade?: string;
   estado?: string;
   tipo_contrato?:

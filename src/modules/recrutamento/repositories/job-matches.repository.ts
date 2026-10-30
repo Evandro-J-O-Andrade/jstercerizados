@@ -469,7 +469,7 @@ export const jobMatchesRepository = {
 
       const { data, error } = await supabase
         .from('job_matches')
-        .select('score, is_eligible, sent_notification')
+        .select('score, status')
         .eq('tenant_id', tenantId);
 
       if (error) {
@@ -484,7 +484,7 @@ export const jobMatchesRepository = {
       const stats = {
         total: data.length,
         high_score: data.filter((m: any) => m.score >= 80).length,
-        eligible_not_notified: data.filter((m: any) => m.is_eligible && !m.sent_notification).length,
+        eligible_not_notified: data.filter((m: any) => m.status === 'pending').length,
         avg_score: Math.round(avgScore * 10) / 10,
       };
 

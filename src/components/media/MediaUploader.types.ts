@@ -15,7 +15,7 @@ export interface MediaAsset {
 }
 
 export interface MediaUploaderProps {
-  entityType: 'company' | 'service' | 'partner' | 'supplier';
+  entityType: 'company' | 'service' | 'partner' | 'supplier' | 'job';
   entityId: string;
   purpose: 'logo' | 'hero' | 'card' | 'gallery';
   onUploadComplete?: (asset: MediaAsset) => void;

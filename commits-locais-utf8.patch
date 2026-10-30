@@ -1,0 +1,1466 @@
+﻿diff --git a/src/App.tsx b/src/App.tsx
+index 3d0594d..1523cf3 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -29,8 +29,6 @@ import SegurancaPage from '@/pages/dashboard/SegurancaPage';
+ import { ModuleRouter } from '@/platform/router';
+ import { moduleRouteRegistries } from '@/platform/router/module-routes';
+ import { MODULE_PERMISSION_MAP } from '@/components/legacy/portal/ModuleRegistry';
+-import FiscalPage from '@/pages/dashboard/FiscalPage';
+-import Estoque from '@/pages/dashboard/Estoque';
+ import Almoxarifado from '@/pages/dashboard/Almoxarifado';
+ import GlobalDashboardPage from '@/pages/dashboard/GlobalDashboardPage';
+ import VisaoGeral from '@/pages/dashboard/VisaoGeral';
+@@ -84,7 +82,6 @@ const EntrarEmpresa = lazy(() =>
+ );
+ const CadastroCandidato = lazy(() => import('@/pages/CadastroCandidato'));
+ const CadastroEmpresa = lazy(() => import('@/pages/CadastroEmpresa'));
+-const SuporteDashboardPage = lazy(() => import('@/modules/suporte/dashboard'));
+ const RecuperarSenha = lazy(() => import('@/pages/RecuperarSenha'));
+ const RedefinirSenha = lazy(() => import('@/pages/RedefinirSenha'));
+ const AlterarSenha = lazy(() => import('@/pages/AlterarSenha'));
+@@ -383,19 +380,23 @@ function RoutesAndLayout() {
+               }
+             />
+             <Route
+-              path="fiscal"
++              path="fiscal/*"
+               element={
+-                <PermissionGuard permission={MODULE_PERMISSION_MAP.fiscal}>
+-                  <FiscalPage />
+-                </PermissionGuard>
++                <ModuleRouter
++                  moduleRegistries={moduleRouteRegistries}
++                  moduleIds={['fiscal']}
++                  moduleRouteBase="/dashboard/fiscal"
++                />
+               }
+             />
+             <Route
+-              path="estoque"
++              path="estoque/*"
+               element={
+-                <PermissionGuard permission={MODULE_PERMISSION_MAP.estoque}>
+-                  <Estoque />
+-                </PermissionGuard>
++                <ModuleRouter
++                  moduleRegistries={moduleRouteRegistries}
++                  moduleIds={['estoque']}
++                  moduleRouteBase="/dashboard/estoque"
++                />
+               }
+             />
+             <Route
+@@ -409,11 +410,43 @@ function RoutesAndLayout() {
+               }
+             />
+             <Route
+-              path="suporte"
++              path="suporte/*"
+               element={
+-                <PermissionGuard permission={MODULE_PERMISSION_MAP.suporte}>
+-                  <SuporteDashboardPage />
+-                </PermissionGuard>
++                <ModuleRouter
++                  moduleRegistries={moduleRouteRegistries}
++                  moduleIds={['suporte']}
++                  moduleRouteBase="/dashboard/suporte"
++                />
++              }
++            />
++            <Route
++              path="financeiro/*"
++              element={
++                <ModuleRouter
++                  moduleRegistries={moduleRouteRegistries}
++                  moduleIds={['financeiro']}
++                  moduleRouteBase="/dashboard/financeiro"
++                />
++              }
++            />
++            <Route
++              path="empresas/*"
++              element={
++                <ModuleRouter
++                  moduleRegistries={moduleRouteRegistries}
++                  moduleIds={['empresas']}
++                  moduleRouteBase="/dashboard/empresas"
++                />
++              }
++            />
++            <Route
++              path="contabilidade/*"
++              element={
++                <ModuleRouter
++                  moduleRegistries={moduleRouteRegistries}
++                  moduleIds={['contabilidade']}
++                  moduleRouteBase="/dashboard/contabilidade"
++                />
+               }
+             />
+             <Route
+diff --git a/src/components/auth/AuthRoute.tsx b/src/components/auth/AuthRoute.tsx
+index 38b06d7..5a46634 100644
+--- a/src/components/auth/AuthRoute.tsx
++++ b/src/components/auth/AuthRoute.tsx
+@@ -15,6 +15,8 @@ export function AuthRoute({ children }: AuthRouteProps) {
+     legalAcceptances,
+     recoveryMode,
+     tenantMemberships,
++    isAdminMaster,
++    isCandidate,
+   } = useAuth();
+ 
+   if (isLoading) {
+@@ -25,6 +27,14 @@ export function AuthRoute({ children }: AuthRouteProps) {
+     return <Navigate to="/login" replace />;
+   }
+ 
++  if (recoveryMode) {
++    return <Navigate to="/redefinir-senha" replace />;
++  }
++
++  if (firstLoginState?.must_change_password) {
++    return <Navigate to="/primeiro-acesso/senha" replace />;
++  }
++
+   const hasAcceptedTerms = legalAcceptances.some(
+     (a) => a.document_type === 'terms',
+   );
+@@ -44,19 +54,13 @@ export function AuthRoute({ children }: AuthRouteProps) {
+     return <Navigate to="/auth/welcome" replace />;
+   }
+ 
+-  if (recoveryMode) {
+-    return <Navigate to="/redefinir-senha" replace />;
+-  }
+-
+   const hasMembership = Array.isArray(tenantMemberships)
+     ? tenantMemberships.length > 0
+     : false;
+-  if (!hasMembership) {
+-    return <Navigate to="/onboarding" replace />;
+-  }
+ 
+-  if (firstLoginState?.must_change_password) {
+-    return <Navigate to="/primeiro-acesso/senha" replace />;
++  // Usuários corporativos exigem membership ativa; Candidatos e Admin Master global são isentos
++  if (!hasMembership && !isAdminMaster && !isCandidate) {
++    return <Navigate to="/onboarding" replace />;
+   }
+ 
+   return <>{children}</>;
+diff --git a/src/components/auth/CandidateRoute.tsx b/src/components/auth/CandidateRoute.tsx
+index 07a1c25..64ebd45 100644
+--- a/src/components/auth/CandidateRoute.tsx
++++ b/src/components/auth/CandidateRoute.tsx
+@@ -8,7 +8,7 @@ interface CandidateRouteProps {
+ }
+ 
+ export function CandidateRoute({ children }: CandidateRouteProps) {
+-  const { isAuthenticated, isCandidate, isLoading } = useAuth();
++  const { isAuthenticated, isCandidate, isAdminMaster, isLoading } = useAuth();
+ 
+   if (isLoading) {
+     return <RouteLoadingFallback />;
+@@ -18,11 +18,8 @@ export function CandidateRoute({ children }: CandidateRouteProps) {
+     return <Navigate to="/login" replace />;
+   }
+ 
+-  if (!isCandidate) {
+-    const fallback = window.location.pathname.startsWith('/candidato')
+-      ? '/dashboard'
+-      : '/login';
+-    return <Navigate to={fallback} replace />;
++  if (!isCandidate && !isAdminMaster) {
++    return <Navigate to="/dashboard" replace />;
+   }
+ 
+   return <AuthRoute>{children}</AuthRoute>;
+diff --git a/src/components/layout/AppShell.tsx b/src/components/layout/AppShell.tsx
+index 473f253..9b65c0c 100644
+--- a/src/components/layout/AppShell.tsx
++++ b/src/components/layout/AppShell.tsx
+@@ -1,10 +1,10 @@
+ import { Outlet } from 'react-router-dom';
+-import { PortalShell } from '@/components/legacy/portal/PortalShell';
++import { AdminShell } from '@/shell/AdminShell';
+ 
+ export function AppShell() {
+   return (
+-    <PortalShell>
++    <AdminShell>
+       <Outlet />
+-    </PortalShell>
++    </AdminShell>
+   );
+ }
+diff --git a/src/contexts/AccountContext.tsx b/src/contexts/AccountContext.tsx
+index d9d8513..98d0b25 100644
+--- a/src/contexts/AccountContext.tsx
++++ b/src/contexts/AccountContext.tsx
+@@ -8,7 +8,7 @@ import {
+   type ModuleDefinition,
+   type ModuleFeature,
+   type ModuleCategory,
+-} from '@/components/legacy/portal/ModuleRegistry';
++} from '@/platform/modules';
+ import { deriveUserIdentity, type UserIdentity } from './UserIdentity';
+ import type { Permission } from '@/types/auth';
+ 
+diff --git a/src/contexts/AuthContext.tsx b/src/contexts/AuthContext.tsx
+index a6aaa1b..e0e8dfb 100644
+--- a/src/contexts/AuthContext.tsx
++++ b/src/contexts/AuthContext.tsx
+@@ -21,6 +21,8 @@ import type {
+   FirstLoginState,
+   LegalAcceptance,
+ } from '@/types/auth';
++import { dispatcherMaster, type DispatchContext } from '@/core/dispatcher';
++import { generateCorrelationId } from '@/core/execution/ExecutionContract';
+ 
+ interface AuthContextType {
+   user: User | null;
+@@ -1240,95 +1242,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
+ 
+   const resolvePostLoginDestination = useCallback(
+     (overrideWelcomeCompleted?: boolean): string => {
+-      console.log('[AUTH:FLOW] resolvePostLoginDestination', {
+-        isAdminMaster,
+-        isCandidate,
+-        tenantMemberships: tenantMemberships.length,
+-        firstLoginState: firstLoginState
+-          ? {
+-              welcome_completed_at: firstLoginState.welcome_completed_at,
+-              first_login_completed: firstLoginState.first_login_completed,
+-              must_change_password: firstLoginState.must_change_password,
+-              terms_version: firstLoginState.terms_version,
+-            }
+-          : null,
+-        overrideWelcomeCompleted,
+-        hasAcceptedTerms:
+-          legalAcceptances.some((a) => a.document_type === 'terms') ||
+-          firstLoginState?.terms_version != null,
+-      });
+-
+-      if (recoveryMode) {
+-        console.log('[AUTH:FLOW] redirect → /redefinir-senha (recovery)');
+-        return '/redefinir-senha';
+-      }
+-
+-      if (tenantMemberships.length === 0) {
+-        console.log('[AUTH:FLOW] redirect → /onboarding (sem membership)');
+-        return '/onboarding';
+-      }
+-
+-      if (firstLoginState?.must_change_password) {
+-        console.log(
+-          '[AUTH:FLOW] redirect → /primeiro-acesso/senha (must_change_password)',
+-        );
+-        return '/primeiro-acesso/senha';
+-      }
++      const welcomeCompleted =
++        Boolean(overrideWelcomeCompleted) ||
++        Boolean(firstLoginState?.welcome_completed_at);
+ 
+       const hasAcceptedTerms =
+         legalAcceptances.some((a) => a.document_type === 'terms') ||
+         firstLoginState?.terms_version != null;
+ 
+-      if (!hasAcceptedTerms) {
+-        console.log('[AUTH:FLOW] redirect → /auth/terms (termos pendentes)');
+-        return '/auth/terms';
+-      }
+-
+-      const welcomeCompleted = Boolean(firstLoginState?.welcome_completed_at);
++      const hasMembership = tenantMemberships.length > 0;
++      const mustChangePassword = Boolean(firstLoginState?.must_change_password);
+ 
+-      if (!welcomeCompleted) {
+-        console.debug('[AUTH:DESTINATION] → /auth/welcome (pendente)');
+-        return '/auth/welcome';
+-      }
+-
+-      const roleToDashboard: Record<string, string> = {
+-        admin_master: '/dashboard/admin',
+-        platform_admin: '/dashboard/admin',
+-        support_engineer: '/dashboard/suporte',
+-        tenant_admin: '/dashboard/admin',
+-        rh_manager: '/dashboard/rh',
+-        recruiter: '/dashboard/recrutamento',
+-        finance_manager: '/dashboard/financeiro',
+-        finance: '/dashboard/financeiro',
+-        support_agent: '/dashboard/suporte',
+-        commercial: '/dashboard/empresas',
+-        stock_manager: '/dashboard/estoque',
+-        fiscal: '/dashboard/fiscal',
+-        operations_manager: '/dashboard/operacoes',
+-        operations_operator: '/dashboard/operacoes',
+-        company_representative: '/dashboard/empresas',
+-        suporte: '/dashboard/suporte',
+-        media: '/dashboard/media',
+-        servicos: '/dashboard/servicos',
+-        pos: '/dashboard/pos',
+-        contabilidade: '/dashboard/contabilidade',
+-        candidato: '/candidato',
++      const dispatchContext: DispatchContext = {
++        correlationId: generateCorrelationId(),
++        personId: person?.id || '',
++        tenantId: currentTenantId,
++        roleIds: roles.map((r) => r.id),
++        permissionKeys: permissions.map((p) => p.name),
++        effectivePermissions: permissions,
++        isAdminMaster,
+       };
+ 
+-      for (const role of roles) {
+-        const dashboard = roleToDashboard[role.name];
+-        if (dashboard) {
+-          console.debug(
+-            `[AUTH:DESTINATION] → ${dashboard} (role: ${role.name})`,
+-          );
+-          return dashboard;
+-        }
+-      }
++      const destination = dispatcherMaster.resolveDestination(
++        dispatchContext,
++        welcomeCompleted,
++        mustChangePassword,
++        hasAcceptedTerms,
++        hasMembership,
++        {
++          recoveryMode,
++          roleNames: roles.map((r) => r.name),
++          isCandidate,
++        },
++      );
+ 
+       console.debug(
+-        '[AUTH:DESTINATION] → /dashboard (sem dashboard de célula específico)',
++        '[AUTH:DESTINATION] DispatcherMaster resolved ->',
++        destination,
+       );
+-      return '/dashboard';
++      return destination;
+     },
+     [
+       isAdminMaster,
+diff --git a/src/contexts/ModuleContext.tsx b/src/contexts/ModuleContext.tsx
+index 92be548..b44f903 100644
+--- a/src/contexts/ModuleContext.tsx
++++ b/src/contexts/ModuleContext.tsx
+@@ -10,7 +10,7 @@ import {
+   PORTAL_MODULES,
+   type ModuleDefinition,
+   type ModuleFeature,
+-} from '@/components/legacy/portal/ModuleRegistry';
++} from '@/platform/modules';
+ 
+ interface ModuleContextType {
+   currentModule: ModuleDefinition | null;
+diff --git a/src/platform/router/ModuleRouter.navigation.test.tsx b/src/platform/router/ModuleRouter.navigation.test.tsx
+index 97d5279..91370f5 100644
+--- a/src/platform/router/ModuleRouter.navigation.test.tsx
++++ b/src/platform/router/ModuleRouter.navigation.test.tsx
+@@ -13,16 +13,12 @@ vi.mock('@/platform/permissions', () => ({
+   PermissionGuard: ({ children }: { children: ReactNode }) => children,
+ }));
+ 
+-vi.mock('@/components/legacy/portal/ModuleWorkspace', () => ({
+-  ModuleWorkspace: ({ children }: { children: ReactNode }) => (
++vi.mock('@/core/shell/AdminModuleLayout', () => ({
++  AdminModuleLayout: ({ children }: { children: ReactNode }) => (
+     <div>{children}</div>
+   ),
+ }));
+ 
+-vi.mock('@/components/legacy/portal/ModuleSidebar', () => ({
+-  ModuleSidebar: () => null,
+-}));
+-
+ import { ModuleRouter } from './ModuleRouter';
+ 
+ function BrokenModulePage(): ReactElement {
+diff --git a/src/platform/router/ModuleRouter.tsx b/src/platform/router/ModuleRouter.tsx
+index 95b896c..c67bf7c 100644
+--- a/src/platform/router/ModuleRouter.tsx
++++ b/src/platform/router/ModuleRouter.tsx
+@@ -11,12 +11,11 @@ import {
+   type ModuleFeature,
+   MODULE_PERMISSION_MAP,
+ } from '@/platform/modules';
+-import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
+-import { ModuleSidebar } from '@/components/legacy/portal/ModuleSidebar';
++import { AdminModuleLayout } from '@/shell/AdminModuleLayout';
+ import { ErrorBoundary } from '@/components/error/ErrorBoundary';
+ import { EmptyState } from '@/components/fallback';
+ import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
+-import { Clock, LayoutDashboard, ShieldAlert } from 'lucide-react';
++import { Clock, ShieldAlert } from 'lucide-react';
+ import { cn } from '@/utils';
+ import { getPermissionKey } from '@/utils/rbac-normalize';
+ import type { ModuleRoute } from './types';
+@@ -158,40 +157,6 @@ function FeatureCard({ feature }: { feature: ModuleFeature }) {
+   );
+ }
+ 
+-function ModuleLayout({
+-  module,
+-  children,
+-}: {
+-  module: ModuleDefinition;
+-  children: ReactNode;
+-}) {
+-  const { activePermissions, effectiveScopes } = useAccount();
+-  const features = getAvailableFeatures(
+-    activePermissions,
+-    module,
+-    effectiveScopes,
+-  );
+-
+-  const showSidebar = features.some((f) => f.route !== module.route);
+-
+-  return (
+-    <ModuleWorkspace
+-      title={module.title}
+-      description={module.description}
+-      icon={LayoutDashboard}
+-      breadcrumbItems={[{ label: module.title }]}
+-    >
+-      {showSidebar && (
+-        <ModuleSidebar module={module} permissions={activePermissions} />
+-      )}
+-      <div className="min-w-0 flex-1 p-6">
+-        <Outlet />
+-        {children}
+-      </div>
+-    </ModuleWorkspace>
+-  );
+-}
+-
+ function ModulePlaceholder() {
+   return (
+     <div className="min-w-0 flex-1 py-8">
+@@ -330,11 +295,11 @@ export function ModuleRouter({
+                   <ModuleFeatureRenderer module={module} />
+                 </Suspense>
+               ) : (
+-                <ModuleLayout module={module}>
++                <AdminModuleLayout module={module}>
+                   <Suspense fallback={<RouteLoadingFallback />}>
+                     <ModuleFeatureRenderer module={module} />
+                   </Suspense>
+-                </ModuleLayout>
++                </AdminModuleLayout>
+               )}
+             </PermissionGuard>
+           );
+diff --git a/src/platform/router/module-routes.ts b/src/platform/router/module-routes.ts
+index a84c9c6..d57b801 100644
+--- a/src/platform/router/module-routes.ts
++++ b/src/platform/router/module-routes.ts
+@@ -13,6 +13,7 @@ import { operacoesRoutes } from '@/modules/operacoes/routes';
+ import { empresasRoutes } from '@/modules/empresas/routes';
+ import { adminRoutes } from '@/modules/admin/routes';
+ import { mediaRoutes } from '@/modules/media/routes';
++import { avaRoutes } from '@/modules/ava/routes';
+ 
+ export const moduleRouteRegistries: Record<string, ModuleRoute[]> = {
+   rh: rhRoutes,
+@@ -29,4 +30,5 @@ export const moduleRouteRegistries: Record<string, ModuleRoute[]> = {
+   admin: adminRoutes,
+   media: mediaRoutes,
+   pos: posRoutes,
++  ava: avaRoutes,
+ };
+diff --git a/src/shell/AdminHeader.tsx b/src/shell/AdminHeader.tsx
+new file mode 100644
+index 0000000..c8b4464
+--- /dev/null
++++ b/src/shell/AdminHeader.tsx
+@@ -0,0 +1,352 @@
++import { useState } from 'react';
++import { useNavigate } from 'react-router-dom';
++import { motion, AnimatePresence } from 'framer-motion';
++import { createPortal } from 'react-dom';
++import {
++  LogOut,
++  Menu,
++  Bell,
++  ChevronDown,
++  User,
++  Shield,
++  Globe,
++  Sun,
++  Moon,
++} from 'lucide-react';
++import { Button } from '@/components/ui/Button';
++import { Card } from '@/components/ui/Card';
++import { useAuth } from '@/contexts/AuthContext';
++import { useAccount } from '@/contexts/AccountContext';
++import { useTheme } from '@/contexts/ThemeContext';
++import { COMPANY } from '@/config';
++import { cn } from '@/utils';
++import { formatRoleLabel } from '@/contexts/UserIdentity';
++
++interface AdminHeaderProps {
++  onMenuClick: () => void;
++  moduleTitle?: string;
++  className?: string;
++}
++
++function AccountSwitcherModal({
++  isOpen,
++  onClose,
++  availableMemberships,
++  roles,
++  activeTenantId,
++  switchAccount,
++  navigate,
++}: {
++  isOpen: boolean;
++  onClose: () => void;
++  availableMemberships: {
++    id: string;
++    tenant_id: string;
++    membership_role: string;
++    status: string;
++  }[];
++  roles: { id: string; name: string; is_global: boolean }[];
++  activeTenantId: string | null;
++  switchAccount: (tenantId: string) => Promise<void>;
++  navigate: (to: string) => void;
++}) {
++  if (!isOpen) return null;
++
++  return createPortal(
++    <motion.div
++      initial={{ opacity: 0 }}
++      animate={{ opacity: 1 }}
++      exit={{ opacity: 0 }}
++      className="bg-background/60 fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-sm"
++      onClick={onClose}
++    >
++      <motion.div
++        initial={{ opacity: 0, y: 20 }}
++        animate={{ opacity: 1, y: 0 }}
++        exit={{ opacity: 0, y: 20 }}
++        className="mx-4 w-full max-w-lg"
++        onClick={(e) => e.stopPropagation()}
++      >
++        <Card variant="default" className="p-6 shadow-xl">
++          <div className="mb-4 flex items-center justify-between">
++            <h2 className="text-foreground text-lg font-semibold">
++              Escolha seu acesso
++            </h2>
++            <Button variant="ghost" size="sm" onClick={onClose}>
++              <Globe className="h-4 w-4" />
++            </Button>
++          </div>
++          <p className="text-muted-foreground mb-4 text-sm">
++            Selecione a conta com a qual deseja trabalhar. Sua sessão permanece
++            ativa.
++          </p>
++          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
++            {availableMemberships.map((membership) => {
++              const membershipRoles = roles.filter(
++                (r) => r.id === membership.membership_role,
++              );
++              const roleName = membershipRoles[0]?.name ?? 'Usuário';
++              const isActive = membership.tenant_id === activeTenantId;
++
++              return (
++                <button
++                  key={membership.id}
++                  type="button"
++                  onClick={() => {
++                    switchAccount(membership.tenant_id);
++                    onClose();
++                    navigate('/dashboard');
++                  }}
++                  className={cn(
++                    'border-border hover:border-primary/50 rounded-xl border p-4 text-left transition-all',
++                    isActive && 'ring-primary/50 ring-2',
++                  )}
++                >
++                  <div className="mb-2 flex items-center gap-3">
++                    <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
++                      <Shield className="h-5 w-5" />
++                    </div>
++                    <div>
++                      <p className="text-foreground text-sm font-semibold">
++                        Conta
++                      </p>
++                      <p className="text-muted-foreground text-xs">
++                        {membershipRoles[0]
++                          ? formatRoleLabel(membershipRoles[0].name)
++                          : roleName}
++                      </p>
++                    </div>
++                  </div>
++                  <div className="flex items-center justify-between">
++                    <span className="text-muted-foreground text-xs">
++                      {isActive ? 'Ativo' : 'Selecionar'}
++                    </span>
++                    {isActive && (
++                      <span className="text-primary text-xs font-medium">
++                        Atual
++                      </span>
++                    )}
++                  </div>
++                </button>
++              );
++            })}
++          </div>
++        </Card>
++      </motion.div>
++    </motion.div>,
++    document.body,
++  );
++}
++
++export function AdminHeader({
++  onMenuClick,
++  moduleTitle,
++  className,
++}: AdminHeaderProps) {
++  const { logout, roles } = useAuth();
++  const {
++    identity,
++    userIdentity,
++    activeTenantId,
++    availableMemberships,
++    switchAccount,
++  } = useAccount();
++  const { resolvedTheme, toggleTheme } = useTheme();
++  const navigate = useNavigate();
++  const [userMenuOpen, setUserMenuOpen] = useState(false);
++  const [switchOpen, setSwitchOpen] = useState(false);
++
++  const handleLogout = async () => {
++    await logout();
++    navigate('/login');
++  };
++
++  const displayName = identity.displayName;
++  const roleLabel = userIdentity.roleLabel;
++  const tenantLabel = userIdentity.tenantLabel;
++  const contextLabel = identity.contextLabel;
++
++  const now = new Date();
++  const dateLabel = now.toLocaleDateString('pt-BR', {
++    day: '2-digit',
++    month: 'long',
++    year: 'numeric',
++  });
++  const timeLabel = now.toLocaleTimeString('pt-BR', {
++    hour: '2-digit',
++    minute: '2-digit',
++  });
++
++  return (
++    <header
++      className={cn(
++        'border-border/50 bg-background/70 sticky top-0 z-40 flex items-center justify-between border-b shadow-sm backdrop-blur-xl',
++        className,
++      )}
++    >
++      <div className="flex items-center gap-4">
++        <Button
++          variant="ghost"
++          size="sm"
++          onClick={onMenuClick}
++          className="lg:hidden"
++          aria-label="Abrir menu"
++        >
++          <Menu className="h-5 w-5" />
++        </Button>
++        <div className="hidden lg:block">
++          <div className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
++            {moduleTitle ? `${contextLabel} / ${moduleTitle}` : contextLabel}
++          </div>
++          <h1 className="text-foreground text-lg font-semibold">
++            Seja bem-vindo, {displayName}
++          </h1>
++          <p className="text-muted-foreground text-xs">
++            {tenantLabel} • {dateLabel} • {timeLabel}
++          </p>
++        </div>
++        <div className="lg:hidden">
++          <div className="text-foreground text-base font-semibold">
++            {COMPANY.name}
++          </div>
++        </div>
++      </div>
++
++      <div className="flex items-center gap-1 sm:gap-2">
++        <Button
++          variant="ghost"
++          size="sm"
++          onClick={() => navigate('/')}
++          className="text-muted-foreground hover:text-foreground hidden items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors md:flex"
++        >
++          <Globe className="h-4 w-4" />
++          <span>Voltar para o site</span>
++        </Button>
++
++        <Button
++          variant="ghost"
++          size="sm"
++          aria-label="Notificações"
++          className="text-muted-foreground hover:text-foreground relative hidden items-center justify-center rounded-lg px-2.5 py-2 sm:flex"
++        >
++          <Bell className="h-5 w-5" />
++          <span className="bg-primary absolute top-1 right-1 h-2 w-2 rounded-full" />
++        </Button>
++
++        <div className="relative">
++          <Button
++            variant="ghost"
++            size="sm"
++            onClick={() => setUserMenuOpen((prev) => !prev)}
++            aria-expanded={userMenuOpen}
++            aria-haspopup="true"
++            className="text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-2 rounded-xl px-2 py-1.5 transition-colors"
++          >
++            <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold">
++              {displayName.charAt(0).toUpperCase()}
++            </div>
++            <div className="hidden text-left sm:block">
++              <p className="text-foreground text-sm leading-tight font-medium">
++                {displayName}
++              </p>
++              <p className="text-muted-foreground text-xs leading-tight">
++                {roleLabel}
++              </p>
++            </div>
++            <ChevronDown className="text-muted-foreground h-4 w-4" />
++          </Button>
++
++          <AnimatePresence>
++            {userMenuOpen && (
++              <motion.div
++                initial={{ opacity: 0, y: 8 }}
++                animate={{ opacity: 1, y: 0 }}
++                exit={{ opacity: 0, y: 8 }}
++                transition={{ duration: 0.2 }}
++                className="border-border bg-background/95 shadow-elevated absolute right-0 z-50 mt-2 w-64 rounded-xl border p-1 backdrop-blur-xl"
++              >
++                <div className="border-border/60 border-b px-3 py-2">
++                  <p className="text-foreground text-sm font-medium">
++                    {displayName}
++                  </p>
++                  <p className="text-muted-foreground text-xs">{roleLabel}</p>
++                  <p className="text-muted-foreground text-xs">{tenantLabel}</p>
++                </div>
++                <button
++                  type="button"
++                  onClick={() => {
++                    setUserMenuOpen(false);
++                    navigate('/dashboard/configuracoes');
++                  }}
++                  className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
++                >
++                  <User className="h-4 w-4" />
++                  Meu perfil
++                </button>
++                <button
++                  type="button"
++                  onClick={() => {
++                    setUserMenuOpen(false);
++                    navigate('/dashboard/configuracoes');
++                  }}
++                  className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
++                >
++                  <Shield className="h-4 w-4" />
++                  Segurança
++                </button>
++                <button
++                  type="button"
++                  onClick={() => {
++                    setUserMenuOpen(false);
++                    setSwitchOpen(true);
++                  }}
++                  className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
++                >
++                  Trocar conta
++                </button>
++                <button
++                  type="button"
++                  onClick={() => {
++                    setUserMenuOpen(false);
++                    toggleTheme();
++                  }}
++                  className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
++                >
++                  {resolvedTheme === 'light' ? (
++                    <Moon className="h-4 w-4" />
++                  ) : (
++                    <Sun className="h-4 w-4" />
++                  )}
++                  {resolvedTheme === 'light' ? 'Tema escuro' : 'Tema claro'}
++                </button>
++                <div className="border-border/60 border-t pt-1">
++                  <button
++                    type="button"
++                    onClick={() => {
++                      setUserMenuOpen(false);
++                      handleLogout();
++                    }}
++                    className="text-destructive hover:text-destructive flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
++                  >
++                    <LogOut className="h-4 w-4" />
++                    Sair
++                  </button>
++                </div>
++              </motion.div>
++            )}
++          </AnimatePresence>
++        </div>
++      </div>
++
++      <AccountSwitcherModal
++        isOpen={switchOpen}
++        onClose={() => setSwitchOpen(false)}
++        availableMemberships={availableMemberships}
++        roles={roles}
++        activeTenantId={activeTenantId}
++        switchAccount={switchAccount}
++        navigate={navigate}
++      />
++    </header>
++  );
++}
+diff --git a/src/shell/AdminModuleLayout.tsx b/src/shell/AdminModuleLayout.tsx
+new file mode 100644
+index 0000000..14080e7
+--- /dev/null
++++ b/src/shell/AdminModuleLayout.tsx
+@@ -0,0 +1,157 @@
++import { type ReactNode } from 'react';
++import { NavLink, useLocation } from 'react-router-dom';
++import { ChevronRight, Home, Clock, LayoutDashboard } from 'lucide-react';
++import { cn } from '@/utils';
++import { getAvailableFeatures } from '@/platform/modules';
++import { useAccount } from '@/platform/context';
++import type { Permission } from '@/types/auth';
++import type { ModuleDefinition } from '@/platform/modules';
++
++interface BreadcrumbItem {
++  label: string;
++  href?: string;
++}
++
++interface AdminModuleLayoutProps {
++  module: ModuleDefinition;
++  children: ReactNode;
++  className?: string;
++}
++
++function AdminModuleBreadcrumb({
++  breadcrumbItems,
++  homeRoute = '/dashboard',
++}: {
++  breadcrumbItems: BreadcrumbItem[];
++  homeRoute?: string;
++}) {
++  if (breadcrumbItems.length === 0) return null;
++
++  return (
++    <nav aria-label="Breadcrumb" className="mb-6">
++      <ol className="text-muted-foreground flex items-center gap-2 text-sm">
++        <li>
++          <NavLink
++            to={homeRoute}
++            className="hover:text-foreground transition-colors"
++          >
++            <Home className="h-4 w-4" />
++          </NavLink>
++        </li>
++        {breadcrumbItems.map((item, index) => (
++          <li key={index} className="flex items-center gap-2">
++            <ChevronRight className="h-4 w-4" />
++            {item.href ? (
++              <NavLink
++                to={item.href}
++                className="hover:text-foreground transition-colors"
++              >
++                {item.label}
++              </NavLink>
++            ) : (
++              <span className="text-foreground font-medium">{item.label}</span>
++            )}
++          </li>
++        ))}
++      </ol>
++    </nav>
++  );
++}
++
++function AdminModuleSidebar({
++  module,
++  permissions,
++}: {
++  module: ModuleDefinition;
++  permissions: Permission[];
++}) {
++  const location = useLocation();
++  const features = getAvailableFeatures(permissions, module, module.scope);
++
++  if (!features.length) return null;
++
++  return (
++    <aside className="bg-card border-border w-64 shrink-0 border-r">
++      <nav className="p-3" aria-label={`${module.title} navigation`}>
++        <p className="text-muted-foreground mb-2 px-2 text-xs font-semibold tracking-wider uppercase">
++          {module.title}
++        </p>
++        <div className="space-y-0.5">
++          {features.map((feature) => {
++            const isActive =
++              location.pathname === feature.route ||
++              location.pathname.startsWith(`${feature.route}/`);
++            const isComingSoon = feature.implementationStatus === 'coming_soon';
++
++            return (
++              <NavLink
++                key={feature.id}
++                to={feature.route}
++                className={cn(
++                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
++                  isComingSoon
++                    ? 'text-muted-foreground'
++                    : isActive
++                      ? 'bg-primary/10 text-primary'
++                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
++                )}
++              >
++                <span className="flex-1">{feature.title}</span>
++                {isComingSoon ? (
++                  <Clock className="text-muted-foreground h-3.5 w-3.5" />
++                ) : isActive ? (
++                  <ChevronRight className="ml-auto h-4 w-4" />
++                ) : null}
++              </NavLink>
++            );
++          })}
++        </div>
++      </nav>
++    </aside>
++  );
++}
++
++export function AdminModuleLayout({
++  module,
++  children,
++  className,
++}: AdminModuleLayoutProps) {
++  const { activePermissions } = useAccount();
++  const features = getAvailableFeatures(
++    activePermissions,
++    module,
++    module.scope,
++  );
++
++  const showSidebar = features.some((f) => f.route !== module.route);
++
++  return (
++    <div className={cn('flex flex-col', className)}>
++      <AdminModuleBreadcrumb breadcrumbItems={[{ label: module.title }]} />
++      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
++        <div className="flex items-start gap-4">
++          <div className="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
++            <LayoutDashboard className="h-6 w-6" />
++          </div>
++          <div>
++            <h1 className="text-foreground text-2xl font-bold sm:text-3xl">
++              {module.title}
++            </h1>
++            {module.description && (
++              <p className="text-muted-foreground mt-1 text-sm sm:text-base">
++                {module.description}
++              </p>
++            )}
++          </div>
++        </div>
++      </div>
++
++      <div className="flex min-h-0 flex-1 gap-6">
++        {showSidebar && (
++          <AdminModuleSidebar module={module} permissions={activePermissions} />
++        )}
++        <div className="min-w-0 flex-1 p-6">{children}</div>
++      </div>
++    </div>
++  );
++}
+diff --git a/src/shell/AdminShell.tsx b/src/shell/AdminShell.tsx
+new file mode 100644
+index 0000000..cb0e73f
+--- /dev/null
++++ b/src/shell/AdminShell.tsx
+@@ -0,0 +1,67 @@
++import { type ReactNode, useState, useLayoutEffect } from 'react';
++import { Outlet } from 'react-router-dom';
++import { AccountProvider } from '@/contexts/AccountContext';
++import { ModuleProvider } from '@/contexts/ModuleContext';
++import { AdminSidebar } from './AdminSidebar';
++import { AdminHeader } from './AdminHeader';
++
++interface AdminShellProps {
++  moduleTitle?: string;
++  children?: ReactNode;
++}
++
++function AdminShellInner({ moduleTitle, children }: AdminShellProps) {
++  const [sidebarOpen, setSidebarOpen] = useState(false);
++
++  useLayoutEffect(() => {
++    const previousBodyOverflow = document.body.style.overflow;
++    const previousHtmlOverflow = document.documentElement.style.overflow;
++
++    document.body.style.overflow = 'hidden';
++    document.documentElement.style.overflow = 'hidden';
++
++    return () => {
++      document.body.style.overflow = previousBodyOverflow;
++      document.documentElement.style.overflow = previousHtmlOverflow;
++    };
++  }, []);
++
++  const currentModuleTitle = moduleTitle || 'J&S Empregos';
++  const content = children ?? <Outlet />;
++
++  return (
++    <div className="bg-muted/30 flex h-dvh w-full flex-row overflow-hidden">
++      <AdminSidebar
++        isOpen={sidebarOpen}
++        onClose={() => setSidebarOpen(false)}
++        onNavigate={() => setSidebarOpen(false)}
++      />
++
++      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
++        <AdminHeader
++          onMenuClick={() => setSidebarOpen(true)}
++          moduleTitle={currentModuleTitle}
++          className="shrink-0"
++        />
++
++        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
++          <main className="flex min-h-0 flex-col">
++            <div className="mx-auto flex min-h-0 max-w-[1920px] flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
++              {content}
++            </div>
++          </main>
++        </div>
++      </div>
++    </div>
++  );
++}
++
++export function AdminShell({ moduleTitle, children }: AdminShellProps) {
++  return (
++    <AccountProvider>
++      <ModuleProvider>
++        <AdminShellInner moduleTitle={moduleTitle} children={children} />
++      </ModuleProvider>
++    </AccountProvider>
++  );
++}
+diff --git a/src/shell/AdminSidebar.tsx b/src/shell/AdminSidebar.tsx
+new file mode 100644
+index 0000000..87253ee
+--- /dev/null
++++ b/src/shell/AdminSidebar.tsx
+@@ -0,0 +1,381 @@
++import { useState, useMemo } from 'react';
++import { NavLink, useLocation, useNavigate } from 'react-router-dom';
++import {
++  Shield,
++  Globe,
++  PanelLeftClose,
++  PanelLeftOpen,
++  LayoutDashboard,
++} from 'lucide-react';
++import { motion, AnimatePresence } from 'framer-motion';
++import { cn } from '@/utils';
++import { Button } from '@/components/ui/Button';
++import { Card } from '@/components/ui/Card';
++import { useAuth } from '@/contexts/AuthContext';
++import { useAccount } from '@/contexts/AccountContext';
++import { formatRoleLabel } from '@/contexts/UserIdentity';
++import { cellRegistry } from '@/core/registry/CellRegistryContract';
++import type { CellContract } from '@/core/types';
++import { COMPANY } from '@/config';
++
++interface AdminSidebarProps {
++  isOpen: boolean;
++  onClose: () => void;
++  onNavigate?: () => void;
++}
++
++export function AdminSidebar({
++  isOpen,
++  onClose,
++  onNavigate,
++}: AdminSidebarProps) {
++  const location = useLocation();
++  const navigate = useNavigate();
++  const { roles } = useAuth();
++  const { identity, availableMemberships, activeTenantId, switchAccount } =
++    useAccount();
++
++  const [collapsed, setCollapsed] = useState(false);
++  const [switchOpen, setSwitchOpen] = useState(false);
++  const [expandedCells, setExpandedCells] = useState<string[]>([]);
++
++  const enabledCells = useMemo<CellContract[]>(() => {
++    return cellRegistry.getEnabled().map((e) => e.cell);
++  }, []);
++
++  const now = new Date();
++  const dateLabel = now.toLocaleDateString('pt-BR', {
++    day: '2-digit',
++    month: 'long',
++    year: 'numeric',
++  });
++  const timeLabel = now.toLocaleTimeString('pt-BR', {
++    hour: '2-digit',
++    minute: '2-digit',
++  });
++  const displayName = identity.displayName;
++  const roleLabel = identity.roleLabel;
++
++  const getCellBaseRoute = (cellId: string) => {
++    return cellId === 'candidato' ? '/candidato' : `/dashboard/${cellId}`;
++  };
++
++  const getRoutePath = (cellId: string, routePath: string) => {
++    const base = getCellBaseRoute(cellId);
++    if (!routePath) return base;
++    const cleanRoute = routePath.startsWith('/') ? routePath : `/${routePath}`;
++    return `${base}${cleanRoute}`;
++  };
++
++  const isExactMatch = (targetPath: string, pathname: string) =>
++    pathname === targetPath;
++
++  const isCellSelected = (cell: CellContract) => {
++    const base = getCellBaseRoute(cell.id);
++    return location.pathname.startsWith(base);
++  };
++
++  const handleNavigate = (href: string) => {
++    setExpandedCells([]);
++    navigate(href);
++    onNavigate?.();
++    onClose();
++  };
++
++  const handleSwitchAccount = (tenantId: string) => {
++    switchAccount(tenantId);
++    setSwitchOpen(false);
++    handleNavigate('/dashboard');
++  };
++
++  const sidebarWidth = collapsed ? 'w-16' : 'w-72';
++
++  return (
++    <>
++      {isOpen && (
++        <div
++          className="bg-background/60 fixed inset-0 z-30 lg:hidden"
++          onClick={onClose}
++        />
++      )}
++      <aside
++        className={cn(
++          'bg-card border-border fixed top-0 left-0 z-40 h-full shrink-0 transform border-r transition-all duration-200 lg:relative lg:top-auto lg:left-auto lg:z-auto lg:translate-x-0',
++          sidebarWidth,
++          isOpen ? 'translate-x-0' : '-translate-x-full',
++        )}
++      >
++        <div className="flex h-full flex-col">
++          <div className="flex items-center justify-between border-b p-4">
++            {!collapsed && (
++              <div className="flex items-center gap-2">
++                <Shield className="text-primary h-6 w-6" />
++                <div className="min-w-0">
++                  <p className="text-foreground truncate text-sm font-semibold">
++                    {COMPANY.name}
++                  </p>
++                  <p className="text-muted-foreground truncate text-xs">
++                    {enabledCells.length} módulos ativos
++                  </p>
++                </div>
++              </div>
++            )}
++            {collapsed && (
++              <div className="mx-auto">
++                <Shield className="text-primary h-6 w-6" />
++              </div>
++            )}
++            <div className="flex items-center gap-1">
++              <Button
++                variant="ghost"
++                size="sm"
++                onClick={() => setCollapsed((prev) => !prev)}
++                aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
++                className="hidden lg:flex"
++              >
++                {collapsed ? (
++                  <PanelLeftOpen className="h-5 w-5" />
++                ) : (
++                  <PanelLeftClose className="h-5 w-5" />
++                )}
++              </Button>
++              <Button
++                variant="ghost"
++                size="sm"
++                onClick={onClose}
++                aria-label="Fechar menu"
++                className="lg:hidden"
++              >
++                <Globe className="h-5 w-5" />
++              </Button>
++            </div>
++          </div>
++
++          <nav
++            className="flex-1 space-y-1 overflow-y-auto p-2"
++            aria-label="Módulos"
++          >
++            {!collapsed && (
++              <div className="space-y-3">
++                <div className="flex items-center gap-2 px-2 py-2">
++                  <span className="bg-primary/10 text-primary rounded-lg p-1.5">
++                    <LayoutDashboard className="h-4 w-4" />
++                  </span>
++                  <span className="text-muted-foreground flex-1 truncate text-xs font-semibold tracking-wider uppercase">
++                    Módulos
++                  </span>
++                </div>
++                <div className="space-y-1">
++                  {enabledCells.map((cell) => {
++                    const cellSelected = isCellSelected(cell);
++                    const cellExpanded = expandedCells.includes(cell.id);
++
++                    return (
++                      <div key={cell.id}>
++                        <button
++                          type="button"
++                          onClick={() => {
++                            if (collapsed) {
++                              handleNavigate(getCellBaseRoute(cell.id));
++                              return;
++                            }
++                            if (cellExpanded) {
++                              setExpandedCells((prev) =>
++                                prev.filter((id) => id !== cell.id),
++                              );
++                            } else {
++                              setExpandedCells([cell.id]);
++                            }
++                          }}
++                          aria-expanded={cellExpanded}
++                          className={cn(
++                            'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
++                            cellSelected
++                              ? 'bg-primary/10 text-primary'
++                              : 'text-muted-foreground hover:bg-muted hover:text-foreground',
++                            collapsed && 'justify-center px-2',
++                          )}
++                        >
++                          {!collapsed && (
++                            <span className="flex-1 truncate text-left">
++                              {cell.name}
++                            </span>
++                          )}
++                          {!collapsed && (
++                            <span className="text-xs">
++                              {cellExpanded ? '▼' : '▶'}
++                            </span>
++                          )}
++                        </button>
++                        {cellExpanded && (
++                          <div className="mt-1 ml-4 space-y-0.5 border-l pl-3">
++                            {cell.routes.map((route) => {
++                              const targetPath = getRoutePath(
++                                cell.id,
++                                route.path,
++                              );
++                              const active = isExactMatch(
++                                targetPath,
++                                location.pathname,
++                              );
++
++                              return (
++                                <NavLink
++                                  key={route.path}
++                                  to={targetPath}
++                                  end
++                                  onClick={() => handleNavigate(targetPath)}
++                                  className={cn(
++                                    'block rounded-lg px-3 py-1.5 text-sm transition-colors',
++                                    collapsed && 'px-2',
++                                    active
++                                      ? 'bg-primary/10 text-primary font-medium'
++                                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
++                                  )}
++                                >
++                                  {!collapsed && route.label}
++                                </NavLink>
++                              );
++                            })}
++                          </div>
++                        )}
++                      </div>
++                    );
++                  })}
++                </div>
++              </div>
++            )}
++
++            <div className="border-border border-t p-2">
++              {!collapsed ? (
++                <div className="mb-3 flex items-center gap-3 px-2">
++                  <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
++                    {displayName.charAt(0).toUpperCase()}
++                  </div>
++                  <div className="min-w-0 flex-1">
++                    <p className="text-foreground truncate text-sm font-medium">
++                      {displayName}
++                    </p>
++                    <p className="text-muted-foreground truncate text-xs">
++                      {roleLabel}
++                    </p>
++                  </div>
++                </div>
++              ) : (
++                <div className="mb-3 flex justify-center">
++                  <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
++                    {displayName.charAt(0).toUpperCase()}
++                  </div>
++                </div>
++              )}
++              {!collapsed && (
++                <div className="text-muted-foreground mb-3 px-2 text-xs">
++                  {dateLabel} • {timeLabel}
++                </div>
++              )}
++              <div className="space-y-0.5">
++                <Button
++                  variant="ghost"
++                  size="sm"
++                  onClick={() => handleNavigate('/')}
++                  className={cn(
++                    'text-muted-foreground hover:text-foreground',
++                    collapsed
++                      ? 'flex w-full items-center justify-center'
++                      : 'flex w-full items-center justify-start gap-2',
++                  )}
++                >
++                  <Globe className="h-4 w-4" />
++                  {!collapsed && <span>Voltar para o site</span>}
++                </Button>
++              </div>
++            </div>
++          </nav>
++        </div>
++      </aside>
++
++      <AnimatePresence>
++        {switchOpen && (
++          <motion.div
++            initial={{ opacity: 0 }}
++            animate={{ opacity: 1 }}
++            exit={{ opacity: 0 }}
++            className="bg-background/60 fixed inset-0 z-[60] flex items-center justify-center backdrop-blur-sm"
++          >
++            <motion.div
++              initial={{ opacity: 0, y: 20 }}
++              animate={{ opacity: 1, y: 0 }}
++              exit={{ opacity: 0, y: 20 }}
++              className="mx-4 w-full max-w-lg"
++            >
++              <Card variant="default" className="p-6 shadow-xl">
++                <div className="mb-4 flex items-center justify-between">
++                  <h2 className="text-foreground text-lg font-semibold">
++                    Escolha seu acesso
++                  </h2>
++                  <Button
++                    variant="ghost"
++                    size="sm"
++                    onClick={() => setSwitchOpen(false)}
++                  >
++                    <Globe className="h-4 w-4" />
++                  </Button>
++                </div>
++                <p className="text-muted-foreground mb-4 text-sm">
++                  Selecione a conta com a qual deseja trabalhar. Sua sessão
++                  permanece ativa.
++                </p>
++                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
++                  {availableMemberships.map((membership) => {
++                    const role = roles.find(
++                      (r) => r.id === membership.membership_role,
++                    );
++                    const roleName = formatRoleLabel(role?.name || 'Usuário');
++                    const isActive = membership.tenant_id === activeTenantId;
++                    return (
++                      <button
++                        key={membership.id}
++                        type="button"
++                        onClick={() =>
++                          handleSwitchAccount(membership.tenant_id)
++                        }
++                        className={cn(
++                          'border-border hover:border-primary/50 rounded-xl border p-4 text-left transition-all',
++                          isActive && 'ring-primary/50 ring-2',
++                        )}
++                      >
++                        <div className="mb-2 flex items-center gap-3">
++                          <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
++                            <Shield className="h-5 w-5" />
++                          </div>
++                          <div>
++                            <p className="text-foreground text-sm font-semibold">
++                              Conta
++                            </p>
++                            <p className="text-muted-foreground text-xs">
++                              {roleName}
++                            </p>
++                          </div>
++                        </div>
++                        <div className="flex items-center justify-between">
++                          <span className="text-muted-foreground text-xs">
++                            {isActive ? 'Ativo' : 'Selecionar'}
++                          </span>
++                          {isActive && (
++                            <span className="text-primary text-xs font-medium">
++                              Atual
++                            </span>
++                          )}
++                        </div>
++                      </button>
++                    );
++                  })}
++                </div>
++              </Card>
++            </motion.div>
++          </motion.div>
++        )}
++      </AnimatePresence>
++    </>
++  );
++}
+diff --git a/src/shell/index.ts b/src/shell/index.ts
+new file mode 100644
+index 0000000..ef6f62f
+--- /dev/null
++++ b/src/shell/index.ts
+@@ -0,0 +1,4 @@
++export { AdminShell } from './AdminShell';
++export { AdminSidebar } from './AdminSidebar';
++export { AdminHeader } from './AdminHeader';
++export { AdminModuleLayout } from './AdminModuleLayout';

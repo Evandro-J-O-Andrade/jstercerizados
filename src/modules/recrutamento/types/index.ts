@@ -129,6 +129,7 @@ export interface Job {
 export interface JobListItem extends Job {
   company_name?: string;
   company_logo_url?: string;
+  imagem_url?: string;
   stage_name?: string;
   process_id?: string;
 }
