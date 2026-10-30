@@ -16,6 +16,11 @@ import { ModuleProvider } from '@/contexts/ModuleContext';
 import { FloatingHelpWidgets } from '@/components/layout/FloatingHelpWidgets';
 import NotFound from '@/pages/NotFound';
 import DashboardHome from '@/pages/dashboard/DashboardHome';
+import { EmpresasPage } from '@/pages/dashboard/EmpresasPage';
+import CandidatosPage from '@/pages/dashboard/Candidatos';
+import VagasPage from '@/pages/dashboard/Vagas';
+import { ServicosPage } from '@/pages/dashboard/ServicosPage';
+import { SuportePage } from '@/pages/dashboard/SuportePage';
 import TenantsPage from '@/pages/dashboard/TenantsPage';
 import OnboardingPage from '@/pages/dashboard/OnboardingPage';
 import AssinaturasPage from '@/pages/dashboard/AssinaturasPage';
@@ -31,11 +36,13 @@ import { ModuleRouter } from '@/platform/router';
 import { moduleRouteRegistries } from '@/platform/router/module-routes';
 import { MODULE_PERMISSION_MAP } from '@/components/legacy/portal/ModuleRegistry';
 import Almoxarifado from '@/pages/dashboard/Almoxarifado';
-import GlobalDashboardPage from '@/pages/dashboard/GlobalDashboardPage';
+import GlobalDashboardPage from '@/modules/admin-master/dashboard/GlobalDashboardPage';
+import PessoasPage from '@/modules/admin-master/pages/PessoasPage';
 import VisaoGeral from '@/pages/dashboard/VisaoGeral';
 import AuthTerms from '@/pages/auth/Termos';
 import AuthWelcome from '@/pages/auth/BoasVindas';
 import AuthCallback from '@/pages/auth/AuthCallback';
+import MinhaConta from '@/pages/MinhaConta';
 import { registerAllCells } from '@/core/cells';
 import { AdminProvider } from '@/modules/admin/AdminContext';
 
@@ -186,9 +193,17 @@ function RoutesAndLayout() {
             <Route
               path="global"
               element={
-                <PermissionGuard permission="domain_events.read">
+                <ProtectedRoute allowedRoles={['admin_master', 'tenant_admin']}>
                   <GlobalDashboardPage />
-                </PermissionGuard>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="pessoas"
+              element={
+                <ProtectedRoute allowedRoles={['admin_master', 'tenant_admin']}>
+                  <PessoasPage />
+                </ProtectedRoute>
               }
             />
 
@@ -411,6 +426,17 @@ function RoutesAndLayout() {
               }
             />
             <Route
+              path="suporte"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.suporte}>
+                  <SuportePage
+                    moduleTitle="Suporte"
+                    moduleDescription="Gestão de chamados e solicitações de suporte"
+                  />
+                </PermissionGuard>
+              }
+            />
+            <Route
               path="suporte/*"
               element={
                 <ModuleRouter
@@ -428,6 +454,44 @@ function RoutesAndLayout() {
                   moduleIds={['financeiro']}
                   moduleRouteBase="/dashboard/financeiro"
                 />
+              }
+            />
+            <Route
+              path="empresas"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.empresas}>
+                  <EmpresasPage
+                    moduleTitle="Empresas"
+                    moduleDescription="Cadastro e gestão de empresas clientes"
+                  />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="candidatos"
+              element={
+                <PermissionGuard permission="candidates.read">
+                  <CandidatosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="vagas"
+              element={
+                <PermissionGuard permission="jobs.read">
+                  <VagasPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="servicos"
+              element={
+                <PermissionGuard permission={MODULE_PERMISSION_MAP.servicos}>
+                  <ServicosPage
+                    moduleTitle="Serviços"
+                    moduleDescription="Gestão de ordens de serviço"
+                  />
+                </PermissionGuard>
               }
             />
             <Route
@@ -610,6 +674,14 @@ function RoutesAndLayout() {
             }
           />
           <Route
+            path="/minha-conta"
+            element={
+              <ProtectedRoute>
+                <MinhaConta />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/primeiro-acesso/termos"
             element={
               <FirstAccessRoute>
@@ -629,9 +701,7 @@ function RoutesAndLayout() {
             path="/candidato/*"
             element={
               <AuthRoute>
-                <ProtectedRoute
-                  allowedRoles={['candidato', 'admin_master', 'tenant_admin']}
-                >
+                <ProtectedRoute allowedRoles={['candidato']}>
                   <CandidatoProvider>
                     <ModuleProvider>
                       <CandidatoContainer />

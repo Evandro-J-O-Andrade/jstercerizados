@@ -151,13 +151,6 @@ function resolveActiveRole(
     return roleById.get(activeAssignments[0].role_id) ?? null;
   }
 
-  const adminMasterRole = Array.from(roleById.values()).find(
-    (r) => r.name === 'admin_master' && isGlobalScope(r.is_global),
-  );
-  if (adminMasterRole) {
-    return adminMasterRole;
-  }
-
   return null;
 }
 

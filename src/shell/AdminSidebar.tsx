@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Sun,
   Moon,
+  UserCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/utils';
@@ -161,6 +162,20 @@ export function AdminSidebar({
             className="flex-1 shrink-0 space-y-1 overflow-y-auto p-2"
             aria-label="Módulos"
           >
+            {/* Primeiro item: Meu Usuário — sempre antes dos módulos da célula */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleNavigate('/minha-conta')}
+              className={cn(
+                'text-muted-foreground hover:text-foreground w-full justify-start gap-2 rounded-lg px-3 py-2',
+                collapsed && 'justify-center',
+              )}
+            >
+              <UserCircle className="h-4 w-4" />
+              {!collapsed && <span>Meu Usuário</span>}
+            </Button>
+
             {!collapsed && (
               <div className="space-y-3">
                 <div className="flex items-center gap-2 px-2 py-2">
