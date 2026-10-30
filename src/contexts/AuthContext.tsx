@@ -345,11 +345,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           ),
         );
 
-        if (permissionIds.length > 0) {
+        // admin_master global recebe TODAS as permissões do banco,
+        // não apenas as vinculadas às suas roles atribuídas.
+        // Isso garante que o dono do SAAS tenha autoridade completa
+        // sobre todos os recursos, independentemente das roles específicas.
+        let allPermissionIds: string[] = permissionIds;
+        if (adminMaster) {
+          const { data: allPerms } = await supabase
+            .from('permissions')
+            .select('id');
+          allPermissionIds = Array.from(
+            new Set([
+              ...permissionIds,
+              ...((allPerms || []).map((p) => p.id) as string[]),
+            ]),
+          );
+        }
+
+        if (allPermissionIds.length > 0) {
           const { data: perms } = await supabase
             .from('permissions')
             .select('*')
-            .in('id', permissionIds);
+            .in('id', allPermissionIds);
 
           const normalizedPermissions = (perms || [])
             .map(normalizePermission)
@@ -764,7 +781,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (data.user) {
         console.log('[AUTH:LOGIN] success — loading identity');
-        authLoadInFlightRef.current = true;
         setSession(data.session);
         setUser(data.user);
 
@@ -774,7 +790,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (!sessionData.session) {
             throw new Error('Sessao invalida apos login.');
           }
-          await loadAuthData(data.user.id);
+
+          // O onAuthStateChange (SIGNED_IN) já dispara loadAuthData.
+          // Evita chamada duplicada: se a sessão já foi processada pelo listener,
+          // não carregamos a identidade novamente.
+          if (!initialSessionProcessedRef.current) {
+            await loadAuthData(data.user.id);
+          } else {
+            console.log(
+              '[AUTH:LOGIN] identidade já carregada pelo onAuthStateChange — pulando carga duplicada.',
+            );
+          }
         } catch (identityError) {
           console.error('[AUTH:LOGIN] identity incomplete', identityError);
           authLoadInFlightRef.current = false;
@@ -1242,9 +1268,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resolvePostLoginDestination = useCallback(
     (overrideWelcomeCompleted?: boolean): string => {
-      const welcomeCompleted =
-        Boolean(overrideWelcomeCompleted) ||
-        Boolean(firstLoginState?.welcome_completed_at);
+      const welcomeCompleted = Boolean(overrideWelcomeCompleted);
 
       const hasAcceptedTerms =
         legalAcceptances.some((a) => a.document_type === 'terms') ||
