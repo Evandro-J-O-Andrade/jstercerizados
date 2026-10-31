@@ -14,7 +14,16 @@ const estoqueCellRoutes: CellRoute[] = estoqueRoutes.map((route) => ({
 export const estoqueCellContract: CellContract = {
   id: 'estoque',
   name: 'Estoque',
+  version: '1.0.0',
+  description: 'Estoque: produtos, materiais, movimentações e almoxarifados.',
+  category: 'estoque',
+  domain: 'tenant',
+  scope: 'tenant',
+  lifecycle: { status: 'active', health: 'healthy' },
+  homeRoute: '/dashboard/estoque',
   routes: estoqueCellRoutes,
+  layout: { skipLayout: false },
+  navigation: { sidebar: true, label: 'Estoque', icon: 'Package' },
   permissions: Object.values(ESTOQUE_PERMISSIONS),
   enabled: true,
 };

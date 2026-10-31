@@ -289,7 +289,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       );
 
       const adminMaster = validatedRoles.some(
-        (role: Role) => role.scope === 'global' && role.name === 'admin_master',
+        (role: Role) =>
+          role.scope === 'global' &&
+          (role.name === 'admin_master' || role.slug === 'admin_master'),
       );
 
       console.log('[AUTH:IDENTITY] roles loaded', {
@@ -346,21 +348,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
 
         // admin_master global recebe TODAS as permissões do banco,
-        // não apenas as vinculadas às suas roles atribuídas.
-        // Isso garante que o dono do SAAS tenha autoridade completa
-        // sobre todos os recursos, independentemente das roles específicas.
-        let allPermissionIds: string[] = permissionIds;
-        if (adminMaster) {
-          const { data: allPerms } = await supabase
-            .from('permissions')
-            .select('id');
-          allPermissionIds = Array.from(
-            new Set([
-              ...permissionIds,
-              ...((allPerms || []).map((p) => p.id) as string[]),
-            ]),
-          );
-        }
+let allPermissionIds: string[] = permissionIds;
 
         if (allPermissionIds.length > 0) {
           const { data: perms } = await supabase

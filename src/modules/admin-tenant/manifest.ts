@@ -16,7 +16,7 @@ export const adminTenantCellManifest = {
   profile: 'owner',
   description:
     'Ambiente exclusivo do proprietário: visão geral, tenants, sistemas, unidades, administradores, gestões e permissões, segurança, auditoria e configurações.',
-  homeRoute: '/dashboard/owner',
+  homeRoute: '/dashboard/admin-tenant',
   sidebarLabel: 'Administração do Proprietário',
   sidebarIcon: 'ShieldCheck',
   isGlobal: false,

@@ -2,6 +2,11 @@ import type { ComponentType } from 'react';
 import { lazy } from 'react';
 import type { ModuleRoute } from '@/platform/router/types';
 
+const ServicosDashboardPage = lazy(() =>
+  import('@/modules/servicos/dashboard').then((m) => ({
+    default: m.ServicosDashboardPage,
+  })),
+);
 const ServicosPage = lazy(
   () => import('@/modules/servicos/pages/ServicosListPage'),
 );
@@ -10,30 +15,33 @@ export const servicosRoutes: ModuleRoute[] = [
   {
     path: '',
     label: 'Dashboard',
-    element: ServicosPage as unknown as ComponentType,
+    element: ServicosDashboardPage as unknown as ComponentType,
     requiredPermissions: ['service_orders.read'],
+    icon: 'LayoutDashboard',
   },
   {
     path: 'catalogo',
-    label: 'Catalogo de Servicos',
+    label: 'Catálogo de Serviços',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['service_orders.read'],
+    icon: 'Briefcase',
   },
   {
     path: 'ordens',
-    label: 'Ordens de Servico',
+    label: 'Ordens de Serviço',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['service_orders.read'],
+    icon: 'ClipboardList',
   },
   {
     path: 'ordens/criar',
-    label: 'Nova Ordem de Servico',
+    label: 'Nova Ordem de Serviço',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['service_orders.create'],
   },
   {
     path: 'execucoes',
-    label: 'Execucoes',
+    label: 'Execuções',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['service_orders.read'],
   },
@@ -45,13 +53,13 @@ export const servicosRoutes: ModuleRoute[] = [
   },
   {
     path: 'ocorrencias',
-    label: 'Ocorrencias',
+    label: 'Ocorrências',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['service_occurrences.read'],
   },
   {
     path: 'avaliacoes',
-    label: 'Avaliacoes de Clientes',
+    label: 'Avaliações de Clientes',
     element: ServicosPage as unknown as ComponentType,
     requiredPermissions: ['customer_ratings.read'],
   },

@@ -14,7 +14,16 @@ const recrutamentoCellRoutes: CellRoute[] = RecrutamentoRoutes.map((route) => ({
 export const recrutamentoCellContract: CellContract = {
   id: 'recrutamento',
   name: 'Recrutamento',
+  version: '1.0.0',
+  description: 'Gestão de vagas, processos seletivos, candidaturas e etapas.',
+  category: 'recrutamento',
+  domain: 'tenant',
+  scope: 'tenant',
+  lifecycle: { status: 'active', health: 'healthy' },
+  homeRoute: '/dashboard/recrutamento',
   routes: recrutamentoCellRoutes,
+  layout: { skipLayout: false },
+  navigation: { sidebar: true, label: 'Recrutamento', icon: 'Briefcase' },
   permissions: Object.values(RECRUTAMENTO_PERMISSIONS),
   enabled: true,
 };

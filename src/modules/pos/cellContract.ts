@@ -14,7 +14,16 @@ const posCellRoutes: CellRoute[] = posRoutes.map((route) => ({
 export const posCellContract: CellContract = {
   id: 'pos',
   name: 'PDV',
+  version: '1.0.0',
+  description: 'PDV: ponto de venda, vendas e movimentações de caixa.',
+  category: 'pdv',
+  domain: 'tenant',
+  scope: 'tenant',
+  lifecycle: { status: 'active', health: 'healthy' },
+  homeRoute: '/dashboard/pos',
   routes: posCellRoutes,
+  layout: { skipLayout: false },
+  navigation: { sidebar: true, label: 'PDV', icon: 'ShoppingCart' },
   permissions: Object.values(POS_PERMISSIONS),
   enabled: true,
 };

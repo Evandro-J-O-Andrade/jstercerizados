@@ -1,7 +1,12 @@
-﻿import type { ComponentType } from 'react';
+import type { ComponentType } from 'react';
 import { lazy } from 'react';
 import type { ModuleRoute } from '@/platform/router/types';
 
+const EmpresasDashboardPage = lazy(() =>
+  import('@/modules/empresas/dashboard').then((m) => ({
+    default: m.EmpresasDashboardPage,
+  })),
+);
 const EmpresasListPage = lazy(
   () => import('@/modules/empresas/pages/EmpresasListPage'),
 );
@@ -15,6 +20,13 @@ const EmpresaDetailPage = lazy(
 export const empresasRoutes: ModuleRoute[] = [
   {
     path: '',
+    label: 'Dashboard',
+    element: EmpresasDashboardPage as unknown as ComponentType,
+    requiredPermissions: ['companies.read'],
+    icon: 'LayoutDashboard',
+  },
+  {
+    path: 'lista',
     label: 'Empresas',
     element: EmpresasListPage as unknown as ComponentType,
     requiredPermissions: ['companies.read'],

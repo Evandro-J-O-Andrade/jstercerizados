@@ -189,16 +189,6 @@ export function PortalSidebar({
     effectiveScopes,
   ]);
 
-  const now = new Date();
-  const dateLabel = now.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-  const timeLabel = now.toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
   const displayName = identity.displayName;
   const roleLabel = identity.roleLabel;
 
@@ -514,48 +504,30 @@ export function PortalSidebar({
           </nav>
 
           <div className="border-border border-t p-2">
-            {!collapsed ? (
-              <div className="mb-3 flex items-center gap-3 px-2">
-                <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
-                  {displayName.charAt(0).toUpperCase()}
-                </div>
+            <button
+              type="button"
+              onClick={() => handleNavigate('/minha-conta')}
+              className={cn(
+                'flex w-full items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-muted',
+                collapsed && 'justify-center',
+              )}
+              style={{ minHeight: '48px', maxHeight: '52px' }}
+              aria-label="Abrir menu de conta"
+            >
+              <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+                {displayName.charAt(0).toUpperCase()}
+              </div>
+              {!collapsed && (
                 <div className="min-w-0 flex-1">
-                  <p className="text-foreground truncate text-sm font-medium">
+                  <p className="text-foreground truncate text-sm font-medium leading-tight">
                     {displayName}
                   </p>
-                  <p className="text-muted-foreground truncate text-xs">
+                  <p className="text-muted-foreground truncate text-xs leading-tight">
                     {roleLabel}
                   </p>
                 </div>
-              </div>
-            ) : (
-              <div className="mb-3 flex justify-center">
-                <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold">
-                  {displayName.charAt(0).toUpperCase()}
-                </div>
-              </div>
-            )}
-            {!collapsed && (
-              <div className="text-muted-foreground mb-3 px-2 text-xs">
-                {dateLabel} • {timeLabel}
-              </div>
-            )}
-            <div className="space-y-0.5">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleNavigate('/')}
-                className={cn(
-                  'text-muted-foreground hover:text-foreground',
-                  collapsed
-                    ? 'flex w-full items-center justify-center'
-                    : 'flex w-full items-center justify-start gap-2',
-                )}
-              >
-                <Globe className="h-4 w-4" />
-                {!collapsed && <span>Voltar para o site</span>}
-              </Button>
-            </div>
+              )}
+            </button>
           </div>
         </div>
       </aside>

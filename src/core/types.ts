@@ -67,15 +67,133 @@ export interface CellRoute {
   path: string;
   label: string;
   requiredPermissions?: string[];
+  icon?: string;
+  children?: CellRoute[];
+  implementationStatus?: 'implemented' | 'coming_soon' | 'beta' | 'disabled' | 'deprecated';
 }
 
-/** Cell contract for the registry */
-export interface CellContract {
+/** Dependência de célula no contrato universal */
+export interface CellDependency {
+  cellId: string;
+  required?: boolean;
+  version?: string;
+}
+
+/** Declaração de layout da célula na experiência */
+export interface CellLayoutContract {
+  component?: string;
+  skipLayout?: boolean;
+  shared?: boolean;
+}
+
+/** Declaração de navegação da célula na experiência */
+export interface CellNavigationContract {
+  sidebar?: boolean;
+  header?: boolean;
+  footer?: boolean;
+  label?: string;
+  icon?: string;
+}
+
+/** Ciclo de vida da célula */
+export interface CellLifecycle {
+  status?: 'active' | 'inactive' | 'maintenance' | 'deprecated';
+  health?: 'healthy' | 'degraded' | 'unavailable' | 'unknown';
+  lastCheckedAt?: string;
+}
+
+/** Identidade da célula */
+export interface CellIdentity {
+  id: string;
+  name: string;
+  version?: string;
+  description?: string;
+  category?: string;
+  domain?: string;
+  scope?: 'tenant' | 'global';
+}
+
+/** Experiência da célula (rotas, layout, navegação) */
+export interface CellExperience {
+  homeRoute?: string;
+  routes: CellRoute[];
+  layout?: CellLayoutContract;
+  navigation?: CellNavigationContract;
+}
+
+/** Capacidades da célula (permissões, operações, métricas, health checks) */
+export interface CellCapabilities {
+  permissions: string[];
+  operations?: string[];
+  metrics?: string[];
+  healthChecks?: string[];
+}
+
+/** Administração da célula (configuração por tenant, exposição de recursos) */
+export interface CellAdministration {
+  tenantConfigurable?: boolean;
+  exposesUserManagement?: boolean;
+  exposesReports?: boolean;
+  exposesAudit?: boolean;
+}
+
+/**
+ * SaaSCellContract — contrato universal obrigatório para toda célula.
+ * Define identidade, ciclo de vida, experiência, capacidades, dependências
+ * e administração de forma padronizada, permitindo que o Admin Tenant
+ * descubra e componha células sem conhecer suas implementações internas.
+ *
+ * Campos marcados como opcionais permitem migração gradual das 19 células
+ * existentes. Novas células devem declarar todos os campos relevantes.
+ */
+export interface SaaSCellContract {
+  id: string;
+  name: string;
+  version?: string;
+  description?: string;
+  category?: string;
+  domain?: string;
+  scope?: 'tenant' | 'global';
+  lifecycle?: CellLifecycle;
+  homeRoute?: string;
+  routes: CellRoute[];
+  layout?: CellLayoutContract;
+  navigation?: CellNavigationContract;
+  permissions: string[];
+  operations?: string[];
+  metrics?: string[];
+  healthChecks?: string[];
+  dependencies?: CellDependency[];
+  administration?: CellAdministration;
+  enabled: boolean;
+}
+
+/**
+ * CellContract — contrato de célula compatível com versões anteriores.
+ * Mantém os campos flat (id, name, routes, permissions, enabled) usados pelas
+ * 19 células existentes. Novas células devem usar SaaSCellContract diretamente.
+ * CellContract é um tipo compatível com SaaSCellContract durante a migração.
+ */
+export interface CellContract extends SaaSCellContract {
   id: string;
   name: string;
   routes: CellRoute[];
   permissions: string[];
   enabled: boolean;
+}
+
+/** Resultado da validação de um contrato de célula pelos gates arquiteturais */
+export interface CellGateResult {
+  passed: boolean;
+  reason?: string;
+}
+
+/** Resultado completo de validação de uma célula no CellRegistry */
+export interface CellValidationResult {
+  valid: boolean;
+  gates: Record<string, CellGateResult>;
+  errors: string[];
+  warnings: string[];
 }
 
 /** Dispatcher action */

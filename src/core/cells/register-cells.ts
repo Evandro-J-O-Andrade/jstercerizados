@@ -34,6 +34,15 @@ import { operacoesCellContract } from '@/modules/operacoes';
 import { posCellContract } from '@/modules/pos';
 import { adminMasterCellContract } from '@/modules/admin-master';
 import { adminTenantCellContract } from '@/modules/admin-tenant';
+import { coreCellContract } from '@/cells/core';
+import { integracoesCellContract } from '@/cells/integracoes';
+import { contratosCellContract } from '@/modules/contratos';
+import { crmCellContract } from '@/modules/crm';
+import { faturamentoCellContract } from '@/modules/faturamento';
+import { relatoriosCellContract } from '@/modules/relatorios';
+import { iaCellContract } from '@/modules/ia';
+import { configuracoesSaasCellContract } from '@/modules/configuracoes-saas';
+import { preferenciasCellContract } from '@/modules/preferencias';
 
 /**
  * Todas as células implementadas com CellContract.
@@ -56,6 +65,15 @@ const cellContracts: CellContract[] = [
   posCellContract,
   adminMasterCellContract,
   adminTenantCellContract,
+  coreCellContract,
+  integracoesCellContract,
+  contratosCellContract,
+  crmCellContract,
+  faturamentoCellContract,
+  relatoriosCellContract,
+  iaCellContract,
+  configuracoesSaasCellContract,
+  preferenciasCellContract,
 ];
 
 let cellsRegistered = false;

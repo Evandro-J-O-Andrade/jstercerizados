@@ -42,6 +42,18 @@ import VisaoGeral from '@/pages/dashboard/VisaoGeral';
 import AuthTerms from '@/pages/auth/Termos';
 import AuthWelcome from '@/pages/auth/BoasVindas';
 import AuthCallback from '@/pages/auth/AuthCallback';
+import { AdminTenantProvider, AdminTenantLayout } from '@/modules/admin-tenant';
+import { FiscalLayout } from '@/modules/fiscal/layout/FiscalLayout';
+import { EstoqueLayout } from '@/modules/estoque/layout/EstoqueLayout';
+import { SuporteLayout } from '@/modules/suporte/layout/SuporteLayout';
+import { FinanceiroLayout } from '@/modules/financeiro/layout/FinanceiroLayout';
+import { EmpresasLayout } from '@/modules/empresas/layout/EmpresasLayout';
+import { ContabilidadeLayout } from '@/modules/contabilidade/layout/ContabilidadeLayout';
+import { AdminLayout } from '@/modules/admin/layout/AdminLayout';
+import { OperacoesLayout } from '@/modules/operacoes/layout/OperacoesLayout';
+import { PosLayout } from '@/modules/pos/layout/PosLayout';
+import { MediaLayout } from '@/modules/media/layout/MediaLayout';
+import { RecrutamentoLayout } from '@/modules/recrutamento/layout/RecrutamentoLayout';
 import MinhaConta from '@/pages/MinhaConta';
 import { registerAllCells } from '@/core/cells';
 import { AdminProvider } from '@/modules/admin/AdminContext';
@@ -193,7 +205,7 @@ function RoutesAndLayout() {
             <Route
               path="global"
               element={
-                <ProtectedRoute allowedRoles={['admin_master', 'tenant_admin']}>
+                <ProtectedRoute allowedRoles={['admin_master']}>
                   <GlobalDashboardPage />
                 </ProtectedRoute>
               }
@@ -398,21 +410,27 @@ function RoutesAndLayout() {
             <Route
               path="fiscal/*"
               element={
-                <ModuleRouter
-                  moduleRegistries={moduleRouteRegistries}
-                  moduleIds={['fiscal']}
-                  moduleRouteBase="/dashboard/fiscal"
-                />
+                <FiscalLayout>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['fiscal']}
+                    moduleRouteBase="/dashboard/fiscal"
+                    skipLayout
+                  />
+                </FiscalLayout>
               }
             />
             <Route
               path="estoque/*"
               element={
-                <ModuleRouter
-                  moduleRegistries={moduleRouteRegistries}
-                  moduleIds={['estoque']}
-                  moduleRouteBase="/dashboard/estoque"
-                />
+                <EstoqueLayout>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['estoque']}
+                    moduleRouteBase="/dashboard/estoque"
+                    skipLayout
+                  />
+                </EstoqueLayout>
               }
             />
             <Route
@@ -439,21 +457,27 @@ function RoutesAndLayout() {
             <Route
               path="suporte/*"
               element={
-                <ModuleRouter
-                  moduleRegistries={moduleRouteRegistries}
-                  moduleIds={['suporte']}
-                  moduleRouteBase="/dashboard/suporte"
-                />
+                <SuporteLayout>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['suporte']}
+                    moduleRouteBase="/dashboard/suporte"
+                    skipLayout
+                  />
+                </SuporteLayout>
               }
             />
             <Route
               path="financeiro/*"
               element={
-                <ModuleRouter
-                  moduleRegistries={moduleRouteRegistries}
-                  moduleIds={['financeiro']}
-                  moduleRouteBase="/dashboard/financeiro"
-                />
+                <FinanceiroLayout>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['financeiro']}
+                    moduleRouteBase="/dashboard/financeiro"
+                    skipLayout
+                  />
+                </FinanceiroLayout>
               }
             />
             <Route
@@ -497,43 +521,96 @@ function RoutesAndLayout() {
             <Route
               path="empresas/*"
               element={
-                <ModuleRouter
-                  moduleRegistries={moduleRouteRegistries}
-                  moduleIds={['empresas']}
-                  moduleRouteBase="/dashboard/empresas"
-                />
+                <EmpresasLayout>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['empresas']}
+                    moduleRouteBase="/dashboard/empresas"
+                    skipLayout
+                  />
+                </EmpresasLayout>
               }
             />
             <Route
               path="contabilidade/*"
               element={
-                <ModuleRouter
-                  moduleRegistries={moduleRouteRegistries}
-                  moduleIds={['contabilidade']}
-                  moduleRouteBase="/dashboard/contabilidade"
-                />
+                <ContabilidadeLayout>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['contabilidade']}
+                    moduleRouteBase="/dashboard/contabilidade"
+                    skipLayout
+                  />
+                </ContabilidadeLayout>
               }
             />
             <Route
               path="admin/*"
               element={
                 <AdminProvider>
+                  <AdminLayout>
+                    <ModuleRouter
+                      moduleRegistries={moduleRouteRegistries}
+                      moduleIds={['admin']}
+                      moduleRouteBase="/dashboard/admin"
+                      skipLayout
+                    />
+                  </AdminLayout>
+                </AdminProvider>
+              }
+            />
+            <Route
+              path="admin-tenant/*"
+              element={
+                <AdminTenantProvider>
+                  <AdminTenantLayout>
+                    <ModuleRouter
+                      moduleRegistries={moduleRouteRegistries}
+                      moduleIds={['admin-tenant']}
+                      moduleRouteBase="/dashboard/admin-tenant"
+                      skipLayout
+                    />
+                  </AdminTenantLayout>
+                </AdminTenantProvider>
+              }
+            />
+            <Route
+              path="operacoes/*"
+              element={
+                <OperacoesLayout>
                   <ModuleRouter
                     moduleRegistries={moduleRouteRegistries}
-                    moduleIds={['admin']}
-                    moduleRouteBase="/dashboard/admin"
+                    moduleIds={['operacoes']}
+                    moduleRouteBase="/dashboard/operacoes"
+                    skipLayout
                   />
-                </AdminProvider>
+                </OperacoesLayout>
+              }
+            />
+            <Route
+              path="pos/*"
+              element={
+                <PosLayout>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['pos']}
+                    moduleRouteBase="/dashboard/pos"
+                    skipLayout
+                  />
+                </PosLayout>
               }
             />
             <Route
               path="media/*"
               element={
-                <ModuleRouter
-                  moduleRegistries={moduleRouteRegistries}
-                  moduleIds={['media']}
-                  moduleRouteBase="/dashboard/media"
-                />
+                <MediaLayout>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['media']}
+                    moduleRouteBase="/dashboard/media"
+                    skipLayout
+                  />
+                </MediaLayout>
               }
             />
             <Route
@@ -646,11 +723,14 @@ function RoutesAndLayout() {
               path="recrutamento/*"
               element={
                 <RecrutamentoProvider>
-                  <ModuleRouter
-                    moduleRegistries={moduleRouteRegistries}
-                    moduleIds={['recrutamento']}
-                    moduleRouteBase="/dashboard/recrutamento"
-                  />
+                  <RecrutamentoLayout>
+                    <ModuleRouter
+                      moduleRegistries={moduleRouteRegistries}
+                      moduleIds={['recrutamento']}
+                      moduleRouteBase="/dashboard/recrutamento"
+                      skipLayout
+                    />
+                  </RecrutamentoLayout>
                 </RecrutamentoProvider>
               }
             />

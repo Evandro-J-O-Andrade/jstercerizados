@@ -17,7 +17,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ShieldCheck,
-  Globe,
   Database,
   MapPin,
 } from 'lucide-react';
@@ -46,55 +45,55 @@ export function AdminTenantSidebar({
   const items: AdminTenantSidebarItem[] = [
     {
       label: 'Dashboard do Proprietário',
-      path: '/dashboard/owner',
+      path: '/dashboard/admin-tenant',
       icon: <ShieldCheck className="h-4 w-4" />,
       permission: 'owner.dashboard.read',
     },
     {
       label: 'Tenants',
-      path: '/dashboard/owner/tenants',
+      path: '/dashboard/admin-tenant/tenants',
       icon: <Building2 className="h-4 w-4" />,
       permission: 'owner.tenants.read',
     },
     {
       label: 'Sistemas',
-      path: '/dashboard/owner/sistemas',
+      path: '/dashboard/admin-tenant/sistemas',
       icon: <Database className="h-4 w-4" />,
       permission: 'owner.systems.read',
     },
     {
       label: 'Unidades',
-      path: '/dashboard/owner/unidades',
+      path: '/dashboard/admin-tenant/unidades',
       icon: <MapPin className="h-4 w-4" />,
       permission: 'owner.units.read',
     },
     {
       label: 'Administradores',
-      path: '/dashboard/owner/administradores',
+      path: '/dashboard/admin-tenant/administradores',
       icon: <UserPlus className="h-4 w-4" />,
       permission: 'owner.administrators.read',
     },
     {
       label: 'Gestões',
-      path: '/dashboard/owner/gestao',
+      path: '/dashboard/admin-tenant/gestao',
       icon: <Wrench className="h-4 w-4" />,
       permission: 'owner.management.read',
     },
     {
       label: 'Segurança',
-      path: '/dashboard/owner/seguranca',
+      path: '/dashboard/admin-tenant/seguranca',
       icon: <Lock className="h-4 w-4" />,
       permission: 'owner.security.read',
     },
     {
       label: 'Auditoria',
-      path: '/dashboard/owner/auditoria',
+      path: '/dashboard/admin-tenant/auditoria',
       icon: <Activity className="h-4 w-4" />,
       permission: 'owner.audit.read',
     },
     {
       label: 'Configurações',
-      path: '/dashboard/owner/configuracoes',
+      path: '/dashboard/admin-tenant/configuracoes',
       icon: <SettingsIcon className="h-4 w-4" />,
       permission: 'owner.settings.read',
     },
@@ -177,13 +176,26 @@ export function AdminTenantSidebar({
         <button
           type="button"
           onClick={() => {
-            navigate('/');
+            navigate('/minha-conta');
             onClose?.();
           }}
-          className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-muted"
+          style={{ minHeight: '48px', maxHeight: '52px' }}
+          aria-label="Abrir menu de conta"
         >
-          <Globe className="h-4 w-4" />
-          <span className={cn(collapsed && 'hidden')}>Voltar para o site</span>
+          <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+            {useAuth().person?.full_name?.charAt(0).toUpperCase() || 'A'}
+          </div>
+          {!collapsed && (
+            <div className="min-w-0 flex-1">
+              <p className="text-foreground truncate text-sm font-medium leading-tight">
+                {useAuth().person?.full_name || 'Proprietário'}
+              </p>
+              <p className="text-muted-foreground truncate text-xs leading-tight">
+                Proprietário
+              </p>
+            </div>
+          )}
         </button>
       </footer>
     </aside>

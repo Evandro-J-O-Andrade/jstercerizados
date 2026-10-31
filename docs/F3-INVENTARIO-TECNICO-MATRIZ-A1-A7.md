@@ -351,3 +351,80 @@ Funções críticas para isolamento entre tenants:
 - F08: Experiências/Cursos/Formação read e CRUD, registrar ausência de DELETE policies
 - Completar mapeamento das ~169 tabelas restantes
 - Cruzamento completo permissões (247) × RLS (668)
+
+---
+
+## 12. Relatório Consolidado F3.6 — Status de Saída
+
+### 12.1 Resumo Executivo
+
+O inventário F3 foi concluído com cobertura parcial do schema Supabase (`okxqfyoqbhcmflpurfrw`, projeto `js-empregos`, ref `okxqfyoqbhcmflpurfrw`):
+
+- **229 tabelas** confirmadas via `information_schema.tables`, todas com RLS habilitada (`relrowsecurity = true`)
+- **≈60 tabelas mapeadas** (≈26% de cobertura) nas seções 2.1–2.6; ~169 tabelas permanecem sem mapeamento
+- **53 arquivos de repositório** lidos e mapeados (100%)
+- **24 hooks** identificados (100%)
+- **105+ páginas** de módulos e dashboard identificadas
+- **247 códigos de permissão** × **668 políticas RLS** — cruzamento parcial
+- **38 funções SECURITY DEFINER** identificadas, incluindo `is_tenant_member()`, `is_admin_master()`, `user_has_permission()`
+- **5 views** inventariadas, 1 órfã (`recruitment_kpis` sem consumidor)
+- **8 divergências código ↔ banco** documentadas na matriz A4 (D1–D8)
+
+### 12.2 Classificação por Status (Matriz A2)
+
+| Status | Quantidade | Exemplos |
+|--------|-----------|----------|
+| REAL | ~45 | `people`, `tenants`, `candidates`, `jobs`, `applications`, `financial_categories` |
+| PARCIAL | ~8 | `candidate_preferences`, `services`, `public_jobs_v1` |
+| CONFLITANTE | ~5 | `applications` (mapper diverge), `bank_accounts` (ausente em prod), `cash_flows` (ausente em prod), `public_services_v1` (retorna 0 para anon), `chat_rooms` |
+| ÓRFÃO | ~4 | `webhooks`, `automation_queue`, `whatsapp_messages`, `emails`, `recruitment_kpis` (view) |
+
+### 12.3 Divergências Críticas (Matriz A4)
+
+| # | Tabela | Impacto | Classificação |
+|---|--------|---------|---------------|
+| D1 | `applications` | Recrutamento não lê/escreve candidaturas corretamente (fallbacks `?? null`) | CONFLITANTE |
+| D4 | `bank_accounts` | Financeiro/bancos não persiste (tabela ausente em prod) | CONFLITANTE |
+| D5 | `cash_flows` | Financeiro/fluxo-caixa não persiste (tabela ausente em prod) | CONFLITANTE |
+| D7 | `public_services_v1` | Site público sem serviços (retorna 0 para `anon`) | CONFLITANTE |
+| D6 | `public_jobs_v1` | Expõe `tenant_id` publicamente | PARCIAL |
+| D2 | `candidate_preferences` | Candidato pode não salvar preferências | PARCIAL |
+| D8 | `chat_rooms` | Chat não funciona | CONFLITANTE |
+
+### 12.4 Status de Saída F3 — Bloqueadores para F06–F08
+
+| Critério | Status |
+|----------|--------|
+| Inventário completo de tabelas (229) | PENDENTE (~60/229 mapeadas) |
+| Mapeamento permissões → RLS (247 × 668) | PARCIAL |
+| Consumidores locais working tree vs HEAD | CONCLUÍDO (53 arquivos mapeados) |
+| Divergências críticas documentadas | CONCLUÍDO (D1–D8) |
+
+### 12.5 Itens Bloqueando F06–F08
+
+| Item | Impacto |
+|------|---------|
+| `applications` tabela vazia remotamente (0 rows) | F07 bloqueado — não é possível validar read/detail/filter com dados reais |
+| `candidate_experiences`, `candidate_courses`, `candidate_education` vazias remotamente | F08 bloqueado — não é possível validar CRUD com dados reais |
+| Ausência de DELETE policies em tabelas operacionais | F08 observa como comportamento atual |
+| Token Supabase Management API inválido | Deploy da Edge Function `media-upload` bloqueado |
+
+### 12.6 Arquivos Modificados nesta Sessão
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/modules/admin-tenant/routes/index.ts` | Reescrito com `element` + lazy imports, `requiredPermissions` |
+| `src/modules/admin-tenant/cellContract.ts` | Corrigido para usar `route.requiredPermissions` |
+| `src/platform/router/module-routes.ts` | Adicionado `'admin-tenant': adminTenantRoutes` |
+| `src/App.tsx` | Adicionada rota `admin-tenant/*` com `ModuleRouter` |
+| `src/modules/admin-tenant/pages/OwnerDashboardPage.tsx` | Links `/dashboard/owner/` → `/dashboard/admin-tenant/` |
+| `src/modules/admin-tenant/manifest.ts` | `homeRoute` alterado para `/dashboard/admin-tenant` |
+| `docs/F3-INVENTARIO-TECNICO-MATRIZ-A1-A7.md` | Adicionada seção 12 (relatório consolidado F3.6) |
+
+### 12.7 Próximos Passos
+
+1. Gerar novo token `sbp_...` no Supabase Dashboard (Settings > Access Tokens)
+2. Executar `npx supabase functions deploy media-upload --project-ref okxqfyoqbhcmflpurfrw`
+3. Completar mapeamento das ~169 tabelas restantes
+4. Cruzamento completo permissões (247) × RLS (668)
+5. Executar F06, F07, F08 quando dados reais estiverem disponíveis

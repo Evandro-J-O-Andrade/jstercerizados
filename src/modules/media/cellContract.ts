@@ -14,7 +14,16 @@ const mediaCellRoutes: CellRoute[] = mediaRoutes.map((route) => ({
 export const mediaCellContract: CellContract = {
   id: 'media',
   name: 'Mídia',
+  version: '1.0.0',
+  description: 'Gerenciamento de mídia: avatares, imagens públicas e documentos privados.',
+  category: 'mídia',
+  domain: 'tenant',
+  scope: 'tenant',
+  lifecycle: { status: 'active', health: 'healthy' },
+  homeRoute: '/dashboard/media',
   routes: mediaCellRoutes,
+  layout: { skipLayout: false },
+  navigation: { sidebar: true, label: 'Mídia', icon: 'Image' },
   permissions: Object.values(MEDIA_PERMISSIONS),
   enabled: true,
 };

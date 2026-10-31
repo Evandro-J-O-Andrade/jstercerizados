@@ -1,12 +1,19 @@
 /**
- * OwnerDashboardPage — Dashboard exclusivo do proprietário.
+ * OwnerDashboardPage — Dashboard do SaaS Control Center (proprietário).
  *
- * Visão central do ambiente J&S para o perfil de proprietário,
- * acima do admin-master. Exibe métricas de tenants, sistemas,
- * unidades, administradores e módulos disponíveis.
+ * Visão central do ambiente J&S para o perfil de proprietário.
+ * Lê contratos de células dinamicamente do CellRegistry, sem conhecer
+ * a implementação interna de cada célula. Exibe:
+ *  - Visão executiva: indicadores consolidados do registry.
+ *  - Mosaico de módulos: contêineres gerados a partir dos contratos.
+ *  - Saúde do sistema: DispatcherMaster, CellRegistry, contratos e versões.
+ *
+ * Cada célula aparece como um contêiner próprio, com suas rotas e
+ * permissões declaradas no contrato. O Admin Tenant não importa
+ * implementação privada de nenhuma célula.
  */
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Activity,
@@ -16,87 +23,263 @@ import {
   LayoutDashboard,
   Lock,
   ShieldCheck,
-  Users,
-  UserPlus,
-  Wrench,
 } from 'lucide-react';
 import {
   DashboardCard,
   DashboardMetricGrid,
   DashboardSection,
 } from '@/components/dashboard';
-import {
-  filterDashboardMetrics,
-  type DashboardMetric,
-} from '@/components/dashboard/dashboard-model';
+import { filterDashboardMetrics, type DashboardMetricTone } from '@/components/dashboard/dashboard-model';
 import { EmptyState } from '@/components/fallback';
 import { useAccount } from '@/contexts/AccountContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { cellRegistry } from '@/core/registry/CellRegistryContract';
+import type { CellContract } from '@/core/types';
+
+interface CellTileProps {
+  cell: CellContract;
+  permissions: { name: string }[];
+}
+
+function CellTile({ cell, permissions }: CellTileProps) {
+  const hasPermission = (perm: string) =>
+    permissions.some((p) => p.name === perm);
+
+  const firstRoute = cell.routes[0];
+  const routePath = firstRoute?.path
+    ? firstRoute.path.startsWith('/')
+      ? firstRoute.path
+      : `/dashboard/${cell.id}${firstRoute.path ? `/${firstRoute.path}` : ''}`
+    : `/dashboard/${cell.id}`;
+
+  const routePerm = firstRoute?.requiredPermissions?.[0];
+
+  const canAccess = !routePerm || hasPermission(routePerm);
+
+  return canAccess ? (
+    <Link
+      to={routePath}
+      className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left hover:bg-accent hover:text-accent-foreground transition-colors"
+    >
+      <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+        <LayoutDashboard className="h-5 w-5" />
+      </div>
+      <h3 className="text-foreground text-sm font-semibold group-hover:text-primary-foreground transition-colors">
+        {cell.name}
+      </h3>
+      <p className="text-muted-foreground text-xs line-clamp-2">
+        {cell.description ?? 'Sem descrição declarada no contrato.'}
+      </p>
+      <div className="mt-auto flex items-center gap-1 text-xs">
+        <span
+          className={`rounded px-1.5 py-0.5 ${
+            cell.enabled
+              ? 'bg-green/10 text-green-foreground border border-green/20'
+              : 'bg-muted/50 text-muted-foreground border border-border'
+          }`}
+        >
+          {cell.enabled ? 'Ativo' : 'Inativo'}
+        </span>
+        {cell.version && (
+          <span className="text-muted-foreground/70">v{cell.version}</span>
+        )}
+      </div>
+    </Link>
+  ) : (
+    <div
+      className="flex flex-col gap-3 rounded-xl border border-border/30 bg-muted/50 p-4 text-left opacity-60"
+    >
+      <div className="bg-muted text-muted-foreground flex h-10 w-10 items-center justify-center rounded-lg">
+        <LayoutDashboard className="h-5 w-5" />
+      </div>
+      <h3 className="text-foreground text-sm font-semibold">
+        {cell.name}
+      </h3>
+      <p className="text-muted-foreground text-xs line-clamp-2">
+        {cell.description ?? 'Sem descrição declarada no contrato.'}
+      </p>
+      <div className="mt-auto flex items-center gap-1 text-xs">
+        <span
+          className={`rounded px-1.5 py-0.5 ${
+            cell.enabled
+              ? 'bg-green/10 text-green-foreground border border-green/20'
+              : 'bg-muted/50 text-muted-foreground border border-border'
+          }`}
+        >
+          {cell.enabled ? 'Ativo' : 'Inativo'}
+        </span>
+        {cell.version && (
+          <span className="text-muted-foreground/70">v{cell.version}</span>
+        )}
+      </div>
+      <span className="text-destructive text-xs">Sem permissão</span>
+    </div>
+  );
+}
+
+interface SystemHealthProps {
+  stats: ReturnType<typeof cellRegistry.stats>;
+  allCells: CellContract[];
+}
+
+function SystemHealth({ stats, allCells }: SystemHealthProps) {
+  const healthyCells = allCells.filter(
+    (c) => c.lifecycle?.health === 'healthy',
+  ).length;
+  const degradedCells = allCells.filter(
+    (c) => c.lifecycle?.health === 'degraded',
+  ).length;
+  const unavailableCells = allCells.filter(
+    (c) => c.lifecycle?.health === 'unavailable',
+  ).length;
+
+  return (
+    <DashboardSection
+      title="Saúde do sistema"
+      description="Espinha dorsal: DispatcherMaster, CellRegistry e contratos de células."
+      icon={Activity}
+    >
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <DashboardCard
+          metric={{
+            id: 'cells-registered',
+            label: 'Células registradas',
+            value: stats.total,
+            description: 'Contratos descobertos pelo CellRegistry',
+            icon: Building2,
+            tone: 'primary',
+            format: 'number',
+          }}
+        />
+        <DashboardCard
+          metric={{
+            id: 'cells-enabled',
+            label: 'Células ativas',
+            value: stats.enabled,
+            description: 'Células habilitadas para acesso',
+            icon: ShieldCheck,
+            tone: 'success',
+            format: 'number',
+          }}
+        />
+        <DashboardCard
+          metric={{
+            id: 'cells-disabled',
+            label: 'Células inativas',
+            value: stats.disabled,
+            description: 'Células desabilitadas',
+            icon: Lock,
+            tone: 'neutral',
+            format: 'number',
+          }}
+        />
+        <DashboardCard
+          metric={{
+            id: 'system-health',
+            label: 'Saúde do sistema',
+            value:
+              unavailableCells > 0
+                ? 'Indisponível'
+                : degradedCells > 0
+                  ? 'Degradado'
+                  : healthyCells === stats.total && stats.total > 0
+                    ? 'Saudável'
+                    : 'Desconhecido',
+            description: 'Com base nos contratos de ciclo de vida',
+            icon: Activity,
+            tone:
+              (unavailableCells > 0
+                ? 'danger'
+                : degradedCells > 0
+                  ? 'warning'
+                  : healthyCells === stats.total && stats.total > 0
+                    ? 'success'
+                    : 'neutral') as DashboardMetricTone,
+            format: undefined,
+          }}
+        />
+      </div>
+
+      {Object.keys(stats.byModule).length > 0 && (
+        <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          {Object.entries(stats.byModule).map(([module, count]) => (
+            <div
+              key={module}
+              className="border border-border rounded-lg p-3 text-sm"
+            >
+              <div className="flex justify-between mb-1">
+                <span className="text-muted-foreground">{module}</span>
+                <span className="text-foreground font-medium">{count}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </DashboardSection>
+  );
+}
 
 export default function OwnerDashboardPage() {
   const { identity, permissions, availableModules } = useAccount();
   const { isAdminMaster } = useAuth();
 
-  const metrics = useMemo<DashboardMetric[]>(
+  const allCells = useMemo(
+    () => cellRegistry.getAll().map((entry) => entry.cell),
+    [],
+  );
+  const enabledCells = useMemo(
+    () => cellRegistry.getEnabled().map((entry) => entry.cell),
+    [],
+  );
+  const stats = useMemo(() => cellRegistry.stats(), []);
+
+  const modules = useMemo(
+    () =>
+      availableModules.filter(
+        (module) => module.id !== 'inicio' && module.id !== 'core',
+      ),
+    [availableModules],
+  );
+
+  const metrics = useMemo(
     () => [
       {
         id: 'tenants',
         label: 'Tenants',
-        value: 0,
-        description: 'Ambientes cadastrados no ambiente',
+        value: stats.total,
+        description: 'Células registradas no CellRegistry',
         icon: Building2,
-        tone: 'primary',
-        href: '/dashboard/owner/tenants',
+        tone: 'primary' as const,
+        href: '/dashboard/admin-tenant/tenants',
         permission: 'owner.tenants.read',
-        format: 'number',
+        format: 'number' as const,
       },
       {
         id: 'sistemas',
-        label: 'Sistemas',
-        value: 0,
-        description: 'Sistemas integrados ao ambiente',
-        icon: BriefcaseBusiness,
-        tone: 'success',
-        href: '/dashboard/owner/sistemas',
+        label: 'Sistemas ativos',
+        value: stats.enabled,
+        description: 'Células habilitadas para acesso',
+        icon: ShieldCheck,
+        tone: 'success' as const,
+        href: '/dashboard/admin-tenant/sistemas',
         permission: 'owner.systems.read',
-        format: 'number',
+        format: 'number' as const,
       },
       {
         id: 'unidades',
-        label: 'Unidades',
-        value: 0,
-        description: 'Unidades operacionais cadastradas',
-        icon: Users,
-        tone: 'primary',
-        href: '/dashboard/owner/unidades',
-        permission: 'owner.units.read',
-        format: 'number',
-      },
-      {
-        id: 'administradores',
-        label: 'Administradores',
-        value: 0,
-        description: 'Administradores ativos no ambiente',
-        icon: UserPlus,
-        tone: 'warning',
-        href: '/dashboard/owner/administradores',
-        permission: 'owner.administrators.read',
-        format: 'number',
-      },
-      {
-        id: 'modulos',
-        label: 'Módulos',
-        value: availableModules.length,
-        description: 'Módulos operacionais disponíveis',
+        label: 'Módulos disponíveis',
+        value: modules.length,
+        description: 'Módulos operacionais para o seu perfil',
         icon: LayoutDashboard,
-        tone: 'neutral',
-        href: '/dashboard/owner/gestao',
+        tone: 'neutral' as const,
+        href: '/dashboard/admin-tenant/gestao',
         permission: 'owner.management.read',
-        format: 'number',
+        format: 'number' as const,
       },
     ],
-    [availableModules.length],
+    [stats, modules.length],
   );
+
   const visibleMetrics = filterDashboardMetrics(
     metrics,
     permissions,
@@ -110,14 +293,14 @@ export default function OwnerDashboardPage() {
           <div>
             <div className="text-primary mb-2 flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
               <ShieldCheck className="h-4 w-4" />
-              Proprietário do Ambiente
+              SaaS Control Center — Proprietário
             </div>
             <h2 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
               {identity.greeting}, {identity.firstName}.
             </h2>
             <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
-              Ambiente exclusivo do proprietário: tenants, sistemas, unidades,
-              administradores, gestões, segurança, auditoria e configurações.
+              Central de comando e gestão do ambiente. Indicadores consolidados,
+              mosaico de módulos e visão da espinha dorsal do sistema.
             </p>
           </div>
           <div className="text-muted-foreground text-sm lg:text-right">
@@ -145,48 +328,40 @@ export default function OwnerDashboardPage() {
       )}
 
       <DashboardSection
-        title="Acesso rápido"
-        description="Atalhos para as áreas principais de administração do proprietário."
+        title="Saúde do sistema"
+        description="Espinha dorsal: DispatcherMaster, CellRegistry e contratos de células."
         icon={Activity}
       >
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            { label: 'Tenants', href: '/dashboard/owner/tenants', icon: Building2, perm: 'owner.tenants.read' },
-            { label: 'Sistemas', href: '/dashboard/owner/sistemas', icon: BriefcaseBusiness, perm: 'owner.systems.read' },
-            { label: 'Unidades', href: '/dashboard/owner/unidades', icon: Users, perm: 'owner.units.read' },
-            { label: 'Administradores', href: '/dashboard/owner/administradores', icon: UserPlus, perm: 'owner.administrators.read' },
-            { label: 'Gestões', href: '/dashboard/owner/gestao', icon: Wrench, perm: 'owner.management.read' },
-            { label: 'Segurança', href: '/dashboard/owner/seguranca', icon: Lock, perm: 'owner.security.read' },
-          ].map((item) => (
-            permissions.some((p) => p.name === item.perm) && (
-              <Link
-                key={item.label}
-                to={item.href}
-                className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  {React.createElement(item.icon)}
-                </div>
-                <h3 className="text-foreground text-sm font-semibold group-hover:text-primary-foreground transition-colors">
-                  {item.label}
-                </h3>
-                <p className="text-muted-foreground text-xs">
-                  Acesse a área de {item.label.toLowerCase()}
-                </p>
-              </Link>
-            )
-          ))}
-        </div>
+        <SystemHealth stats={stats} allCells={allCells} />
       </DashboardSection>
 
-      {availableModules.length > 0 && (
+      <DashboardSection
+        title="Mosaico de módulos"
+        description="Contêineres gerados a partir dos contratos de células registradas."
+        icon={BarChart3}
+      >
+        {enabledCells.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {enabledCells.map((cell) => (
+              <CellTile key={cell.id} cell={cell} permissions={permissions} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="Nenhuma célula ativa"
+            description="Não há células habilitadas no CellRegistry para este tenant."
+          />
+        )}
+      </DashboardSection>
+
+      {modules.length > 0 && (
         <DashboardSection
           title="Módulos do Portal"
           description="Acesse as áreas operacionais disponíveis para o seu perfil."
-          icon={BarChart3}
+          icon={BriefcaseBusiness}
         >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {availableModules.slice(0, 6).map((module) => (
+            {modules.slice(0, 6).map((module) => (
               <Link
                 key={module.id}
                 to={module.route}

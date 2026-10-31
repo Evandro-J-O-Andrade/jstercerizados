@@ -14,7 +14,16 @@ const financeiroCellRoutes: CellRoute[] = financeiroRoutes.map((route) => ({
 export const financeiroCellContract: CellContract = {
   id: 'financeiro',
   name: 'Financeiro',
+  version: '1.0.0',
+  description: 'Gestão financeira: movimentações, contas a pagar e receber.',
+  category: 'financeiro',
+  domain: 'tenant',
+  scope: 'tenant',
+  lifecycle: { status: 'active', health: 'healthy' },
+  homeRoute: '/dashboard/financeiro',
   routes: financeiroCellRoutes,
+  layout: { skipLayout: false },
+  navigation: { sidebar: true, label: 'Financeiro', icon: 'CreditCard' },
   permissions: Object.values(FINANCEIRO_PERMISSIONS),
   enabled: true,
 };

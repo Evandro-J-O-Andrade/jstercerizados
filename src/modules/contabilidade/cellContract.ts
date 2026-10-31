@@ -16,7 +16,16 @@ const contabilidadeCellRoutes: CellRoute[] = contabilidadeRoutes.map(
 export const contabilidadeCellContract: CellContract = {
   id: 'contabilidade',
   name: 'Contabilidade',
+  version: '1.0.0',
+  description: 'Contabilidade: plano de contas, lançamentos e relatórios contábeis.',
+  category: 'contabilidade',
+  domain: 'tenant',
+  scope: 'tenant',
+  lifecycle: { status: 'active', health: 'healthy' },
+  homeRoute: '/dashboard/contabilidade',
   routes: contabilidadeCellRoutes,
+  layout: { skipLayout: false },
+  navigation: { sidebar: true, label: 'Contabilidade', icon: 'Book' },
   permissions: Object.values(CONTABILIDADE_PERMISSIONS),
   enabled: true,
 };

@@ -1,5 +1,6 @@
 import type { CellContract, CellRoute } from '@/core/types';
 import { rhRoutes } from './routes';
+import { RH_PERMISSIONS } from './permissions';
 
 const rhCellRoutes: CellRoute[] = rhRoutes.map((route) => ({
   path: route.path,
@@ -13,18 +14,16 @@ const rhCellRoutes: CellRoute[] = rhRoutes.map((route) => ({
 export const rhCellContract: CellContract = {
   id: 'rh',
   name: 'RH',
+  version: '1.0.0',
+  description: 'Gestão de pessoas, funcionários, documentos e relatórios de RH.',
+  category: 'rh',
+  domain: 'tenant',
+  scope: 'tenant',
+  lifecycle: { status: 'active', health: 'healthy' },
+  homeRoute: '/dashboard/rh',
   routes: rhCellRoutes,
-  permissions: [
-    'people.read',
-    'people.create',
-    'people.update',
-    'people.disable',
-    'people.export',
-    'candidates.read',
-    'jobs.read',
-    'applications.read',
-    'recruitment.stage.manage',
-    'recruitment.read',
-  ],
+  layout: { skipLayout: false },
+  navigation: { sidebar: true, label: 'RH', icon: 'Users' },
+  permissions: Object.values(RH_PERMISSIONS),
   enabled: true,
 };

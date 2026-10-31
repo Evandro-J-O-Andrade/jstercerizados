@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Building2,
@@ -21,6 +22,7 @@ interface AdminSidebarItem {
 }
 
 export function AdminSidebar({ className }: { className?: string }) {
+  const location = useLocation();
 
   const items: AdminSidebarItem[] = [
     { label: 'Dashboard', path: '/dashboard/admin', icon: <LayoutDashboard className="h-4 w-4" /> },
@@ -37,21 +39,26 @@ export function AdminSidebar({ className }: { className?: string }) {
     { label: 'Notificações', path: '/dashboard/admin/notificacoes', icon: <Bell className="h-4 w-4" /> },
   ];
 
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(`${path}/`);
+
   return (
     <aside className={className}>
       <nav>
         <ul className="space-y-1">
-          {items.map((item) => (
-            <li key={item.path}>
-              <a
-                href={item.path}
-                className="flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                {item.icon}
-                {item.label}
-              </a>
-            </li>
-          ))}
+          {items.map((item) => {
+            const active = isActive(item.path);
+            return (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  className={`flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors ${active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'}`}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
     </aside>

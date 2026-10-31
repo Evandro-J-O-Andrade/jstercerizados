@@ -14,7 +14,16 @@ const adminMasterCellRoutes: CellRoute[] = adminMasterRoutes.map((route) => ({
 export const adminMasterCellContract: CellContract = {
   id: 'admin-master',
   name: 'Admin Master Global',
+  version: '1.0.0',
+  description: 'Admin Master Global: administração ROOT da plataforma, tenants globais e configurações de sistema.',
+  category: 'administração',
+  domain: 'global',
+  scope: 'global',
+  lifecycle: { status: 'active', health: 'healthy' },
+  homeRoute: '/dashboard/global',
   routes: adminMasterCellRoutes,
+  layout: { skipLayout: false },
+  navigation: { sidebar: true, label: 'Admin Master', icon: 'ShieldCheck' },
   permissions: Object.values(ADMIN_MASTER_PERMISSIONS),
   enabled: true,
 };

@@ -14,7 +14,16 @@ const empresasCellRoutes: CellRoute[] = empresasRoutes.map((route) => ({
 export const empresasCellContract: CellContract = {
   id: 'empresas',
   name: 'Empresas',
+  version: '1.0.0',
+  description: 'Cadastro e gestão de empresas clientes e parceiros.',
+  category: 'comercial',
+  domain: 'tenant',
+  scope: 'tenant',
+  lifecycle: { status: 'active', health: 'healthy' },
+  homeRoute: '/dashboard/empresas',
   routes: empresasCellRoutes,
+  layout: { skipLayout: false },
+  navigation: { sidebar: true, label: 'Empresas', icon: 'Building' },
   permissions: Object.values(EMPRESAS_PERMISSIONS),
   enabled: true,
 };

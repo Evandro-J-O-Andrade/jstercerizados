@@ -14,7 +14,16 @@ const operacoesCellRoutes: CellRoute[] = operacoesRoutes.map((route) => ({
 export const operacoesCellContract: CellContract = {
   id: 'operacoes',
   name: 'Operações',
+  version: '1.0.0',
+  description: 'Operações: gestão de operações do dia a dia.',
+  category: 'operações',
+  domain: 'tenant',
+  scope: 'tenant',
+  lifecycle: { status: 'active', health: 'healthy' },
+  homeRoute: '/dashboard/operacoes',
   routes: operacoesCellRoutes,
+  layout: { skipLayout: false },
+  navigation: { sidebar: true, label: 'Operações', icon: 'Layout' },
   permissions: Object.values(OPERACOES_PERMISSIONS),
   enabled: true,
 };

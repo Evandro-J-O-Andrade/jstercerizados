@@ -14,6 +14,7 @@ import { empresasRoutes } from '@/modules/empresas/routes';
 import { adminRoutes } from '@/modules/admin/routes';
 import { mediaRoutes } from '@/modules/media/routes';
 import { avaRoutes } from '@/modules/ava/routes';
+import { adminTenantRoutes } from '@/modules/admin-tenant/routes';
 
 export const moduleRouteRegistries: Record<string, ModuleRoute[]> = {
   rh: rhRoutes,
@@ -31,4 +32,5 @@ export const moduleRouteRegistries: Record<string, ModuleRoute[]> = {
   media: mediaRoutes,
   pos: posRoutes,
   ava: avaRoutes,
+  'admin-tenant': adminTenantRoutes,
 };

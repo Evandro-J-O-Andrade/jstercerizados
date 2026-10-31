@@ -4,62 +4,82 @@
  * Todas as rotas desta célula são protegidas e exigem perfil de proprietário.
  */
 
+import type { ModuleRoute } from '@/platform/router/types';
+import { lazy } from 'react';
 import { ADMIN_TENANT_PERMISSIONS } from '../permissions';
 
-export const adminTenantRoutes = [
+const OwnerDashboardPage = lazy(() => import('../pages/OwnerDashboardPage'));
+const TenantsPage = lazy(() => import('../pages/TenantsPage'));
+const SystemsPage = lazy(() => import('../pages/SystemsPage'));
+const UnitsPage = lazy(() => import('../pages/UnitsPage'));
+const AdministratorsPage = lazy(() => import('../pages/AdministratorsPage'));
+const ManagementPage = lazy(() => import('../pages/ManagementPage'));
+const SecurityPage = lazy(() => import('../pages/SecurityPage'));
+const AuditPage = lazy(() => import('../pages/AuditPage'));
+const SettingsPage = lazy(() => import('../pages/SettingsPage'));
+
+export const adminTenantRoutes: ModuleRoute[] = [
   {
     path: '',
     label: 'Dashboard do Proprietário',
-    component: 'OwnerDashboardPage',
-    permission: ADMIN_TENANT_PERMISSIONS.dashboardRead,
-    isOwner: true,
+    element: OwnerDashboardPage as unknown as ModuleRoute['element'],
+    requiredPermissions: [ADMIN_TENANT_PERMISSIONS.dashboardRead],
+    icon: 'ShieldCheck',
   },
   {
     path: 'tenants',
     label: 'Tenants',
-    component: 'TenantsPage',
-    permission: ADMIN_TENANT_PERMISSIONS.tenantsRead,
+    element: TenantsPage as unknown as ModuleRoute['element'],
+    requiredPermissions: [ADMIN_TENANT_PERMISSIONS.tenantsRead],
+    icon: 'Building2',
   },
   {
     path: 'sistemas',
     label: 'Sistemas',
-    component: 'SystemsPage',
-    permission: ADMIN_TENANT_PERMISSIONS.systemsRead,
+    element: SystemsPage as unknown as ModuleRoute['element'],
+    requiredPermissions: [ADMIN_TENANT_PERMISSIONS.systemsRead],
+    icon: 'BriefcaseBusiness',
   },
   {
     path: 'unidades',
     label: 'Unidades',
-    component: 'UnitsPage',
-    permission: ADMIN_TENANT_PERMISSIONS.unitsRead,
+    element: UnitsPage as unknown as ModuleRoute['element'],
+    requiredPermissions: [ADMIN_TENANT_PERMISSIONS.unitsRead],
+    icon: 'Users',
   },
   {
     path: 'administradores',
     label: 'Administradores',
-    component: 'AdministratorsPage',
-    permission: ADMIN_TENANT_PERMISSIONS.administratorsRead,
+    element: AdministratorsPage as unknown as ModuleRoute['element'],
+    requiredPermissions: [ADMIN_TENANT_PERMISSIONS.administratorsRead],
+    icon: 'UserPlus',
   },
   {
     path: 'gestao',
     label: 'Gestões',
-    component: 'ManagementPage',
-    permission: ADMIN_TENANT_PERMISSIONS.managementRead,
+    element: ManagementPage as unknown as ModuleRoute['element'],
+    requiredPermissions: [ADMIN_TENANT_PERMISSIONS.managementRead],
+    icon: 'Wrench',
   },
   {
     path: 'seguranca',
     label: 'Segurança',
-    component: 'SecurityPage',
-    permission: ADMIN_TENANT_PERMISSIONS.securityRead,
+    element: SecurityPage as unknown as ModuleRoute['element'],
+    requiredPermissions: [ADMIN_TENANT_PERMISSIONS.securityRead],
+    icon: 'Lock',
   },
   {
     path: 'auditoria',
     label: 'Auditoria',
-    component: 'AuditPage',
-    permission: ADMIN_TENANT_PERMISSIONS.auditRead,
+    element: AuditPage as unknown as ModuleRoute['element'],
+    requiredPermissions: [ADMIN_TENANT_PERMISSIONS.auditRead],
+    icon: 'Activity',
   },
   {
     path: 'configuracoes',
     label: 'Configurações',
-    component: 'SettingsPage',
-    permission: ADMIN_TENANT_PERMISSIONS.settingsRead,
+    element: SettingsPage as unknown as ModuleRoute['element'],
+    requiredPermissions: [ADMIN_TENANT_PERMISSIONS.settingsRead],
+    icon: 'Settings',
   },
-] as const;
+];

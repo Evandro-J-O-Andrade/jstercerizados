@@ -52,6 +52,10 @@ export default function DashboardHome() {
     return <Navigate to="/candidato" replace />;
   }
 
+  if (isAdminMaster) {
+    return <Navigate to="/dashboard/global" replace />;
+  }
+
   if (availableModules.length === 0) {
     return (
       <ModuleWorkspace

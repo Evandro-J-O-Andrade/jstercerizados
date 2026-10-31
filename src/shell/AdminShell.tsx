@@ -4,6 +4,7 @@ import { AccountProvider } from '@/contexts/AccountContext';
 import { ModuleProvider } from '@/contexts/ModuleContext';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
+import { COMPANY } from '@/config';
 
 interface AdminShellProps {
   moduleTitle?: string;
@@ -37,6 +38,17 @@ function AdminShellInner({ moduleTitle, children }: AdminShellProps) {
               {content}
             </div>
           </main>
+
+          <footer className="border-t border-border/50 bg-background/50 px-4 py-4 sm:px-6 lg:px-8 xl:px-10">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>
+                {COMPANY.name} — Sistema de Administração
+              </span>
+              <span>
+                Área restrita · Tenant isolado
+              </span>
+            </div>
+          </footer>
         </div>
       </div>
     </div>

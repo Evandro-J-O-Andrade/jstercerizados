@@ -148,7 +148,9 @@ export function buildDispatchContext(
   );
 
   const isAdminMaster = roles.some(
-    (role) => role.scope === 'global' && role.slug === 'admin_master',
+    (role) =>
+      role.scope === 'global' &&
+      (role.slug === 'admin_master' || role.name === 'admin_master'),
   );
 
   return {
@@ -336,10 +338,19 @@ export class DispatcherMaster {
       return '/dashboard/global';
     }
 
-    // 8. Despacho por papel ou permissão das células operacionais do CHECK BOULER 24H
+    // 8. Proprietário / Tenant Admin — ambiente exclusivo do dono
     const roles = options?.roleNames?.map((r) => r.toLowerCase()) || [];
     const perms = dispatchContext.effectivePermissions.map((p) => p.name);
 
+    if (
+      roles.includes('owner') ||
+      roles.includes('tenant_admin') ||
+      perms.some((p) => p.startsWith('owner.'))
+    ) {
+      return '/dashboard/admin-tenant';
+    }
+
+    // 9. Despacho por papel ou permissão das células operacionais do CHECK BOULER 24H
     if (roles.includes('recruiter') || perms.includes('recruitment.read')) {
       return '/dashboard/recrutamento';
     }
