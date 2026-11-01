@@ -1,0 +1,1 @@
+export const relatoriosCellManifest = { id: 'relatorios', name: 'Relatórios', domain: 'tenant', scope: 'tenant', profile: 'relatorios', description: 'Relatórios e dashboards.', homeRoute: '/dashboard/relatorios', sidebarLabel: 'Relatórios', sidebarIcon: 'BarChart3', isGlobal: false, enabled: true } as const;

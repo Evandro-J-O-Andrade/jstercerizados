@@ -1,0 +1,1 @@
+export const faturamentoCellManifest = { id: 'faturamento', name: 'Faturamento', domain: 'tenant', scope: 'tenant', profile: 'faturamento', description: 'Faturamento e notas fiscais.', homeRoute: '/dashboard/faturamento', sidebarLabel: 'Faturamento', sidebarIcon: 'Receipt', isGlobal: false, enabled: true } as const;

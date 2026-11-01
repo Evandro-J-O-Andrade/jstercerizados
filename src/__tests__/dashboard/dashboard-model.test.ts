@@ -5,6 +5,8 @@ import {
   formatDashboardMetricValue,
   type DashboardMetric,
 } from '@/components/dashboard/dashboard-model';
+import { getAvailableModules } from '@/platform/modules';
+import { normalizePermission } from '@/utils/rbac-normalize';
 
 const jobsMetric: DashboardMetric = {
   id: 'jobs',
@@ -45,12 +47,12 @@ describe('dashboard metric model', () => {
   });
 
   it('keeps metrics without a permission requirement', () => {
-    expect(
-      filterDashboardMetrics([jobsMetric, candidatesMetric], [], false),
-    ).toEqual([]);
+    expect(filterDashboardMetrics([jobsMetric, candidatesMetric], [])).toEqual(
+      [],
+    );
 
     const unrestrictedMetric = { ...jobsMetric, permission: undefined };
-    expect(filterDashboardMetrics([unrestrictedMetric], [], false)).toEqual([
+    expect(filterDashboardMetrics([unrestrictedMetric], [])).toEqual([
       unrestrictedMetric,
     ]);
   });
@@ -59,15 +61,35 @@ describe('dashboard metric model', () => {
     expect(
       filterDashboardMetrics(
         [jobsMetric, candidatesMetric],
-        [{ name: 'jobs.read' }],
-        false,
+        [
+          normalizePermission({
+            id: 'permission-jobs-read',
+            resource: 'jobs',
+            action: 'read',
+          })!,
+        ],
       ),
     ).toEqual([jobsMetric]);
   });
 
-  it('lets admin_master see every metric', () => {
+  it('does not bypass database permissions for admin_master metrics', () => {
+    expect(filterDashboardMetrics([jobsMetric, candidatesMetric], [])).toEqual(
+      [],
+    );
+  });
+
+  it('exposes the global module only with a real permission granted by the database', () => {
+    const globalReadPermission = normalizePermission({
+      id: 'permission-tenants-read',
+      resource: 'tenants',
+      action: 'read',
+    })!;
+
     expect(
-      filterDashboardMetrics([jobsMetric, candidatesMetric], [], true),
-    ).toEqual([jobsMetric, candidatesMetric]);
+      getAvailableModules([globalReadPermission], 'global'),
+    ).toContainEqual(expect.objectContaining({ id: 'admin-master' }));
+    expect(getAvailableModules([], 'global')).not.toContainEqual(
+      expect.objectContaining({ id: 'admin-master' }),
+    );
   });
 });

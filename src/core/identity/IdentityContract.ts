@@ -4,7 +4,13 @@
  * (is this person allowed to do this action in this tenant?).
  */
 
-import type { AuthUser, Person, TenantMembership, IdentityContext, UUID } from '../types';
+import type {
+  AuthUser,
+  Person,
+  TenantMembership,
+  IdentityContext,
+  UUID,
+} from '../types';
 
 /**
  * Validates that an authUser has a corresponding person record.
@@ -22,23 +28,35 @@ export function validatePersonLink(
     return { valid: false, reason: 'No person record linked to auth user' };
   }
   if (person.auth_user_id !== authUser.id) {
-    return { valid: false, reason: 'Person auth_user_id does not match session' };
+    return {
+      valid: false,
+      reason: 'Person auth_user_id does not match session',
+    };
   }
   return { valid: true };
 }
 
 /**
- * Resolves the active tenant from memberships.
- * Only 'active' memberships are considered.
+ * Resolves a tenant only when the caller provides an explicit selection.
+ * Only active memberships are considered; stored preferences are not proof
+ * of authorization and must be revalidated before reaching this function.
  */
 export function resolveActiveTenant(
   memberships: TenantMembership[],
   requestedTenantId?: UUID,
-): { tenantId: UUID | null; membership: TenantMembership | null; reason?: string } {
+): {
+  tenantId: UUID | null;
+  membership: TenantMembership | null;
+  reason?: string;
+} {
   const active = memberships.filter((m) => m.status === 'active');
 
   if (active.length === 0) {
-    return { tenantId: null, membership: null, reason: 'No active tenant memberships' };
+    return {
+      tenantId: null,
+      membership: null,
+      reason: 'No active tenant memberships',
+    };
   }
 
   if (requestedTenantId) {
@@ -53,9 +71,11 @@ export function resolveActiveTenant(
     return { tenantId: match.tenant_id, membership: match };
   }
 
-  // Default: first active membership
-  const first = active[0];
-  return { tenantId: first.tenant_id, membership: first };
+  return {
+    tenantId: null,
+    membership: null,
+    reason: 'Explicit tenant selection is required',
+  };
 }
 
 /**
@@ -95,10 +115,16 @@ export function canExecuteBusinessOperation(identity: IdentityContext): {
     return { canProceed: false, reason: 'User not authenticated' };
   }
   if (!identity.person) {
-    return { canProceed: false, reason: 'No person record — business operation requires domain identity' };
+    return {
+      canProceed: false,
+      reason: 'No person record — business operation requires domain identity',
+    };
   }
   if (!identity.currentTenantId) {
-    return { canProceed: false, reason: 'No active tenant — business operation requires tenant context' };
+    return {
+      canProceed: false,
+      reason: 'No active tenant — business operation requires tenant context',
+    };
   }
   return { canProceed: true };
 }

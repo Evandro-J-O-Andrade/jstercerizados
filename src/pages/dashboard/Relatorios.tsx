@@ -57,7 +57,6 @@ interface ModuleSummary {
 export default function RelatoriosPage() {
   const { currentTenantId } = useAuth();
   const { activePermissions } = useAccount();
-  const { isAdminMaster } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -206,7 +205,6 @@ export default function RelatoriosPage() {
       description: `Abrir módulo de ${summary.title.toLowerCase()}`,
     })),
     activePermissions,
-    isAdminMaster,
   );
 
   const financeKpis = useMemo(
@@ -273,7 +271,6 @@ export default function RelatoriosPage() {
   const visibleFinanceMetrics = filterDashboardMetrics(
     financeMetrics,
     activePermissions,
-    isAdminMaster,
   );
 
   const operationalMetrics: DashboardMetric[] = [
@@ -315,7 +312,6 @@ export default function RelatoriosPage() {
   const visibleOperationalMetrics = filterDashboardMetrics(
     operationalMetrics,
     activePermissions,
-    isAdminMaster,
   );
 
   if (loading) {

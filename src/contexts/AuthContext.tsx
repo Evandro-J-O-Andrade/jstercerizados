@@ -92,6 +92,49 @@ interface AuthContextType {
 }
 
 const SESSION_PERSIST_KEY = 'jst_session_persist';
+const TENANT_SELECTION_STORAGE_PREFIX = 'jst_selected_tenant:';
+
+interface AuthDataLoadResult {
+  operationId: number;
+  currentTenantId: string | null;
+}
+
+function getTenantSelectionStorageKey(authUserId: string): string {
+  return `${TENANT_SELECTION_STORAGE_PREFIX}${authUserId}`;
+}
+
+function readTenantSelection(authUserId?: string): string | null {
+  if (!authUserId) return null;
+
+  try {
+    return sessionStorage.getItem(getTenantSelectionStorageKey(authUserId));
+  } catch (error) {
+    console.warn(
+      '[AUTH:tenant] Não foi possível ler a preferência de tenant da sessão.',
+      error,
+    );
+    return null;
+  }
+}
+
+function persistTenantSelection(
+  authUserId: string,
+  tenantId: string | null,
+): void {
+  try {
+    const key = getTenantSelectionStorageKey(authUserId);
+    if (tenantId) {
+      sessionStorage.setItem(key, tenantId);
+    } else {
+      sessionStorage.removeItem(key);
+    }
+  } catch (error) {
+    console.warn(
+      '[AUTH:tenant] Não foi possível persistir a preferência de tenant.',
+      error,
+    );
+  }
+}
 
 function clearSessionPersistence() {
   try {
@@ -131,293 +174,290 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const authLoadInFlightRef = useRef(false);
   const loadOperationIdRef = useRef(0);
 
-  const loadAuthData = useCallback(async (authUserId?: string) => {
-    const currentOperationId = ++loadOperationIdRef.current;
+  const loadAuthData = useCallback(
+    async (
+      authUserId?: string,
+      explicitTenantId?: string | null,
+    ): Promise<AuthDataLoadResult> => {
+      const currentOperationId = ++loadOperationIdRef.current;
+      const requestedTenantId =
+        explicitTenantId === undefined
+          ? readTenantSelection(authUserId)
+          : explicitTenantId;
 
-    try {
-      const supabase = getSupabaseClient();
-      if (!supabase || !isMountedRef.current) {
-        return;
-      }
+      try {
+        const supabase = getSupabaseClient();
+        if (!supabase || !isMountedRef.current) {
+          return {
+            operationId: currentOperationId,
+            currentTenantId: null,
+          };
+        }
 
-      console.log('[AUTH:IDENTITY] loadAuthData start', {
-        authUserId,
-        operationId: currentOperationId,
-      });
+        if (!authUserId) {
+          throw new Error('Não foi possível identificar a sessão autenticada.');
+        }
 
-      const { data: personData, error: personError } = await supabase
-        .from('people')
-        .select('*')
-        .eq('auth_user_id', authUserId)
-        .maybeSingle();
+        console.log('[AUTH:IDENTITY] loadAuthData start', {
+          authUserId,
+          operationId: currentOperationId,
+        });
 
-      console.log('[AUTH:IDENTITY] people loaded', {
-        hasPerson: !!personData,
-        error: personError?.message ?? null,
-      });
-
-      if (personError) throw personError;
-      if (!personData) {
-        throw new Error(
-          'Identidade não encontrada. Verifique se seu cadastro está completo ou solicite acesso ao administrador.',
-        );
-      }
-
-      const { data: membershipData } = await supabase
-        .from('tenant_memberships')
-        .select('*')
-        .eq('person_id', personData.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      console.log('[AUTH:IDENTITY] memberships loaded', {
-        count: (membershipData || []).length,
-      });
-
-      const tenantIds = (membershipData || [])
-        .map((m: TenantMembership) => m.tenant_id)
-        .filter((id): id is string => Boolean(id));
-
-      const primaryTenantId = tenantIds[0] || null;
-
-      let tenantsData: { id: string; name: string }[] = [];
-      if (tenantIds.length > 0) {
-        const { data: tenantsResult } = await supabase
-          .from('tenants')
-          .select('id, name')
-          .in('id', tenantIds);
-        tenantsData = (tenantsResult || []) as { id: string; name: string }[];
-      }
-
-      console.log('[AUTH:IDENTITY] tenants loaded', {
-        count: tenantsData.length,
-      });
-
-      // Fetch all role_assignments, then filter by tenant and expiration
-      const { data: roleAssignmentData, error: roleAssignmentError } =
-        await supabase
-          .from('role_assignments')
+        const { data: personData, error: personError } = await supabase
+          .from('people')
           .select('*')
-          .eq('person_id', personData.id);
+          .eq('auth_user_id', authUserId)
+          .maybeSingle();
 
-      console.log('[AUTH:IDENTITY] role_assignments loaded', {
-        count: (roleAssignmentData || []).length,
-        error: roleAssignmentError?.message ?? null,
-      });
+        console.log('[AUTH:IDENTITY] people loaded', {
+          hasPerson: !!personData,
+          error: personError?.message ?? null,
+        });
 
-      if (roleAssignmentError) {
-        console.error(
-          '[AUTH:IDENTITY] role_assignments query failed',
-          roleAssignmentError,
-        );
-      }
-
-      // Filter assignments: valid globals (tenant_id IS NULL + role.scope='global') + valid current tenant
-      const now = new Date().toISOString();
-      const currentTenantIdForFilter = primaryTenantId;
-
-      const validAssignments = (roleAssignmentData || []).filter(
-        (ra: RoleAssignment) => {
-          // Check expiration
-          if (ra.expires_at && ra.expires_at < now) {
-            return false; // expired
-          }
-          // Global role assignment (tenant_id IS NULL)
-          if (ra.tenant_id === null) {
-            return true; // Will validate role.scope when roles are loaded
-          }
-          // Tenant-scoped assignment for current tenant
-          if (ra.tenant_id === currentTenantIdForFilter) {
-            return true;
-          }
-          // Assignment for another tenant — EXCLUDE
-          return false;
-        },
-      );
-
-      const roleIds = Array.from(
-        new Set(
-          validAssignments
-            .map((ra: RoleAssignment) => ra.role_id)
-            .filter(Boolean),
-        ),
-      );
-
-      console.log('[AUTH:IDENTITY] roleIds resolved', { roleIds });
-
-      const { data: rolesData } = await supabase
-        .from('roles')
-        .select('*')
-        .in('id', roleIds);
-
-      // Separar funções pelo escopo real do banco (coluna scope, não is_global).
-      const globalRoles = (rolesData || []).filter(
-        (role: Role) => role.scope === 'global',
-      );
-
-      const tenantRoles = (rolesData || []).filter(
-        (role: Role) => role.scope === 'tenant',
-      );
-
-      const globalRoleIds = new Set(globalRoles.map((role) => role.id));
-
-      const validGlobalAssignments = validAssignments.filter(
-        (assignment) =>
-          assignment.tenant_id === null &&
-          globalRoleIds.has(assignment.role_id),
-      );
-
-      const tenantRoleIds = new Set(tenantRoles.map((role) => role.id));
-
-      const validTenantAssignments = validAssignments.filter(
-        (assignment) =>
-          assignment.tenant_id === currentTenantIdForFilter &&
-          tenantRoleIds.has(assignment.role_id),
-      );
-
-      // Combine validated role IDs
-      const validatedRoleIds = Array.from(
-        new Set([
-          ...validGlobalAssignments.map((assignment) => assignment.role_id),
-          ...validTenantAssignments.map((assignment) => assignment.role_id),
-        ]),
-      ).filter((id): id is string => Boolean(id));
-
-      // Re-filter rolesData to only validated roles
-      const validatedRoles = (rolesData || []).filter((role) =>
-        validatedRoleIds.includes(role.id),
-      );
-
-      const adminMaster = validatedRoles.some(
-        (role: Role) =>
-          role.scope === 'global' &&
-          (role.name === 'admin_master' || role.slug === 'admin_master'),
-      );
-
-      console.log('[AUTH:IDENTITY] roles loaded', {
-        count: validatedRoles.length,
-        names: validatedRoles.map((r: Role) => r.name),
-        scopes: validatedRoles.map((r: Role) => r.scope),
-        adminMaster,
-      });
-
-      let isCandidate = validatedRoles.some(
-        (r: Role) => r.name === 'candidato',
-      );
-
-      const isEmpresa = validatedRoles.some(
-        (r: Role) => r.name === 'company_representative',
-      );
-
-      // Fallback: if role_assignments query failed, check candidates table directly
-      if (roleAssignmentError && !isCandidate) {
-        console.log(
-          '[AUTH:IDENTITY] role_assignments query failed, using fallback for candidate detection',
-        );
-        try {
-          const { data: candidateProfile } = await supabase
-            .from('candidates')
-            .select('id, tenant_id, status')
-            .eq('person_id', personData.id)
-            .maybeSingle();
-
-          if (candidateProfile) {
-            isCandidate = true;
-          }
-        } catch (fallbackErr) {
-          console.error(
-            '[AUTH:IDENTITY] candidato fallback query also failed',
-            fallbackErr,
+        if (personError) throw personError;
+        if (!personData) {
+          throw new Error(
+            'Identidade não encontrada. Verifique se seu cadastro está completo ou solicite acesso ao administrador.',
           );
         }
-      }
 
-      let permissionsData: Permission[] = [];
-      if (validatedRoleIds.length > 0) {
-        const { data: rolePerms } = await supabase
-          .from('role_permissions')
-          .select('permission_id')
-          .in('role_id', validatedRoleIds);
+        const { data: membershipData, error: membershipError } = await supabase
+          .from('tenant_memberships')
+          .select('*')
+          .eq('person_id', personData.id)
+          .eq('status', 'active')
+          .order('tenant_id', { ascending: true });
 
-        const permissionIds = Array.from(
+        if (membershipError) throw membershipError;
+
+        console.log('[AUTH:IDENTITY] memberships loaded', {
+          count: (membershipData || []).length,
+        });
+
+        const tenantIds = Array.from(
           new Set(
-            (rolePerms || [])
-              .map((rp: { permission_id: string }) => rp.permission_id)
+            (membershipData || [])
+              .map((m: TenantMembership) => m.tenant_id)
+              .filter((id): id is string => Boolean(id)),
+          ),
+        );
+        const validatedTenantId =
+          requestedTenantId && tenantIds.includes(requestedTenantId)
+            ? requestedTenantId
+            : null;
+
+        if (requestedTenantId && !validatedTenantId) {
+          persistTenantSelection(authUserId, null);
+        }
+
+        let tenantsData: { id: string; name: string }[] = [];
+        if (tenantIds.length > 0) {
+          const { data: tenantsResult, error: tenantsError } = await supabase
+            .from('tenants')
+            .select('id, name')
+            .in('id', tenantIds);
+          if (tenantsError) throw tenantsError;
+          tenantsData = (tenantsResult || []) as {
+            id: string;
+            name: string;
+          }[];
+        }
+
+        console.log('[AUTH:IDENTITY] tenants loaded', {
+          count: tenantsData.length,
+        });
+
+        // Fetch all role_assignments, then filter by tenant and expiration
+        const { data: roleAssignmentData, error: roleAssignmentError } =
+          await supabase
+            .from('role_assignments')
+            .select('*')
+            .eq('person_id', personData.id);
+
+        console.log('[AUTH:IDENTITY] role_assignments loaded', {
+          count: (roleAssignmentData || []).length,
+          error: roleAssignmentError?.message ?? null,
+        });
+
+        if (roleAssignmentError) throw roleAssignmentError;
+
+        // Filter assignments to global roles and the explicitly validated tenant.
+        const now = new Date().toISOString();
+        const validAssignments = (roleAssignmentData || []).filter(
+          (ra: RoleAssignment) => {
+            if (ra.expires_at && ra.expires_at < now) {
+              return false;
+            }
+            return ra.tenant_id === null || ra.tenant_id === validatedTenantId;
+          },
+        );
+
+        const roleIds = Array.from(
+          new Set(
+            validAssignments
+              .map((ra: RoleAssignment) => ra.role_id)
               .filter(Boolean),
           ),
         );
 
-        // admin_master global recebe TODAS as permissões do banco,
-let allPermissionIds: string[] = permissionIds;
+        console.log('[AUTH:IDENTITY] roleIds resolved', { roleIds });
 
-        if (allPermissionIds.length > 0) {
-          const { data: perms } = await supabase
-            .from('permissions')
-            .select('*')
-            .in('id', allPermissionIds);
+        const { data: rolesData, error: rolesError } =
+          roleIds.length > 0
+            ? await supabase.from('roles').select('*').in('id', roleIds)
+            : { data: [], error: null };
+        if (rolesError) throw rolesError;
 
-          const normalizedPermissions = (perms || [])
-            .map(normalizePermission)
-            .filter((p): p is Permission => p !== null);
+        // Separar funções pelo escopo real do banco (coluna scope, não is_global).
+        const globalRoles = (rolesData || []).filter(
+          (role: Role) => role.scope === 'global',
+        );
 
-          permissionsData = normalizedPermissions;
-        }
-      }
+        const tenantRoles = (rolesData || []).filter(
+          (role: Role) => role.scope === 'tenant',
+        );
 
-      console.log('[AUTH:IDENTITY] permissions loaded', {
-        count: permissionsData.length,
-        slugs: permissionsData.map((p) => p.name),
-      });
+        const globalRoleIds = new Set(globalRoles.map((role) => role.id));
 
-      console.log('[AUTH:IDENTITY] candidate flags resolved', {
-        isCandidate,
-        isEmpresa,
-        adminMaster,
-        roles: validatedRoles.map((r: Role) => ({
-          name: r.name,
-          scope: r.scope,
-        })),
-      });
+        const validGlobalAssignments = validAssignments.filter(
+          (assignment) =>
+            assignment.tenant_id === null &&
+            globalRoleIds.has(assignment.role_id),
+        );
 
-      const { data: firstLoginData } = await supabase
-        .from('first_login_state')
-        .select('*')
-        .eq('person_id', personData.id)
-        .maybeSingle();
+        const tenantRoleIds = new Set(tenantRoles.map((role) => role.id));
 
-      console.log('[AUTH:FIRST_LOGIN] first_login_state loaded', {
-        personId: personData.id,
-        firstLoginData: firstLoginData
-          ? {
-              welcome_completed_at: firstLoginData.welcome_completed_at,
-              first_login_completed: firstLoginData.first_login_completed,
-              must_change_password: firstLoginData.must_change_password,
-              terms_version: firstLoginData.terms_version,
-            }
-          : null,
-      });
+        const validTenantAssignments = validAssignments.filter(
+          (assignment) =>
+            assignment.tenant_id === validatedTenantId &&
+            tenantRoleIds.has(assignment.role_id),
+        );
 
-      const { data: legalAcceptancesData } = await supabase
-        .from('legal_acceptances')
-        .select('*')
-        .eq('person_id', personData.id)
-        .order('accepted_at', { ascending: false });
+        // Combine validated role IDs
+        const validatedRoleIds = Array.from(
+          new Set([
+            ...validGlobalAssignments.map((assignment) => assignment.role_id),
+            ...validTenantAssignments.map((assignment) => assignment.role_id),
+          ]),
+        ).filter((id): id is string => Boolean(id));
 
-      // Check if this operation is still current before updating state
-      if (
-        !isMountedRef.current ||
-        currentOperationId !== loadOperationIdRef.current
-      ) {
-        console.log('[AUTH:IDENTITY] Stale operation discarded', {
-          operationId: currentOperationId,
+        // Re-filter rolesData to only validated roles
+        const validatedRoles = (rolesData || []).filter((role) =>
+          validatedRoleIds.includes(role.id),
+        );
+
+        const adminMaster = validatedRoles.some(
+          (role: Role) =>
+            role.scope === 'global' &&
+            (role.name === 'admin_master' || role.slug === 'admin_master'),
+        );
+
+        console.log('[AUTH:IDENTITY] roles loaded', {
+          count: validatedRoles.length,
+          names: validatedRoles.map((r: Role) => r.name),
+          scopes: validatedRoles.map((r: Role) => r.scope),
+          adminMaster,
         });
-        return;
-      }
 
-      if (isMountedRef.current) {
+        const isCandidate = validatedRoles.some(
+          (r: Role) => r.name === 'candidato',
+        );
+
+        const isEmpresa = validatedRoles.some(
+          (r: Role) => r.name === 'company_representative',
+        );
+
+        let permissionsData: Permission[] = [];
+        if (validatedRoleIds.length > 0) {
+          const { data: rolePerms, error: rolePermissionsError } =
+            await supabase
+              .from('role_permissions')
+              .select('permission_id')
+              .in('role_id', validatedRoleIds);
+          if (rolePermissionsError) throw rolePermissionsError;
+
+          const permissionIds = Array.from(
+            new Set(
+              (rolePerms || [])
+                .map((rp: { permission_id: string }) => rp.permission_id)
+                .filter(Boolean),
+            ),
+          );
+
+          // admin_master global recebe TODAS as permissões do banco,
+          const allPermissionIds: string[] = permissionIds;
+
+          if (allPermissionIds.length > 0) {
+            const { data: perms, error: permissionsError } = await supabase
+              .from('permissions')
+              .select('*')
+              .in('id', allPermissionIds);
+            if (permissionsError) throw permissionsError;
+
+            const normalizedPermissions = (perms || [])
+              .map(normalizePermission)
+              .filter((p): p is Permission => p !== null);
+
+            permissionsData = normalizedPermissions;
+          }
+        }
+
+        console.log('[AUTH:IDENTITY] permissions loaded', {
+          count: permissionsData.length,
+          slugs: permissionsData.map((p) => p.name),
+        });
+
+        console.log('[AUTH:IDENTITY] candidate flags resolved', {
+          isCandidate,
+          isEmpresa,
+          adminMaster,
+          roles: validatedRoles.map((r: Role) => ({
+            name: r.name,
+            scope: r.scope,
+          })),
+        });
+
+        const { data: firstLoginData } = await supabase
+          .from('first_login_state')
+          .select('*')
+          .eq('person_id', personData.id)
+          .maybeSingle();
+
+        console.log('[AUTH:FIRST_LOGIN] first_login_state loaded', {
+          personId: personData.id,
+          firstLoginData: firstLoginData
+            ? {
+                welcome_completed_at: firstLoginData.welcome_completed_at,
+                first_login_completed: firstLoginData.first_login_completed,
+                must_change_password: firstLoginData.must_change_password,
+                terms_version: firstLoginData.terms_version,
+              }
+            : null,
+        });
+
+        const { data: legalAcceptancesData } = await supabase
+          .from('legal_acceptances')
+          .select('*')
+          .eq('person_id', personData.id)
+          .order('accepted_at', { ascending: false });
+
+        // Check if this operation is still current before updating state
+        if (
+          !isMountedRef.current ||
+          currentOperationId !== loadOperationIdRef.current
+        ) {
+          console.log('[AUTH:IDENTITY] Stale operation discarded', {
+            operationId: currentOperationId,
+          });
+          return {
+            operationId: currentOperationId,
+            currentTenantId: validatedTenantId,
+          };
+        }
+
         setPerson(personData as Person);
         setTenantMemberships((membershipData || []) as TenantMembership[]);
-        setCurrentTenantId(primaryTenantId);
+        setCurrentTenantId(validatedTenantId);
         setTenants(tenantsData);
         setRoles(validatedRoles as Role[]);
         setPermissions(permissionsData);
@@ -431,38 +471,52 @@ let allPermissionIds: string[] = permissionIds;
         setIsAdminMaster(adminMaster);
         setIsCandidate(isCandidate);
         setIsEmpresa(isEmpresa);
-      }
 
-      console.log('[AUTH:IDENTITY] loadAuthData complete', {
-        personId: personData.id,
-        primaryTenantId,
-        isCandidate,
-        isAdminMaster: adminMaster,
-        permissionCount: permissionsData.length,
-        operationId: currentOperationId,
-      });
-    } catch (error) {
-      // Only update error state if this operation is still current
-      if (
-        isMountedRef.current &&
-        currentOperationId === loadOperationIdRef.current
-      ) {
-        console.error('[AUTH:IDENTITY] loadAuthData failed', error);
-        setPerson(null);
-        setTenantMemberships([]);
-        setCurrentTenantId(null);
-        setRoles([]);
-        setPermissions([]);
-        setRoleAssignments([]);
-        setFirstLoginState(null);
-        setLegalAcceptances([]);
-        setIsAdminMaster(false);
-        setIsCandidate(false);
-        setIsEmpresa(false);
+        console.log('[AUTH:IDENTITY] loadAuthData complete', {
+          personId: personData.id,
+          currentTenantId: validatedTenantId,
+          isCandidate,
+          isAdminMaster: adminMaster,
+          permissionCount: permissionsData.length,
+          operationId: currentOperationId,
+        });
+        return {
+          operationId: currentOperationId,
+          currentTenantId: validatedTenantId,
+        };
+      } catch (error) {
+        if (
+          isMountedRef.current &&
+          currentOperationId === loadOperationIdRef.current
+        ) {
+          console.error('[AUTH:IDENTITY] loadAuthData failed', error);
+          if (explicitTenantId !== undefined) {
+            setCurrentTenantId(null);
+            setRoles([]);
+            setPermissions([]);
+            setRoleAssignments([]);
+            setIsAdminMaster(false);
+            setIsCandidate(false);
+            setIsEmpresa(false);
+          } else {
+            setPerson(null);
+            setTenantMemberships([]);
+            setCurrentTenantId(null);
+            setRoles([]);
+            setPermissions([]);
+            setRoleAssignments([]);
+            setFirstLoginState(null);
+            setLegalAcceptances([]);
+            setIsAdminMaster(false);
+            setIsCandidate(false);
+            setIsEmpresa(false);
+          }
+        }
+        throw error;
       }
-      throw error;
-    }
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -1193,61 +1247,48 @@ let allPermissionIds: string[] = permissionIds;
 
   const switchTenant = useCallback(
     async (tenantId: string | null) => {
-      if (!user) return;
-
-      const supabase = getSupabaseClient();
-      if (!supabase) return;
-
-      if (tenantId !== null) {
-        const { data: targetMembership, error: membershipError } =
-          await supabase
-            .from('tenant_memberships')
-            .select('*')
-            .eq('person_id', person?.id || '')
-            .eq('tenant_id', tenantId)
-            .eq('status', 'active')
-            .maybeSingle();
-
-        if (membershipError) {
-          console.error(
-            '[AUTH:switchTenant] membership check failed',
-            membershipError,
-          );
-          throw new Error('Não foi possível validar a tenant de destino.');
-        }
-
-        if (!targetMembership) {
-          console.error(
-            '[AUTH:switchTenant] no active membership for target tenant',
-          );
-          throw new Error(
-            'Você não possui acesso ativo a este tenant. Solicite acesso ao administrador.',
-          );
-        }
+      if (!user || !person) {
+        throw new Error('Faça login antes de selecionar uma organização.');
       }
 
-      // CRITICAL: Clear protected state BEFORE starting new load
-      // This prevents stale permissions from being exposed during async load
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        throw new Error('Supabase não está configurado.');
+      }
+
+      const expectedOperationId = loadOperationIdRef.current + 1;
+      persistTenantSelection(user.id, null);
+      setCurrentTenantId(null);
       setPermissions([]);
       setRoles([]);
       setRoleAssignments([]);
       setIsAdminMaster(false);
       setIsCandidate(false);
       setIsEmpresa(false);
-
-      setCurrentTenantId(tenantId);
+      setAuthError(null);
 
       try {
-        await loadAuthData(user.id);
+        const result = await loadAuthData(user.id, tenantId);
+        if (result.operationId !== loadOperationIdRef.current) {
+          throw new Error(
+            'A seleção foi substituída por outra atualização. Selecione novamente o contexto.',
+          );
+        }
+
+        if (result.currentTenantId !== tenantId) {
+          throw new Error(
+            'Sua associação a essa organização não está mais ativa. Selecione um contexto disponível.',
+          );
+        }
+
+        if (tenantId) {
+          persistTenantSelection(user.id, tenantId);
+        }
       } catch (error) {
-        // On failure, ensure protected state stays cleared
-        // Identity state (person, memberships) preserved for error handling
-        setPermissions([]);
-        setRoles([]);
-        setRoleAssignments([]);
-        setIsAdminMaster(false);
-        setIsCandidate(false);
-        setIsEmpresa(false);
+        if (loadOperationIdRef.current === expectedOperationId) {
+          setCurrentTenantId(null);
+          persistTenantSelection(user.id, null);
+        }
         throw error;
       }
     },
@@ -1256,7 +1297,9 @@ let allPermissionIds: string[] = permissionIds;
 
   const resolvePostLoginDestination = useCallback(
     (overrideWelcomeCompleted?: boolean): string => {
-      const welcomeCompleted = Boolean(overrideWelcomeCompleted);
+      const welcomeCompleted =
+        overrideWelcomeCompleted ??
+        Boolean(firstLoginState?.welcome_completed_at);
 
       const hasAcceptedTerms =
         legalAcceptances.some((a) => a.document_type === 'terms') ||
@@ -1295,12 +1338,14 @@ let allPermissionIds: string[] = permissionIds;
       return destination;
     },
     [
+      currentTenantId,
       isAdminMaster,
       isCandidate,
       tenantMemberships,
       firstLoginState,
       legalAcceptances,
       permissions,
+      person,
       recoveryMode,
       roleAssignments,
       roles,
@@ -1516,7 +1561,9 @@ let allPermissionIds: string[] = permissionIds;
         hasAnyPermission,
         hasAllPermissions,
         switchTenant,
-        refreshAuthData: loadAuthData,
+        refreshAuthData: async (authUserId) => {
+          await loadAuthData(authUserId ?? user?.id);
+        },
         resolvePostLoginDestination,
         authError,
         recoveryMode,

@@ -6,7 +6,7 @@
  * Utiliza o AdminPersonService integrado ao Supabase (RLS respeitado).
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   Search,
   User,
@@ -34,7 +34,7 @@ type PersonListItem = {
 };
 
 export default function PessoasPage() {
-  const service = createAdminPersonService();
+  const service = useMemo(() => createAdminPersonService(), []);
   const [items, setItems] = useState<PersonListItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,6 +60,10 @@ export default function PessoasPage() {
     }
     setLoading(false);
   }, [search, statusFilter, service]);
+
+  useEffect(() => {
+    void loadPeople();
+  }, [loadPeople]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();

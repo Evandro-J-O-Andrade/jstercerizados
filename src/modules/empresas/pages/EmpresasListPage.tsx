@@ -19,22 +19,28 @@ export default function EmpresasListPage() {
     hasPermission,
     hasAnyPermission,
     currentTenantId,
-    tenantMemberships,
   } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const activeTenantId = currentTenantId || tenantMemberships[0]?.tenant_id;
+  const activeTenantId = currentTenantId;
   const canCreate =
     hasPermission('companies.create') || hasAnyPermission(['companies.create']);
 
   const loadCompanies = async () => {
+    if (!activeTenantId) {
+      setCompanies([]);
+      setError('Selecione um tenant antes de consultar empresas.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
-      const data = await companiesRepository.findAll(activeTenantId || null);
+      const data = await companiesRepository.findAll(activeTenantId);
       setCompanies(data);
     } catch (err) {
       setError(

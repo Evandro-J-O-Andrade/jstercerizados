@@ -2,13 +2,12 @@
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/fallback';
-import { ConfirmDialog } from '@/components/feedback';
 import { accountsPayableRepository } from '@/repositories/finance.repository';
 import type { AccountPayable } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,7 +18,7 @@ const statusLabel: Record<string, string> = {
   paid: 'Pago',
   overdue: 'Vencido',
   cancelled: 'Cancelado',
-  partially_paid: 'Parcialmente pago',
+  partial: 'Parcialmente pago',
 };
 
 const statusVariant = (status: string) => {
@@ -32,7 +31,7 @@ const statusVariant = (status: string) => {
       return 'success';
     case 'cancelled':
       return 'secondary';
-    case 'partially_paid':
+    case 'partial':
       return 'warning';
     default:
       return 'default';
@@ -46,8 +45,6 @@ export default function ContasPagarPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     description: '',
@@ -126,24 +123,6 @@ export default function ContasPagarPage() {
       addToast({
         type: 'error',
         message: err instanceof Error ? err.message : 'Erro ao salvar',
-      });
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!deleteId || !currentTenantId) return;
-    try {
-      await accountsPayableRepository.remove(deleteId, currentTenantId);
-      setPayables((prev) => prev.filter((item) => item.id !== deleteId));
-      setDeleteId(null);
-      addToast({
-        type: 'success',
-        message: 'Conta a pagar excluída com sucesso.',
-      });
-    } catch (err) {
-      addToast({
-        type: 'error',
-        message: err instanceof Error ? err.message : 'Erro ao excluir',
       });
     }
   };
@@ -248,13 +227,6 @@ export default function ContasPagarPage() {
                     {statusLabel[item.status] || item.status}
                   </Badge>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setDeleteId(item.id)}
-                >
-                  <Trash2 className="text-destructive h-4 w-4" />
-                </Button>
               </div>
             </motion.div>
           ))}
@@ -346,17 +318,6 @@ export default function ContasPagarPage() {
           </Card>
         </div>
       )}
-
-      <ConfirmDialog
-        open={!!deleteId}
-        title="Excluir conta a pagar?"
-        message="Essa ação removerá a obrigação. Se houver pagamentos relacionados, essa operação pode ser bloqueada."
-        confirmLabel="Excluir"
-        cancelLabel="Cancelar"
-        variant="danger"
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteId(null)}
-      />
     </div>
   );
 }

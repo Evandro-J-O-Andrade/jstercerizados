@@ -8,9 +8,7 @@ import type { Permission } from '@/types/auth';
 
 describe('normalizeResourceAction', () => {
   it('deriva chave resource.action quando ambos presentes', () => {
-    expect(normalizeResourceAction('contracts', 'read')).toBe(
-      'contracts.read',
-    );
+    expect(normalizeResourceAction('contracts', 'read')).toBe('contracts.read');
     expect(normalizeResourceAction('stock_movements', 'create')).toBe(
       'stock_movements.create',
     );
@@ -81,6 +79,8 @@ describe('normalizePermission', () => {
     const result = normalizePermission(raw);
     expect(result).toEqual({
       id: 'c49ddf68-ed63-4cf2-b54d-d2251a815272',
+      name: 'tenants.read',
+      module: 'tenants',
       resource: 'tenants',
       action: 'read',
       description: 'Ler tenant',

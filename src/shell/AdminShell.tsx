@@ -33,20 +33,16 @@ function AdminShellInner({ moduleTitle, children }: AdminShellProps) {
         />
 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          <main className="flex min-h-0 flex-col">
-            <div className="mx-auto flex min-h-0 max-w-[1920px] flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
+          <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div className="mx-auto flex min-h-0 w-full max-w-[1920px] flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 xl:max-w-[2200px] xl:px-10">
               {content}
             </div>
           </main>
 
-          <footer className="border-t border-border/50 bg-background/50 px-4 py-4 sm:px-6 lg:px-8 xl:px-10">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>
-                {COMPANY.name} — Sistema de Administração
-              </span>
-              <span>
-                Área restrita · Tenant isolado
-              </span>
+          <footer className="border-border/50 bg-background/50 border-t px-4 py-4 sm:px-6 lg:px-8 xl:px-10">
+            <div className="text-muted-foreground flex items-center justify-between text-xs">
+              <span>{COMPANY.name} — Sistema de Administração</span>
+              <span>Área restrita · Tenant isolado</span>
             </div>
           </footer>
         </div>

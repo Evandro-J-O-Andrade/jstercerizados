@@ -1,0 +1,1 @@
+export { integracoesRoutes } from './IntegracoesRoutes';

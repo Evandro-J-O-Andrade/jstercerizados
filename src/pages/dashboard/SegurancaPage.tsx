@@ -5,37 +5,61 @@ import { Shield, Users, Activity } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getSupabaseClient } from '@/lib/supabase';
 import { securityEventRepository } from '@/repositories/security.repository';
+import { hasPermission } from '@/utils/rbac';
 import type { SecurityEvent } from '@/types/domain/security';
 
 export default function SegurancaPage() {
-  const { currentTenantId, isAdminMaster } = useAuth();
+  const { currentTenantId, isAdminMaster, permissions } = useAuth();
+  const canReadRoles = hasPermission(permissions, 'roles.read');
+  const canReadSecurityEvents = hasPermission(
+    permissions,
+    'security_events.read',
+  );
   const [roles, setRoles] = useState<
     { id: string; name: string; scope: string }[]
   >([]);
   const [events, setEvents] = useState<SecurityEvent[]>([]);
   const [stats, setStats] = useState({ total: 0, today: 0, week: 0 });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    setRoles([]);
+    setEvents([]);
+    setStats({ total: 0, today: 0, week: 0 });
+
     const supabase = getSupabaseClient();
-    if (!supabase) return;
+    if (!supabase) {
+      setError('Supabase não está configurado.');
+      setLoading(false);
+      return () => {
+        cancelled = true;
+      };
+    }
 
     const fetchData = async () => {
       try {
         const tenantId = currentTenantId;
-        if (!tenantId && !isAdminMaster) {
-          setLoading(false);
-          return;
-        }
+        if (!tenantId && !isAdminMaster) return;
 
         const [rolesResult, eventsResult] = await Promise.all([
-          supabase.from('roles').select('id, name, scope').order('name'),
-          isAdminMaster && tenantId
-            ? securityEventRepository.findAll(tenantId)
+          canReadRoles
+            ? supabase.from('roles').select('id, name, scope').order('name')
+            : Promise.resolve({ data: null, error: null }),
+          canReadSecurityEvents && isAdminMaster
+            ? tenantId
+              ? securityEventRepository.findAll(tenantId)
+              : securityEventRepository.findAllGlobal()
             : Promise.resolve([] as SecurityEvent[]),
         ]);
 
-        setRoles(rolesResult.data || []);
+        if (rolesResult.error) throw rolesResult.error;
+        if (cancelled) return;
+
+        setRoles(rolesResult.data ?? []);
         const evts = Array.isArray(eventsResult) ? eventsResult : [];
         setEvents(evts);
 
@@ -55,79 +79,99 @@ export default function SegurancaPage() {
           week: evts.filter((e) => new Date(e.created_at) >= weekStart).length,
         });
       } catch (error) {
+        if (cancelled) return;
         console.error('[SEGURANCA] Failed to load data:', error);
+        setError(
+          error instanceof Error
+            ? error.message
+            : 'Não foi possível carregar os dados de segurança.',
+        );
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
-    fetchData();
-  }, [currentTenantId, isAdminMaster]);
+    void fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [canReadRoles, canReadSecurityEvents, currentTenantId, isAdminMaster]);
 
   return (
     <ModuleWorkspace
       title="Segurança"
-      description="Eventos, sessões e proteção da plataforma."
+      description="Eventos de segurança e perfis de acesso."
       icon={Shield}
       breadcrumbItems={[{ label: 'Segurança', href: '/dashboard/seguranca' }]}
     >
-      {loading ? (
+      {error ? (
+        <p role="alert" className="text-destructive text-sm">
+          {error}
+        </p>
+      ) : loading ? (
         <div className="text-muted-foreground text-sm">
           Carregando dados de segurança...
         </div>
       ) : (
         <div className="space-y-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Card className="p-6">
-              <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                Roles cadastradas
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-foreground text-2xl font-semibold">
-                  {roles.length}
-                </span>
-                <Shield className="text-primary h-5 w-5" />
-              </div>
-            </Card>
-            <Card className="p-6">
-              <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                Roles globais
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-foreground text-2xl font-semibold">
-                  {roles.filter((r) => r.scope === 'global').length}
-                </span>
-                <Shield className="text-primary h-5 w-5" />
-              </div>
-            </Card>
-            <Card className="p-6">
-              <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                Roles de tenant
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-foreground text-2xl font-semibold">
-                  {roles.filter((r) => r.scope === 'tenant').length}
-                </span>
-                <Users className="text-primary h-5 w-5" />
-              </div>
-            </Card>
-            <Card className="p-6">
-              <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                Eventos de segurança
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-foreground text-2xl font-semibold">
-                  {stats.total}
-                </span>
-                <Activity className="text-primary h-5 w-5" />
-              </div>
-              <p className="text-muted-foreground mt-2 text-xs">
-                Hoje: {stats.today} | Semana: {stats.week}
-              </p>
-            </Card>
+            {canReadRoles && (
+              <>
+                <Card className="p-6">
+                  <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                    Roles cadastradas
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-foreground text-2xl font-semibold">
+                      {roles.length}
+                    </span>
+                    <Shield className="text-primary h-5 w-5" />
+                  </div>
+                </Card>
+                <Card className="p-6">
+                  <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                    Roles globais
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-foreground text-2xl font-semibold">
+                      {roles.filter((r) => r.scope === 'global').length}
+                    </span>
+                    <Shield className="text-primary h-5 w-5" />
+                  </div>
+                </Card>
+                <Card className="p-6">
+                  <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                    Roles de tenant
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-foreground text-2xl font-semibold">
+                      {roles.filter((r) => r.scope === 'tenant').length}
+                    </span>
+                    <Users className="text-primary h-5 w-5" />
+                  </div>
+                </Card>
+              </>
+            )}
+            {canReadSecurityEvents && (
+              <Card className="p-6">
+                <div className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
+                  Eventos de segurança
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-foreground text-2xl font-semibold">
+                    {stats.total}
+                  </span>
+                  <Activity className="text-primary h-5 w-5" />
+                </div>
+                <p className="text-muted-foreground mt-2 text-xs">
+                  Hoje: {stats.today} | Semana: {stats.week}
+                </p>
+              </Card>
+            )}
           </div>
 
-          {isAdminMaster && events.length > 0 && (
+          {canReadSecurityEvents && isAdminMaster && events.length > 0 && (
             <Card className="overflow-hidden">
               <div className="border-border border-b px-4 py-3">
                 <h3 className="text-foreground text-sm font-semibold">
@@ -170,42 +214,44 @@ export default function SegurancaPage() {
             </Card>
           )}
 
-          <Card className="overflow-hidden">
-            <div className="border-border border-b px-4 py-3">
-              <h3 className="text-foreground text-sm font-semibold">
-                Roles cadastradas
-              </h3>
-            </div>
-            <table className="divide-border min-w-full divide-y">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Nome
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Escopo
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-border divide-y">
-                {roles.map((role) => (
-                  <tr
-                    key={role.id}
-                    className="hover:bg-muted/30 transition-colors"
-                  >
-                    <td className="text-foreground px-4 py-3 text-sm font-medium">
-                      {role.name}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 text-sm">
-                      <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
-                        {role.scope === 'global' ? 'Plataforma' : 'Tenant'}
-                      </span>
-                    </td>
+          {canReadRoles && (
+            <Card className="overflow-hidden">
+              <div className="border-border border-b px-4 py-3">
+                <h3 className="text-foreground text-sm font-semibold">
+                  Roles cadastradas
+                </h3>
+              </div>
+              <table className="divide-border min-w-full divide-y">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Nome
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Escopo
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </Card>
+                </thead>
+                <tbody className="divide-border divide-y">
+                  {roles.map((role) => (
+                    <tr
+                      key={role.id}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="text-foreground px-4 py-3 text-sm font-medium">
+                        {role.name}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-sm">
+                        <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
+                          {role.scope === 'global' ? 'Plataforma' : 'Tenant'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+          )}
         </div>
       )}
     </ModuleWorkspace>

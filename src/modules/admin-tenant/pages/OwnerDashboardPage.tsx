@@ -29,10 +29,12 @@ import {
   DashboardMetricGrid,
   DashboardSection,
 } from '@/components/dashboard';
-import { filterDashboardMetrics, type DashboardMetricTone } from '@/components/dashboard/dashboard-model';
+import {
+  filterDashboardMetrics,
+  type DashboardMetricTone,
+} from '@/components/dashboard/dashboard-model';
 import { EmptyState } from '@/components/fallback';
 import { useAccount } from '@/contexts/AccountContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { cellRegistry } from '@/core/registry/CellRegistryContract';
 import type { CellContract } from '@/core/types';
 
@@ -59,23 +61,23 @@ function CellTile({ cell, permissions }: CellTileProps) {
   return canAccess ? (
     <Link
       to={routePath}
-      className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left hover:bg-accent hover:text-accent-foreground transition-colors"
+      className="border-border bg-card hover:bg-accent hover:text-accent-foreground flex flex-col gap-3 rounded-xl border p-4 text-left transition-colors"
     >
-      <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+      <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-lg transition-colors">
         <LayoutDashboard className="h-5 w-5" />
       </div>
-      <h3 className="text-foreground text-sm font-semibold group-hover:text-primary-foreground transition-colors">
+      <h3 className="text-foreground group-hover:text-primary-foreground text-sm font-semibold transition-colors">
         {cell.name}
       </h3>
-      <p className="text-muted-foreground text-xs line-clamp-2">
+      <p className="text-muted-foreground line-clamp-2 text-xs">
         {cell.description ?? 'Sem descrição declarada no contrato.'}
       </p>
       <div className="mt-auto flex items-center gap-1 text-xs">
         <span
           className={`rounded px-1.5 py-0.5 ${
             cell.enabled
-              ? 'bg-green/10 text-green-foreground border border-green/20'
-              : 'bg-muted/50 text-muted-foreground border border-border'
+              ? 'bg-green/10 text-green-foreground border-green/20 border'
+              : 'bg-muted/50 text-muted-foreground border-border border'
           }`}
         >
           {cell.enabled ? 'Ativo' : 'Inativo'}
@@ -86,24 +88,20 @@ function CellTile({ cell, permissions }: CellTileProps) {
       </div>
     </Link>
   ) : (
-    <div
-      className="flex flex-col gap-3 rounded-xl border border-border/30 bg-muted/50 p-4 text-left opacity-60"
-    >
+    <div className="border-border/30 bg-muted/50 flex flex-col gap-3 rounded-xl border p-4 text-left opacity-60">
       <div className="bg-muted text-muted-foreground flex h-10 w-10 items-center justify-center rounded-lg">
         <LayoutDashboard className="h-5 w-5" />
       </div>
-      <h3 className="text-foreground text-sm font-semibold">
-        {cell.name}
-      </h3>
-      <p className="text-muted-foreground text-xs line-clamp-2">
+      <h3 className="text-foreground text-sm font-semibold">{cell.name}</h3>
+      <p className="text-muted-foreground line-clamp-2 text-xs">
         {cell.description ?? 'Sem descrição declarada no contrato.'}
       </p>
       <div className="mt-auto flex items-center gap-1 text-xs">
         <span
           className={`rounded px-1.5 py-0.5 ${
             cell.enabled
-              ? 'bg-green/10 text-green-foreground border border-green/20'
-              : 'bg-muted/50 text-muted-foreground border border-border'
+              ? 'bg-green/10 text-green-foreground border-green/20 border'
+              : 'bg-muted/50 text-muted-foreground border-border border'
           }`}
         >
           {cell.enabled ? 'Ativo' : 'Inativo'}
@@ -187,14 +185,13 @@ function SystemHealth({ stats, allCells }: SystemHealthProps) {
                     : 'Desconhecido',
             description: 'Com base nos contratos de ciclo de vida',
             icon: Activity,
-            tone:
-              (unavailableCells > 0
-                ? 'danger'
-                : degradedCells > 0
-                  ? 'warning'
-                  : healthyCells === stats.total && stats.total > 0
-                    ? 'success'
-                    : 'neutral') as DashboardMetricTone,
+            tone: (unavailableCells > 0
+              ? 'danger'
+              : degradedCells > 0
+                ? 'warning'
+                : healthyCells === stats.total && stats.total > 0
+                  ? 'success'
+                  : 'neutral') as DashboardMetricTone,
             format: undefined,
           }}
         />
@@ -205,9 +202,9 @@ function SystemHealth({ stats, allCells }: SystemHealthProps) {
           {Object.entries(stats.byModule).map(([module, count]) => (
             <div
               key={module}
-              className="border border-border rounded-lg p-3 text-sm"
+              className="border-border rounded-lg border p-3 text-sm"
             >
-              <div className="flex justify-between mb-1">
+              <div className="mb-1 flex justify-between">
                 <span className="text-muted-foreground">{module}</span>
                 <span className="text-foreground font-medium">{count}</span>
               </div>
@@ -221,7 +218,6 @@ function SystemHealth({ stats, allCells }: SystemHealthProps) {
 
 export default function OwnerDashboardPage() {
   const { identity, permissions, availableModules } = useAccount();
-  const { isAdminMaster } = useAuth();
 
   const allCells = useMemo(
     () => cellRegistry.getAll().map((entry) => entry.cell),
@@ -280,11 +276,7 @@ export default function OwnerDashboardPage() {
     [stats, modules.length],
   );
 
-  const visibleMetrics = filterDashboardMetrics(
-    metrics,
-    permissions,
-    isAdminMaster,
-  );
+  const visibleMetrics = filterDashboardMetrics(metrics, permissions);
 
   return (
     <div className="space-y-6">
@@ -365,12 +357,12 @@ export default function OwnerDashboardPage() {
               <Link
                 key={module.id}
                 to={module.route}
-                className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="border-border bg-card hover:bg-accent hover:text-accent-foreground flex flex-col gap-3 rounded-xl border p-4 text-left transition-colors"
               >
-                <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-lg transition-colors">
                   <LayoutDashboard className="h-5 w-5" />
                 </div>
-                <h3 className="text-foreground text-sm font-semibold group-hover:text-primary-foreground transition-colors">
+                <h3 className="text-foreground group-hover:text-primary-foreground text-sm font-semibold transition-colors">
                   {module.title}
                 </h3>
                 <p className="text-muted-foreground text-xs">

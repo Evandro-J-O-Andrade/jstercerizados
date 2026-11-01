@@ -9,7 +9,6 @@ import { EmptyState } from '@/components/fallback';
 import { jobsRepository } from '@/modules/recrutamento/repositories/jobs.repository';
 import type { JobListItem, JobStatus } from '@/modules/recrutamento/types';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/components/feedback/ToastContext';
 
 const STATUS_LABELS: Record<JobStatus, string> = {
   draft: 'Rascunho',
@@ -31,23 +30,75 @@ const STATUS_OPTIONS: { value: JobStatus | 'all'; label: string }[] = [
 ];
 
 export default function RelatorioRecrutamentoPage() {
-  const { addToast } = useToast();
   const { currentTenantId } = useAuth();
   const [jobs, setJobs] = useState<JobListItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<JobStatus | 'all'>('all');
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
-    if (!currentTenantId) return;
-    setLoading(true);
-    jobsRepository.list({ tenant_id: currentTenantId })
-      .then((result) => {
-        if (!result.error) setJobs(result.data || []);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [currentTenantId]);
+    let cancelled = false;
+
+    async function loadJobs() {
+      setJobs([]);
+      setError(null);
+      if (!currentTenantId) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const result = await jobsRepository.list({
+          tenant_id: currentTenantId,
+        });
+        if (result.error) throw result.error;
+        if (!cancelled) setJobs(result.data || []);
+      } catch (loadError) {
+        if (!cancelled) {
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : 'Erro ao carregar relatório de recrutamento.',
+          );
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void loadJobs();
+    return () => {
+      cancelled = true;
+    };
+  }, [currentTenantId, reloadToken]);
+
+  const handleExport = () => {
+    const escapeCsv = (value: string | null | undefined) =>
+      `"${(value ?? '').replace(/"/g, '""')}"`;
+    const rows = [
+      ['Título', 'Cidade', 'Estado', 'Status'],
+      ...filtered.map((job) => [
+        job.title,
+        job.city,
+        job.state,
+        STATUS_LABELS[job.status] || job.status,
+      ]),
+    ];
+    const csv = `\uFEFF${rows.map((row) => row.map(escapeCsv).join(';')).join('\r\n')}`;
+    const downloadUrl = URL.createObjectURL(
+      new Blob([csv], { type: 'text/csv;charset=utf-8' }),
+    );
+    const anchor = document.createElement('a');
+    anchor.href = downloadUrl;
+    anchor.download = `relatorio-recrutamento-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(downloadUrl);
+  };
 
   const filtered = useMemo(() => {
     let data = jobs;
@@ -79,6 +130,28 @@ export default function RelatorioRecrutamentoPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-xl font-semibold text-foreground">
+          Relatórios de Recrutamento
+        </h1>
+        <Card className="p-6">
+          <p role="alert" className="text-destructive">
+            {error}
+          </p>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => setReloadToken((token) => token + 1)}
+          >
+            Tentar novamente
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -88,12 +161,8 @@ export default function RelatorioRecrutamentoPage() {
         </div>
         <Button
           variant="secondary"
-          onClick={() =>
-            addToast({
-              type: 'info',
-              message: 'Exportando relatório de recrutamento...',
-            })
-          }
+          onClick={handleExport}
+          disabled={filtered.length === 0}
         >
           <Download className="mr-2 h-4 w-4" />
           Exportar

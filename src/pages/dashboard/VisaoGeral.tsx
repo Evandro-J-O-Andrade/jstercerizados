@@ -162,7 +162,6 @@ export default function VisaoGeral() {
   const visibleMetrics = filterDashboardMetrics(
     metrics,
     activePermissions,
-    isAdminMaster,
   );
 
   const quickActions = useMemo(

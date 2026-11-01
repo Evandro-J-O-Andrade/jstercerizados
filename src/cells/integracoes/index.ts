@@ -1,0 +1,1 @@
+export { integracoesCellContract } from './cellContract';

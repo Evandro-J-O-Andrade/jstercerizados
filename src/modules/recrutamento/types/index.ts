@@ -24,6 +24,7 @@ import type {
   Candidate,
   CandidateStatus,
 } from '@/modules/candidato/types/candidate';
+import type { Database } from '@/types/database';
 
 // ============================================================
 // Enums (matching database CHECK constraints and ENUM types)
@@ -256,29 +257,20 @@ export interface RecruitmentStage {
 export interface RecruitmentDemand {
   id: string;
   tenant_id: string;
-  company_relationship_id: string | null;
-  title: string;
-  description: string | null;
+  company_id: string;
+  position: string;
   quantity: number;
-  filled_quantity: number;
   status: DemandStatus;
-  priority: DemandPriority;
-  required_skills: string[];
-  desired_skills: string[];
-  salary_min: number | null;
-  salary_max: number | null;
-  contract_type: ContractType | null;
-  work_mode: WorkMode | null;
-  city: string | null;
-  state: string | null;
-  start_date: string | null;
-  deadline: string | null;
-  assigned_recruiter_id: string | null;
-  metadata: Record<string, unknown>;
   created_at: string;
-  created_by: string | null;
   updated_at: string;
-  updated_by: string | null;
+  description: string | null;
+  contact_name: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  urgency: string | null;
+  service_type: string | null;
+  responsible_person_id: string | null;
+  service_id: string | null;
 }
 
 /**
@@ -305,22 +297,18 @@ export interface JobMatch {
  */
 export interface TalentPoolMembership {
   id: string;
-  candidate_id: string;
+  person_id: string;
   tenant_id: string;
   status: TalentPoolStatus;
-  source: TalentPoolSource;
-  consent_status: ConsentStatus;
-  consented_at: string;
-  consent_source: string | null;
-  consent_version: string | null;
-  joined_at: string;
-  removed_at: string | null;
-  removal_reason: string | null;
-  metadata: Record<string, unknown>;
+  source: string | null;
   created_at: string;
-  created_by: string | null;
   updated_at: string;
 }
+
+export type TalentPoolPerson = Pick<
+  Database['public']['Tables']['people']['Row'],
+  'id' | 'full_name' | 'email' | 'phone' | 'status' | 'created_at' | 'updated_at'
+>;
 
 /**
  * candidate_preferences - Preferências para matching
@@ -522,13 +510,12 @@ export interface ProcessFilters {
 
 export interface DemandFilters {
   tenant_id?: string;
-  company_relationship_id?: string;
+  company_id?: string;
   status?: DemandStatus | DemandStatus[];
-  priority?: DemandPriority | DemandPriority[];
-  assigned_recruiter_id?: string;
   date_from?: string;
   date_to?: string;
-  sort_by?: 'created_at' | 'deadline' | 'priority' | 'status';
+  search?: string;
+  sort_by?: 'created_at' | 'position' | 'status';
   sort_order?: 'asc' | 'desc';
   limit?: number;
   offset?: number;
@@ -737,27 +724,22 @@ export interface UpdateStageInput extends Partial<CreateStageInput> {
 
 export interface CreateDemandInput {
   tenant_id: string;
-  company_relationship_id?: string;
-  title: string;
-  description?: string;
+  company_id: string;
+  position: string;
   quantity: number;
   status?: DemandStatus;
-  priority?: DemandPriority;
-  required_skills?: string[];
-  desired_skills?: string[];
-  salary_min?: number;
-  salary_max?: number;
-  contract_type?: ContractType;
-  work_mode?: WorkMode;
-  city?: string;
-  state?: string;
-  start_date?: string;
-  deadline?: string;
-  assigned_recruiter_id?: string;
-  metadata?: Record<string, unknown>;
+  description?: string | null;
+  contact_name?: string | null;
+  contact_email?: string | null;
+  contact_phone?: string | null;
+  urgency?: string | null;
+  service_type?: string | null;
+  responsible_person_id?: string | null;
+  service_id?: string | null;
 }
 
-export interface UpdateDemandInput extends Partial<CreateDemandInput> {
+export interface UpdateDemandInput
+  extends Partial<Omit<CreateDemandInput, 'tenant_id'>> {
   id: string;
 }
 

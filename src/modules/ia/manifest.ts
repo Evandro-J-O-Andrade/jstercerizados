@@ -1,0 +1,1 @@
+export const iaCellManifest = { id: 'ia', name: 'IA & Automação', domain: 'tenant', scope: 'tenant', profile: 'ia', description: 'IA e automação.', homeRoute: '/dashboard/ia', sidebarLabel: 'IA', sidebarIcon: 'Sparkles', isGlobal: false, enabled: true } as const;

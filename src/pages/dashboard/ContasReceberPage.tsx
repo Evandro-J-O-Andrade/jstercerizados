@@ -11,10 +11,10 @@ import type { AccountReceivable } from '@/types/domain/finance';
 
 const statusLabels: Record<string, string> = {
   open: 'Em aberto',
-  received: 'Recebido',
+  paid: 'Recebido',
   overdue: 'Vencido',
   cancelled: 'Cancelado',
-  partially_received: 'Parcialmente recebido',
+  partial: 'Parcialmente recebido',
 };
 
 export default function ContasReceberPage() {
@@ -84,7 +84,7 @@ export default function ContasReceberPage() {
     const openTotal = open.reduce((sum, item) => sum + item.amount, 0);
     const overdue = items.filter((item) => item.status === 'overdue');
     const overdueTotal = overdue.reduce((sum, item) => sum + item.amount, 0);
-    const received = items.filter((item) => item.status === 'received');
+    const received = items.filter((item) => item.status === 'paid');
     const receivedTotal = received.reduce((sum, item) => sum + item.amount, 0);
 
     return {
@@ -102,7 +102,9 @@ export default function ContasReceberPage() {
 
   if (loading) {
     return (
-      <p className="text-sm text-muted-foreground">Carregando contas a receber...</p>
+      <p className="text-muted-foreground text-sm">
+        Carregando contas a receber...
+      </p>
     );
   }
 
@@ -114,38 +116,47 @@ export default function ContasReceberPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">
+          <h1 className="text-foreground text-xl font-semibold">
             Contas a Receber
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Gerencie recebimentos, vencimentos e status.
           </p>
         </div>
-        <Button onClick={() => addToast({ type: 'info', message: 'Abrir formulário de conta a receber' })}>
+        <Button
+          onClick={() =>
+            addToast({
+              type: 'info',
+              message: 'Abrir formulário de conta a receber',
+            })
+          }
+        >
           <Plus className="mr-2 h-4 w-4" />
           Nova conta
         </Button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
-          <p className="text-xs text-muted-foreground">Total em aberto</p>
+        <div className="border-border bg-background rounded-xl border p-4 shadow-sm">
+          <p className="text-muted-foreground text-xs">Total em aberto</p>
           <p className="text-lg font-semibold text-blue-700">
             {formatCurrency(stats.openTotal)}
           </p>
-          <p className="text-xs text-muted-foreground">{stats.openCount} título(s)</p>
+          <p className="text-muted-foreground text-xs">
+            {stats.openCount} título(s)
+          </p>
         </div>
-        <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
-          <p className="text-xs text-muted-foreground">Total vencido</p>
+        <div className="border-border bg-background rounded-xl border p-4 shadow-sm">
+          <p className="text-muted-foreground text-xs">Total vencido</p>
           <p className="text-lg font-semibold text-red-700">
             {formatCurrency(stats.overdueTotal)}
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             {stats.overdueCount} título(s)
           </p>
         </div>
-        <div className="rounded-xl border border-border bg-background p-4 shadow-sm">
-          <p className="text-xs text-muted-foreground">Total recebido</p>
+        <div className="border-border bg-background rounded-xl border p-4 shadow-sm">
+          <p className="text-muted-foreground text-xs">Total recebido</p>
           <p className="text-lg font-semibold text-green-700">
             {formatCurrency(stats.receivedTotal)}
           </p>
@@ -153,8 +164,8 @@ export default function ContasReceberPage() {
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="flex flex-1 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="border-border bg-background flex flex-1 items-center gap-2 rounded-lg border px-3 py-2">
+          <Search className="text-muted-foreground h-4 w-4" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -165,13 +176,13 @@ export default function ContasReceberPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none"
+          className="border-border bg-background rounded-lg border px-3 py-2 text-sm outline-none"
         >
           <option value="all">Todos os status</option>
           <option value="open">Em aberto</option>
           <option value="overdue">Vencido</option>
-          <option value="received">Recebido</option>
-          <option value="partially_received">Parcialmente recebido</option>
+          <option value="paid">Recebido</option>
+          <option value="partial">Parcialmente recebido</option>
           <option value="cancelled">Cancelado</option>
         </select>
         <Button variant="secondary" onClick={load}>
@@ -180,7 +191,9 @@ export default function ContasReceberPage() {
         </Button>
         <Button
           variant="ghost"
-          onClick={() => addToast({ type: 'info', message: 'Exportar contas a receber' })}
+          onClick={() =>
+            addToast({ type: 'info', message: 'Exportar contas a receber' })
+          }
         >
           <Download className="mr-2 h-4 w-4" />
           Exportar
@@ -192,53 +205,58 @@ export default function ContasReceberPage() {
           title="Nenhuma conta a receber cadastrada"
           description="Ainda não há contas a receber registradas para este ambiente."
           actionLabel="Nova conta"
-          onAction={() => addToast({ type: 'info', message: 'Abrir formulário de conta a receber' })}
+          onAction={() =>
+            addToast({
+              type: 'info',
+              message: 'Abrir formulário de conta a receber',
+            })
+          }
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="min-w-full divide-y divide-border bg-background text-sm">
+        <div className="border-border overflow-x-auto rounded-lg border">
+          <table className="divide-border bg-background min-w-full divide-y text-sm">
             <thead className="bg-muted">
               <tr>
-                <th className="px-4 py-2 text-left font-medium text-muted-foreground">
+                <th className="text-muted-foreground px-4 py-2 text-left font-medium">
                   Descrição
                 </th>
-                <th className="px-4 py-2 text-left font-medium text-muted-foreground">
+                <th className="text-muted-foreground px-4 py-2 text-left font-medium">
                   Vencimento
                 </th>
-                <th className="px-4 py-2 text-left font-medium text-muted-foreground">
+                <th className="text-muted-foreground px-4 py-2 text-left font-medium">
                   Valor
                 </th>
-                <th className="px-4 py-2 text-left font-medium text-muted-foreground">
+                <th className="text-muted-foreground px-4 py-2 text-left font-medium">
                   Status
                 </th>
-                <th className="px-4 py-2 text-left font-medium text-muted-foreground">
+                <th className="text-muted-foreground px-4 py-2 text-left font-medium">
                   Ações
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-border divide-y">
               {items.map((item) => (
                 <tr key={item.id} className="hover:bg-muted">
-                  <td className="px-4 py-2 font-medium text-foreground">
+                  <td className="text-foreground px-4 py-2 font-medium">
                     {item.description}
                   </td>
-                  <td className="px-4 py-2 text-muted-foreground">
+                  <td className="text-muted-foreground px-4 py-2">
                     {new Date(item.due_date).toLocaleDateString('pt-BR')}
                   </td>
-                  <td className="px-4 py-2 text-foreground">
+                  <td className="text-foreground px-4 py-2">
                     {item.amount.toLocaleString('pt-BR', {
                       style: 'currency',
                       currency: 'BRL',
                     })}
                   </td>
                   <td className="px-4 py-2">
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
+                    <span className="bg-muted text-foreground rounded-full px-2 py-0.5 text-xs font-medium">
                       {statusLabels[item.status] ?? item.status}
                     </span>
                   </td>
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-2">
-                      <button className="rounded p-1 text-muted-foreground hover:bg-muted">
+                      <button className="text-muted-foreground hover:bg-muted rounded p-1">
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
@@ -269,4 +287,3 @@ export default function ContasReceberPage() {
     </div>
   );
 }
-

@@ -14,6 +14,17 @@ export class SecurityEventRepository extends SupabaseRepository {
     return data || [];
   }
 
+  async findAllGlobal(): Promise<SecurityEvent[]> {
+    if (!this.supabase) throw new Error('Supabase não configurado');
+    const { data, error } = await this.supabase
+      .from('security_events')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data ?? [];
+  }
+
   async findById(id: string, tenantId: string): Promise<SecurityEvent | null> {
     if (!this.supabase) return null;
     const { data, error } = await this.supabase

@@ -20,7 +20,7 @@ export const financialCategoryRepository: FinancialCategoryRepository = {
   async findAll(tenantId: string) {
     const { getSupabaseClient } = await import('@/lib/supabase');
     const supabase = getSupabaseClient();
-    if (!supabase) return [];
+    if (!supabase) throw new Error('Supabase não configurado');
     const { data, error } = await supabase
       .from('financial_categories')
       .select('*')
@@ -33,7 +33,7 @@ export const financialCategoryRepository: FinancialCategoryRepository = {
   async findById(id: string, tenantId: string) {
     const { getSupabaseClient } = await import('@/lib/supabase');
     const supabase = getSupabaseClient();
-    if (!supabase) return null;
+    if (!supabase) throw new Error('Supabase não configurado');
     const { data, error } = await supabase
       .from('financial_categories')
       .select('*')
@@ -79,7 +79,7 @@ export const financialCategoryRepository: FinancialCategoryRepository = {
   async remove(id: string, tenantId: string) {
     const { getSupabaseClient } = await import('@/lib/supabase');
     const supabase = getSupabaseClient();
-    if (!supabase) return;
+    if (!supabase) throw new Error('Supabase não configurado');
     const { error } = await supabase
       .from('financial_categories')
       .delete()

@@ -13,12 +13,10 @@ import {
 } from '@/components/dashboard/dashboard-model';
 import { EmptyState } from '@/components/fallback';
 import { useAccount } from '@/contexts/AccountContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { useGlobalDashboardStats } from '@/hooks/useGlobalDashboardStats';
 
 export default function GestaoPage() {
   const { activePermissions } = useAccount();
-  const { isAdminMaster } = useAuth();
   const stats = useGlobalDashboardStats();
 
   const metrics = useMemo<DashboardMetric[]>(
@@ -59,11 +57,7 @@ export default function GestaoPage() {
     ],
     [stats.companies, stats.jobs, stats.people],
   );
-  const visibleMetrics = filterDashboardMetrics(
-    metrics,
-    activePermissions,
-    isAdminMaster,
-  );
+  const visibleMetrics = filterDashboardMetrics(metrics, activePermissions);
 
   return (
     <ModuleWorkspace

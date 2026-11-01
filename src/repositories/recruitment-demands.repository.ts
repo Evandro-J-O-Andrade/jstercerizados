@@ -1,11 +1,7 @@
 import { SupabaseRepository } from './supabase.repository';
+import type { RecruitmentDemand } from '@/modules/recrutamento/types';
 
-export interface RecruitmentDemandOption {
-  id: string;
-  position: string;
-  status: string;
-  company_id: string | null;
-}
+export type RecruitmentDemandOption = RecruitmentDemand;
 
 export class RecruitmentDemandsRepository extends SupabaseRepository {
   async findAll(tenantId: string): Promise<RecruitmentDemandOption[]> {
@@ -13,12 +9,14 @@ export class RecruitmentDemandsRepository extends SupabaseRepository {
 
     const { data, error } = await this.supabase
       .from('recruitment_demands')
-      .select('id, position, status, company_id')
+      .select(
+        'id, tenant_id, company_id, position, quantity, status, created_at, updated_at, contact_name, contact_email, contact_phone, description, urgency, service_type, responsible_person_id, service_id',
+      )
       .eq('tenant_id', tenantId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return (data || []) as RecruitmentDemandOption[];
+    return data || [];
   }
 }
 

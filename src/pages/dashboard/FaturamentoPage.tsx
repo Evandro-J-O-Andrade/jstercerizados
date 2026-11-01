@@ -35,7 +35,7 @@ import { useToast } from '@/components/feedback/ToastContext';
 type Tab = 'invoices' | 'sales' | 'quotes';
 
 export default function FaturamentoPage() {
-  const { currentTenantId, isAdminMaster } = useAuth();
+  const { currentTenantId } = useAuth();
   const { activePermissions } = useAccount();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('invoices');
@@ -153,11 +153,7 @@ export default function FaturamentoPage() {
       kpis.saleTotal,
     ],
   );
-  const visibleMetrics = filterDashboardMetrics(
-    metrics,
-    activePermissions,
-    isAdminMaster,
-  );
+  const visibleMetrics = filterDashboardMetrics(metrics, activePermissions);
 
   const formatCurrency = (value: number) =>
     value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });

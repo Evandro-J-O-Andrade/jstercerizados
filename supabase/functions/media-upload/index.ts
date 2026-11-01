@@ -215,6 +215,17 @@ serve(async (req: Request) => {
       );
     }
 
+    // Block entity_types not supported by current media_assets constraint until schema aligned
+    const unsupportedEntityTypes = ['partner', 'supplier', 'person'];
+    if (unsupportedEntityTypes.includes(entityType)) {
+      return errorResponse(
+        'ENTITY_TYPE_NOT_SUPPORTED',
+        `entity_type '${entityType}' não suportado nesta versão. Aguarde alinhamento com o schema.`,
+        400,
+        req,
+      );
+    }
+
     // 4. Validate purpose
     const validPurposes = [
       'logo',
@@ -289,17 +300,51 @@ serve(async (req: Request) => {
     }
     const personId = person.id;
 
-    // 9. Resolve tenant_id from active membership
-    const { data: membership, error: membershipError } = await userClient
-      .from('tenant_memberships')
-      .select('tenant_id')
-      .eq('person_id', personId)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // 9. Resolve tenant_id from active membership (must match selected/requested tenant)
+    const requestedTenantId = formData.get('tenant_id') as string | null;
 
-    if (membershipError || !membership) {
+    let tenantId: string | null = null;
+
+    if (requestedTenantId) {
+      const { data: membership, error: membershipError } = await userClient
+        .from('tenant_memberships')
+        .select('tenant_id')
+        .eq('person_id', personId)
+        .eq('tenant_id', requestedTenantId)
+        .eq('status', 'active')
+        .maybeSingle();
+
+      if (membershipError || !membership) {
+        return errorResponse(
+          'TENANT_NOT_FOUND',
+          'Nenhum tenant ativo encontrado para o usuário neste contexto.',
+          403,
+          req,
+        );
+      }
+      tenantId = membership.tenant_id;
+    } else {
+      const { data: membership, error: membershipError } = await userClient
+        .from('tenant_memberships')
+        .select('tenant_id')
+        .eq('person_id', personId)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (membershipError || !membership) {
+        return errorResponse(
+          'TENANT_NOT_FOUND',
+          'Nenhum tenant ativo encontrado para o usuário.',
+          403,
+          req,
+        );
+      }
+      tenantId = membership.tenant_id;
+    }
+
+    if (!tenantId) {
       return errorResponse(
         'TENANT_NOT_FOUND',
         'Nenhum tenant ativo encontrado para o usuário.',
@@ -307,7 +352,6 @@ serve(async (req: Request) => {
         req,
       );
     }
-    const tenantId = membership.tenant_id;
 
     // 10. Check permission via RPC (uses user_has_permission internally)
     const { data: hasPermission, error: permError } = await userClient.rpc(
@@ -412,7 +456,7 @@ serve(async (req: Request) => {
     // 14.5. Deduplication: check if an asset with the same hash already exists for this tenant
     const { data: existingAsset } = await adminClient
       .from('media_assets')
-      .select('id, bucket_id, storage_path, file_url, file_name, mime_type, file_size_bytes, file_hash, entity_type, entity_id, purpose, is_primary, sort_order, alt_text, created_at, metadata')
+      .select('id, bucket_id, storage_path, file_url, file_name, mime_type, file_size_bytes, file_hash, entity_type, entity_id, is_primary, sort_order, alt_text, created_at, metadata')
       .eq('tenant_id', tenantId)
       .eq('file_hash', fileHash)
       .maybeSingle();
@@ -463,11 +507,29 @@ serve(async (req: Request) => {
       );
     }
 
-    // 16. Get public URL (or signed URL for private buckets)
-    const { data: urlData } = adminClient.storage
-      .from(bucketName)
-      .getPublicUrl(storagePath);
-    const fileUrl = urlData.publicUrl;
+    // 16. Get public/signed URL depending on bucket privacy
+    let fileUrl: string;
+    if (bucketName === 'private-documents') {
+      const { data: signed, error: signedError } = await adminClient.storage
+        .from(bucketName)
+        .createSignedUrl(storagePath, 600);
+      if (signedError || !signed?.signedUrl) {
+        console.error('[media-upload] Signed URL error:', signedError);
+        await adminClient.storage.from(bucketName).remove([storagePath]);
+        return errorResponse(
+          'URL_GENERATION_FAILED',
+          'Falha ao gerar URL assinada para arquivo privado.',
+          500,
+          req,
+        );
+      }
+      fileUrl = signed.signedUrl;
+    } else {
+      const { data: urlData } = adminClient.storage
+        .from(bucketName)
+        .getPublicUrl(storagePath);
+      fileUrl = urlData.publicUrl;
+    }
 
     // 17. Determine sort_order
     let sortOrder = 0;

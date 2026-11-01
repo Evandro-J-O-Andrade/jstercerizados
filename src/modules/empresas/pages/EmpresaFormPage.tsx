@@ -40,21 +40,26 @@ function InlineCompanyForm({
 export default function EmpresaFormPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentTenantId, tenantMemberships } = useAuth();
+  const { currentTenantId } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
 
-  const activeTenantId = currentTenantId || tenantMemberships[0]?.tenant_id;
+  const activeTenantId = currentTenantId;
   const isEditing = !!id;
 
   useEffect(() => {
+    if (!activeTenantId) {
+      setLoading(false);
+      setError('Selecione um tenant antes de acessar o formulário de empresa.');
+      return;
+    }
+
     if (isEditing && id) {
       const fetchCompany = async () => {
         try {
           setLoading(true);
-          const tenantId = activeTenantId || '';
-          const data = await companiesRepository.findById(id, tenantId);
+          const data = await companiesRepository.findById(id, activeTenantId);
           if (data) {
             setCompany(data);
           } else {

@@ -10,16 +10,27 @@ export interface ValidationResult {
   errors: string[];
 }
 
+export interface ExecutionValidationOptions {
+  allowGlobalScope?: boolean;
+}
+
 /**
  * Validates that all required fields are present.
  * This is STRUCTURAL validation — it does NOT check permissions.
  */
 export function validateExecutionContext(
   context: Partial<ExecutionContext>,
+  options: ExecutionValidationOptions = {},
 ): ValidationResult {
   const errors: string[] = [];
 
-  if (!context.tenantId) errors.push('Missing tenantId');
+  if (
+    context.tenantId === undefined ||
+    context.tenantId === '' ||
+    (context.tenantId === null && !options.allowGlobalScope)
+  ) {
+    errors.push('Missing tenantId');
+  }
   if (!context.personId) errors.push('Missing personId');
   if (!context.roleIds || context.roleIds.length === 0)
     errors.push('Missing roleIds');

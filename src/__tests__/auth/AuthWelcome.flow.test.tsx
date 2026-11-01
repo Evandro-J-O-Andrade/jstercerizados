@@ -69,6 +69,10 @@ function renderProtectedRoute() {
           path="/auth/welcome"
           element={<div data-testid="welcome-page">Welcome</div>}
         />
+        <Route
+          path="/selecionar-tenant"
+          element={<div data-testid="tenant-selection">Select tenant</div>}
+        />
       </Routes>
     </MemoryRouter>,
   );
@@ -162,7 +166,7 @@ describe('post-login welcome flow', () => {
     expect(await screen.findByTestId('welcome-page')).toBeInTheDocument();
   });
 
-  it('keeps an already welcomed user on the protected route after refresh', async () => {
+  it('requires explicit tenant selection for a welcomed user after refresh', async () => {
     mocks.useAuth.mockReturnValue({
       isLoading: false,
       isAuthenticated: true,
@@ -180,8 +184,6 @@ describe('post-login welcome flow', () => {
 
     renderProtectedRoute();
 
-    expect(
-      await screen.findByTestId('protected-dashboard'),
-    ).toBeInTheDocument();
+    expect(await screen.findByTestId('tenant-selection')).toBeInTheDocument();
   });
 });

@@ -1,0 +1,1 @@
+export const configuracoesSaasCellManifest = { id: 'configuracoes-saas', name: 'Configurações SaaS', domain: 'global', scope: 'global', profile: 'configuracoes-saas', description: 'Configurações globais do SaaS.', homeRoute: '/dashboard/configuracoes', sidebarLabel: 'Configurações SaaS', sidebarIcon: 'Settings', isGlobal: true, enabled: true } as const;

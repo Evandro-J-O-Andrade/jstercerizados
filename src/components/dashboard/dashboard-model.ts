@@ -40,12 +40,7 @@ export function formatDashboardMetricValue(
 export function filterDashboardMetrics(
   metrics: DashboardMetric[],
   permissions: Permission[],
-  isAdminMaster: boolean,
 ): DashboardMetric[] {
-  if (isAdminMaster) {
-    return metrics;
-  }
-
   return metrics.filter((metric) => {
     if (!metric.permission) {
       return true;

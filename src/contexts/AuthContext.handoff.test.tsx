@@ -46,6 +46,7 @@ vi.mock('@/lib/supabase', () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  sessionStorage.removeItem('jst_selected_tenant:user-1');
   mockAuthGetSession.mockReturnValue(
     Promise.resolve({
       data: { session: null },
@@ -84,6 +85,14 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
       name: 'admin_master',
       scope: 'global',
       description: 'Administrador global do sistema',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    const tenantAdminRole = {
+      id: 'role-tenant-admin',
+      name: 'tenant_admin',
+      scope: 'tenant',
+      description: 'Administrador do tenant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -141,13 +150,22 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
           expires_at: null,
           created_at: new Date().toISOString(),
         },
+        {
+          id: 'ra-tenant-1',
+          role_id: tenantAdminRole.id,
+          person_id: 'person-1',
+          tenant_id: 'tenant-1',
+          assigned_by: null,
+          expires_at: null,
+          created_at: new Date().toISOString(),
+        },
       ],
       error: null,
     });
 
     const mockRolesChain = createChain();
     mockRolesChain.in.mockResolvedValue({
-      data: [adminRole],
+      data: [adminRole, tenantAdminRole],
       error: null,
     });
 
@@ -231,9 +249,129 @@ describe('AUTH-HANDOFF: AuthContext post-login state machine', () => {
     expect(result.current.isAuthenticated).toBe(true);
     expect(result.current.person?.full_name).toBe('Evandro');
     expect(result.current.tenantMemberships).toHaveLength(1);
+    expect(result.current.currentTenantId).toBeNull();
     expect(result.current.roles).toHaveLength(1);
+    expect(
+      result.current.roleAssignments.every(
+        (assignment) => assignment.tenant_id === null,
+      ),
+    ).toBe(true);
     expect(result.current.isAdminMaster).toBe(true);
     expect(result.current.resolvePostLoginDestination()).toBe('/auth/welcome');
+    expect(result.current.resolvePostLoginDestination(true)).toBe(
+      '/selecionar-tenant',
+    );
+
+    await act(async () => {
+      await result.current.switchTenant('tenant-1');
+    });
+
+    expect(result.current.currentTenantId).toBe('tenant-1');
+    expect(result.current.roles.map((role) => role.name)).toContain(
+      'tenant_admin',
+    );
+    expect(
+      result.current.roleAssignments.some(
+        (assignment) => assignment.tenant_id === 'tenant-1',
+      ),
+    ).toBe(true);
+    expect(sessionStorage.getItem('jst_selected_tenant:user-1')).toBe(
+      'tenant-1',
+    );
+
+    await act(async () => {
+      await result.current.refreshAuthData('user-1');
+    });
+
+    expect(result.current.currentTenantId).toBe('tenant-1');
+    expect(sessionStorage.getItem('jst_selected_tenant:user-1')).toBe(
+      'tenant-1',
+    );
+
+    const tenantTwoMembership = {
+      id: 'membership-2',
+      tenant_id: 'tenant-2',
+      person_id: 'person-1',
+      membership_role: 'recruiter',
+      status: 'active',
+      created_at: new Date().toISOString(),
+    };
+    mockMembershipChain.order
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            setTimeout(
+              () =>
+                resolve({
+                  data: [
+                    {
+                      id: 'membership-1',
+                      tenant_id: 'tenant-1',
+                      person_id: 'person-1',
+                      membership_role: 'tenant_admin',
+                      status: 'active',
+                      created_at: new Date().toISOString(),
+                      updated_at: new Date().toISOString(),
+                    },
+                  ],
+                  error: null,
+                }),
+              20,
+            );
+          }),
+      )
+      .mockResolvedValueOnce({
+        data: [tenantTwoMembership],
+        error: null,
+      });
+
+    await act(async () => {
+      const firstTenantSwitch = result.current.switchTenant('tenant-1');
+      const secondTenantSwitch = result.current.switchTenant('tenant-2');
+      await expect(secondTenantSwitch).resolves.toBeUndefined();
+      await expect(firstTenantSwitch).rejects.toThrow(
+        'A seleção foi substituída por outra atualização.',
+      );
+    });
+
+    expect(result.current.currentTenantId).toBe('tenant-2');
+    expect(sessionStorage.getItem('jst_selected_tenant:user-1')).toBe(
+      'tenant-2',
+    );
+
+    mockMembershipChain.order.mockResolvedValue({
+      data: [],
+      error: null,
+    });
+    let switchError: unknown;
+    await act(async () => {
+      try {
+        await result.current.switchTenant('revoked-tenant');
+      } catch (error) {
+        switchError = error;
+      }
+    });
+
+    expect(switchError).toBeInstanceOf(Error);
+    expect(result.current.currentTenantId).toBeNull();
+    expect(sessionStorage.getItem('jst_selected_tenant:user-1')).toBeNull();
+
+    mockRoleAssignmentChain.eq.mockResolvedValueOnce({
+      data: null,
+      error: new Error('RBAC read failed'),
+    });
+    let refreshError: unknown;
+    await act(async () => {
+      try {
+        await result.current.refreshAuthData('user-1');
+      } catch (error) {
+        refreshError = error;
+      }
+    });
+
+    expect(refreshError).toEqual(new Error('RBAC read failed'));
+    expect(result.current.person).toBeNull();
+    expect(result.current.currentTenantId).toBeNull();
   });
 
   it('falls back to onboarding when authenticated but without RBAC data', async () => {

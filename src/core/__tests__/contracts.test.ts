@@ -337,6 +337,20 @@ describe('ExecutionContract', () => {
     expect(result.errors).toHaveLength(0);
   });
 
+  it('allows a tenantless context only when global scope is explicitly authorized', () => {
+    const context = {
+      tenantId: null,
+      personId: 'person-global',
+      roleIds: ['role-admin-master'],
+      permissions: ['tenants.read'],
+    };
+
+    expect(
+      validateExecutionContext(context, { allowGlobalScope: true }).valid,
+    ).toBe(true);
+    expect(validateExecutionContext(context).valid).toBe(false);
+  });
+
   it('fails validation when fields missing', () => {
     const ctx = { tenantId: 't-1' };
     const result = validateExecutionContext(ctx);
@@ -425,9 +439,27 @@ describe('IdentityContract', () => {
     expect(result.tenantId).toBeNull();
   });
 
-  it('resolveActiveTenant returns first active when no request', () => {
+  it('resolveActiveTenant requires explicit selection with one active membership', () => {
     const result = resolveActiveTenant(mockMemberships);
-    expect(result.tenantId).toBe('tenant-a');
+    expect(result.tenantId).toBeNull();
+    expect(result.membership).toBeNull();
+    expect(result.reason).toBe('Explicit tenant selection is required');
+  });
+
+  it('resolveActiveTenant requires explicit selection with multiple memberships', () => {
+    const result = resolveActiveTenant([
+      ...mockMemberships,
+      {
+        id: 'm-2',
+        tenant_id: 'tenant-b',
+        person_id: 'person-1',
+        membership_role: 'recruiter',
+        status: 'active',
+        created_at: '2024-01-02T00:00:00Z',
+      },
+    ]);
+    expect(result.tenantId).toBeNull();
+    expect(result.membership).toBeNull();
   });
 
   it('buildIdentityContext constructs full context', () => {
@@ -442,6 +474,17 @@ describe('IdentityContract', () => {
     expect(identity.currentTenantId).toBe('tenant-a');
     expect(identity.isAuthenticated).toBe(true);
     expect(identity.isLoading).toBe(false);
+  });
+
+  it('buildIdentityContext keeps tenant null until explicitly selected', () => {
+    const identity = buildIdentityContext(
+      mockAuthUser,
+      mockPerson,
+      mockMemberships,
+    );
+
+    expect(identity.currentTenantId).toBeNull();
+    expect(identity.availableTenants).toEqual([{ id: 'tenant-a', name: '' }]);
   });
 
   it('canExecuteBusinessOperation requires auth + person + tenant', () => {

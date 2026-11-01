@@ -18,8 +18,9 @@ import type { CashFlow } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function FluxoDeCaixaPage() {
-  const { currentTenantId } = useAuth();
+  const { currentTenantId, hasPermission } = useAuth();
   const { addToast } = useToast();
+  const canDelete = hasPermission('finance.delete');
   const [items, setItems] = useState<CashFlow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -255,13 +256,15 @@ export default function FluxoDeCaixaPage() {
                         : '±'}
                     {formatCurrency(item.amount)}
                   </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setDeleteId(item.id)}
-                  >
-                    Excluir
-                  </Button>
+                  {canDelete && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDeleteId(item.id)}
+                    >
+                      Excluir
+                    </Button>
+                  )}
                 </div>
               </motion.div>
             );

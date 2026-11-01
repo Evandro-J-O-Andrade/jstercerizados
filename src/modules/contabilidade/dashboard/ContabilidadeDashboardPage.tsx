@@ -32,7 +32,7 @@ import { useAccount } from '@/contexts/AccountContext';
 import { useToast } from '@/components/feedback/ToastContext';
 
 export default function ContabilidadeDashboardPage() {
-  const { currentTenantId, isAdminMaster } = useAuth();
+  const { currentTenantId } = useAuth();
   const { activePermissions } = useAccount();
   const { addToast } = useToast();
   const [entries, setEntries] = useState<AccountingEntry[]>([]);
@@ -119,11 +119,7 @@ export default function ContabilidadeDashboardPage() {
     [kpis.accountCount, kpis.balance, kpis.totalCredit, kpis.totalDebit],
   );
 
-  const visibleMetrics = filterDashboardMetrics(
-    metrics,
-    activePermissions,
-    isAdminMaster,
-  );
+  const visibleMetrics = filterDashboardMetrics(metrics, activePermissions);
 
   const formatCurrency = (value: number) =>
     value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });

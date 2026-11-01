@@ -18,50 +18,93 @@ interface Person {
 type RhTab = 'people' | 'employees';
 
 export default function RhPage() {
-  const { isAdminMaster, tenantMemberships, currentTenantId } = useAuth();
+  const { currentTenantId } = useAuth();
   const [activeTab, setActiveTab] = useState<RhTab>('people');
   const [people, setPeople] = useState<Person[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     const supabase = getSupabaseClient();
-    if (!supabase) return;
+    if (!currentTenantId) {
+      setPeople([]);
+      setEmployees([]);
+      setError('Selecione um tenant antes de acessar o RH.');
+      setLoading(false);
+      return () => {
+        cancelled = true;
+      };
+    }
+    if (!supabase) {
+      setError('Supabase não está configurado.');
+      setLoading(false);
+      return () => {
+        cancelled = true;
+      };
+    }
 
     const fetchPeople = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        let query = supabase
-          .from('people')
-          .select('id, full_name, email, status, created_at')
-          .order('created_at', { ascending: false });
+        const [membershipResult, employeeRows] = await Promise.all([
+          supabase
+            .from('tenant_memberships')
+            .select('person_id')
+            .eq('tenant_id', currentTenantId)
+            .eq('status', 'active'),
+          employeesRepository.findAll(currentTenantId),
+        ]);
+        if (membershipResult.error) throw membershipResult.error;
 
-        if (!isAdminMaster) {
-          const activeTenantId =
-            currentTenantId || tenantMemberships[0]?.tenant_id;
-          if (activeTenantId) {
-            query = query.eq('tenant_id', activeTenantId);
+        const personIds = Array.from(
+          new Set(
+            (membershipResult.data ?? [])
+              .map((membership) => membership.person_id)
+              .filter((personId): personId is string => Boolean(personId)),
+          ),
+        );
+        if (personIds.length === 0) {
+          if (!cancelled) {
+            setPeople([]);
+            setEmployees(employeeRows);
           }
+          return;
         }
 
-        const { data } = await query;
-        setPeople(data || []);
+        const { data, error: peopleError } = await supabase
+          .from('people')
+          .select('id, full_name, email, status, created_at')
+          .in('id', personIds)
+          .order('created_at', { ascending: false });
+        if (peopleError) throw peopleError;
+
+        if (!cancelled) {
+          setPeople(data || []);
+          setEmployees(employeeRows);
+        }
       } catch (error) {
         console.error('[RH] Failed to load:', error);
+        if (!cancelled) {
+          setPeople([]);
+          setEmployees([]);
+          setError(
+            error instanceof Error ? error.message : 'Erro ao carregar RH.',
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
-    fetchPeople();
-    if (currentTenantId) {
-      employeesRepository
-        .findAll(currentTenantId)
-        .then(setEmployees)
-        .catch((error) =>
-          console.error('[RH] Failed to load employees:', error),
-        );
-    }
-  }, [isAdminMaster, currentTenantId, tenantMemberships]);
+    void fetchPeople();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentTenantId]);
 
   return (
     <ModuleWorkspace
@@ -79,6 +122,10 @@ export default function RhPage() {
       {loading ? (
         <div className="text-muted-foreground text-sm">
           Carregando dados do RH...
+        </div>
+      ) : error ? (
+        <div className="text-destructive text-sm" role="alert">
+          {error}
         </div>
       ) : (
         <div className="space-y-6">

@@ -1,6 +1,8 @@
 import type { ModuleRoute } from '@/platform/router/types';
 import type { ComponentType } from 'react';
 import { lazy } from 'react';
+import ProcessosSeletivosPage from '@/pages/dashboard/ProcessosSeletivos';
+import EtapasPage from '@/pages/dashboard/Etapas';
 import { RECRUTAMENTO_PERMISSIONS } from '../permissions';
 import { RecrutamentoProvider } from '../RecrutamentoContext';
 
@@ -10,8 +12,6 @@ const RecrutamentoDashboard = lazy(
 const RecrutamentoVagas = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoVagas'));
 const RecrutamentoCandidatos = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoCandidatos'));
 const RecrutamentoCandidatoDetalhe = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoCandidatoDetalhe'));
-const RecrutamentoProcessos = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoProcessos'));
-const RecrutamentoEtapas = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoEtapas'));
 const RecrutamentoCandidaturas = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoCandidaturas'));
 const RecrutamentoMatches = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoMatches'));
 const RecrutamentoRelatorios = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoRelatorios'));
@@ -69,13 +69,13 @@ export const RecrutamentoRoutes: ModuleRoute[] = [
   {
     path: 'processos',
     label: 'Processos Seletivos',
-    element: withProvider(RecrutamentoProcessos),
+    element: withProvider(ProcessosSeletivosPage),
     requiredPermissions: [RECRUTAMENTO_PERMISSIONS.processos],
   },
   {
     path: 'etapas',
     label: 'Etapas',
-    element: withProvider(RecrutamentoEtapas),
+    element: withProvider(EtapasPage),
     requiredPermissions: [RECRUTAMENTO_PERMISSIONS.etapasGerenciar],
   },
   {

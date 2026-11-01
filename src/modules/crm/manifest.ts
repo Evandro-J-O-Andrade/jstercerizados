@@ -1,0 +1,1 @@
+export const crmCellManifest = { id: 'crm', name: 'CRM', domain: 'tenant', scope: 'tenant', profile: 'crm', description: 'CRM de empresas e relacionamentos.', homeRoute: '/dashboard/crm', sidebarLabel: 'CRM', sidebarIcon: 'Users', isGlobal: false, enabled: true } as const;

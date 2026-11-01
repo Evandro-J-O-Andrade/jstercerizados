@@ -1,0 +1,1 @@
+export { contratosRoutes } from './ContratosRoutes';

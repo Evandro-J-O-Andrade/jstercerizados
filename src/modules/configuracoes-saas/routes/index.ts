@@ -1,0 +1,1 @@
+export { configuracoesSaasRoutes } from './ConfiguracoesSaasRoutes';

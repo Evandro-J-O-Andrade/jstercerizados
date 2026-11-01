@@ -19,7 +19,7 @@ interface CompanyRelationship {
 }
 
 export default function CompanyRelationshipsPage() {
-  const { isAdminMaster, tenantMemberships, currentTenantId } = useAuth();
+  const { currentTenantId } = useAuth();
   const [items, setItems] = useState<CompanyRelationship[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +30,13 @@ export default function CompanyRelationshipsPage() {
 
     const fetchRelationships = async () => {
       try {
+        if (!currentTenantId) {
+          setItems([]);
+          setError('Selecione um tenant antes de consultar relacionamentos.');
+          return;
+        }
+
+        setError(null);
         let query = supabase
           .from('company_relationships')
           .select(
@@ -57,13 +64,7 @@ export default function CompanyRelationshipsPage() {
           )
           .order('created_at', { ascending: false });
 
-        if (!isAdminMaster) {
-          const activeTenantId =
-            currentTenantId || tenantMemberships[0]?.tenant_id;
-          if (activeTenantId) {
-            query = query.eq('tenant_id', activeTenantId);
-          }
-        }
+        query = query.eq('tenant_id', currentTenantId);
 
         const { data, error } = await query;
         if (error) throw error;
@@ -80,7 +81,7 @@ export default function CompanyRelationshipsPage() {
     };
 
     fetchRelationships();
-  }, [isAdminMaster, currentTenantId, tenantMemberships]);
+  }, [currentTenantId]);
 
   return (
     <ModuleWorkspace

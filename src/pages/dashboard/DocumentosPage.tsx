@@ -13,7 +13,7 @@ interface File {
 }
 
 export default function DocumentosPage() {
-  const { isAdminMaster, tenantMemberships, currentTenantId } = useAuth();
+  const { currentTenantId } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,13 +29,11 @@ export default function DocumentosPage() {
           .order('created_at', { ascending: false })
           .limit(50);
 
-        if (!isAdminMaster) {
-          const activeTenantId =
-            currentTenantId || tenantMemberships[0]?.tenant_id;
-          if (activeTenantId) {
-            query = query.eq('tenant_id', activeTenantId);
-          }
+        if (!currentTenantId) {
+          setFiles([]);
+          return;
         }
+        query = query.eq('tenant_id', currentTenantId);
 
         const { data } = await query;
         setFiles(data || []);
@@ -47,7 +45,7 @@ export default function DocumentosPage() {
     };
 
     fetchFiles();
-  }, [isAdminMaster, currentTenantId, tenantMemberships]);
+  }, [currentTenantId]);
 
   return (
     <ModuleWorkspace

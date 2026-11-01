@@ -9,20 +9,28 @@ import type { AuditLog } from '@/types/domain/security';
 import type { SecurityEvent } from '@/types/domain/security';
 
 export default function AuditoriaPage() {
-  const { isAdminMaster, tenantMemberships, currentTenantId } = useAuth();
+  const { isAdminMaster, currentTenantId } = useAuth();
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [securityEvents, setSecurityEvents] = useState<SecurityEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     const fetchData = async () => {
       try {
-        const tenantId =
-          currentTenantId || tenantMemberships[0]?.tenant_id || '';
+        const tenantId = currentTenantId;
 
-        if (isAdminMaster && tenantId) {
+        if (!tenantId) {
+          setAuditLogs([]);
+          setSecurityEvents([]);
+          setError('Selecione um tenant antes de consultar a auditoria.');
+          return;
+        }
+
+        setError(null);
+        if (isAdminMaster) {
           const [logs, events] = await Promise.all([
             auditLogRepository.findAll(tenantId),
             securityEventRepository.findAll(tenantId),
@@ -40,6 +48,13 @@ export default function AuditoriaPage() {
         }
       } catch (error) {
         console.error('[AUDITORIA] Failed to load:', error);
+        if (!cancelled) {
+          setError(
+            error instanceof Error
+              ? error.message
+              : 'Erro ao carregar auditoria.',
+          );
+        }
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -52,7 +67,7 @@ export default function AuditoriaPage() {
     return () => {
       cancelled = true;
     };
-  }, [isAdminMaster, currentTenantId, tenantMemberships]);
+  }, [isAdminMaster, currentTenantId]);
 
   return (
     <ModuleWorkspace
@@ -64,6 +79,10 @@ export default function AuditoriaPage() {
       {loading ? (
         <div className="text-muted-foreground text-sm">
           Carregando auditoria...
+        </div>
+      ) : error ? (
+        <div className="text-destructive text-sm" role="alert">
+          {error}
         </div>
       ) : (
         <div className="space-y-6">

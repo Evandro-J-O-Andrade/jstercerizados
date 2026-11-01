@@ -25,7 +25,6 @@ import {
   filterDashboardMetrics,
   type DashboardMetric,
 } from '@/components/dashboard/dashboard-model';
-import { ConfirmDialog } from '@/components/feedback';
 import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import {
   accountsPayableRepository,
@@ -39,22 +38,18 @@ import type {
 } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAccount } from '@/contexts/AccountContext';
-import { useToast } from '@/components/feedback/ToastContext';
 
 const statusLabel: Record<string, string> = {
   open: 'Em aberto',
   paid: 'Pago',
   overdue: 'Vencido',
   cancelled: 'Cancelado',
-  partially_paid: 'Parcialmente pago',
-  received: 'Recebido',
-  partially_received: 'Parcialmente recebido',
+  partial: 'Parcial',
 };
 
 const statusVariant = (status: string) => {
   switch (status) {
     case 'open':
-    case 'received':
       return 'default';
     case 'overdue':
       return 'danger';
@@ -62,8 +57,7 @@ const statusVariant = (status: string) => {
       return 'success';
     case 'cancelled':
       return 'secondary';
-    case 'partially_paid':
-    case 'partially_received':
+    case 'partial':
       return 'warning';
     default:
       return 'default';
@@ -71,20 +65,14 @@ const statusVariant = (status: string) => {
 };
 
 export default function FinanceiroDashboardPage() {
-  const { currentTenantId, isAdminMaster } = useAuth();
+  const { currentTenantId } = useAuth();
   const { activePermissions } = useAccount();
-  const { addToast } = useToast();
 
   const [payables, setPayables] = useState<AccountPayable[]>([]);
   const [receivables, setReceivables] = useState<AccountReceivable[]>([]);
   const [cashFlows, setCashFlows] = useState<CashFlow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [deleteType, setDeleteType] = useState<
-    'payable' | 'receivable' | 'cashflow' | null
-  >(null);
 
   const loadData = useCallback(async () => {
     if (!currentTenantId) return;
@@ -277,11 +265,7 @@ export default function FinanceiroDashboardPage() {
       kpis.totalIncome,
     ],
   );
-  const visibleMetrics = filterDashboardMetrics(
-    metrics,
-    activePermissions,
-    isAdminMaster,
-  );
+  const visibleMetrics = filterDashboardMetrics(metrics, activePermissions);
 
   const recentPayables = useMemo(() => payables.slice(0, 5), [payables]);
   const recentReceivables = useMemo(
@@ -289,28 +273,6 @@ export default function FinanceiroDashboardPage() {
     [receivables],
   );
   const recentCashFlows = useMemo(() => cashFlows.slice(0, 5), [cashFlows]);
-
-  const handleDelete = async () => {
-    if (!deleteId || !deleteType || !currentTenantId) return;
-    try {
-      if (deleteType === 'payable') {
-        await accountsPayableRepository.remove(deleteId, currentTenantId);
-      } else if (deleteType === 'receivable') {
-        await accountsReceivableRepository.remove(deleteId, currentTenantId);
-      } else if (deleteType === 'cashflow') {
-        await cashFlowRepository.remove(deleteId, currentTenantId);
-      }
-      await loadData();
-      setDeleteId(null);
-      setDeleteType(null);
-      addToast({ type: 'success', message: 'Registro excluído com sucesso.' });
-    } catch (err) {
-      addToast({
-        type: 'error',
-        message: err instanceof Error ? err.message : 'Erro ao excluir',
-      });
-    }
-  };
 
   if (loading) {
     return <DashboardSkeleton count={9} />;
@@ -331,25 +293,9 @@ export default function FinanceiroDashboardPage() {
       ]}
       actions={
         <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            onClick={() =>
-              addToast({ type: 'info', message: 'Calculadora - Em breve' })
-            }
-          >
+          <Button to="/dashboard/financeiro/contas-pagar">
             <Plus className="mr-2 h-4 w-4" />
-            Calculadora
-          </Button>
-          <Button
-            onClick={() =>
-              addToast({
-                type: 'info',
-                message: 'Novo lançamento - use a aba Contas a Pagar',
-              })
-            }
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Novo lançamento
+            Nova conta a pagar
           </Button>
         </div>
       }
@@ -375,14 +321,9 @@ export default function FinanceiroDashboardPage() {
                 Contas a pagar recentes
               </h3>
               <Button
+                to="/dashboard/financeiro/contas-pagar"
                 variant="ghost"
                 size="sm"
-                onClick={() =>
-                  addToast({
-                    type: 'info',
-                    message: 'Navegar para Contas a Pagar',
-                  })
-                }
               >
                 <Eye className="mr-1 h-4 w-4" />
                 Ver todas
@@ -427,14 +368,9 @@ export default function FinanceiroDashboardPage() {
                 Contas a receber recentes
               </h3>
               <Button
+                to="/dashboard/financeiro/contas-receber"
                 variant="ghost"
                 size="sm"
-                onClick={() =>
-                  addToast({
-                    type: 'info',
-                    message: 'Navegar para Contas a Receber',
-                  })
-                }
               >
                 <Eye className="mr-1 h-4 w-4" />
                 Ver todas
@@ -480,14 +416,9 @@ export default function FinanceiroDashboardPage() {
               Fluxo de caixa recente
             </h3>
             <Button
+              to="/dashboard/financeiro/fluxo-caixa"
               variant="ghost"
               size="sm"
-              onClick={() =>
-                addToast({
-                  type: 'info',
-                  message: 'Navegar para Fluxo de Caixa',
-                })
-              }
             >
               <Eye className="mr-1 h-4 w-4" />
               Ver todos
@@ -548,36 +479,12 @@ export default function FinanceiroDashboardPage() {
                           : '±'}
                       {formatCurrency(item.amount)}
                     </p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setDeleteId(item.id);
-                        setDeleteType('cashflow');
-                      }}
-                    >
-                      Excluir
-                    </Button>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </Card>
-
-        <ConfirmDialog
-          open={!!deleteId}
-          title="Excluir registro?"
-          message="Essa ação removerá o registro."
-          confirmLabel="Excluir"
-          cancelLabel="Cancelar"
-          variant="danger"
-          onConfirm={handleDelete}
-          onCancel={() => {
-            setDeleteId(null);
-            setDeleteType(null);
-          }}
-        />
       </div>
     </ModuleWorkspace>
   );

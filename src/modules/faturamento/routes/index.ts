@@ -1,0 +1,1 @@
+export { faturamentoRoutes } from './FaturamentoRoutes';

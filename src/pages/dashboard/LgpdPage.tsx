@@ -13,7 +13,7 @@ interface Acceptance {
 }
 
 export default function LgpdPage() {
-  const { isAdminMaster, tenantMemberships, currentTenantId } = useAuth();
+  const { currentTenantId } = useAuth();
   const [acceptances, setAcceptances] = useState<Acceptance[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,13 +29,11 @@ export default function LgpdPage() {
           .order('accepted_at', { ascending: false })
           .limit(50);
 
-        if (!isAdminMaster) {
-          const activeTenantId =
-            currentTenantId || tenantMemberships[0]?.tenant_id;
-          if (activeTenantId) {
-            query = query.eq('tenant_id', activeTenantId);
-          }
+        if (!currentTenantId) {
+          setAcceptances([]);
+          return;
         }
+        query = query.eq('tenant_id', currentTenantId);
 
         const { data } = await query;
         setAcceptances(data || []);
@@ -47,7 +45,7 @@ export default function LgpdPage() {
     };
 
     fetchAcceptances();
-  }, [isAdminMaster, currentTenantId, tenantMemberships]);
+  }, [currentTenantId]);
 
   const lgpdCount = acceptances.filter(
     (a) => a.document_type === 'lgpd',

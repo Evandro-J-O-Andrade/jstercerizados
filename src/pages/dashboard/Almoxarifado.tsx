@@ -44,7 +44,7 @@ type Tab =
   'warehouses' | 'entries' | 'issues' | 'returns' | 'custodies' | 'epis';
 
 export default function Almoxarifado() {
-  const { currentTenantId, isAdminMaster } = useAuth();
+  const { currentTenantId } = useAuth();
   const { activePermissions } = useAccount();
   const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>('warehouses');
@@ -203,11 +203,7 @@ export default function Almoxarifado() {
       kpis.totalWarehouses,
     ],
   );
-  const visibleMetrics = filterDashboardMetrics(
-    metrics,
-    activePermissions,
-    isAdminMaster,
-  );
+  const visibleMetrics = filterDashboardMetrics(metrics, activePermissions);
 
   if (loading) {
     return <DashboardSkeleton count={7} />;

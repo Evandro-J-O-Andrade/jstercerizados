@@ -1,0 +1,1 @@
+export const preferenciasCellManifest = { id: 'preferencias', name: 'Preferências', domain: 'tenant', scope: 'tenant', profile: 'preferencias', description: 'Preferências do usuário.', homeRoute: '/dashboard/configuracoes/preferencias', sidebarLabel: 'Preferências', sidebarIcon: 'Sliders', isGlobal: false, enabled: true } as const;

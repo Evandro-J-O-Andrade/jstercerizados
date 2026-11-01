@@ -8,7 +8,7 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar(props: AdminSidebarProps) {
-  return <AdminSidebarImpl className={props.className} />;
+  return <AdminSidebarImpl {...props} />;
 }
 
 export default AdminSidebar;

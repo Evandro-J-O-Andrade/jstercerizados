@@ -76,6 +76,8 @@ export function normalizePermission(
 
   return {
     id,
+    name: `${resource}.${action}`,
+    module: typeof raw.module === 'string' ? raw.module : resource,
     resource,
     action,
     description,

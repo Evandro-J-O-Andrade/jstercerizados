@@ -68,4 +68,10 @@ export const adminMasterRoutes = [
     component: 'PessoasPage',
     permission: ADMIN_MASTER_PERMISSIONS.people,
   },
+  {
+    path: '/dashboard/seguranca',
+    label: 'Segurança',
+    component: 'SegurancaPage',
+    permission: ADMIN_MASTER_PERMISSIONS.securityEvents,
+  },
 ] as const;

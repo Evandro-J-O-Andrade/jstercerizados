@@ -18,6 +18,7 @@ export const ADMIN_MASTER_PERMISSIONS = {
   applications: 'applications.read',
   serviceOrders: 'service_orders.read',
   supportTickets: 'support_tickets.read',
+  securityEvents: 'security_events.read',
   audit: 'audit.read',
   modules: 'modules.read',
   contracts: 'contracts.read',

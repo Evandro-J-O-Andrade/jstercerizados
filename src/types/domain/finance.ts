@@ -6,7 +6,7 @@ export interface AccountPayable {
   amount: number;
   due_date: string;
   paid_at: string | null;
-  status: 'open' | 'paid' | 'overdue' | 'cancelled' | 'partially_paid';
+  status: 'open' | 'partial' | 'paid' | 'overdue' | 'cancelled';
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -19,7 +19,7 @@ export interface AccountPayableCreateInput {
   amount: number;
   due_date: string;
   paid_at?: string | null;
-  status?: 'open' | 'paid' | 'overdue' | 'cancelled' | 'partially_paid';
+  status?: 'open' | 'partial' | 'paid' | 'overdue' | 'cancelled';
   created_by?: string | null;
 }
 
@@ -29,7 +29,7 @@ export interface AccountPayableUpdateInput {
   amount?: number;
   due_date?: string;
   paid_at?: string | null;
-  status?: 'open' | 'paid' | 'overdue' | 'cancelled' | 'partially_paid';
+  status?: 'open' | 'partial' | 'paid' | 'overdue' | 'cancelled';
 }
 
 export interface AccountReceivable {
@@ -40,7 +40,7 @@ export interface AccountReceivable {
   amount: number;
   due_date: string;
   received_date: string | null;
-  status: 'open' | 'received' | 'overdue' | 'cancelled' | 'partially_received';
+  status: 'open' | 'partial' | 'paid' | 'overdue' | 'cancelled';
   payment_method: string | null;
   payment_reference: string | null;
   notes: string | null;
@@ -56,7 +56,7 @@ export interface AccountReceivableCreateInput {
   amount: number;
   due_date: string;
   received_date?: string | null;
-  status?: 'open' | 'received' | 'overdue' | 'cancelled' | 'partially_received';
+  status?: 'open' | 'partial' | 'paid' | 'overdue' | 'cancelled';
   payment_method?: string | null;
   payment_reference?: string | null;
   notes?: string | null;
@@ -69,7 +69,7 @@ export interface AccountReceivableUpdateInput {
   amount?: number;
   due_date?: string;
   received_date?: string | null;
-  status?: 'open' | 'received' | 'overdue' | 'cancelled' | 'partially_received';
+  status?: 'open' | 'partial' | 'paid' | 'overdue' | 'cancelled';
   payment_method?: string | null;
   payment_reference?: string | null;
   notes?: string | null;

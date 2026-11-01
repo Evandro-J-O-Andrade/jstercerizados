@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/utils';
+import { hasPermission } from '@/utils/rbac';
 
 interface AdminMasterSidebarItem {
   label: string;
@@ -112,12 +113,15 @@ export function AdminMasterSidebar({
       label: 'Segurança',
       path: '/dashboard/seguranca',
       icon: <Lock className="h-4 w-4" />,
-      permission: 'sessions.read',
+      permission: 'security_events.read',
     },
   ];
 
   const visibleItems = isAdminMaster
-    ? items.filter((item) => !item.permission || permissions.some((p: { name: string }) => p.name === item.permission))
+    ? items.filter(
+        (item) =>
+          !item.permission || hasPermission(permissions, item.permission),
+      )
     : [];
 
   const isActive = (path: string) => location.pathname === path;
@@ -127,7 +131,7 @@ export function AdminMasterSidebar({
   return (
     <aside
       className={cn(
-        'bg-card border-border shrink-0 transform border-r transition-all duration-200 flex h-full flex-col',
+        'bg-card border-border flex h-full shrink-0 transform flex-col border-r transition-all duration-200',
         sidebarWidth,
         className,
       )}
@@ -136,7 +140,7 @@ export function AdminMasterSidebar({
         <div className="flex items-center gap-2">
           <ShieldCheck className="text-primary h-5 w-5" />
           {!collapsed && (
-            <span className="text-foreground font-semibold text-sm truncate">
+            <span className="text-foreground truncate text-sm font-semibold">
               Global
             </span>
           )}
@@ -145,7 +149,7 @@ export function AdminMasterSidebar({
           type="button"
           onClick={() => setCollapsed((prev) => !prev)}
           aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
-          className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+          className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg p-1.5 transition-colors"
         >
           {collapsed ? (
             <PanelLeftOpen className="h-4 w-4" />
@@ -156,7 +160,7 @@ export function AdminMasterSidebar({
       </div>
 
       <nav
-        className="flex-1 overflow-y-auto p-1 space-y-0.5"
+        className="flex-1 space-y-0.5 overflow-y-auto p-1"
         aria-label="Navegação administrativa"
       >
         {visibleItems.map((item) => {
@@ -175,7 +179,7 @@ export function AdminMasterSidebar({
               )}
             >
               {collapsed ? (
-                <div className="p-1 rounded-md">{item.icon}</div>
+                <div className="rounded-md p-1">{item.icon}</div>
               ) : (
                 <>
                   {item.icon}
@@ -187,14 +191,14 @@ export function AdminMasterSidebar({
         })}
       </nav>
 
-      <footer className="border-t border-border/50 p-2">
+      <footer className="border-border/50 border-t p-2">
         <button
           type="button"
           onClick={() => {
             navigate('/');
             onClose?.();
           }}
-          className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="text-muted-foreground hover:text-foreground hover:bg-muted flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors"
         >
           <Globe className="h-4 w-4" />
           <span className={cn(collapsed && 'hidden')}>Voltar para o site</span>

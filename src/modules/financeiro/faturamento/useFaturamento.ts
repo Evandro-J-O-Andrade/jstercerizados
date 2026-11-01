@@ -41,7 +41,7 @@ interface UseFaturamentoReturn {
 }
 
 export function useFaturamento(): UseFaturamentoReturn {
-  const { currentTenantId, isAdminMaster } = useAuth();
+  const { currentTenantId } = useAuth();
   const { activePermissions } = useAccount();
 
   const [activeTab, setActiveTab] = useState<Tab>('invoices');
@@ -166,11 +166,7 @@ export function useFaturamento(): UseFaturamentoReturn {
     ],
   );
 
-  const visibleMetrics = filterDashboardMetrics(
-    metrics,
-    activePermissions,
-    isAdminMaster,
-  );
+  const visibleMetrics = filterDashboardMetrics(metrics, activePermissions);
 
   const formatCurrency = (value: number) =>
     value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });

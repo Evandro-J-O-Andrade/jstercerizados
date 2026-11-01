@@ -7,7 +7,7 @@ import { notificationRepository } from '@/repositories/notification.repository';
 import type { Notification } from '@/types/domain/notification';
 
 export default function NotificationsPage() {
-  const { currentTenantId, isAdminMaster, tenantMemberships } = useAuth();
+  const { currentTenantId } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,16 +17,12 @@ export default function NotificationsPage() {
 
     const fetchNotifications = async () => {
       try {
-        const tenantId =
-          currentTenantId || tenantMemberships[0]?.tenant_id || '';
-        if (!tenantId && !isAdminMaster) {
-          setLoading(false);
+        if (!currentTenantId) {
+          setNotifications([]);
           return;
         }
 
-        const data = await notificationRepository.findAll(
-          isAdminMaster ? '' : tenantId,
-        );
+        const data = await notificationRepository.findAll(currentTenantId);
 
         if (!cancelled) {
           setNotifications(data);
@@ -51,7 +47,7 @@ export default function NotificationsPage() {
     return () => {
       cancelled = true;
     };
-  }, [currentTenantId, isAdminMaster, tenantMemberships]);
+  }, [currentTenantId]);
 
   return (
     <ModuleWorkspace

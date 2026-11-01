@@ -70,24 +70,19 @@ export default function RelatorioFinanceiroPage() {
     paid: 'Pago',
     overdue: 'Vencido',
     cancelled: 'Cancelado',
-    partially_paid: 'Parcialmente pago',
-    received: 'Recebido',
-    partially_received: 'Parcialmente recebido',
+    partial: 'Parcial',
   };
 
   const statusVariant = (status: string) => {
     switch (status) {
       case 'open':
-      case 'received':
-        return 'default';
       case 'overdue':
         return 'danger';
       case 'paid':
         return 'success';
       case 'cancelled':
         return 'secondary';
-      case 'partially_paid':
-      case 'partially_received':
+      case 'partial':
         return 'warning';
       default:
         return 'default';
@@ -335,6 +330,7 @@ export default function RelatorioFinanceiroPage() {
             >
               <option value="all">Todos os status</option>
               <option value="open">Em aberto</option>
+              <option value="partial">Parcial</option>
               <option value="paid">Pago</option>
               <option value="overdue">Vencido</option>
               <option value="cancelled">Cancelado</option>
@@ -426,7 +422,8 @@ export default function RelatorioFinanceiroPage() {
             >
               <option value="all">Todos os status</option>
               <option value="open">Em aberto</option>
-              <option value="received">Recebido</option>
+              <option value="partial">Parcial</option>
+              <option value="paid">Recebido</option>
               <option value="overdue">Vencido</option>
               <option value="cancelled">Cancelado</option>
             </select>

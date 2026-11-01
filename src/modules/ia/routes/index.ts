@@ -1,0 +1,1 @@
+export { iaRoutes } from './IaRoutes';

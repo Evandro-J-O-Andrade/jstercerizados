@@ -37,23 +37,31 @@ function InlineCompanyForm({
 export default function EmpresaDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { currentTenantId, tenantMemberships } = useAuth();
+  const { currentTenantId } = useAuth();
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const activeTenantId = currentTenantId || tenantMemberships[0]?.tenant_id;
+  const activeTenantId = currentTenantId;
 
   useEffect(() => {
-    if (!id) return;
+    if (!activeTenantId) {
+      setCompany(null);
+      setError('Selecione um tenant antes de acessar os detalhes da empresa.');
+      setLoading(false);
+      return;
+    }
+    if (!id) {
+      setLoading(false);
+      return;
+    }
 
     const fetchCompany = async () => {
       try {
         setLoading(true);
-        const tenantId = activeTenantId || '';
-        const data = await companiesRepository.findById(id, tenantId);
+        const data = await companiesRepository.findById(id, activeTenantId);
         if (data) {
           setCompany(data);
         } else {

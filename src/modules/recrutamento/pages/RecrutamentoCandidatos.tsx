@@ -1,8 +1,9 @@
 import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
-import { Users, Search, Plus } from 'lucide-react';
+import { Users, Search } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Link } from 'react-router-dom';
 import { useRecrutamento } from '@/modules/recrutamento/RecrutamentoContext';
 import { useState } from 'react';
 import type { CandidateListItem } from '@/modules/recrutamento/types';
@@ -18,41 +19,44 @@ function CandidateCard({ candidate }: { candidate: CandidateListItem }) {
     .slice(0, 2);
 
   return (
-    <Card className="hover:bg-muted/50 flex items-center gap-4 p-4 transition-colors">
-      <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-full font-medium">
-        {initials}
-      </div>
-      <div className="min-w-0 flex-1">
-        <h4 className="truncate font-medium">{fullName}</h4>
-        <p className="text-muted-foreground truncate text-sm">
-          {candidate.person?.email ?? '—'}
-        </p>
-        <div className="mt-1 flex flex-wrap gap-2">
-          {candidate.person?.city && (
-            <span className="text-muted-foreground text-xs">
-              {candidate.person.city}
-              {candidate.person.state ? `/${candidate.person.state}` : ''}
-            </span>
+    <Link
+      to={`/dashboard/recrutamento/candidatos/${candidate.id}`}
+      className="block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      aria-label={`Ver perfil de ${fullName}`}
+    >
+      <Card className="hover:bg-muted/50 flex items-center gap-4 p-4 transition-colors">
+        <div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-full font-medium">
+          {initials}
+        </div>
+        <div className="min-w-0 flex-1">
+          <h4 className="truncate font-medium">{fullName}</h4>
+          <p className="text-muted-foreground truncate text-sm">
+            {candidate.person?.email ?? '—'}
+          </p>
+          {candidate.person?.phone && (
+            <p className="text-muted-foreground text-xs">
+              {candidate.person.phone}
+            </p>
           )}
           {candidate.status === 'active' && (
-            <span className="bg-green/10 text-green rounded-full px-2 py-0.5 text-xs">
+            <span className="bg-green/10 text-green mt-1 inline-flex rounded-full px-2 py-0.5 text-xs">
               Ativo
             </span>
           )}
         </div>
-      </div>
-      <div className="text-right">
-        {candidate.headline && (
-          <p className="text-muted-foreground text-sm">{candidate.headline}</p>
-        )}
-        <p className="text-muted-foreground text-xs">
-          Atualizado:{' '}
-          {candidate.updated_at
-            ? new Date(candidate.updated_at).toLocaleDateString('pt-BR')
-            : '—'}
-        </p>
-      </div>
-    </Card>
+        <div className="text-right">
+          {candidate.headline && (
+            <p className="text-muted-foreground text-sm">{candidate.headline}</p>
+          )}
+          <p className="text-muted-foreground text-xs">
+            Atualizado:{' '}
+            {candidate.updated_at
+              ? new Date(candidate.updated_at).toLocaleDateString('pt-BR')
+              : '—'}
+          </p>
+        </div>
+      </Card>
+    </Link>
   );
 }
 
@@ -123,17 +127,6 @@ export default function RecrutamentoCandidatos() {
       description="Banco de talentos e currículos"
       icon={Users}
       breadcrumbItems={[{ label: 'Recrutamento' }, { label: 'Candidatos' }]}
-      actions={
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="hidden sm:flex">
-            <Plus className="mr-2 h-4 w-4" />
-            Novo Candidato
-          </Button>
-          <Button variant="outline" size="sm" className="sm:hidden">
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
-      }
     >
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="max-w-md flex-1">

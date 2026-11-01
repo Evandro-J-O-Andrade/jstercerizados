@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useLayoutEffect,
   useCallback,
   useState,
   useRef,
@@ -29,8 +30,10 @@ import type {
   RecruitmentProcess,
   RecruitmentProcessListItem,
   RecruitmentStage,
-  TalentPoolMembership,
+  TalentPoolPerson,
   RecruitmentDemand,
+  CreateDemandInput,
+  UpdateDemandInput,
   JobMatch,
   RecruitmentDashboardStats,
 } from '../types';
@@ -42,7 +45,7 @@ export interface RecrutamentoContextValue {
   applications: Application[];
   processes: RecruitmentProcess[];
   stages: RecruitmentStage[];
-  talentPool: TalentPoolMembership[];
+  talentPool: TalentPoolPerson[];
   demands: RecruitmentDemand[];
   matches: JobMatch[];
 
@@ -109,9 +112,8 @@ export interface RecrutamentoContextValue {
   deleteStage: (id: string) => Promise<boolean>;
 
   // Demand actions
-  createDemand: (input: any) => Promise<RecruitmentDemand | null>;
-  updateDemand: (input: any) => Promise<RecruitmentDemand | null>;
-  deleteDemand: (id: string) => Promise<boolean>;
+  createDemand: (input: CreateDemandInput) => Promise<RecruitmentDemand | null>;
+  updateDemand: (input: UpdateDemandInput) => Promise<RecruitmentDemand | null>;
 
   // Match actions
   upsertMatch: (match: any) => Promise<JobMatch | null>;
@@ -131,7 +133,7 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
   const [applications, setApplications] = useState<Application[]>([]);
   const [processes, setProcesses] = useState<RecruitmentProcess[]>([]);
   const [stages, setStages] = useState<RecruitmentStage[]>([]);
-  const [talentPool, setTalentPool] = useState<TalentPoolMembership[]>([]);
+  const [talentPool, setTalentPool] = useState<TalentPoolPerson[]>([]);
   const [demands, setDemands] = useState<RecruitmentDemand[]>([]);
   const [matches, setMatches] = useState<JobMatch[]>([]);
 
@@ -152,22 +154,34 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const activeRequestsRef = useRef(0);
+  const requestGenerationRef = useRef(0);
 
   const tenantId = currentTenantId;
+  const tenantIdRef = useRef(tenantId);
+  tenantIdRef.current = tenantId;
 
   const beginRequest = useCallback(() => {
     activeRequestsRef.current += 1;
     setIsLoading(true);
+    return requestGenerationRef.current;
   }, []);
 
-  const finishRequest = useCallback(() => {
+  const isCurrentRequest = useCallback(
+    (generation: number, requestTenantId: string) =>
+      generation === requestGenerationRef.current &&
+      requestTenantId === tenantIdRef.current,
+    [],
+  );
+
+  const finishRequest = useCallback((generation: number) => {
+    if (generation !== requestGenerationRef.current) return;
     activeRequestsRef.current = Math.max(0, activeRequestsRef.current - 1);
     setIsLoading(activeRequestsRef.current > 0);
   }, []);
 
   const refetchJobs = useCallback(async () => {
     if (!tenantId) return;
-    beginRequest();
+    const generation = beginRequest();
     setError(null);
     try {
       const [listResult, enrichedResult] = await Promise.all([
@@ -181,18 +195,21 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
       ]);
       if (listResult.error) throw listResult.error;
       if (enrichedResult.error) throw enrichedResult.error;
+      if (!isCurrentRequest(generation, tenantId)) return;
       setJobs(listResult.data || []);
       setJobsEnriched(enrichedResult.data || []);
     } catch (e) {
-      setError(normalizeError(e).userMessage);
+      if (isCurrentRequest(generation, tenantId)) {
+        setError(normalizeError(e).userMessage);
+      }
     } finally {
-      finishRequest();
+      finishRequest(generation);
     }
-  }, [tenantId, beginRequest, finishRequest]);
+  }, [tenantId, beginRequest, finishRequest, isCurrentRequest]);
 
   const refetchCandidates = useCallback(async () => {
     if (!tenantId) return;
-    beginRequest();
+    const generation = beginRequest();
     setError(null);
     try {
       const [listResult, enrichedResult] = await Promise.all([
@@ -206,18 +223,21 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
       ]);
       if (listResult.error) throw listResult.error;
       if (enrichedResult.error) throw enrichedResult.error;
+      if (!isCurrentRequest(generation, tenantId)) return;
       setCandidates(listResult.data || []);
       setCandidatesEnriched(enrichedResult.data || []);
     } catch (e) {
-      setError(normalizeError(e).userMessage);
+      if (isCurrentRequest(generation, tenantId)) {
+        setError(normalizeError(e).userMessage);
+      }
     } finally {
-      finishRequest();
+      finishRequest(generation);
     }
-  }, [tenantId, beginRequest, finishRequest]);
+  }, [tenantId, beginRequest, finishRequest, isCurrentRequest]);
 
   const refetchApplications = useCallback(async () => {
     if (!tenantId) return;
-    beginRequest();
+    const generation = beginRequest();
     setError(null);
     try {
       const [listResult, enrichedResult] = await Promise.all([
@@ -231,80 +251,95 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
       ]);
       if (listResult.error) throw listResult.error;
       if (enrichedResult.error) throw enrichedResult.error;
+      if (!isCurrentRequest(generation, tenantId)) return;
       setApplications(listResult.data || []);
       setApplicationsEnriched(enrichedResult.data || []);
     } catch (e) {
-      setError(normalizeError(e).userMessage);
+      if (isCurrentRequest(generation, tenantId)) {
+        setError(normalizeError(e).userMessage);
+      }
     } finally {
-      finishRequest();
+      finishRequest(generation);
     }
-  }, [tenantId, beginRequest, finishRequest]);
+  }, [tenantId, beginRequest, finishRequest, isCurrentRequest]);
 
   const refetchProcesses = useCallback(async () => {
     if (!tenantId) return;
-    beginRequest();
+    const generation = beginRequest();
     setError(null);
     try {
       const [listData, enrichedData] = await Promise.all([
         recruitmentProcessRepository.findAll(tenantId),
         recruitmentProcessRepository.findAll(tenantId),
       ]);
+      if (!isCurrentRequest(generation, tenantId)) return;
       setProcesses(listData as unknown as RecruitmentProcess[]);
       setProcessesEnriched(
         enrichedData as unknown as RecruitmentProcessListItem[],
       );
     } catch (e) {
-      setError(normalizeError(e).userMessage);
+      if (isCurrentRequest(generation, tenantId)) {
+        setError(normalizeError(e).userMessage);
+      }
     } finally {
-      finishRequest();
+      finishRequest(generation);
     }
-  }, [tenantId, beginRequest, finishRequest]);
+  }, [tenantId, beginRequest, finishRequest, isCurrentRequest]);
 
   const refetchStages = useCallback(async () => {
     if (!tenantId) return;
-    beginRequest();
+    const generation = beginRequest();
     setError(null);
     try {
       const data = await recruitmentStageRepository.findAll(tenantId);
+      if (!isCurrentRequest(generation, tenantId)) return;
       setStages(data as unknown as RecruitmentStage[]);
     } catch (e) {
-      setError(normalizeError(e).userMessage);
+      if (isCurrentRequest(generation, tenantId)) {
+        setError(normalizeError(e).userMessage);
+      }
     } finally {
-      finishRequest();
+      finishRequest(generation);
     }
-  }, [tenantId, beginRequest, finishRequest]);
+  }, [tenantId, beginRequest, finishRequest, isCurrentRequest]);
 
   const refetchTalentPool = useCallback(async () => {
     if (!tenantId) return;
-    beginRequest();
+    const generation = beginRequest();
     setError(null);
     try {
       const data = await talentPoolRepository.findAll(tenantId);
-      setTalentPool(data as unknown as TalentPoolMembership[]);
+      if (!isCurrentRequest(generation, tenantId)) return;
+      setTalentPool(data);
     } catch (e) {
-      setError(normalizeError(e).userMessage);
+      if (isCurrentRequest(generation, tenantId)) {
+        setError(normalizeError(e).userMessage);
+      }
     } finally {
-      finishRequest();
+      finishRequest(generation);
     }
-  }, [tenantId, beginRequest, finishRequest]);
+  }, [tenantId, beginRequest, finishRequest, isCurrentRequest]);
 
   const refetchDemands = useCallback(async () => {
     if (!tenantId) return;
-    beginRequest();
+    const generation = beginRequest();
     setError(null);
     try {
       const data = await recruitmentDemandRepository.findAll(tenantId);
-      setDemands(data as unknown as RecruitmentDemand[]);
+      if (!isCurrentRequest(generation, tenantId)) return;
+      setDemands(data);
     } catch (e) {
-      setError(normalizeError(e).userMessage);
+      if (isCurrentRequest(generation, tenantId)) {
+        setError(normalizeError(e).userMessage);
+      }
     } finally {
-      finishRequest();
+      finishRequest(generation);
     }
-  }, [tenantId, beginRequest, finishRequest]);
+  }, [tenantId, beginRequest, finishRequest, isCurrentRequest]);
 
   const refetchMatches = useCallback(async () => {
     if (!tenantId) return;
-    beginRequest();
+    const generation = beginRequest();
     setError(null);
     try {
       const result = await jobMatchesRepository.list({
@@ -314,17 +349,20 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
         limit: 100,
       });
       if (result.error) throw result.error;
+      if (!isCurrentRequest(generation, tenantId)) return;
       setMatches(result.data || []);
     } catch (e) {
-      setError(normalizeError(e).userMessage);
+      if (isCurrentRequest(generation, tenantId)) {
+        setError(normalizeError(e).userMessage);
+      }
     } finally {
-      finishRequest();
+      finishRequest(generation);
     }
-  }, [tenantId, beginRequest, finishRequest]);
+  }, [tenantId, beginRequest, finishRequest, isCurrentRequest]);
 
   const refetchDashboardStats = useCallback(async () => {
     if (!tenantId) return;
-    beginRequest();
+    const generation = beginRequest();
     try {
       const [jobsStats, candidatesStats, applicationsStats, matchesStats] =
         await Promise.all([
@@ -341,6 +379,7 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
       // Get demands stats - old repository may not have getStats, so use findAll
       const demandsData = await recruitmentDemandRepository.findAll(tenantId);
 
+      if (!isCurrentRequest(generation, tenantId)) return;
       setDashboardStats({
         jobs: {
           total: jobsStats.data?.total || 0,
@@ -395,11 +434,13 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
         },
       });
     } catch (e) {
-      setError(normalizeError(e).userMessage);
+      if (isCurrentRequest(generation, tenantId)) {
+        setError(normalizeError(e).userMessage);
+      }
     } finally {
-      finishRequest();
+      finishRequest(generation);
     }
-  }, [tenantId, beginRequest, finishRequest]);
+  }, [tenantId, beginRequest, finishRequest, isCurrentRequest]);
 
   const refetch = useCallback(async () => {
     await Promise.all([
@@ -424,6 +465,37 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
     refetchMatches,
     refetchDashboardStats,
   ]);
+
+  useLayoutEffect(() => {
+    requestGenerationRef.current += 1;
+    activeRequestsRef.current = 0;
+    setJobs([]);
+    setCandidates([]);
+    setApplications([]);
+    setProcesses([]);
+    setStages([]);
+    setTalentPool([]);
+    setDemands([]);
+    setMatches([]);
+    setJobsEnriched([]);
+    setCandidatesEnriched([]);
+    setApplicationsEnriched([]);
+    setProcessesEnriched([]);
+    setDashboardStats(null);
+    setError(null);
+    setIsLoading(Boolean(tenantId));
+
+    if (tenantId) {
+      void refetch();
+    } else {
+      setIsLoading(false);
+    }
+
+    return () => {
+      requestGenerationRef.current += 1;
+      activeRequestsRef.current = 0;
+    };
+  }, [tenantId, refetch]);
 
   // Job actions
   const createJob = useCallback(
@@ -741,7 +813,7 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
 
   // Demand actions
   const createDemand = useCallback(
-    async (input: any) => {
+    async (input: CreateDemandInput) => {
       if (!tenantId) return null;
       try {
         const data = await recruitmentDemandRepository.create({
@@ -749,7 +821,7 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
           tenant_id: tenantId,
         });
         await refetchDemands();
-        return data as unknown as RecruitmentDemand;
+        return data;
       } catch (e) {
         setError(normalizeError(e).userMessage);
         return null;
@@ -759,32 +831,23 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
   );
 
   const updateDemand = useCallback(
-    async (input: any) => {
+    async (input: UpdateDemandInput) => {
+      if (!tenantId) return null;
       try {
-        const { id, ...updates } = input;
-        const data = await recruitmentDemandRepository.update(id, updates);
+        const data = await recruitmentDemandRepository.update(
+          input.id,
+          tenantId,
+          input,
+        );
+        if (!data) return null;
         await refetchDemands();
-        return data as unknown as RecruitmentDemand;
+        return data;
       } catch (e) {
         setError(normalizeError(e).userMessage);
         return null;
       }
     },
-    [refetchDemands],
-  );
-
-  const deleteDemand = useCallback(
-    async (id: string) => {
-      try {
-        await recruitmentDemandRepository.delete(id);
-        await refetchDemands();
-        return true;
-      } catch (e) {
-        setError(normalizeError(e).userMessage);
-        return false;
-      }
-    },
-    [refetchDemands],
+    [tenantId, refetchDemands],
   );
 
   // Match actions
@@ -904,7 +967,6 @@ export function RecrutamentoProvider({ children }: { children: ReactNode }) {
     deleteStage,
     createDemand,
     updateDemand,
-    deleteDemand,
     upsertMatch,
     markMatchNotified,
     invalidateMatch,

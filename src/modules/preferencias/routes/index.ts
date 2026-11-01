@@ -1,0 +1,1 @@
+export { preferenciasRoutes } from './PreferenciasRoutes';

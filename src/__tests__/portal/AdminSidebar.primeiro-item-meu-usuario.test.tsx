@@ -135,8 +135,8 @@ describe('AdminSidebar - Primeiro item: Meu Usuário', () => {
   it('2. "Meu Usuário" aparece dentro do <nav> da sidebar administrativa', () => {
     renderSidebar();
     const nav = screen.getByRole('navigation', { name: 'Módulos' });
-    const primeiroBotao = nav.querySelector('button');
-    expect(primeiroBotao).toHaveTextContent('Meu Usuário');
+    const primeiroLink = nav.querySelector('a');
+    expect(primeiroLink).toHaveTextContent('Meu Usuário');
   });
 
   it('3. "Meu Usuário" aparece para admin_master', () => {

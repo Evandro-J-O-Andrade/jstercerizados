@@ -36,11 +36,13 @@ import { EmptyState } from '@/components/fallback';
 import { useAccount } from '@/contexts/AccountContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGlobalDashboardStats } from '@/hooks/useGlobalDashboardStats';
+import { hasPermission } from '@/utils/rbac';
 
 export default function GlobalDashboardPage() {
   const { identity, activePermissions, availableModules } = useAccount();
-  const { isAdminMaster } = useAuth();
+  const { permissions } = useAuth();
   const stats = useGlobalDashboardStats();
+  const canReadDomainEvents = hasPermission(permissions, 'domain_events.read');
 
   const metrics = useMemo<DashboardMetric[]>(
     () => [
@@ -144,11 +146,7 @@ export default function GlobalDashboardPage() {
       stats.tenants,
     ],
   );
-  const visibleMetrics = filterDashboardMetrics(
-    metrics,
-    activePermissions,
-    isAdminMaster,
-  );
+  const visibleMetrics = filterDashboardMetrics(metrics, activePermissions);
   const modules = availableModules.filter((module) => module.id !== 'inicio');
 
   return (
@@ -196,59 +194,64 @@ export default function GlobalDashboardPage() {
         />
       )}
 
-      <DashboardSection
-        title="Atividade recente da plataforma"
-        description="Eventos operacionais registrados nos domínios autorizados."
-        icon={Activity}
-      >
-        {stats.recentEvents.length === 0 ? (
-          <EmptyState
-            title="Nenhum evento recente"
-            description="Quando houver atividade na plataforma, ela aparecerá aqui."
-          />
-        ) : (
-          <div className="border-border overflow-x-auto rounded-lg border">
-            <table className="divide-border min-w-full divide-y">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Evento
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Domínio
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Data
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-border divide-y">
-                {stats.recentEvents.slice(0, 8).map((event) => (
-                  <tr
-                    key={event.id}
-                    className="hover:bg-muted/30 transition-colors"
-                  >
-                    <td className="text-foreground px-4 py-3 text-sm font-medium">
-                      {event.event_type}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {event.aggregate_type || '—'}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 text-sm whitespace-nowrap">
-                      {new Date(event.created_at).toLocaleDateString('pt-BR', {
-                        day: '2-digit',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </td>
+      {canReadDomainEvents && (
+        <DashboardSection
+          title="Atividade recente da plataforma"
+          description="Eventos operacionais registrados nos domínios autorizados."
+          icon={Activity}
+        >
+          {stats.recentEvents.length === 0 ? (
+            <EmptyState
+              title="Nenhum evento recente"
+              description="Quando houver atividade na plataforma, ela aparecerá aqui."
+            />
+          ) : (
+            <div className="border-border overflow-x-auto rounded-lg border">
+              <table className="divide-border min-w-full divide-y">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Evento
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Domínio
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Data
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </DashboardSection>
+                </thead>
+                <tbody className="divide-border divide-y">
+                  {stats.recentEvents.slice(0, 8).map((event) => (
+                    <tr
+                      key={event.id}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="text-foreground px-4 py-3 text-sm font-medium">
+                        {event.event_type}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-sm">
+                        {event.aggregate_type || '—'}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-sm whitespace-nowrap">
+                        {new Date(event.created_at).toLocaleDateString(
+                          'pt-BR',
+                          {
+                            day: '2-digit',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          },
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </DashboardSection>
+      )}
 
       {modules.length > 0 && (
         <DashboardSection
@@ -261,12 +264,12 @@ export default function GlobalDashboardPage() {
               <Link
                 key={module.id}
                 to={module.route}
-                className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="border-border bg-card hover:bg-accent hover:text-accent-foreground flex flex-col gap-3 rounded-xl border p-4 text-left transition-colors"
               >
-                <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                <div className="bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground flex h-10 w-10 items-center justify-center rounded-lg transition-colors">
                   <LayoutDashboard className="h-5 w-5" />
                 </div>
-                <h3 className="text-foreground text-sm font-semibold group-hover:text-primary-foreground transition-colors">
+                <h3 className="text-foreground group-hover:text-primary-foreground text-sm font-semibold transition-colors">
                   {module.title}
                 </h3>
                 <p className="text-muted-foreground text-xs">

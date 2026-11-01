@@ -60,14 +60,14 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     route: '/dashboard/global',
     category: 'plataforma',
     scope: 'global',
-    requiredPermissions: ['domain_events.read'],
+    requiredPermissions: ['tenants.read'],
     features: [
       {
         id: 'dashboard-global',
         title: 'Dashboard Global',
         description: 'Visão executiva da plataforma',
         route: '/dashboard/global',
-        requiredPermissions: ['domain_events.read'],
+        requiredPermissions: ['tenants.read'],
       },
     ],
   },
@@ -2503,7 +2503,7 @@ export { CATEGORY_META };
 
 export const MODULE_PERMISSION_MAP: Record<string, string> = {
   inicio: '',
-  'admin-master': 'domain_events.read',
+  'admin-master': 'tenants.read',
   tenants: 'tenants.read',
   onboarding: 'tenants.read',
   assinaturas: 'finance.read',

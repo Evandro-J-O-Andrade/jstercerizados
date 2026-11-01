@@ -111,7 +111,7 @@ export const financeiroRoutes: ModuleRoute[] = [
   },
   {
     path: 'categoria',
-    label: 'CATEGORIES Financeiras',
+    label: 'Categorias Financeiras',
     element: CATEGORIESPage as unknown as ComponentType,
     requiredPermissions: ['finance.read'],
   },

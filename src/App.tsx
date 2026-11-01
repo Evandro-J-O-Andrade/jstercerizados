@@ -42,6 +42,7 @@ import VisaoGeral from '@/pages/dashboard/VisaoGeral';
 import AuthTerms from '@/pages/auth/Termos';
 import AuthWelcome from '@/pages/auth/BoasVindas';
 import AuthCallback from '@/pages/auth/AuthCallback';
+import TenantSelectionPage from '@/pages/auth/TenantSelectionPage';
 import { AdminTenantProvider, AdminTenantLayout } from '@/modules/admin-tenant';
 import { FiscalLayout } from '@/modules/fiscal/layout/FiscalLayout';
 import { EstoqueLayout } from '@/modules/estoque/layout/EstoqueLayout';
@@ -135,7 +136,6 @@ import RelatorioAlmoxarifadoPage from '@/pages/dashboard/relatorios/RelatorioAlm
 import RelatorioServicosPage from '@/pages/dashboard/relatorios/RelatorioServicosPage';
 import RelatorioSuportePage from '@/pages/dashboard/relatorios/RelatorioSuportePage';
 import { RHDashboardPage } from '@/modules/rh/dashboard';
-import { RecrutamentoProvider } from '@/modules/recrutamento/RecrutamentoContext';
 import { AvaProvider } from '@/modules/ava/context/AvaContext';
 import { AvaDashboardPage } from '@/modules/ava/dashboard/AvaDashboardPage';
 import { AvaTutorialPage } from '@/modules/ava/pages/AvaTutorialPage';
@@ -206,15 +206,29 @@ function RoutesAndLayout() {
               path="global"
               element={
                 <ProtectedRoute allowedRoles={['admin_master']}>
-                  <GlobalDashboardPage />
+                  <PermissionGuard permission="tenants.read">
+                    <GlobalDashboardPage />
+                  </PermissionGuard>
                 </ProtectedRoute>
               }
             />
             <Route
               path="pessoas"
               element={
-                <ProtectedRoute allowedRoles={['admin_master', 'tenant_admin']}>
-                  <PessoasPage />
+                <ProtectedRoute allowedRoles={['admin_master']}>
+                  <PermissionGuard permission="people.read">
+                    <PessoasPage />
+                  </PermissionGuard>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="seguranca"
+              element={
+                <ProtectedRoute allowedRoles={['admin_master']}>
+                  <PermissionGuard permission="security_events.read">
+                    <SegurancaPage />
+                  </PermissionGuard>
                 </ProtectedRoute>
               }
             />
@@ -722,16 +736,14 @@ function RoutesAndLayout() {
             <Route
               path="recrutamento/*"
               element={
-                <RecrutamentoProvider>
-                  <RecrutamentoLayout>
-                    <ModuleRouter
-                      moduleRegistries={moduleRouteRegistries}
-                      moduleIds={['recrutamento']}
-                      moduleRouteBase="/dashboard/recrutamento"
-                      skipLayout
-                    />
-                  </RecrutamentoLayout>
-                </RecrutamentoProvider>
+                <RecrutamentoLayout>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['recrutamento']}
+                    moduleRouteBase="/dashboard/recrutamento"
+                    skipLayout
+                  />
+                </RecrutamentoLayout>
               }
             />
             <Route
@@ -741,6 +753,14 @@ function RoutesAndLayout() {
               }
             />
           </Route>
+          <Route
+            path="/selecionar-tenant"
+            element={
+              <AuthRoute>
+                <TenantSelectionPage />
+              </AuthRoute>
+            }
+          />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/auth/terms" element={<AuthTerms />} />

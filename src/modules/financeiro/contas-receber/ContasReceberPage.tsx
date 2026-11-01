@@ -1,9 +1,8 @@
 'use client';
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import { Plus, Search, Edit, Trash2, Filter, Download } from 'lucide-react';
+import { Search, Filter, Download } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { EmptyState, ErrorState } from '@/components/fallback';
-import { ConfirmDialog } from '@/components/feedback';
 import { useToast } from '@/components/feedback/ToastContext';
 import { accountsReceivableRepository } from '@/repositories/accounts-receivable.repository';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,10 +10,10 @@ import type { AccountReceivable } from '@/types/domain/finance';
 
 const statusLabels: Record<string, string> = {
   open: 'Em aberto',
-  received: 'Recebido',
+  paid: 'Recebido',
   overdue: 'Vencido',
   cancelled: 'Cancelado',
-  partially_received: 'Parcialmente recebido',
+  partial: 'Parcialmente recebido',
 };
 
 export default function ContasReceberPage() {
@@ -25,8 +24,6 @@ export default function ContasReceberPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-
   const load = useCallback(async () => {
     if (!currentTenantId) return;
     setLoading(true);
@@ -65,26 +62,13 @@ export default function ContasReceberPage() {
     load();
   }, [load]);
 
-  const handleDelete = async () => {
-    if (!deleteId || !currentTenantId) return;
-    try {
-      await accountsReceivableRepository.remove(deleteId, currentTenantId);
-      setItems((prev) => prev.filter((item) => item.id !== deleteId));
-      setDeleteId(null);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Erro ao excluir conta a receber',
-      );
-    }
-  };
-
   const stats = useMemo(() => {
     const total = items.reduce((sum, item) => sum + item.amount, 0);
     const open = items.filter((item) => item.status === 'open');
     const openTotal = open.reduce((sum, item) => sum + item.amount, 0);
     const overdue = items.filter((item) => item.status === 'overdue');
     const overdueTotal = overdue.reduce((sum, item) => sum + item.amount, 0);
-    const received = items.filter((item) => item.status === 'received');
+    const received = items.filter((item) => item.status === 'paid');
     const receivedTotal = received.reduce((sum, item) => sum + item.amount, 0);
 
     return {
@@ -123,17 +107,6 @@ export default function ContasReceberPage() {
             Gerencie recebimentos, vencimentos e status.
           </p>
         </div>
-        <Button
-          onClick={() =>
-            addToast({
-              type: 'info',
-              message: 'Abrir formulário de conta a receber',
-            })
-          }
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Nova conta
-        </Button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -181,8 +154,8 @@ export default function ContasReceberPage() {
           <option value="all">Todos os status</option>
           <option value="open">Em aberto</option>
           <option value="overdue">Vencido</option>
-          <option value="received">Recebido</option>
-          <option value="partially_received">Parcialmente recebido</option>
+          <option value="paid">Recebido</option>
+          <option value="partial">Parcialmente recebido</option>
           <option value="cancelled">Cancelado</option>
         </select>
         <Button variant="secondary" onClick={load}>
@@ -204,13 +177,6 @@ export default function ContasReceberPage() {
         <EmptyState
           title="Nenhuma conta a receber cadastrada"
           description="Ainda não há contas a receber registradas para este ambiente."
-          actionLabel="Nova conta"
-          onAction={() =>
-            addToast({
-              type: 'info',
-              message: 'Abrir formulário de conta a receber',
-            })
-          }
         />
       ) : (
         <div className="border-border overflow-x-auto rounded-lg border">
@@ -228,9 +194,6 @@ export default function ContasReceberPage() {
                 </th>
                 <th className="text-muted-foreground px-4 py-2 text-left font-medium">
                   Status
-                </th>
-                <th className="text-muted-foreground px-4 py-2 text-left font-medium">
-                  Ações
                 </th>
               </tr>
             </thead>
@@ -254,36 +217,12 @@ export default function ContasReceberPage() {
                       {statusLabels[item.status] ?? item.status}
                     </span>
                   </td>
-                  <td className="px-4 py-2">
-                    <div className="flex items-center gap-2">
-                      <button className="text-muted-foreground hover:bg-muted rounded p-1">
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button
-                        className="rounded p-1 text-red-500 hover:bg-red-50"
-                        onClick={() => setDeleteId(item.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-
-      <ConfirmDialog
-        open={!!deleteId}
-        title="Excluir conta a receber?"
-        message="Essa ação removerá o título. Se houver recebimentos relacionados, essa operação pode ser bloqueada."
-        confirmLabel="Excluir"
-        cancelLabel="Cancelar"
-        variant="danger"
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteId(null)}
-      />
     </div>
   );
 }

@@ -1,10 +1,9 @@
 ﻿'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/fallback';
-import { ConfirmDialog } from '@/components/feedback';
 import { bankReconciliationRepository } from '@/repositories/bank-reconciliation.repository';
 import type { BankReconciliation } from '@/types/domain/finance';
 import { useAuth } from '@/contexts/AuthContext';
@@ -32,8 +31,6 @@ export default function ConciliacaoPage() {
     [],
   );
   const [search, setSearch] = useState('');
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-
   const loadReconciliations = useCallback(async () => {
     if (!currentTenantId) return;
     try {
@@ -54,23 +51,6 @@ export default function ConciliacaoPage() {
     loadReconciliations();
   }, [loadReconciliations]);
 
-  const handleDelete = async () => {
-    if (!deleteId || !currentTenantId) return;
-    try {
-      await bankReconciliationRepository.remove(deleteId, currentTenantId);
-      setDeleteId(null);
-      await loadReconciliations();
-      addToast({
-        type: 'success',
-        message: 'Conciliacao excluida com sucesso.',
-      });
-    } catch (err) {
-      addToast({
-        type: 'error',
-        message: err instanceof Error ? err.message : 'Erro ao excluir',
-      });
-    }
-  };
   const filtered = reconciliations.filter((r) => {
     if (!search) return true;
     const term = search.toLowerCase();
@@ -162,9 +142,6 @@ export default function ConciliacaoPage() {
                 <th className="text-muted-foreground px-4 py-3 font-medium">
                   Status
                 </th>
-                <th className="text-muted-foreground px-4 py-3 font-medium">
-                  Acoes
-                </th>
               </tr>
             </thead>
             <tbody className="divide-border divide-y">
@@ -200,32 +177,12 @@ export default function ConciliacaoPage() {
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setDeleteId(item.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-
-      <ConfirmDialog
-        open={!!deleteId}
-        title="Excluir conciliacao?"
-        message="Essa acao removera a conciliacao permanentemente."
-        confirmLabel="Excluir"
-        cancelLabel=" Cancelar"
-        variant="danger"
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteId(null)}
-      />
     </div>
   );
 }

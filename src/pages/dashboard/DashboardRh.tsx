@@ -234,11 +234,7 @@ export default function DashboardRh() {
       stats.totalEmployees,
     ],
   );
-  const visibleMetrics = filterDashboardMetrics(
-    metrics,
-    activePermissions,
-    isAdminMaster,
-  );
+  const visibleMetrics = filterDashboardMetrics(metrics, activePermissions);
 
   return (
     <ModuleWorkspace

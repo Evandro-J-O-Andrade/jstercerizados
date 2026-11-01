@@ -91,10 +91,9 @@ function authorizeActions(
   for (const action of actions) {
     if (!action.permissionKey) continue;
 
-    const granted = hasAnyPermission(
-      dispatchContext.effectivePermissions,
-      [action.permissionKey],
-    );
+    const granted = hasAnyPermission(dispatchContext.effectivePermissions, [
+      action.permissionKey,
+    ]);
 
     if (!granted) {
       throw new DispatcherError(
@@ -115,12 +114,17 @@ function assertTenantIsolation(
   dispatchContext: DispatchContext,
   actionTenantId: UUID | null,
 ): void {
-  if (
-    actionTenantId !== null &&
-    dispatchContext.tenantId !== null &&
-    actionTenantId !== dispatchContext.tenantId &&
-    !dispatchContext.isAdminMaster
-  ) {
+  if (actionTenantId === null || dispatchContext.isAdminMaster) return;
+
+  if (!dispatchContext.tenantId) {
+    throw new DispatcherError(
+      'TENANT_ISOLATION_VIOLATION',
+      'Uma ação tenant-scoped exige um tenant explicitamente selecionado.',
+      dispatchContext.correlationId,
+    );
+  }
+
+  if (actionTenantId !== dispatchContext.tenantId) {
     throw new DispatcherError(
       'TENANT_ISOLATION_VIOLATION',
       `Isolamento de tenant violado: contexto=${dispatchContext.tenantId}, ação=${actionTenantId}`,
@@ -217,7 +221,9 @@ export class DispatcherMaster {
       dispatchContext.roleIds,
       dispatchContext.permissionKeys,
     );
-    const structural = validateExecutionContext(execCtx);
+    const structural = validateExecutionContext(execCtx, {
+      allowGlobalScope: dispatchContext.isAdminMaster,
+    });
     if (!structural.valid) {
       throw new DispatcherError(
         'VALIDATION_ERROR',
@@ -230,8 +236,7 @@ export class DispatcherMaster {
     if (action.metadata?.requiredPermissionKey) {
       authorizeActions(dispatchContext, [
         {
-          permissionKey: action.metadata
-            .requiredPermissionKey as string,
+          permissionKey: action.metadata.requiredPermissionKey as string,
           operation: action.type,
         },
       ]);
@@ -311,7 +316,8 @@ export class DispatcherMaster {
       options?.isCandidate === true ||
       options?.roleNames?.includes('candidato') ||
       dispatchContext.effectivePermissions.some(
-        (p) => p.name === 'candidates.self.read' || p.name === 'candidates.read',
+        (p) =>
+          p.name === 'candidates.self.read' || p.name === 'candidates.read',
       );
 
     if (!hasMembership && !dispatchContext.isAdminMaster && !isCandidateUser) {
@@ -326,6 +332,10 @@ export class DispatcherMaster {
     // 5. Boas-vindas pendentes
     if (!welcomeCompleted) {
       return '/auth/welcome';
+    }
+
+    if (hasMembership && !dispatchContext.tenantId) {
+      return '/selecionar-tenant';
     }
 
     // 6. Célula do Candidato (Portal dedicado)

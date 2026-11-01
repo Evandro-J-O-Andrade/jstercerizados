@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getSupabaseClient } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { hasPermission as userHasPermission } from '@/utils/rbac';
 import type { GlobalDashboardStats } from '@/pages/dashboard/global-dashboard-model';
 import type { DomainEventSummary } from '@/types/domain/security';
 
@@ -22,7 +23,7 @@ const emptyStats: GlobalDashboardStats = {
 };
 
 export function useGlobalDashboardStats(): GlobalDashboardData {
-  const { currentTenantId, tenantMemberships, isAdminMaster } = useAuth();
+  const { currentTenantId, isAdminMaster, permissions } = useAuth();
   const [data, setData] = useState<GlobalDashboardData>({
     ...emptyStats,
     recentEvents: [],
@@ -46,10 +47,15 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
         return;
       }
 
-      const activeTenantId = currentTenantId || tenantMemberships[0]?.tenant_id;
+      const activeTenantId = currentTenantId;
       if (!activeTenantId && !isAdminMaster) {
         if (!cancelled) {
-          setData((previous) => ({ ...previous, loading: false }));
+          setData({
+            ...emptyStats,
+            recentEvents: [],
+            loading: false,
+            error: null,
+          });
         }
         return;
       }
@@ -60,7 +66,9 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
 
       try {
         const globalScope = isAdminMaster;
-        const countTable = async (table: string) => {
+        const countTable = async (table: string, permission: string) => {
+          if (!userHasPermission(permissions, permission)) return 0;
+
           let query = supabase
             .from(table)
             .select('*', { count: 'exact', head: true });
@@ -68,6 +76,18 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
             query = query.eq('tenant_id', activeTenantId);
           }
           const { count, error } = await query;
+          if (error) throw error;
+          return count ?? 0;
+        };
+
+        const countPeople = async () => {
+          if (!userHasPermission(permissions, 'people.read')) return 0;
+          if (globalScope) return countTable('people', 'people.read');
+          const { count, error } = await supabase
+            .from('tenant_memberships')
+            .select('person_id', { count: 'exact', head: true })
+            .eq('tenant_id', activeTenantId)
+            .eq('status', 'active');
           if (error) throw error;
           return count ?? 0;
         };
@@ -82,26 +102,33 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
           serviceOrders,
           supportTickets,
         ] = await Promise.all([
-          globalScope ? countTable('tenants') : Promise.resolve(0),
-          countTable('companies'),
-          countTable('people'),
-          countTable('candidates'),
-          countTable('jobs'),
-          countTable('applications'),
-          countTable('service_orders'),
-          countTable('support_tickets'),
+          globalScope
+            ? countTable('tenants', 'tenants.read')
+            : Promise.resolve(0),
+          countTable('companies', 'companies.read'),
+          countPeople(),
+          countTable('candidates', 'candidates.read'),
+          countTable('jobs', 'jobs.read'),
+          countTable('applications', 'applications.read'),
+          countTable('service_orders', 'service_orders.read'),
+          countTable('support_tickets', 'support_tickets.read'),
         ]);
 
-        let eventsQuery = supabase
-          .from('domain_events')
-          .select('id, event_type, aggregate_type, created_at, tenant_id')
-          .order('created_at', { ascending: false })
-          .limit(8);
-        if (!globalScope && activeTenantId) {
-          eventsQuery = eventsQuery.eq('tenant_id', activeTenantId);
+        let recentEvents: DomainEventSummary[] = [];
+        if (userHasPermission(permissions, 'domain_events.read')) {
+          let eventsQuery = supabase
+            .from('domain_events')
+            .select('id, event_type, aggregate_type, created_at, tenant_id')
+            .order('created_at', { ascending: false })
+            .limit(8);
+          if (!globalScope && activeTenantId) {
+            eventsQuery = eventsQuery.eq('tenant_id', activeTenantId);
+          }
+
+          const { data: events, error: eventsError } = await eventsQuery;
+          if (eventsError) throw eventsError;
+          recentEvents = (events ?? []) as DomainEventSummary[];
         }
-        const { data: events, error: eventsError } = await eventsQuery;
-        if (eventsError) throw eventsError;
 
         if (!cancelled) {
           setData({
@@ -113,7 +140,7 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
             applications,
             serviceOrders,
             supportTickets,
-            recentEvents: (events ?? []) as DomainEventSummary[],
+            recentEvents,
             loading: false,
             error: null,
           });
@@ -137,7 +164,7 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
     return () => {
       cancelled = true;
     };
-  }, [currentTenantId, isAdminMaster, tenantMemberships]);
+  }, [currentTenantId, isAdminMaster, permissions]);
 
   return data;
 }

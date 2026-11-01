@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { PageLoader } from '@/components/ui/PageLoader';
 
@@ -15,9 +15,11 @@ export function AuthRoute({ children }: AuthRouteProps) {
     legalAcceptances,
     recoveryMode,
     tenantMemberships,
+    currentTenantId,
     isAdminMaster,
     isCandidate,
   } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return <PageLoader />;
@@ -61,6 +63,42 @@ export function AuthRoute({ children }: AuthRouteProps) {
   // Usuários corporativos exigem membership ativa; Candidatos e Admin Master global são isentos
   if (!hasMembership && !isAdminMaster && !isCandidate) {
     return <Navigate to="/onboarding" replace />;
+  }
+
+  const isTenantSelectionRoute =
+    location.pathname.replace(/\/+$/, '') === '/selecionar-tenant';
+  const normalizedPath = location.pathname.replace(/\/+$/, '');
+  const isGlobalAdminRoute =
+    isAdminMaster &&
+    new Set([
+      '/dashboard',
+      '/dashboard/global',
+      '/dashboard/seguranca',
+      '/dashboard/tenants',
+      '/dashboard/pessoas',
+      '/dashboard/roles-permissoes',
+      '/dashboard/gestao-saas',
+      '/dashboard/onboarding',
+    ]).has(normalizedPath);
+
+  if (
+    isAdminMaster &&
+    !currentTenantId &&
+    normalizedPath.startsWith('/dashboard') &&
+    !isGlobalAdminRoute
+  ) {
+    return <Navigate to="/dashboard/global" replace />;
+  }
+
+  if (
+    hasMembership &&
+    !currentTenantId &&
+    !isTenantSelectionRoute &&
+    !isGlobalAdminRoute
+  ) {
+    return (
+      <Navigate to="/selecionar-tenant" replace state={{ from: location }} />
+    );
   }
 
   return <>{children}</>;

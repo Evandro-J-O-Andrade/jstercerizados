@@ -1,72 +1,72 @@
 import { getSupabaseClient } from '@/lib/supabase';
+import { recruitmentDemandsRepository } from '@/repositories/recruitment-demands.repository';
+import type {
+  CreateDemandInput,
+  RecruitmentDemand,
+  UpdateDemandInput,
+} from '../types';
 
 export const recruitmentDemandRepository = {
-  async findAll(tenantId: string): Promise<any[]> {
-    const supabase = getSupabaseClient();
-    if (!supabase) return [];
-
-    const { data, error } = await supabase
-      .from('recruitment_demands')
-      .select('*')
-      .eq('tenant_id', tenantId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data || [];
+  findAll(tenantId: string): Promise<RecruitmentDemand[]> {
+    return recruitmentDemandsRepository.findAll(tenantId);
   },
 
-  async findById(id: string): Promise<any | null> {
+  async findById(
+    id: string,
+    tenantId: string,
+  ): Promise<RecruitmentDemand | null> {
     const supabase = getSupabaseClient();
     if (!supabase) return null;
 
     const { data, error } = await supabase
       .from('recruitment_demands')
-      .select('*')
+      .select(
+        'id, tenant_id, company_id, position, quantity, status, created_at, updated_at, contact_name, contact_email, contact_phone, description, urgency, service_type, responsible_person_id, service_id',
+      )
       .eq('id', id)
-      .single();
+      .eq('tenant_id', tenantId)
+      .maybeSingle();
 
     if (error) throw error;
     return data;
   },
 
-  async create(input: { tenant_id: string; title: string; description?: string; contact_name?: string; contact_email?: string; contact_phone?: string; urgency?: string; service_type?: string; responsible_person_id?: string }): Promise<any> {
+  async create(input: CreateDemandInput): Promise<RecruitmentDemand> {
     const supabase = getSupabaseClient();
     if (!supabase) throw new Error('Supabase client not available');
 
     const { data, error } = await supabase
       .from('recruitment_demands')
       .insert(input)
-      .select()
+      .select(
+        'id, tenant_id, company_id, position, quantity, status, created_at, updated_at, contact_name, contact_email, contact_phone, description, urgency, service_type, responsible_person_id, service_id',
+      )
       .single();
 
     if (error) throw error;
     return data;
   },
 
-  async update(id: string, input: Partial<any>): Promise<any> {
+  async update(
+    id: string,
+    tenantId: string,
+    input: UpdateDemandInput,
+  ): Promise<RecruitmentDemand | null> {
     const supabase = getSupabaseClient();
     if (!supabase) throw new Error('Supabase client not available');
+    const { id: _inputId, ...updates } = input;
 
     const { data, error } = await supabase
       .from('recruitment_demands')
-      .update(input)
+      .update(updates)
       .eq('id', id)
-      .select()
-      .single();
+      .eq('tenant_id', tenantId)
+      .select(
+        'id, tenant_id, company_id, position, quantity, status, created_at, updated_at, contact_name, contact_email, contact_phone, description, urgency, service_type, responsible_person_id, service_id',
+      )
+      .maybeSingle();
 
     if (error) throw error;
     return data;
-  },
-
-  async delete(id: string): Promise<void> {
-    const supabase = getSupabaseClient();
-    if (!supabase) throw new Error('Supabase client not available');
-
-    const { error } = await supabase
-      .from('recruitment_demands')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
   },
 };

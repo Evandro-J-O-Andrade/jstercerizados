@@ -23,6 +23,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { COMPANY } from '@/config';
 import { cn } from '@/utils';
 import { formatRoleLabel } from '@/contexts/UserIdentity';
+import { normalizeError } from '@/lib/error-normalizer';
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -52,6 +53,25 @@ function AccountSwitcherModal({
   switchAccount: (tenantId: string) => Promise<void>;
   navigate: (to: string) => void;
 }) {
+  const [switchingTenantId, setSwitchingTenantId] = useState<string | null>(
+    null,
+  );
+  const [switchError, setSwitchError] = useState<string | null>(null);
+
+  const handleSwitchAccount = async (tenantId: string) => {
+    setSwitchError(null);
+    setSwitchingTenantId(tenantId);
+    try {
+      await switchAccount(tenantId);
+      onClose();
+      navigate('/dashboard');
+    } catch (error) {
+      setSwitchError(normalizeError(error).userMessage);
+    } finally {
+      setSwitchingTenantId(null);
+    }
+  };
+
   if (!isOpen) return null;
 
   return createPortal(
@@ -82,6 +102,11 @@ function AccountSwitcherModal({
             Selecione a conta com a qual deseja trabalhar. Sua sessão permanece
             ativa.
           </p>
+          {switchError && (
+            <p className="text-destructive mb-4 text-sm" role="alert">
+              {switchError}
+            </p>
+          )}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {availableMemberships.map((membership) => {
               const membershipRoles = roles.filter(
@@ -94,13 +119,11 @@ function AccountSwitcherModal({
                 <button
                   key={membership.id}
                   type="button"
-                  onClick={() => {
-                    switchAccount(membership.tenant_id);
-                    onClose();
-                    navigate('/dashboard');
-                  }}
+                  onClick={() => void handleSwitchAccount(membership.tenant_id)}
+                  disabled={switchingTenantId !== null}
+                  aria-busy={switchingTenantId === membership.tenant_id}
                   className={cn(
-                    'border-border hover:border-primary/50 rounded-xl border p-4 text-left transition-all',
+                    'border-border hover:border-primary/50 rounded-xl border p-4 text-left transition-all disabled:cursor-wait disabled:opacity-60',
                     isActive && 'ring-primary/50 ring-2',
                   )}
                 >
