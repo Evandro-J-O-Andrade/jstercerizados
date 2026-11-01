@@ -7,13 +7,13 @@
 
 ## 1. REGRAS CRÍTICAS — NUNCA ALTERAR (Bloqueio Absoluto)
 
-| Item | Regra | Origem |
-|------|-------|--------|
-| **Nome da empresa** | **NUNCA** mudar "J&S Empregos LTDA" para "J&S Terceirizados" ou qualquer variação | `AGENTS.md` §1 |
-| **Footer** | **NUNCA** alterar o conteúdo do footer atual | `AGENTS.md` §1 |
-| **Site público** | **NÃO** alterar rotas, páginas, layouts, hooks, componentes das rotas públicas (`/`, `/vagas`, `/servicos`, `/clientes`, `/empresas`, `/fornecedores`, `/login`) | `module-audit.md` linhas 36-42 (categoria "Site") |
-| **Mocks/fallbacks** | **NUNCA** remover mock apenas porque o banco foi conectado; fallback deve participar da renderização desde o início | `JSEmpregos_Inventario_Geral_Diretrizes.md` §3 |
-| **Assets de marca** | **NÃO** substituir `logo.svg` por `logomarca.png` sem testar proporções; **NÃO** usar `escudojs.png` como favicon sem redimensionar; **NÃO** apagar SVGs antes de confirmar PNGs referenciados | `GATE-BRAND-ASSETS-01-report.md` §6.3 |
+| Item                | Regra                                                                                                                                                                                          | Origem                                            |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| **Nome da empresa** | **NUNCA** mudar "J&S Empregos LTDA" para "J&S Terceirizados" ou qualquer variação                                                                                                              | `AGENTS.md` §1                                    |
+| **Footer**          | **NUNCA** alterar o conteúdo do footer atual                                                                                                                                                   | `AGENTS.md` §1                                    |
+| **Site público**    | **NÃO** alterar rotas, páginas, layouts, hooks, componentes das rotas públicas (`/`, `/vagas`, `/servicos`, `/clientes`, `/empresas`, `/fornecedores`, `/login`)                               | `module-audit.md` linhas 36-42 (categoria "Site") |
+| **Mocks/fallbacks** | **NUNCA** remover mock apenas porque o banco foi conectado; fallback deve participar da renderização desde o início                                                                            | `JSEmpregos_Inventario_Geral_Diretrizes.md` §3    |
+| **Assets de marca** | **NÃO** substituir `logo.svg` por `logomarca.png` sem testar proporções; **NÃO** usar `escudojs.png` como favicon sem redimensionar; **NÃO** apagar SVGs antes de confirmar PNGs referenciados | `GATE-BRAND-ASSETS-01-report.md` §6.3             |
 
 ---
 
@@ -36,6 +36,7 @@
 ## 3. PROTEÇÕES POR CAMADA
 
 ### 3.1 Site Público (Rotas Públicas)
+
 - **Rotas protegidas:** `/`, `/vagas`, `/vagas/:slug`, `/servicos`, `/servicos/:slug`, `/clientes`, `/empresas`, `/fornecedores`, `/login`, `/cadastro`, `/sobre`, `/trabalhe-conosco`, `/suporte`, `/faq`, `/blog`, `/parceiros`
 - **Layouts protegidos:** `PublicLayout`, `Navbar`, `PublicBottomNavigation`, `PortalBottomNavigation`, `Footer`
 - **Hooks protegidos:** `usePublicJobs`, `usePublicJobsAsVagas`, `usePublicJobBySlugAsVaga`, `usePublicServices`, `usePublicServiceBySlug`, `usePublicCompanies`
@@ -43,6 +44,7 @@
 - **Ação proibida:** Modificar, remover, mover ou sobrescrever qualquer um dos acima sem autorização explícita
 
 ### 3.2 Identidade Visual
+
 - **Logo ativa:** `public/images/global/brand/logo.svg` (Navbar, Footer, SEO, manifest)
 - **Sidebar:** `sidebar-logo.svg`, `sidebar-icon.svg`
 - **Watermark:** `watermark-logo.svg`
@@ -53,11 +55,13 @@
 - **Placeholders 37 bytes:** Inválidos — não referenciar, não restaurar
 
 ### 3.3 Módulos Dashboard (Portal SaaS)
+
 - **28 módulos no registry** — apenas 3 com rota registrada (todos site público)
 - **24 módulos com página existente mas sem rota** — não ativar sem registro de rota + RBAC + dados reais
-- **Financeiro:** 4 diretórios untracked (`bancos`, `centros-custo`, `contas-pagar` prontos; `categoria` precisa 4 fixes)
+- **Financeiro:** a tela de categorias foi ligada ao repositório real; leitura/criação exigem tenant explícito, criação verifica `finance.create` e a exclusão não é exposta porque não há política RLS `DELETE`. A auditoria financeira continua parcial: outros módulos ainda têm ações placeholder e exigem reconciliação individual.
 
 ### 3.4 Banco de Dados / Supabase
+
 - **Source of Truth:** Supabase (não inventar dados, não substituir reais por mocks)
 - **Cadeia obrigatória:** Interface → Hook/Context → Repository/Service → RPC/Query → Supabase → Dados reais
 - **RLS/RBAC/Auth/Turnstile/SMTP/Triggers/migrations:** NÃO alterar sem verificação de documentação + autorização explícita
@@ -95,7 +99,7 @@ Antes de **qualquer** alteração de código, arquivo, rota, migration, commit o
     "ORDEM OBRIGATÓRIA: Ler AGENTS.md + GOVERNANCE-RULES.md + .mds relevantes ANTES de qualquer ação. Não duplicar. Supabase = Source of Truth.",
     "AUTORIZAÇÃO EXPLÍCITA: Commit/Push/Deploy só com autorização separada e explícita. 'Terminou' ou 'Corrija' NÃO autorizam push/deploy.",
     "AUDITORIA = SOMENTE LEITURA: Produzir evidências, classificar itens. NÃO implementar durante auditoria.",
-    "FINANCEIRO: 3 dirs prontos (bancos, centros-custo, contas-pagar), categoria precisa 4 fixes. Não commit sem autorização.",
+    "FINANCEIRO: categorias usa dados reais e exige tenant/permissão para criar; sem botão de exclusão quando não há política RLS DELETE. Auditoria dos demais módulos ainda parcial. Não commit sem autorização.",
     "CHECK BOUL(ER) 24H: Restaurar cells/poc/ do baseline 5759a0b; extrair contratos do stash@{4} seletivamente; criar governance checkpoint branch."
   ]
 }
@@ -103,13 +107,13 @@ Antes de **qualquer** alteração de código, arquivo, rota, migration, commit o
 
 ### 5.2 Verificações Automatizadas (Quando Disponíveis)
 
-| Verificação | Ferramenta | Status |
-|-------------|------------|--------|
-| Lint/Typecheck | `npm run lint` / `npm run typecheck` | ✅ Disponível |
-| Build | `npm run build` | ✅ Disponível |
-| Testes | `npm test` / `vitest` | ✅ Disponível |
-| Git diff antes de commit | `git diff --cached` | Manual |
-| Branch protection | GitHub branch protection rules | Não configurado |
+| Verificação              | Ferramenta                           | Status          |
+| ------------------------ | ------------------------------------ | --------------- |
+| Lint/Typecheck           | `npm run lint` / `npm run typecheck` | ✅ Disponível   |
+| Build                    | `npm run build`                      | ✅ Disponível   |
+| Testes                   | `npm test` / `vitest`                | ✅ Disponível   |
+| Git diff antes de commit | `git diff --cached`                  | Manual          |
+| Branch protection        | GitHub branch protection rules       | Não configurado |
 
 > **Nota:** Não há pre-commit hooks, Husky, ou CI gates configurados no repositório. A proteção é comportamental (agente segue instruções).
 
@@ -118,6 +122,7 @@ Antes de **qualquer** alteração de código, arquivo, rota, migration, commit o
 ## 6. ESTADO ATUAL DOS TRABALHOS (Memória do Projeto)
 
 ### Concluído ✅
+
 - Procedure A (REVOKE `is_admin_master(uuid)`) executada e validada no Supabase
 - Media module audit docs commitados (`330f152`, `1f0cbc5`); R1 validado
 - AVA module restaurado do baseline `5759a0b`/`c8ce3ee`
@@ -129,11 +134,13 @@ Antes de **qualquer** alteração de código, arquivo, rota, migration, commit o
 - Mobile web inventory: responsivo via `PublicBottomNavigation`/`PortalBottomNavigation` (`lg:hidden`)
 
 ### Ativo 🔄
+
 - **Etapa A auditada:** Hooks/serviços de vagas e serviços verificados (DB + fallback correto)
 - **Governança:** Este documento criado — próximo: injetar instruções no Kilo
 - **CHECK Boul(er) 24h:** Aguardando governança consolidada
 
 ### Bloqueado 🚫
+
 - Procedure B/C/D (test identities, cross-tenant, pilot cell) — precisa ambiente isolado
 - R2/R3 media corrections — aguarda design review + autorização
 - Stash@{4} wholesale apply — quebraria AVA, AuthContext, ModuleRouter
@@ -154,27 +161,27 @@ Antes de **qualquer** alteração de código, arquivo, rota, migration, commit o
 
 ## 8. CLASSIFICAÇÃO DE ITENS (Para Auditorias)
 
-| Classificação | Definição |
-|---------------|-----------|
-| `REAL` | Implementado no código E no banco, funcionando |
-| `PARCIAL` | Existe no código mas incompleto / só frontend / só backend |
-| `MOCK` | Apenas dados fictícios, sem conexão real |
-| `ESPECIFICADO` | Documentado mas não implementado |
-| `NÃO IMPLEMENTADO` | Nem especificado nem codificado |
-| `ÓRFÃO` | Existe mas sem dono/consumidor claro |
-| `OBSOLETO` | Substituído por outra implementação, deve ser removido |
-| `CONFLITANTE` | Duas implementações para mesma coisa, incompatíveis |
+| Classificação      | Definição                                                  |
+| ------------------ | ---------------------------------------------------------- |
+| `REAL`             | Implementado no código E no banco, funcionando             |
+| `PARCIAL`          | Existe no código mas incompleto / só frontend / só backend |
+| `MOCK`             | Apenas dados fictícios, sem conexão real                   |
+| `ESPECIFICADO`     | Documentado mas não implementado                           |
+| `NÃO IMPLEMENTADO` | Nem especificado nem codificado                            |
+| `ÓRFÃO`            | Existe mas sem dono/consumidor claro                       |
+| `OBSOLETO`         | Substituído por outra implementação, deve ser removido     |
+| `CONFLITANTE`      | Duas implementações para mesma coisa, incompatíveis        |
 
 ---
 
 ## 9. HISTÓRICO DE DECISÕES (Extraído da Memória)
 
-| ID | Decisão | Status |
-|----|---------|--------|
-| `is_admin_master.acl_fix_deployed` | REVOKE EXECUTE ON is_admin_master(uuid) FROM PUBLIC, anon, authenticated | ✅ Executado |
-| `phase2_services_image_resolution.closed` | Phase 2 fechada: mapeamento explícito, resolver integrado, 21/21 testes | ✅ Fechado |
-| `financeiro.modules_to_restore` | Investigar Git history antes de restaurar contas-pagar, bancos, centros-custo, categorias | 🔄 Pendente |
-| `audit.next_verification_scope` | Verificar todos .sql em supabase/, CREATE FUNCTION, GRANT, REVOKE, ALTER DEFAULT PRIVILEGES | 🔄 Pendente |
+| ID                                        | Decisão                                                                                     | Status       |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------- | ------------ |
+| `is_admin_master.acl_fix_deployed`        | REVOKE EXECUTE ON is_admin_master(uuid) FROM PUBLIC, anon, authenticated                    | ✅ Executado |
+| `phase2_services_image_resolution.closed` | Phase 2 fechada: mapeamento explícito, resolver integrado, 21/21 testes                     | ✅ Fechado   |
+| `financeiro.modules_to_restore`           | Investigar Git history antes de restaurar contas-pagar, bancos, centros-custo, categorias   | 🔄 Pendente  |
+| `audit.next_verification_scope`           | Verificar todos .sql em supabase/, CREATE FUNCTION, GRANT, REVOKE, ALTER DEFAULT PRIVILEGES | 🔄 Pendente  |
 
 ---
 

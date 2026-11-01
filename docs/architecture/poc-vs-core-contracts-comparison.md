@@ -110,7 +110,7 @@ The POC (`src/platform/cells/poc/`) and Core Contracts (`src/core/`) serve **dif
 **Core** (`IdentityContract.ts` - 104 lines):
 
 - `validatePersonLink(authUser, person)` — auth ↔ person linkage
-- `resolveActiveTenant(memberships, requestedTenantId)` — tenant resolution
+- `resolveActiveTenant(memberships, requestedTenantId)` — tenant resolution; returns no tenant without an explicit selection
 - `buildIdentityContext(authUser, person, memberships, currentTenantId)` — builds `IdentityContext`
 - `canExecuteBusinessOperation(identity)` — business operation guard
 - **Purpose:** Pure identity/tenant validation logic
@@ -205,7 +205,7 @@ From `levantamento_estrutural_chat.md` §12, the critical divergences are **data
 
 ### Phase 3 Complete: Comparison Done
 
-The core contracts in `src/core/` are **production-ready**, **well-tested** (40 tests), and **architecturally sound** (pure functions, default-deny, tenant isolation). They are **not** a direct evolution of the POC — they are a proper extraction from the `c8ce3ee` baseline that modeled the real Supabase schema.
+The core contracts in `src/core/` are **well-tested** (43 tests) and **architecturally sound** (pure functions, default-deny, tenant isolation). Tenant resolution requires an explicit selection even when only one active membership exists. They are **not** a direct evolution of the POC — they are a proper extraction from the `c8ce3ee` baseline that modeled the real Supabase schema.
 
 ### Next: Passagem C — Matriz Banco ↔ Código ↔ Célula
 
