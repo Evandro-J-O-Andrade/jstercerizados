@@ -1,0 +1,1 @@
+﻿export { EstoqueLayout } from './EstoqueLayout';
