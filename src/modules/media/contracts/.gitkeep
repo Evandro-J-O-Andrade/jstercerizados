@@ -1,0 +1,1 @@
+export const MEDIA_CELL_CONTRACT_VERSION = '1.0.0';
