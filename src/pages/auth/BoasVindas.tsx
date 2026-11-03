@@ -28,7 +28,11 @@ type AreaInfo = {
 };
 
 function getAreaInfo(
-  roles: { name: string; is_global: boolean }[],
+  roles: {
+    name: string;
+    is_global?: boolean | null;
+    scope?: 'global' | 'tenant' | null;
+  }[],
   isAdminMaster: boolean,
 ): AreaInfo {
   if (isAdminMaster) {
@@ -190,16 +194,14 @@ export default function AuthWelcome() {
       });
 
       if (result.error) {
-        console.warn(
-          '[AUTH:WELCOME] falha ao registrar welcome_completed_at',
-          { error: result.error },
-        );
+        console.warn('[AUTH:WELCOME] falha ao registrar welcome_completed_at', {
+          error: result.error,
+        });
       }
     } catch (persistError) {
-      console.warn(
-        '[AUTH:WELCOME] exceção ao registrar welcome_completed_at',
-        { error: persistError },
-      );
+      console.warn('[AUTH:WELCOME] exceção ao registrar welcome_completed_at', {
+        error: persistError,
+      });
     }
 
     try {

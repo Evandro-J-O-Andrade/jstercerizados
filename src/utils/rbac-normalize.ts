@@ -1,13 +1,57 @@
-export function normalizeRoleScope(isGlobal: boolean): 'global' | 'tenant' {
-  return isGlobal ? 'global' : 'tenant';
+export function normalizeRoleScope(
+  roleOrScope:
+    | {
+        scope?: 'global' | 'tenant' | null;
+        is_global?: boolean | null | string;
+      }
+    | boolean
+    | string
+    | null
+    | undefined,
+): 'global' | 'tenant' {
+  if (typeof roleOrScope === 'boolean') {
+    return roleOrScope ? 'global' : 'tenant';
+  }
+  if (roleOrScope && typeof roleOrScope === 'object') {
+    if (roleOrScope.scope === 'global') return 'global';
+    if (roleOrScope.scope === 'tenant') return 'tenant';
+    if (typeof roleOrScope.is_global === 'boolean') {
+      return roleOrScope.is_global ? 'global' : 'tenant';
+    }
+  }
+  if (typeof roleOrScope === 'string') {
+    if (roleOrScope === 'global') return 'global';
+    if (roleOrScope === 'tenant') return 'tenant';
+  }
+  return 'tenant';
 }
 
-export function isGlobalScope(isGlobal: boolean): boolean {
-  return isGlobal;
+export function isGlobalScope(
+  roleOrScope:
+    | {
+        scope?: 'global' | 'tenant' | null;
+        is_global?: boolean | null | string;
+      }
+    | boolean
+    | string
+    | null
+    | undefined,
+): boolean {
+  return normalizeRoleScope(roleOrScope) === 'global';
 }
 
-export function isTenantScope(isGlobal: boolean): boolean {
-  return !isGlobal;
+export function isTenantScope(
+  roleOrScope:
+    | {
+        scope?: 'global' | 'tenant' | null;
+        is_global?: boolean | null | string;
+      }
+    | boolean
+    | string
+    | null
+    | undefined,
+): boolean {
+  return normalizeRoleScope(roleOrScope) === 'tenant';
 }
 
 import type { Permission } from '@/types/auth';

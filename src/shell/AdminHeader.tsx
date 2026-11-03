@@ -205,7 +205,7 @@ export function AdminHeader({
   return (
     <header
       className={cn(
-        'border-border bg-background sticky top-0 z-40 flex items-center justify-between border-b shadow-sm backdrop-blur-md h-16',
+        'border-border bg-background sticky top-0 z-40 flex h-16 items-center justify-between border-b shadow-sm backdrop-blur-md',
         className,
       )}
     >
@@ -388,7 +388,7 @@ export function AdminHeader({
         isOpen={switchOpen}
         onClose={() => setSwitchOpen(false)}
         availableMemberships={availableMemberships}
-        roles={roles}
+        roles={roles as { id: string; name: string; is_global: boolean }[]}
         activeTenantId={activeTenantId}
         switchAccount={switchAccount}
         navigate={navigate}

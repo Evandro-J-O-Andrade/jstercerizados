@@ -130,22 +130,36 @@ function resolveActiveRole(
     const tenantRoles = activeAssignments.filter(
       (ra) => ra.tenant_id === currentTenantId,
     );
-    if (tenantRoles.length > 1) {
-      const globalRole = tenantRoles.find((ra) =>
-        isGlobalScope(roleById.get(ra.role_id)?.is_global ?? false),
-      );
-      if (globalRole) return roleById.get(globalRole.role_id) ?? null;
-    }
     if (tenantRoles.length > 0) {
+      const globalInTenant = tenantRoles.find((ra) => {
+        const role = roleById.get(ra.role_id);
+        return role ? isGlobalScope(role) : false;
+      });
+      if (globalInTenant) {
+        return roleById.get(globalInTenant.role_id) ?? null;
+      }
       return roleById.get(tenantRoles[0].role_id) ?? null;
     }
   }
 
-  const globalRole = activeAssignments.find(
-    (ra) => ra.tenant_id === null || ra.tenant_id === undefined,
-  );
+  const globalRole = activeAssignments.find((ra) => {
+    const role = roleById.get(ra.role_id);
+    if (!role) return false;
+    if (isGlobalScope(role)) {
+      return ra.tenant_id === null || ra.tenant_id === undefined;
+    }
+    return false;
+  });
   if (globalRole) {
     return roleById.get(globalRole.role_id) ?? null;
+  }
+
+  const anyGlobal = activeAssignments.find((ra) => {
+    const role = roleById.get(ra.role_id);
+    return role ? isGlobalScope(role) : false;
+  });
+  if (anyGlobal) {
+    return roleById.get(anyGlobal.role_id) ?? null;
   }
 
   if (activeAssignments.length > 0) {
@@ -193,7 +207,7 @@ export function deriveUserIdentity(
     ? {
         id: resolvedRole.id,
         name: resolvedRole.name,
-        is_global: resolvedRole.is_global,
+        is_global: isGlobalScope(resolvedRole),
       }
     : null;
 
@@ -202,7 +216,9 @@ export function deriveUserIdentity(
     ? { id: activeTenant.id, name: activeTenant.name }
     : null;
 
-  const roleScope = role?.is_global ? 'global' : 'tenant';
+  const roleScope = role?.is_global
+    ? 'global'
+    : normalizeRoleScope(resolvedRole);
   const tenantName =
     tenant?.name || (currentTenantId ? 'Tenant' : 'Plataforma');
   const contextLabel = computeContextLabel(roleScope, tenantName);
@@ -212,19 +228,19 @@ export function deriveUserIdentity(
   const roleLabel = role ? formatRoleLabel(role.name) : 'Usuário';
   const tenantLabel = tenant?.name || 'Plataforma';
 
-  const roleScopes = new Set(roles.map((r) => normalizeRoleScope(r.is_global)));
+  const roleScopes = new Set(roles.map((r) => normalizeRoleScope(r)));
   const hasTenantMembership = memberships.some((m) => m.status === 'active');
   const scopes: ('global' | 'tenant')[] = [];
   if (roleScopes.has('global')) {
     scopes.push('global');
-    const hasAdminMaster = roles.some(
-      (r) => isGlobalScope(r.is_global) && r.name === 'admin_master',
-    );
-    if (hasAdminMaster) {
+  }
+  if (roleScopes.has('tenant') || hasTenantMembership) {
+    if (!scopes.includes('tenant')) {
       scopes.push('tenant');
     }
+  } else if (scopes.length === 0) {
+    scopes.push('tenant');
   }
-  if (roleScopes.has('tenant') || hasTenantMembership) scopes.push('tenant');
 
   return {
     id: personId,

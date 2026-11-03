@@ -344,7 +344,7 @@ export function PortalHeader({
         isOpen={switchOpen}
         onClose={() => setSwitchOpen(false)}
         availableMemberships={availableMemberships}
-        roles={roles}
+        roles={roles as { id: string; name: string; is_global: boolean }[]}
         activeTenantId={activeTenantId}
         switchAccount={switchAccount}
         navigate={navigate}

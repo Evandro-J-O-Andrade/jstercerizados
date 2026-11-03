@@ -26,10 +26,10 @@ export interface TenantMembership {
 export interface Role {
   id: string;
   name: string;
-  slug: string;
+  slug?: string | null;
   description?: string | null;
-  scope: 'global' | 'tenant';
-  is_global: boolean;
+  scope?: 'global' | 'tenant' | null;
+  is_global?: boolean | null;
   created_at: string;
   updated_at: string;
 }

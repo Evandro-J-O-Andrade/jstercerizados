@@ -121,8 +121,8 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
   }, [identity.effectiveScopes]);
 
   const availableModules = useMemo<ModuleDefinition[]>(() => {
-    return getAvailableModules(permissions, effectiveScopes);
-  }, [permissions, effectiveScopes]);
+    return getAvailableModules(effectiveScopes);
+  }, [effectiveScopes]);
 
   const availableFeatures = useMemo<ModuleFeature[]>(() => {
     return availableModules.flatMap((module) =>
