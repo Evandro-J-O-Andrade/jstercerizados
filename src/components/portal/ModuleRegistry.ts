@@ -67,7 +67,7 @@ export const PORTAL_MODULES: ModuleDefinition[] = [
     title: 'Início',
     description: 'Resumo da sua operação',
     icon: 'home',
-    route: '/dashboard',
+    route: '/dashboard/global',
     category: 'inicio',
     scope: 'tenant',
     requiredPermissions: [],

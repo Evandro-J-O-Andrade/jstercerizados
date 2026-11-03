@@ -364,21 +364,35 @@ export function PortalSidebar({
                       const hasFeatures = Boolean(module.features?.length);
 
                       if (collapsed) {
+                        const isActiveCollapsed =
+                          moduleSelected ||
+                          isChildOf(module.route, activeRoute) ||
+                          isModuleRouteExpanded(module);
+
                         return (
                           <NavLink
                             key={module.id}
                             to={module.route}
-                            end
+                            end={module.route === '/dashboard' || module.route === '/'}
                             onClick={() => handleNavigate(module.route)}
                             className={cn(
-                              'flex items-center justify-center rounded-lg px-2 py-2 text-sm font-medium transition-colors',
-                              moduleSelected
-                                ? 'bg-primary/10 text-primary'
-                                : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                              'group relative flex items-center justify-center rounded-lg px-2 py-2 text-sm font-medium transition-all duration-200',
+                              isActiveCollapsed
+                                ? 'bg-primary/15 text-primary shadow-sm before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5 before:-translate-y-1/2 before:rounded-r-full before:bg-primary'
+                                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-sm',
                             )}
                             title={module.title}
+                            aria-current={isActiveCollapsed ? 'page' : undefined}
                           >
-                            <ModuleIcon name={module.icon} />
+                            <ModuleIcon
+                              name={module.icon}
+                              className={cn(
+                                'h-5 w-5 transition-all duration-200',
+                                isActiveCollapsed
+                                  ? 'text-primary scale-110'
+                                  : 'text-muted-foreground group-hover:text-accent-foreground group-hover:scale-105',
+                              )}
+                            />
                           </NavLink>
                         );
                       }
@@ -396,33 +410,58 @@ export function PortalSidebar({
                                   )
                                 }
                                 className={cn(
-                                  'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                                  moduleSelected
-                                    ? 'bg-primary/10 text-primary'
-                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                  'group flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
+                                  moduleSelected || isModuleRouteExpanded(module)
+                                    ? 'bg-primary/15 text-primary shadow-sm ring-1 ring-primary/20 before:w-0.5 before:bg-primary before:rounded-r-full before:absolute before:left-0 before:top-1/2 before:h-6 before:-translate-y-1/2 relative'
+                                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-sm',
                                 )}
+                                aria-expanded={moduleExpanded}
                               >
-                                <ModuleIcon name={module.icon} />
+                                <ModuleIcon
+                                  name={module.icon}
+                                  className={cn(
+                                    'h-5 w-5 transition-all duration-200',
+                                    moduleSelected || isModuleRouteExpanded(module)
+                                      ? 'text-primary scale-110'
+                                      : 'text-muted-foreground group-hover:text-accent-foreground group-hover:scale-105',
+                                  )}
+                                />
                                 <span className="flex-1 text-left">
                                   {module.title}
                                 </span>
-                                <span className="text-xs">
-                                  {moduleExpanded ? '▼' : '▶'}
+                                <span
+                                  className={cn(
+                                    'text-xs transition-all duration-200',
+                                    moduleSelected || isModuleRouteExpanded(module)
+                                      ? 'text-primary'
+                                      : 'text-muted-foreground group-hover:text-accent-foreground',
+                                    moduleExpanded ? 'rotate-0' : '-rotate-90',
+                                  )}
+                                >
+                                  ▼
                                 </span>
                               </button>
                             ) : (
                               <NavLink
                                 to={module.route}
-                                end
+                                end={module.route === '/dashboard' || module.route === '/'}
                                 onClick={() => handleNavigate(module.route)}
                                 className={cn(
-                                  'flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                                  'group relative flex flex-1 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
                                   moduleSelected
-                                    ? 'bg-primary/10 text-primary'
-                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                    ? 'bg-primary/15 text-primary shadow-sm ring-1 ring-primary/20 before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5 before:-translate-y-1/2 before:rounded-r-full before:bg-primary'
+                                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-sm',
                                 )}
                               >
-                                <ModuleIcon name={module.icon} />
+                                <ModuleIcon
+                                  name={module.icon}
+                                  className={cn(
+                                    'h-5 w-5 transition-all duration-200',
+                                    moduleSelected
+                                      ? 'text-primary scale-110'
+                                      : 'text-muted-foreground group-hover:text-accent-foreground group-hover:scale-105',
+                                  )}
+                                />
                                 <span className="flex-1 text-left">
                                   {module.title}
                                 </span>
@@ -453,17 +492,27 @@ export function PortalSidebar({
                                         }
                                         aria-expanded={featureExpanded}
                                         className={cn(
-                                          'flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
+                                          'group flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200',
                                           featureSelected
-                                            ? 'text-primary'
-                                            : 'text-muted-foreground hover:text-foreground',
+                                            ? 'text-primary relative before:absolute before:left-0 before:top-1/2 before:h-4 before:w-0.5 before:-translate-y-1/2 before:rounded-r-full before:bg-primary'
+                                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
                                         )}
                                       >
                                         <span className="flex-1 text-left">
                                           {feature.title}
                                         </span>
-                                        <span className="text-xs">
-                                          {featureExpanded ? '▼' : '▶'}
+                                        <span
+                                          className={cn(
+                                            'text-xs transition-transform duration-150',
+                                            featureSelected
+                                              ? 'text-primary'
+                                              : 'text-muted-foreground group-hover:text-accent-foreground',
+                                            featureExpanded
+                                              ? 'rotate-0'
+                                              : '-rotate-90',
+                                          )}
+                                        >
+                                          ▼
                                         </span>
                                       </button>
                                       {featureExpanded && (
@@ -480,16 +529,28 @@ export function PortalSidebar({
                                                   )
                                                 }
                                                 className={cn(
-                                                  'block rounded-lg px-3 py-1.5 text-sm transition-colors',
+                                                  'group relative block rounded-lg px-3 py-1.5 text-sm transition-all duration-200',
                                                   isExactMatch(
                                                     subFeature.route,
                                                     location.pathname,
                                                   )
-                                                    ? 'bg-primary/10 text-primary'
-                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                                    ? 'bg-primary/15 text-primary font-medium shadow-sm ring-1 ring-primary/20 before:absolute before:left-0 before:top-1/2 before:h-4 before:w-0.5 before:-translate-y-1/2 before:rounded-r-full before:bg-primary'
+                                                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-sm',
                                                 )}
                                               >
-                                                {subFeature.title}
+                                                <span
+                                                  className={cn(
+                                                    'transition-colors',
+                                                    isExactMatch(
+                                                      subFeature.route,
+                                                      location.pathname,
+                                                    )
+                                                      ? 'text-primary'
+                                                      : 'text-muted-foreground group-hover:text-accent-foreground',
+                                                  )}
+                                                >
+                                                  {subFeature.title}
+                                                </span>
                                               </NavLink>
                                             ),
                                           )}
@@ -504,17 +565,24 @@ export function PortalSidebar({
                                     key={feature.id}
                                     to={feature.route}
                                     end
-                                    onClick={() =>
-                                      handleNavigate(feature.route)
-                                    }
+                                    onClick={() => handleNavigate(feature.route)}
                                     className={cn(
-                                      'block rounded-lg px-3 py-1.5 text-sm transition-colors',
+                                      'group relative block rounded-lg px-3 py-1.5 text-sm transition-all duration-200',
                                       featureSelected
-                                        ? 'bg-primary/10 text-primary'
-                                        : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                        ? 'bg-primary/15 text-primary font-medium shadow-sm ring-1 ring-primary/20 before:absolute before:left-0 before:top-1/2 before:h-4 before:w-0.5 before:-translate-y-1/2 before:rounded-r-full before:bg-primary'
+                                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-sm',
                                     )}
                                   >
-                                    {feature.title}
+                                    <span
+                                      className={cn(
+                                        'transition-colors',
+                                        featureSelected
+                                          ? 'text-primary'
+                                          : 'text-muted-foreground group-hover:text-accent-foreground',
+                                      )}
+                                    >
+                                      {feature.title}
+                                    </span>
                                   </NavLink>
                                 );
                               })}

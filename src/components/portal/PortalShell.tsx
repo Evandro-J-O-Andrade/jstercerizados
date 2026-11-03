@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { PortalSidebar } from '@/components/portal/PortalSidebar';
 import { PortalHeader } from '@/components/portal/PortalHeader';
 import { PortalBottomNavigation } from '@/components/layout/PortalBottomNavigation';
+import { RoleBasedFooter } from '@/components/layout/RoleBasedFooter';
 import { AccountProvider } from '@/contexts/AccountContext';
 import { applyTheme, getStoredTheme } from '@/hooks/useTheme';
 
@@ -40,6 +41,7 @@ function PortalShellInner({ moduleTitle, children }: PortalShellProps) {
             {content}
           </div>
         </main>
+        <RoleBasedFooter className="shrink-0" />
       </div>
 
       <PortalBottomNavigation />

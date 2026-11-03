@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useCallback } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useIntro } from '@/contexts/IntroContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -275,13 +275,16 @@ function App() {
   );
 
   const dashboardRoutes = [
-    { path: '', element: <DashboardHome />, exact: true },
+    { path: 'global', element: <GlobalDashboardPage />, exact: true },
+    { path: '', element: <Navigate to="global" replace />, exact: true },
     ...(platformModules.length ? platformModules : [])
       .filter(
         (module) =>
           MODULE_PAGE_MAP[module.id] &&
           (MODULE_PERMISSION_MAP[module.id] ||
-            !module.requiredPermissions?.length),
+            !module.requiredPermissions?.length) &&
+          module.id !== 'admin-master' &&
+          module.id !== 'inicio',
       )
       .map((module) => ({
         path:
@@ -303,7 +306,9 @@ function App() {
         (module) =>
           MODULE_PAGE_MAP[module.id] &&
           (MODULE_PERMISSION_MAP[module.id] ||
-            !module.requiredPermissions?.length),
+            !module.requiredPermissions?.length) &&
+          module.id !== 'admin-master' &&
+          module.id !== 'inicio',
       )
       .map((module) => ({
         path:
@@ -370,6 +375,7 @@ function App() {
                 </PermissionGuard>
               }
             />
+            <Route path="" element={<Navigate to="global" replace />} />
 
             <Route
               path="rbac-auditoria"
