@@ -19,6 +19,8 @@ import {
   UserCircle,
 } from 'lucide-react';
 import { useAccount } from '@/contexts/AccountContext';
+import { usePlatformContext } from '@/platform/platform-context';
+import { cellRegistry } from '@/core/registry/CellRegistryContract';
 import { cn } from '@/utils';
 
 interface AdminSidebarItem {
@@ -42,9 +44,36 @@ export function AdminSidebar({
 }: AdminSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { identity } = useAccount();
+  const platform = usePlatformContext();
 
-  const items: AdminSidebarItem[] = [
-    { label: 'Meu Usuário', path: '/minha-conta', icon: <UserCircle /> },
+  const cellEntries = cellRegistry.getEnabled();
+  const cellItems: AdminSidebarItem[] = cellEntries
+    .filter((entry: any) => {
+      const cell = entry.cell;
+      if (!cell?.enabled) return false;
+      if (cell.navigation && cell.navigation.sidebar === false) return false;
+      const scopes = platform.effectiveScopes || [];
+      if (cell.scope && scopes.length > 0) {
+        if (!scopes.includes(cell.scope)) return false;
+      }
+      return true;
+    })
+    .map((entry: any) => {
+      const cell = entry.cell;
+      const home = cell.homeRoute || `/dashboard/${cell.id}`;
+      return { label: cell.navigation?.label || cell.name, path: home, icon: <LayoutDashboard />, id: cell.id };
+    })
+    .sort((a: any, b: any) => {
+      const aIsGlobal = a.id === 'admin-master' || a.path === '/dashboard/global';
+      const bIsGlobal = b.id === 'admin-master' || b.path === '/dashboard/global';
+      if (aIsGlobal && !bIsGlobal) return -1;
+      if (!aIsGlobal && bIsGlobal) return 1;
+      return a.label.localeCompare(b.label);
+    })
+    .map(({ id, ...rest }: any) => rest);
+
+  const items: AdminSidebarItem[] = cellItems.length > 0 ? cellItems : [
+    { label: 'Meu UsuÃ¡rio', path: '/minha-conta', icon: <UserCircle /> },
     {
       label: 'Dashboard',
       path: '/dashboard/admin',
@@ -52,7 +81,7 @@ export function AdminSidebar({
     },
     { label: 'Tenants', path: '/dashboard/admin/tenants', icon: <Building2 /> },
     {
-      label: 'Roles e Permissões',
+      label: 'Roles e PermissÃµes',
       path: '/dashboard/admin/roles-permissoes',
       icon: <ShieldCheck />,
     },
@@ -61,20 +90,20 @@ export function AdminSidebar({
       path: '/dashboard/admin/auditoria',
       icon: <Activity />,
     },
-    { label: 'Segurança', path: '/dashboard/admin/seguranca', icon: <Lock /> },
-    { label: 'Sessões', path: '/dashboard/admin/sessoes', icon: <Monitor /> },
+    { label: 'SeguranÃ§a', path: '/dashboard/admin/seguranca', icon: <Lock /> },
+    { label: 'SessÃµes', path: '/dashboard/admin/sessoes', icon: <Monitor /> },
     {
       label: 'Assinaturas',
       path: '/dashboard/admin/assinaturas',
       icon: <CreditCard />,
     },
     {
-      label: 'Gestão SaaS',
+      label: 'GestÃ£o SaaS',
       path: '/dashboard/admin/gestao-saas',
       icon: <Settings />,
     },
     {
-      label: 'Integrações',
+      label: 'IntegraÃ§Ãµes',
       path: '/dashboard/admin/integracoes',
       icon: <PlugZap />,
     },
@@ -89,7 +118,7 @@ export function AdminSidebar({
       icon: <Share2 />,
     },
     {
-      label: 'Notificações',
+      label: 'NotificaÃ§Ãµes',
       path: '/dashboard/admin/notificacoes',
       icon: <Bell />,
     },
@@ -121,7 +150,7 @@ export function AdminSidebar({
                 aria-hidden="true"
               />
               <span className="text-foreground truncate text-sm font-semibold">
-                Administração
+                Navegação
               </span>
             </div>
           )}

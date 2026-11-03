@@ -23,7 +23,7 @@ export const adminMasterCellContract: CellContract = {
   homeRoute: '/dashboard/global',
   routes: adminMasterCellRoutes,
   layout: { skipLayout: false },
-  navigation: { sidebar: true, label: 'Admin Master', icon: 'ShieldCheck' },
+  navigation: { sidebar: true, label: 'Dashboard Global', icon: 'ShieldCheck' },
   permissions: Object.values(ADMIN_MASTER_PERMISSIONS),
   enabled: true,
 };
