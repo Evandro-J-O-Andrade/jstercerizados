@@ -26,8 +26,11 @@ export class CandidatesRepository extends SupabaseRepository {
         documents:candidate_documents(*)
       `,
       )
-      .eq('tenant_id', tenantId)
       .order('created_at', { ascending: false });
+
+    if (tenantId) {
+      query = query.eq('tenant_id', tenantId);
+    }
 
     if (filters?.status) {
       query = query.eq('status', filters.status);

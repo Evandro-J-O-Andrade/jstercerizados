@@ -1,7 +1,10 @@
-﻿import type { MediaRequest, MediaResponse } from '../contracts/MediaRequestContract';
+﻿import type {
+  MediaRequest,
+  MediaResponse,
+} from '../contracts/MediaRequestContract';
 import type { MediaContext } from '../contracts/MediaContextContract';
-import { mediaAssetsRepository } from '../../repositories/media-assets.repository';
-import { getSupabaseClient } from '../../lib/supabase';
+import { mediaAssetsRepository } from '../../../repositories/media-assets.repository';
+import { getSupabaseClient } from '../../../lib/supabase';
 
 /**
  * MediaService — Serviço operacional da Célula Media
@@ -152,7 +155,8 @@ export class MediaService {
         success: false,
         requestId,
         errorCode: 'MEDIA_NOT_FOUND',
-        message: error instanceof Error ? error.message : 'Ativo não encontrado',
+        message:
+          error instanceof Error ? error.message : 'Ativo não encontrado',
         retryable: false,
       } as MediaResponse<T>;
     }

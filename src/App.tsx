@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useIntro } from '@/contexts/IntroContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -18,7 +18,6 @@ import NotFound from '@/pages/NotFound';
 import DashboardHome from '@/pages/dashboard/DashboardHome';
 import { EmpresasPage } from '@/pages/dashboard/EmpresasPage';
 import CandidatosPage from '@/pages/dashboard/Candidatos';
-import VagasPage from '@/pages/dashboard/Vagas';
 import { ServicosPage } from '@/pages/dashboard/ServicosPage';
 import { SuportePage } from '@/pages/dashboard/SuportePage';
 import TenantsPage from '@/pages/dashboard/TenantsPage';
@@ -34,9 +33,9 @@ import IntegracoesPage from '@/pages/dashboard/IntegracoesPage';
 import SegurancaPage from '@/pages/dashboard/SegurancaPage';
 import { ModuleRouter } from '@/platform/router';
 import { moduleRouteRegistries } from '@/platform/router/module-routes';
-import { MODULE_PERMISSION_MAP } from '@/components/legacy/portal/ModuleRegistry';
+import { MODULE_PERMISSION_MAP } from '@/core/permissions/modulePermissionMap';
 import Almoxarifado from '@/pages/dashboard/Almoxarifado';
-import GlobalDashboardPage from '@/modules/admin-master/dashboard/GlobalDashboardPage';
+import AdminMasterDashboardPage from '@/modules/admin-master/dashboard/AdminMasterDashboardPage';
 import PessoasPage from '@/modules/admin-master/pages/PessoasPage';
 import VisaoGeral from '@/pages/dashboard/VisaoGeral';
 import AuthTerms from '@/pages/auth/Termos';
@@ -206,9 +205,7 @@ function RoutesAndLayout() {
               path="global"
               element={
                 <ProtectedRoute allowedRoles={['admin_master']}>
-                  <PermissionGuard permission="tenants.read">
-                    <GlobalDashboardPage />
-                  </PermissionGuard>
+                  <Navigate to="/dashboard/admin-master" replace />
                 </ProtectedRoute>
               }
             />
@@ -506,7 +503,7 @@ function RoutesAndLayout() {
               }
             />
             <Route
-              path="candidatos"
+              path="candidato"
               element={
                 <PermissionGuard permission="candidates.read">
                   <CandidatosPage />
@@ -514,10 +511,18 @@ function RoutesAndLayout() {
               }
             />
             <Route
-              path="vagas"
+              path="global"
               element={
-                <PermissionGuard permission="jobs.read">
-                  <VagasPage />
+                <ProtectedRoute allowedRoles={['admin_master']}>
+                  <Navigate to="/dashboard/admin-master" replace />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="admin-master"
+              element={
+                <PermissionGuard permission="tenants.read">
+                  <AdminMasterDashboardPage />
                 </PermissionGuard>
               }
             />
@@ -734,6 +739,14 @@ function RoutesAndLayout() {
               }
             />
             <Route
+              path="usuarios"
+              element={
+                <PermissionGuard permission="people.read">
+                  <UsuariosPage />
+                </PermissionGuard>
+              }
+            />
+            <Route
               path="recrutamento/*"
               element={
                 <RecrutamentoLayout>
@@ -823,6 +836,27 @@ function RoutesAndLayout() {
               }
             />
           </Route>
+          <Route
+            path="/dashboard/candidato/*"
+            element={
+              <AuthRoute>
+                <ProtectedRoute allowedRoles={['admin_master']}>
+                  <PermissionGuard permission="candidates.read">
+                    <AdminProvider>
+                      <AdminLayout>
+                        <ModuleRouter
+                          moduleRegistries={moduleRouteRegistries}
+                          moduleIds={['candidato']}
+                          moduleRouteBase="/dashboard/candidato"
+                          skipLayout
+                        />
+                      </AdminLayout>
+                    </AdminProvider>
+                  </PermissionGuard>
+                </ProtectedRoute>
+              </AuthRoute>
+            }
+          />
           <Route
             path="*"
             element={

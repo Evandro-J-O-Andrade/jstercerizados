@@ -8,11 +8,17 @@ import { ADMIN_MASTER_PERMISSIONS } from '../permissions';
 
 export const adminMasterRoutes = [
   {
+    path: '/dashboard/admin-master',
+    label: 'Admin Master',
+    component: 'GlobalDashboardPage',
+    permission: ADMIN_MASTER_PERMISSIONS.tenants,
+    isGlobal: true,
+  },
+  {
     path: '/dashboard/global',
     label: 'Dashboard Global',
     component: 'GlobalDashboardPage',
     permission: ADMIN_MASTER_PERMISSIONS.tenants,
-    isGlobal: true,
   },
   {
     path: '/dashboard/tenants',
@@ -33,8 +39,8 @@ export const adminMasterRoutes = [
     permission: ADMIN_MASTER_PERMISSIONS.people,
   },
   {
-    path: '/dashboard/candidatos',
-    label: 'Candidatos',
+    path: '/dashboard/candidato',
+    label: 'Candidato',
     component: 'CandidatosPage',
     permission: ADMIN_MASTER_PERMISSIONS.candidates,
   },

@@ -67,7 +67,8 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
       try {
         const globalScope = isAdminMaster;
         const countTable = async (table: string, permission: string) => {
-          if (!userHasPermission(permissions, permission)) return 0;
+          if (!isAdminMaster && !userHasPermission(permissions, permission))
+            return 0;
 
           let query = supabase
             .from(table)

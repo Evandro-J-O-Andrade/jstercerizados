@@ -15,9 +15,10 @@ export interface MediaAsset {
 }
 
 export interface MediaUploaderProps {
-  entityType: 'company' | 'service' | 'partner' | 'supplier' | 'job';
+  entityType:
+    'company' | 'service' | 'partner' | 'supplier' | 'job' | 'candidate';
   entityId: string;
-  purpose: 'logo' | 'hero' | 'card' | 'gallery';
+  purpose: 'logo' | 'hero' | 'card' | 'gallery' | 'cover' | 'avatar' | 'banner';
   onUploadComplete?: (asset: MediaAsset) => void;
   onError?: (error: Error) => void;
   onDelete?: (assetId: string) => void;

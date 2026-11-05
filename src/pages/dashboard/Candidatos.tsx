@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
-import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
-import { Users, Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/feedback/ToastContext';
 import { ConfirmDialog } from '@/components/feedback/ConfirmDialog';
@@ -28,7 +27,7 @@ const SALARY_TYPE_OPTIONS = [
 ] as const;
 
 export default function Candidatos() {
-  const { currentTenantId, hasAnyPermission } = useAuth();
+  const { currentTenantId, hasAnyPermission, isAdminMaster } = useAuth();
   const { addToast } = useToast();
 
   const canCreate = hasAnyPermission(['candidates.create']);
@@ -52,7 +51,8 @@ export default function Candidatos() {
   });
 
   const statusCounts = candidates.reduce<Record<string, number>>((acc, c) => {
-    acc[c.status || 'unknown'] = (acc[c.status || 'unknown'] || 0) + 1;
+    const status = c.status || 'unknown';
+    acc[status] = (acc[status] || 0) + 1;
     return acc;
   }, {});
 
@@ -60,16 +60,20 @@ export default function Candidatos() {
     let cancelled = false;
 
     async function load() {
-      if (!currentTenantId) return;
+      const tenantId = currentTenantId || (isAdminMaster ? '' : null);
+      if (!tenantId && !isAdminMaster) return;
 
       setIsLoading(true);
       setError(null);
 
       try {
-        const data = await candidatesRepository.findAll(currentTenantId, {
-          status: statusFilter === 'all' ? undefined : statusFilter,
-          search: search || undefined,
-        });
+        const data = await candidatesRepository.findAll(
+          isAdminMaster && !currentTenantId ? ('' as any) : currentTenantId!,
+          {
+            status: statusFilter === 'all' ? undefined : statusFilter,
+            search: search || undefined,
+          },
+        );
         if (!cancelled) {
           setCandidates(data);
         }
@@ -196,342 +200,344 @@ export default function Candidatos() {
   };
 
   return (
-    <ModuleWorkspace
-      title="Candidatos"
-      description="Acompanhe os candidatos inscritos."
-      icon={Users}
-      breadcrumbItems={[{ label: 'Candidatos' }]}
-      actions={
-        canCreate ? (
-          <Button variant="primary" size="sm" onClick={openCreate}>
-            <Plus className="h-4 w-4" />
-            Novo candidato
-          </Button>
-        ) : undefined
-      }
-    >
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Card className="p-4">
-            <p className="text-muted-foreground text-xs font-semibold uppercase">
-              Total
-            </p>
-            <p className="text-foreground text-2xl font-semibold">
-              {candidates.length}
-            </p>
-          </Card>
-          <Card className="p-4">
-            <p className="text-muted-foreground text-xs font-semibold uppercase">
-              Ativos
-            </p>
-            <p className="text-foreground text-2xl font-semibold">
-              {statusCounts['active'] || 0}
-            </p>
-          </Card>
-          <Card className="p-4">
-            <p className="text-muted-foreground text-xs font-semibold uppercase">
-              Arquivados
-            </p>
-            <p className="text-foreground text-2xl font-semibold">
-              {statusCounts['archived'] || 0}
-            </p>
-          </Card>
-          <Card className="p-4">
-            <p className="text-muted-foreground text-xs font-semibold uppercase">
-              Bloqueados
-            </p>
-            <p className="text-foreground text-2xl font-semibold">
-              {statusCounts['blacklisted'] || 0}
-            </p>
-          </Card>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2 rounded-lg border px-3 py-1.5">
-            <Search className="text-muted-foreground h-4 w-4" />
-            <input
-              type="text"
-              placeholder="Buscar por nome, headline ou fonte..."
-              className="bg-transparent text-sm outline-none"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+    <div className="min-h-screen bg-slate-50">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Candidatos</h1>
+            <p className="text-slate-600">Acompanhe os candidatos inscritos.</p>
           </div>
-          <select
-            className="rounded-lg border px-3 py-1.5 text-sm"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="all">Todos os status</option>
-            {CANDIDATE_STATUS.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
+          {canCreate && (
+            <Button onClick={openCreate} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Novo candidato
+            </Button>
+          )}
         </div>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Card className="p-4">
+              <p className="text-muted-foreground text-xs font-semibold uppercase">
+                Total
+              </p>
+              <p className="text-foreground text-2xl font-semibold">
+                {candidates.length}
+              </p>
+            </Card>
+            <Card className="p-4">
+              <p className="text-muted-foreground text-xs font-semibold uppercase">
+                Ativos
+              </p>
+              <p className="text-foreground text-2xl font-semibold">
+                {statusCounts['active'] || 0}
+              </p>
+            </Card>
+            <Card className="p-4">
+              <p className="text-muted-foreground text-xs font-semibold uppercase">
+                Arquivados
+              </p>
+              <p className="text-foreground text-2xl font-semibold">
+                {statusCounts['archived'] || 0}
+              </p>
+            </Card>
+            <Card className="p-4">
+              <p className="text-muted-foreground text-xs font-semibold uppercase">
+                Bloqueados
+              </p>
+              <p className="text-foreground text-2xl font-semibold">
+                {statusCounts['blacklisted'] || 0}
+              </p>
+            </Card>
+          </div>
 
-        {error && (
-          <Card className="p-6">
-            <p className="text-destructive">{error}</p>
-          </Card>
-        )}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 rounded-lg border px-3 py-1.5">
+              <Search className="text-muted-foreground h-4 w-4" />
+              <input
+                type="text"
+                placeholder="Buscar por nome, headline ou fonte..."
+                className="bg-transparent text-sm outline-none"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <select
+              className="rounded-lg border px-3 py-1.5 text-sm"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">Todos os status</option>
+              {CANDIDATE_STATUS.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {isLoading ? (
-          <Card className="p-6">
-            <p className="text-muted-foreground">Carregando candidatos...</p>
-          </Card>
-        ) : candidates.length === 0 ? (
-          <Card className="p-6">
-            <p className="text-muted-foreground">
-              Nenhum candidato encontrado.
-            </p>
-          </Card>
-        ) : (
-          <div className="card-base overflow-hidden">
-            <table className="divide-border min-w-full divide-y">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Nome
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Headline
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Fonte
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
-                    Status
-                  </th>
-                  <th className="text-muted-foreground px-4 py-3 text-right text-xs font-semibold tracking-wider uppercase">
-                    Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-border divide-y">
-                {candidates.map((candidate) => (
-                  <tr
-                    key={candidate.id}
-                    className="hover:bg-muted/30 transition-colors"
-                  >
-                    <td className="text-foreground px-4 py-3 text-sm font-medium">
-                      {candidate.person?.full_name || 'Sem nome'}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {candidate.headline || '-'}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3 text-sm">
-                      {candidate.source || '-'}
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      <span
-                        className={cn(
-                          'rounded-full px-3 py-1 text-xs font-medium',
-                          candidate.status === 'active' &&
-                            'bg-success/10 text-success',
-                          candidate.status === 'inactive' &&
-                            'bg-warning/10 text-warning',
-                          candidate.status === 'archived' &&
-                            'bg-muted text-muted-foreground',
-                          candidate.status === 'blacklisted' &&
-                            'bg-destructive/10 text-destructive',
-                        )}
-                      >
-                        {getStatusLabel(candidate.status)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {canUpdate && (
-                          <button
-                            type="button"
-                            onClick={() => openEdit(candidate)}
-                            className="text-muted-foreground hover:text-foreground"
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </button>
-                        )}
-                        {canDelete && (
-                          <button
-                            type="button"
-                            onClick={() => setDeleteConfirm(candidate.id)}
-                            className="text-destructive hover:text-destructive/80"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
+          {error && (
+            <Card className="p-6">
+              <p className="text-destructive">{error}</p>
+            </Card>
+          )}
+
+          {isLoading ? (
+            <Card className="p-6">
+              <p className="text-muted-foreground">Carregando candidatos...</p>
+            </Card>
+          ) : candidates.length === 0 ? (
+            <Card className="p-6">
+              <p className="text-muted-foreground">
+                Nenhum candidato encontrado.
+              </p>
+            </Card>
+          ) : (
+            <div className="card-base overflow-hidden">
+              <table className="divide-border min-w-full divide-y">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Nome
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Headline
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Fonte
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
+                      Status
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-right text-xs font-semibold tracking-wider uppercase">
+                      Ações
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody className="divide-border divide-y">
+                  {candidates.map((candidate) => (
+                    <tr
+                      key={candidate.id}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="text-foreground px-4 py-3 text-sm font-medium">
+                        {candidate.person?.full_name || 'Sem nome'}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-sm">
+                        {candidate.headline || '-'}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3 text-sm">
+                        {candidate.source || '-'}
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <span
+                          className={cn(
+                            'rounded-full px-3 py-1 text-xs font-medium',
+                            candidate.status === 'active' &&
+                              'bg-success/10 text-success',
+                            candidate.status === 'inactive' &&
+                              'bg-warning/10 text-warning',
+                            candidate.status === 'archived' &&
+                              'bg-muted text-muted-foreground',
+                            candidate.status === 'blacklisted' &&
+                              'bg-destructive/10 text-destructive',
+                          )}
+                        >
+                          {getStatusLabel(candidate.status)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {canUpdate && (
+                            <button
+                              type="button"
+                              onClick={() => openEdit(candidate)}
+                              className="text-muted-foreground hover:text-foreground"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              onClick={() => setDeleteConfirm(candidate.id)}
+                              className="text-destructive hover:text-destructive/80"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
-        {(canCreate || selected) && (
-          <Card className="p-6">
-            <h3 className="text-foreground mb-4 text-lg font-semibold">
-              {selected ? 'Editar candidato' : 'Novo candidato'}
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Person ID
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.person_id}
-                    onChange={(e) =>
-                      setForm({ ...form, person_id: e.target.value })
-                    }
-                    placeholder="UUID da pessoa"
-                  />
+          {(canCreate || selected) && (
+            <Card className="p-6">
+              <h3 className="text-foreground mb-4 text-lg font-semibold">
+                {selected ? 'Editar candidato' : 'Novo candidato'}
+              </h3>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
+                      Person ID
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full rounded-lg border px-3 py-2 text-sm"
+                      value={form.person_id}
+                      onChange={(e) =>
+                        setForm({ ...form, person_id: e.target.value })
+                      }
+                      placeholder="UUID da pessoa"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
+                      Headline
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full rounded-lg border px-3 py-2 text-sm"
+                      value={form.headline}
+                      onChange={(e) =>
+                        setForm({ ...form, headline: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
+                      Salário mínimo
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full rounded-lg border px-3 py-2 text-sm"
+                      value={form.salary_expectation_min}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          salary_expectation_min: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
+                      Salário máximo
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full rounded-lg border px-3 py-2 text-sm"
+                      value={form.salary_expectation_max}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          salary_expectation_max: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
+                      Tipo de salário
+                    </label>
+                    <select
+                      className="w-full rounded-lg border px-3 py-2 text-sm"
+                      value={form.salary_type ?? 'negotiate'}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          salary_type: e.target
+                            .value as Candidate['salary_type'],
+                        })
+                      }
+                    >
+                      {SALARY_TYPE_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
+                      Fonte
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full rounded-lg border px-3 py-2 text-sm"
+                      value={form.source}
+                      onChange={(e) =>
+                        setForm({ ...form, source: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
+                      Status
+                    </label>
+                    <select
+                      className="w-full rounded-lg border px-3 py-2 text-sm"
+                      value={form.status}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          status: e.target.value as Candidate['status'],
+                        })
+                      }
+                    >
+                      {CANDIDATE_STATUS.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Headline
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.headline}
-                    onChange={(e) =>
-                      setForm({ ...form, headline: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Salário mínimo
-                  </label>
-                  <input
-                    type="number"
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.salary_expectation_min}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        salary_expectation_min: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Salário máximo
-                  </label>
-                  <input
-                    type="number"
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.salary_expectation_max}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        salary_expectation_max: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Tipo de salário
-                  </label>
-                  <select
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.salary_type ?? 'negotiate'}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        salary_type: e.target.value as Candidate['salary_type'],
-                      })
-                    }
-                  >
-                    {SALARY_TYPE_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Fonte
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.source}
-                    onChange={(e) =>
-                      setForm({ ...form, source: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-muted-foreground mb-1 block text-xs font-semibold uppercase">
-                    Status
-                  </label>
-                  <select
-                    className="w-full rounded-lg border px-3 py-2 text-sm"
-                    value={form.status}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        status: e.target.value as Candidate['status'],
-                      })
-                    }
-                  >
-                    {CANDIDATE_STATUS.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button type="submit" variant="primary">
-                  {selected ? 'Salvar' : 'Criar'}
-                </Button>
-                {selected && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => {
-                      setSelected(null);
-                      setForm({
-                        person_id: '',
-                        headline: '',
-                        salary_expectation_min: '',
-                        salary_expectation_max: '',
-                        salary_type: 'negotiate',
-                        source: '',
-                        status: 'active',
-                      });
-                    }}
-                  >
-                    Cancelar
+                <div className="flex items-center gap-2">
+                  <Button type="submit" variant="primary">
+                    {selected ? 'Salvar' : 'Criar'}
                   </Button>
-                )}
-              </div>
-            </form>
-          </Card>
-        )}
-      </div>
+                  {selected && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => {
+                        setSelected(null);
+                        setForm({
+                          person_id: '',
+                          headline: '',
+                          salary_expectation_min: '',
+                          salary_expectation_max: '',
+                          salary_type: 'negotiate',
+                          source: '',
+                          status: 'active',
+                        });
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </Card>
+          )}
+        </div>
 
-      <ConfirmDialog
-        open={!!deleteConfirm}
-        title="Remover candidato?"
-        message="Tem certeza que deseja remover este candidato? Essa ação não pode ser desfeita."
-        confirmLabel="Remover"
-        variant="danger"
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteConfirm(null)}
-      />
-    </ModuleWorkspace>
+        <ConfirmDialog
+          open={!!deleteConfirm}
+          title="Remover candidato?"
+          message="Tem certeza que deseja remover este candidato? Essa ação não pode ser desfeita."
+          confirmLabel="Remover"
+          variant="danger"
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteConfirm(null)}
+        />
+      </div>
+    </div>
   );
 }

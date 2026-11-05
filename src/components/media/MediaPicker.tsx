@@ -5,8 +5,8 @@
  * sem necessidade de upload duplicado. Consumidor da Célula Media.
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { Image, Search, Upload, X } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
+import { Image, Search } from 'lucide-react';
 import { cn } from '@/utils';
 import { MediaUploader } from './MediaUploader';
 import { mediaAssetsRepository } from '@/repositories/media-assets.repository';
@@ -46,7 +46,9 @@ export function MediaPicker({
       );
       setExistingAssets(assets);
     } catch (err) {
-      onError?.(err instanceof Error ? err : new Error('Falha ao carregar ativos'));
+      onError?.(
+        err instanceof Error ? err : new Error('Falha ao carregar ativos'),
+      );
     } finally {
       setIsLoading(false);
     }
@@ -83,24 +85,24 @@ export function MediaPicker({
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Busar ativos existentes..."
                 disabled={disabled || isLoading}
-                className="w-full rounded-lg border pl-9 pr-3 py-2 text-sm bg-surface text-foreground"
+                className="bg-surface text-foreground w-full rounded-lg border py-2 pr-3 pl-9 text-sm"
               />
             </div>
           </div>
 
           {isLoading ? (
-            <div className="flex items-center justify-center py-8 text-muted-foreground">
+            <div className="text-muted-foreground flex items-center justify-center py-8">
               <Image className="h-6 w-6 animate-pulse" />
             </div>
           ) : filteredAssets.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {filteredAssets.map((asset) => (
                 <button
                   key={asset.id}
@@ -108,19 +110,19 @@ export function MediaPicker({
                   onClick={() => handleAssetClick(asset)}
                   disabled={disabled}
                   className={cn(
-                    'relative rounded-lg overflow-hidden border-2 transition-all',
+                    'relative overflow-hidden rounded-lg border-2 transition-all',
                     'hover:border-primary hover:shadow-md',
-                    disabled && 'opacity-50 cursor-not-allowed',
+                    disabled && 'cursor-not-allowed opacity-50',
                   )}
                 >
                   <img
                     src={asset.file_url}
                     alt={asset.alt_text || asset.file_name}
-                    className="w-full h-24 object-cover"
+                    className="h-24 w-full object-cover"
                     loading="lazy"
                   />
                   {asset.is_primary && (
-                    <span className="absolute top-1 right-1 px-1.5 py-0.5 text-xs bg-primary text-white rounded">
+                    <span className="bg-primary absolute top-1 right-1 rounded px-1.5 py-0.5 text-xs text-white">
                       Principal
                     </span>
                   )}
@@ -128,8 +130,8 @@ export function MediaPicker({
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-muted-foreground text-sm">
-              <Image className="h-8 w-8 mx-auto mb-2 opacity-50" />
+            <div className="text-muted-foreground py-8 text-center text-sm">
+              <Image className="mx-auto mb-2 h-8 w-8 opacity-50" />
               Nenhum ativo encontrado para esta entidade.
             </div>
           )}
@@ -139,9 +141,9 @@ export function MediaPicker({
       {/* Separador */}
       {showExisting && existingAssets.length > 0 && (
         <div className="flex items-center gap-3">
-          <div className="flex-1 border-t border-border" />
-          <span className="text-xs text-muted-foreground">ou</span>
-          <div className="flex-1 border-t border-border" />
+          <div className="border-border flex-1 border-t" />
+          <span className="text-muted-foreground text-xs">ou</span>
+          <div className="border-border flex-1 border-t" />
         </div>
       )}
 

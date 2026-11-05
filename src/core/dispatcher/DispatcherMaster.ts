@@ -312,13 +312,12 @@ export class DispatcherMaster {
     }
 
     // 3. Usuário corporativo sem membership vai para onboarding
+    const roleNamesLower = (options?.roleNames || []).map((r) =>
+      r.toLowerCase(),
+    );
+
     const isCandidateUser =
-      options?.isCandidate === true ||
-      options?.roleNames?.includes('candidato') ||
-      dispatchContext.effectivePermissions.some(
-        (p) =>
-          p.name === 'candidates.self.read' || p.name === 'candidates.read',
-      );
+      options?.isCandidate === true || roleNamesLower.includes('candidato');
 
     if (!hasMembership && !dispatchContext.isAdminMaster && !isCandidateUser) {
       return '/onboarding';
@@ -345,7 +344,7 @@ export class DispatcherMaster {
 
     // 7. Administrador Master Global — ROOT da plataforma
     if (dispatchContext.isAdminMaster) {
-      return '/dashboard/global';
+      return '/dashboard/admin-master';
     }
 
     // 8. Proprietário / Tenant Admin — ambiente exclusivo do dono

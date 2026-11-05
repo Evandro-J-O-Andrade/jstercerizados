@@ -62,12 +62,16 @@ export function MediaUploader({
     setAssets(existingAssets);
   }, [existingAssets]);
 
-  const handleFilesSelected = useCallback((files: File[]) => {
-    setValidationError(null);
-    const remainingSlots = effectiveMaxFiles - assets.length - selectedFiles.length;
-    const filesToAdd = files.slice(0, Math.max(0, remainingSlots));
-    setSelectedFiles((prev) => [...prev, ...filesToAdd]);
-  }, [assets.length, effectiveMaxFiles, selectedFiles.length]);
+  const handleFilesSelected = useCallback(
+    (files: File[]) => {
+      setValidationError(null);
+      const remainingSlots =
+        effectiveMaxFiles - assets.length - selectedFiles.length;
+      const filesToAdd = files.slice(0, Math.max(0, remainingSlots));
+      setSelectedFiles((prev) => [...prev, ...filesToAdd]);
+    },
+    [assets.length, effectiveMaxFiles, selectedFiles.length],
+  );
 
   const handleValidationError = useCallback((error: string | null) => {
     setValidationError(error);
@@ -84,39 +88,53 @@ export function MediaUploader({
     setSelectedFiles([]);
   }, [selectedFiles, uploadFile]);
 
-  const handleRemoveAsset = useCallback(async (assetId: string) => {
-    await deleteAssetHook(assetId);
-    setAssets((prev) => prev.filter((a) => a.id !== assetId));
-  }, [deleteAssetHook]);
+  const handleRemoveAsset = useCallback(
+    async (assetId: string) => {
+      await deleteAssetHook(assetId);
+      setAssets((prev) => prev.filter((a) => a.id !== assetId));
+    },
+    [deleteAssetHook],
+  );
 
-  const handleSetPrimary = useCallback(async (assetId: string) => {
-    await setPrimaryAsset(assetId);
-    setAssets((prev) =>
-      prev.map((a) => ({ ...a, is_primary: a.id === assetId }))
-    );
-  }, [setPrimaryAsset]);
+  const handleSetPrimary = useCallback(
+    async (assetId: string) => {
+      await setPrimaryAsset(assetId);
+      setAssets((prev) =>
+        prev.map((a) => ({ ...a, is_primary: a.id === assetId })),
+      );
+    },
+    [setPrimaryAsset],
+  );
 
-  const handleReorder = useCallback(async (assetId: string, newSortOrder: number) => {
-    await reorderAssets(assetId, newSortOrder);
-    setAssets((prev) =>
-      prev.map((a) => (a.id === assetId ? { ...a, sort_order: newSortOrder } : a))
-    );
-  }, [reorderAssets]);
+  const handleReorder = useCallback(
+    async (assetId: string, newSortOrder: number) => {
+      await reorderAssets(assetId, newSortOrder);
+      setAssets((prev) =>
+        prev.map((a) =>
+          a.id === assetId ? { ...a, sort_order: newSortOrder } : a,
+        ),
+      );
+    },
+    [reorderAssets],
+  );
 
   const hasPrimary = assets.some((a) => a.is_primary);
   const primaryAsset = assets.find((a) => a.is_primary);
 
   // For non-gallery purposes, show only primary (or first) as main preview
-  const showMainPreview = purpose !== 'gallery' && showPreview && assets.length > 0;
+  const showMainPreview =
+    purpose !== 'gallery' && showPreview && assets.length > 0;
   const showGallery = purpose === 'gallery' && showPreview;
 
   return (
     <div className={cn('space-y-4', className)}>
       {validationError && (
-        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20">
           <div className="flex items-start gap-2">
-            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
-            <p className="text-sm text-red-800 dark:text-red-200">{validationError}</p>
+            <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" />
+            <p className="text-sm text-red-800 dark:text-red-200">
+              {validationError}
+            </p>
           </div>
         </div>
       )}
@@ -144,28 +162,28 @@ export function MediaUploader({
             {selectedFiles.map((file, index) => (
               <div
                 key={`${file.name}-${index}`}
-                className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
               >
-                <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
                   <div className="text-2xl">📄</div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
                     {file.name}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     {(file.size / 1024 / 1024).toFixed(2)} MB • {file.type}
                   </p>
                   {errors[file.name] && (
-                    <p className="text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
+                    <p className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
+                      <AlertCircle className="h-3 w-3" />
                       {errors[file.name]}
                     </p>
                   )}
                   {progress[file.name] !== undefined && (
-                    <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mt-1">
+                    <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                       <div
-                        className="h-full bg-primary transition-all duration-300"
+                        className="bg-primary h-full transition-all duration-300"
                         style={{ width: `${progress[file.name]}%` }}
                       />
                     </div>
@@ -174,10 +192,10 @@ export function MediaUploader({
                 <button
                   onClick={() => removeSelectedFile(index)}
                   disabled={uploading}
-                  className="p-1.5 text-gray-400 hover:text-red-600 disabled:opacity-50 transition-colors"
+                  className="p-1.5 text-gray-400 transition-colors hover:text-red-600 disabled:opacity-50"
                   aria-label="Remover arquivo"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="h-4 w-4" />
                 </button>
               </div>
             ))}
@@ -186,9 +204,9 @@ export function MediaUploader({
             <button
               onClick={handleUploadAll}
               disabled={selectedFiles.length === 0 || uploading}
-              className="w-full py-2 px-4 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+              className="bg-primary hover:bg-primary/90 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
               Enviar {selectedFiles.length} arquivo(s)
             </button>
           )}
@@ -203,7 +221,7 @@ export function MediaUploader({
           </h4>
           <Preview
             asset={primaryAsset}
-            purpose={purpose}
+            purpose={purpose as any}
             isPrimary={true}
             onRemove={handleRemoveAsset}
             onSetPrimary={undefined} // Already primary
@@ -217,7 +235,8 @@ export function MediaUploader({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              Galeria ({assets.filter((a) => !a.metadata?.archived).length}/{effectiveMaxFiles})
+              Galeria ({assets.filter((a) => !a.metadata?.archived).length}/
+              {effectiveMaxFiles})
             </h4>
             {assets.length < effectiveMaxFiles && !uploading && (
               <DropZone
@@ -246,21 +265,21 @@ export function MediaUploader({
       {/* Upload Status */}
       {uploading && (
         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+          <Loader2 className="text-primary h-4 w-4 animate-spin" />
           Enviando...
         </div>
       )}
 
       {/* Global Error */}
       {Object.keys(errors).length > 0 && !selectedFiles.length && (
-        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20">
           <div className="flex items-start gap-2">
-            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
+            <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" />
             <div>
               <p className="text-sm font-medium text-red-800 dark:text-red-200">
                 Erros no upload
               </p>
-              <ul className="text-xs text-red-700 dark:text-red-300 mt-1 space-y-1">
+              <ul className="mt-1 space-y-1 text-xs text-red-700 dark:text-red-300">
                 {Object.entries(errors).map(([fileName, msg]) => (
                   <li key={fileName} className="flex items-center gap-1">
                     <span className="font-mono">{fileName}:</span>

@@ -47,9 +47,8 @@ const MAGIC_BYTES: Record<string, Uint8Array[]> = {
     new Uint8Array([0xff, 0xd8, 0xff, 0xe1]),
   ],
   'image/webp': [
-    new Uint8Array([
-      0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
-    ]),
+    new Uint8Array([0x52, 0x49, 0x46, 0x46]), // RIFF
+    new Uint8Array([0x57, 0x45, 0x42, 0x50]), // WEBP at offset 8
   ],
   'application/pdf': [new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d])],
 };
@@ -104,6 +103,22 @@ function validateMagicBytes(
     .arrayBuffer()
     .then((buffer) => {
       const header = new Uint8Array(buffer);
+
+      if (declaredMime === 'image/webp') {
+        // RIFF at offset 0-3, WEBP at offset 8-11
+        const riffOk =
+          header[0] === 0x52 &&
+          header[1] === 0x49 &&
+          header[2] === 0x46 &&
+          header[3] === 0x46;
+        const webpOk =
+          header[8] === 0x57 &&
+          header[9] === 0x45 &&
+          header[10] === 0x42 &&
+          header[11] === 0x50;
+        return riffOk && webpOk;
+      }
+
       return expectedSignatures.some((sig) =>
         sig.every((byte, i) => header[i] === byte),
       );
@@ -404,7 +419,11 @@ serve(async (req: Request) => {
       .eq('id', entityId);
 
     // person: verify via tenant_memberships (already done above)
-    if (entityType === 'company' || entityType === 'service' || entityType === 'job') {
+    if (
+      entityType === 'company' ||
+      entityType === 'service' ||
+      entityType === 'job'
+    ) {
       entityQuery = entityQuery.eq('tenant_id', tenantId);
     } else if (entityType !== 'person') {
       // partner/supplier: verify via company_relationships tenant_id
@@ -456,7 +475,9 @@ serve(async (req: Request) => {
     // 14.5. Deduplication: check if an asset with the same hash already exists for this tenant
     const { data: existingAsset } = await adminClient
       .from('media_assets')
-      .select('id, bucket_id, storage_path, file_url, file_name, mime_type, file_size_bytes, file_hash, entity_type, entity_id, is_primary, sort_order, alt_text, created_at, metadata')
+      .select(
+        'id, bucket_id, storage_path, file_url, file_name, mime_type, file_size_bytes, file_hash, entity_type, entity_id, is_primary, sort_order, alt_text, created_at, metadata',
+      )
       .eq('tenant_id', tenantId)
       .eq('file_hash', fileHash)
       .maybeSingle();

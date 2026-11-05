@@ -7,8 +7,7 @@
  * o ModuleContext usem o CellRegistry como fonte de verdade para resolução
  * de módulos, sem quebrar compatibilidade com rotas existentes.
  *
- * O CellRegistry é a fonte canônica. PORTAL_MODULES é mantido como fallback
- * para módulos que ainda não têm CellContract registrado.
+ * O CellRegistry é a fonte canônica. Não utilizar PORTAL_MODULES como fallback.
  */
 
 import type { CellContract, CellRoute } from '@/core/types';
@@ -18,7 +17,6 @@ import type {
   ModuleFeature,
 } from '@/components/legacy/portal/ModuleRegistry';
 import { cellRegistry } from '@/core/registry/CellRegistryContract';
-import { PORTAL_MODULES } from '@/components/legacy/portal/ModuleRegistry';
 
 /**
  * Converte um CellRoute em ModuleFeature (compatível com ModuleRouter).
@@ -73,7 +71,6 @@ export function cellContractToModuleDefinition(
 
 /**
  * Retorna todos os módulos disponíveis, priorizando o CellRegistry (canônico)
- * e fazendo fallback para PORTAL_MODULES para módulos sem CellContract.
  *
  * Este é o replacement direto para getAvailableModules() do ModuleRegistry
  * legado, garantindo que todas as células registradas no CellRegistry
@@ -86,20 +83,11 @@ export function getAvailableModulesFromCellRegistry(
     ? effectiveScopes
     : [effectiveScopes];
 
-  // 1. Módulos do CellRegistry (fonte canônica)
-  const cellModules = cellRegistry
+  // Módulos do CellRegistry (fonte canônica)
+  return cellRegistry
     .getEnabled()
     .map((entry) => cellContractToModuleDefinition(entry.cell))
     .filter((module) => scopes.includes(module.scope));
-
-  // 2. Módulos do PORTAL_MODULES que não têm CellContract (fallback)
-  const cellModuleIds = new Set(cellModules.map((m) => m.id));
-  const legacyModules = PORTAL_MODULES.filter(
-    (m: ModuleDefinition) =>
-      !cellModuleIds.has(m.id) && scopes.includes(m.scope),
-  );
-
-  return [...cellModules, ...legacyModules];
 }
 
 /**
@@ -108,14 +96,11 @@ export function getAvailableModulesFromCellRegistry(
 export function getModuleDefinitionById(
   moduleId: string,
 ): ModuleDefinition | undefined {
-  // 1. Tentar CellRegistry primeiro
   const cellEntry = cellRegistry.get(moduleId);
   if (cellEntry) {
     return cellContractToModuleDefinition(cellEntry.cell);
   }
-
-  // 2. Fallback para PORTAL_MODULES
-  return PORTAL_MODULES.find((m: ModuleDefinition) => m.id === moduleId);
+  return undefined;
 }
 
 /**
@@ -152,7 +137,7 @@ export function resolveModuleFromPathname(pathname: string): {
 
   const candidates: Candidate[] = [];
 
-  // 1. Candidatos do CellRegistry (fonte canônica)
+  // Candidatos do CellRegistry (fonte canônica)
   for (const entry of cellRegistry.getAll()) {
     if (!entry.cell.enabled) continue;
     const moduleDef = cellContractToModuleDefinition(entry.cell);
@@ -171,35 +156,6 @@ export function resolveModuleFromPathname(pathname: string): {
         feature,
         route: feature.route,
       });
-    }
-  }
-
-  // 2. Candidatos do PORTAL_MODULES (fallback, apenas IDs não cobertos pelo CellRegistry)
-  const cellModuleIds = new Set(cellRegistry.getAll().map((e) => e.cell.id));
-  for (const module of PORTAL_MODULES) {
-    if (cellModuleIds.has(module.id)) continue;
-
-    candidates.push({
-      module,
-      feature: null,
-      route: module.route,
-    });
-
-    for (const feature of module.features ?? []) {
-      candidates.push({
-        module,
-        feature,
-        route: feature.route,
-      });
-
-      // Legacy routes
-      for (const legacy of feature.legacyRoutes ?? []) {
-        candidates.push({
-          module,
-          feature,
-          route: legacy,
-        });
-      }
     }
   }
 

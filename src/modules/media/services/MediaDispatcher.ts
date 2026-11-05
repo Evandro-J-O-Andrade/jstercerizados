@@ -6,7 +6,10 @@
  * O DispatcherMaster é a autoridade de despacho global.
  */
 
-import type { MediaRequest, MediaResponse } from '../contracts/MediaRequestContract';
+import type {
+  MediaRequest,
+  MediaResponse,
+} from '../contracts/MediaRequestContract';
 import type { MediaContext } from '../contracts/MediaContextContract';
 import { MediaService } from './MediaService';
 import type { MediaAuthorizationResult } from '../contracts/MediaAuthorizationContract';
@@ -26,11 +29,18 @@ export interface MediaDispatcherDeps {
 }
 
 export class MediaDispatcher {
-  constructor(private readonly deps: MediaDispatcherDeps) {}
+  private readonly deps: MediaDispatcherDeps;
 
-  async dispatch<T>(request: Partial<MediaRequest<T>>): Promise<MediaResponse<T>> {
+  constructor(deps: MediaDispatcherDeps) {
+    this.deps = deps;
+  }
+
+  async dispatch<T>(
+    request: Partial<MediaRequest<T>>,
+  ): Promise<MediaResponse<T>> {
     const requestId = request.requestId || this.deps.generateRequestId();
-    const correlationId = request.context?.correlationId || this.deps.generateCorrelationId();
+    const correlationId =
+      request.context?.correlationId || this.deps.generateCorrelationId();
 
     // 1. Validar contexto
     const context = this.buildContext(request, requestId, correlationId);
@@ -49,7 +59,13 @@ export class MediaDispatcher {
       const resource = this.mapEntityToResource(request.entity.type);
       const action = this.mapOperationToAction(request.operation);
       if (resource && action) {
-        const authResult = this.validateAuthorization(context, request.entity.type, request.entity.id, resource, action);
+        const authResult = this.validateAuthorization(
+          context,
+          request.entity.type,
+          request.entity.id,
+          resource,
+          action,
+        );
         if (!authResult.allowed) {
           return {
             success: false,
@@ -64,7 +80,12 @@ export class MediaDispatcher {
 
     // 3. Direcionar para o service
     try {
-      return await this.deps.mediaService.execute(request, context, requestId, correlationId);
+      return await this.deps.mediaService.execute(
+        request,
+        context,
+        requestId,
+        correlationId,
+      );
     } catch (error) {
       return {
         success: false,
@@ -116,11 +137,23 @@ export class MediaDispatcher {
     return map[entityType] || null;
   }
 
-  private mapOperationToAction(operation: string): 'read' | 'write' | 'delete' | null {
-    if (operation === 'list' || operation === 'search' || operation === 'get' || operation === 'preview') {
+  private mapOperationToAction(
+    operation: string,
+  ): 'read' | 'write' | 'delete' | null {
+    if (
+      operation === 'list' ||
+      operation === 'search' ||
+      operation === 'get' ||
+      operation === 'preview'
+    ) {
       return 'read';
     }
-    if (operation === 'upload' || operation === 'replace' || operation === 'set_primary' || operation === 'reorder') {
+    if (
+      operation === 'upload' ||
+      operation === 'replace' ||
+      operation === 'set_primary' ||
+      operation === 'reorder'
+    ) {
       return 'write';
     }
     if (operation === 'delete') {

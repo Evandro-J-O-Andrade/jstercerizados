@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Activity,
   Bell,
@@ -45,6 +45,7 @@ export function AdminSidebar({
   const [collapsed, setCollapsed] = useState(false);
   const { identity } = useAccount();
   const platform = usePlatformContext();
+  const navigate = useNavigate();
 
   const cellEntries = cellRegistry.getEnabled();
   const cellItems: AdminSidebarItem[] = cellEntries
@@ -61,68 +62,90 @@ export function AdminSidebar({
     .map((entry: any) => {
       const cell = entry.cell;
       const home = cell.homeRoute || `/dashboard/${cell.id}`;
-      return { label: cell.navigation?.label || cell.name, path: home, icon: <LayoutDashboard />, id: cell.id };
+      return {
+        label: cell.navigation?.label || cell.name,
+        path: home,
+        icon: <LayoutDashboard />,
+        id: cell.id,
+      };
     })
     .sort((a: any, b: any) => {
-      const aIsGlobal = a.id === 'admin-master' || a.path === '/dashboard/global';
-      const bIsGlobal = b.id === 'admin-master' || b.path === '/dashboard/global';
+      const aIsGlobal =
+        a.id === 'admin-master' || a.path === '/dashboard/global';
+      const bIsGlobal =
+        b.id === 'admin-master' || b.path === '/dashboard/global';
       if (aIsGlobal && !bIsGlobal) return -1;
       if (!aIsGlobal && bIsGlobal) return 1;
       return a.label.localeCompare(b.label);
     })
     .map(({ id, ...rest }: any) => rest);
 
-  const items: AdminSidebarItem[] = cellItems.length > 0 ? cellItems : [
-    { label: 'Meu UsuÃ¡rio', path: '/minha-conta', icon: <UserCircle /> },
-    {
-      label: 'Dashboard',
-      path: '/dashboard/admin',
-      icon: <LayoutDashboard />,
-    },
-    { label: 'Tenants', path: '/dashboard/admin/tenants', icon: <Building2 /> },
-    {
-      label: 'Roles e PermissÃµes',
-      path: '/dashboard/admin/roles-permissoes',
-      icon: <ShieldCheck />,
-    },
-    {
-      label: 'Auditoria',
-      path: '/dashboard/admin/auditoria',
-      icon: <Activity />,
-    },
-    { label: 'SeguranÃ§a', path: '/dashboard/admin/seguranca', icon: <Lock /> },
-    { label: 'SessÃµes', path: '/dashboard/admin/sessoes', icon: <Monitor /> },
-    {
-      label: 'Assinaturas',
-      path: '/dashboard/admin/assinaturas',
-      icon: <CreditCard />,
-    },
-    {
-      label: 'GestÃ£o SaaS',
-      path: '/dashboard/admin/gestao-saas',
-      icon: <Settings />,
-    },
-    {
-      label: 'IntegraÃ§Ãµes',
-      path: '/dashboard/admin/integracoes',
-      icon: <PlugZap />,
-    },
-    {
-      label: 'Auditoria RBAC',
-      path: '/dashboard/admin/rbac-auditoria',
-      icon: <ShieldAlert />,
-    },
-    {
-      label: 'Relacionamentos',
-      path: '/dashboard/admin/relacionamentos',
-      icon: <Share2 />,
-    },
-    {
-      label: 'NotificaÃ§Ãµes',
-      path: '/dashboard/admin/notificacoes',
-      icon: <Bell />,
-    },
-  ];
+  const items: AdminSidebarItem[] =
+    cellItems.length > 0
+      ? cellItems
+      : [
+          { label: 'Meu UsuÃ¡rio', path: '/minha-conta', icon: <UserCircle /> },
+          {
+            label: 'Dashboard',
+            path: '/dashboard/admin',
+            icon: <LayoutDashboard />,
+          },
+          {
+            label: 'Tenants',
+            path: '/dashboard/admin/tenants',
+            icon: <Building2 />,
+          },
+          {
+            label: 'Roles e PermissÃµes',
+            path: '/dashboard/admin/roles-permissoes',
+            icon: <ShieldCheck />,
+          },
+          {
+            label: 'Auditoria',
+            path: '/dashboard/admin/auditoria',
+            icon: <Activity />,
+          },
+          {
+            label: 'SeguranÃ§a',
+            path: '/dashboard/admin/seguranca',
+            icon: <Lock />,
+          },
+          {
+            label: 'SessÃµes',
+            path: '/dashboard/admin/sessoes',
+            icon: <Monitor />,
+          },
+          {
+            label: 'Assinaturas',
+            path: '/dashboard/admin/assinaturas',
+            icon: <CreditCard />,
+          },
+          {
+            label: 'GestÃ£o SaaS',
+            path: '/dashboard/admin/gestao-saas',
+            icon: <Settings />,
+          },
+          {
+            label: 'IntegraÃ§Ãµes',
+            path: '/dashboard/admin/integracoes',
+            icon: <PlugZap />,
+          },
+          {
+            label: 'Auditoria RBAC',
+            path: '/dashboard/admin/rbac-auditoria',
+            icon: <ShieldAlert />,
+          },
+          {
+            label: 'Relacionamentos',
+            path: '/dashboard/admin/relacionamentos',
+            icon: <Share2 />,
+          },
+          {
+            label: 'NotificaÃ§Ãµes',
+            path: '/dashboard/admin/notificacoes',
+            icon: <Bell />,
+          },
+        ];
 
   return (
     <>
@@ -202,9 +225,15 @@ export function AdminSidebar({
         </nav>
 
         <div className="border-border shrink-0 border-t p-3">
-          <div
+          <button
+            type="button"
+            onClick={() => {
+              navigate('/minha-conta');
+              onNavigate?.();
+              onClose?.();
+            }}
             className={cn(
-              'flex min-h-10 items-center gap-2',
+              'hover:bg-muted flex min-h-10 w-full items-center gap-2 rounded-md text-left transition-colors',
               collapsed && 'justify-center',
             )}
             title={
@@ -218,7 +247,7 @@ export function AdminSidebar({
               aria-label={`${identity.displayName}, ${identity.roleLabel}`}
               className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold"
             >
-              {identity.displayName.charAt(0).toUpperCase()}
+              {identity.displayName?.charAt(0)?.toUpperCase() || 'U'}
             </span>
             {!collapsed && (
               <span className="min-w-0">
@@ -230,7 +259,7 @@ export function AdminSidebar({
                 </span>
               </span>
             )}
-          </div>
+          </button>
         </div>
       </aside>
     </>

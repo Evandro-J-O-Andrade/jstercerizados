@@ -72,12 +72,12 @@ export function AuthRoute({ children }: AuthRouteProps) {
     isAdminMaster &&
     new Set([
       '/dashboard',
-      '/dashboard/global',
+      '/dashboard/admin-master',
+      '/dashboard/candidatos',
       '/dashboard/seguranca',
       '/dashboard/tenants',
       '/dashboard/pessoas',
       '/dashboard/roles-permissoes',
-      '/dashboard/gestao-saas',
       '/dashboard/onboarding',
     ]).has(normalizedPath);
 
@@ -87,7 +87,7 @@ export function AuthRoute({ children }: AuthRouteProps) {
     normalizedPath.startsWith('/dashboard') &&
     !isGlobalAdminRoute
   ) {
-    return <Navigate to="/dashboard/global" replace />;
+    return <Navigate to="/dashboard/admin-master" replace />;
   }
 
   if (

@@ -5,6 +5,16 @@
  * identificador, operação, contexto, entidade, dados, idempotência e metadados.
  */
 
+export interface MediaResponse<T = unknown> {
+  success: boolean;
+  requestId: string;
+  correlationId?: string;
+  data?: T;
+  errorCode?: string;
+  message?: string;
+  retryable?: boolean;
+}
+
 export type MediaOperation =
   | 'upload'
   | 'list'
@@ -40,7 +50,9 @@ export interface MediaRequest<T = unknown> {
   metadata?: Record<string, unknown>;
 }
 
-export function createMediaRequest<T>(input: Partial<MediaRequest<T>>): MediaRequest<T> {
+export function createMediaRequest<T>(
+  input: Partial<MediaRequest<T>>,
+): MediaRequest<T> {
   return {
     requestId: input.requestId || crypto.randomUUID(),
     operation: input.operation || 'upload',

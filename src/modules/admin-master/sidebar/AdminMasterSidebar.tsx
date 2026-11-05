@@ -10,10 +10,8 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard,
   Building2,
   Users,
-  UserPlus,
   BriefcaseBusiness,
   ClipboardList,
   Wrench,
@@ -23,7 +21,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ShieldCheck,
-  Globe,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/utils';
@@ -45,15 +42,27 @@ export function AdminMasterSidebar({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { permissions, isAdminMaster } = useAuth();
+  const { permissions, isAdminMaster, person } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
 
   const items: AdminMasterSidebarItem[] = [
     {
-      label: 'Dashboard Global',
-      path: '/dashboard/global',
-      icon: <LayoutDashboard className="h-4 w-4" />,
+      label: 'Dashboard Admin Master',
+      path: '/dashboard/admin-master',
+      icon: <ShieldCheck className="h-4 w-4" />,
       permission: 'tenants.read',
+    },
+    {
+      label: 'Recrutamento',
+      path: '/dashboard/recrutamento',
+      icon: <BriefcaseBusiness className="h-4 w-4" />,
+      permission: 'recruitment.read',
+    },
+    {
+      label: 'Gestão de Usuários',
+      path: '/dashboard/usuarios',
+      icon: <Users className="h-4 w-4" />,
+      permission: 'people.read',
     },
     {
       label: 'Tenants',
@@ -72,12 +81,6 @@ export function AdminMasterSidebar({
       path: '/dashboard/pessoas',
       icon: <Users className="h-4 w-4" />,
       permission: 'people.read',
-    },
-    {
-      label: 'Candidatos',
-      path: '/dashboard/candidatos',
-      icon: <UserPlus className="h-4 w-4" />,
-      permission: 'candidates.read',
     },
     {
       label: 'Vagas',
@@ -195,13 +198,23 @@ export function AdminMasterSidebar({
         <button
           type="button"
           onClick={() => {
-            navigate('/');
+            navigate('/minha-conta');
             onClose?.();
           }}
-          className="text-muted-foreground hover:text-foreground hover:bg-muted flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors"
+          className={cn(
+            'text-muted-foreground hover:text-foreground hover:bg-muted flex w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors',
+            collapsed && 'justify-center px-1',
+          )}
+          title={collapsed ? `${person?.full_name || ''}` : undefined}
         >
-          <Globe className="h-4 w-4" />
-          <span className={cn(collapsed && 'hidden')}>Voltar para o site</span>
+          <div className="bg-primary/10 text-primary flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold">
+            {(person?.full_name || person?.email || 'U')
+              .charAt(0)
+              .toUpperCase()}
+          </div>
+          <span className={cn('truncate', collapsed && 'hidden')}>
+            {person?.full_name || person?.email || 'Minha Conta'}
+          </span>
         </button>
       </footer>
     </aside>
