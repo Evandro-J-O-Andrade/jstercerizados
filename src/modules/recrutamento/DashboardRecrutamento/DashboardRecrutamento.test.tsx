@@ -100,16 +100,50 @@ describe('DashboardRecrutamento', () => {
         <DashboardRecrutamento />
       </MemoryRouter>,
     );
-
-    expect(screen.getByTestId('metric-open-jobs')).toHaveTextContent('3');
-    expect(screen.getByTestId('metric-active-candidates')).toHaveTextContent(
-      '7',
+    expect(screen.getByTestId('dashboard-card-open-jobs')).toHaveTextContent(
+      '3',
     );
+    expect(
+      screen.getByTestId('dashboard-card-active-candidates'),
+    ).toHaveTextContent('7');
     expect(screen.getByText('Maria Silva')).toBeInTheDocument();
     expect(screen.getByText('Assistente de RH')).toBeInTheDocument();
     expect(screen.getByText('Em triagem')).toBeInTheDocument();
     expect(
       screen.getAllByRole('link', { name: /Vagas publicadas/ }),
     ).toHaveLength(1);
+  });
+
+  it('renders error state without fake metrics', () => {
+    mocks.useRecrutamento.mockReturnValue({
+      isLoading: false,
+      error: 'Falha real',
+      refetch: vi.fn(),
+      dashboardStats: null,
+      applicationsEnriched: [],
+    });
+    render(
+      <MemoryRouter>
+        <DashboardRecrutamento />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('alert')).toHaveTextContent('Falha real');
+    expect(screen.queryByText('Maria Silva')).not.toBeInTheDocument();
+  });
+
+  it('renders empty state when no stats', () => {
+    mocks.useRecrutamento.mockReturnValue({
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+      dashboardStats: null,
+      applicationsEnriched: [],
+    });
+    render(
+      <MemoryRouter>
+        <DashboardRecrutamento />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText('Indicadores indisponíveis')).toBeInTheDocument();
   });
 });

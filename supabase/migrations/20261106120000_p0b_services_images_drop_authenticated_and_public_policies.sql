@@ -1,0 +1,82 @@
+-- =============================================================================
+-- P0-B (FASE 1, SEM SELECT PÚBLICO) — services-images: remove policies RLS inseguras
+-- =============================================================================
+-- Projeto: J&S Empregos LTDA (CHECK BOULER 24H)
+-- Supabase: js-empregos (okxqfyoqbhcmflpurfrw), sa-east-1
+-- Baseline: main@b9de729
+-- Data de preparação: 2026-11-06
+-- Status: ARQUIVO VERSIONADO LOCALMENTE — NÃO APLICADO / NÃO EXECUTADO NO REMOTO
+--
+-- DECISÃO (explícita, 2026-11-06): opção 2 "CRIAR MIGRATION LOCAL FASE1 SEM SELECT".
+-- SELECT público NÃO aprovado para esta fase.
+--
+-- PROBLEMA (Comprovado por SQL 02.14 + migration 20260830001100_storage_services_images.sql):
+--   services_images_authenticated_write  (INSERT, authenticated)
+--   services_images_authenticated_update (UPDATE, authenticated)
+--   services_images_authenticated_delete (DELETE, authenticated)
+--   condicionam apenas a membership ativa em QUALQUER tenant
+--   (people.auth_user_id = auth.uid() JOIN tenant_memberships.status='active'),
+--   sem vínculo a tenant do recurso, path, owner, entity_id ou permissão resource.action.
+--   Risco: escrita/alteração/exclusão cross-tenant no bucket services-images (P0-B).
+--
+-- INVENTÁRIO CONTROLADO (Q1-Q8 read-only, 2026-11-06, okxqfyoqbhcmflpurfrw):
+--   - storage.objects em services-images: 0
+--   - refs public.services (card_image_url/hero_image_url ilike %services-images%): 0
+--   - refs public.media_assets (bucket_id/storage_path/file_url): 0
+--   - consumidores app/Edge locais de escrita no bucket: não identificados (inspeção local)
+--   - bucket: public=true, 5MB, image/jpeg|png|webp (estado pré-correção)
+--
+-- CORREÇÃO (fase 1):
+--   1) DROP services_images_authenticated_write
+--   2) DROP services_images_authenticated_update
+--   3) DROP services_images_authenticated_delete
+--   4) DROP services_images_public_read  (SELECT público não aprovado; bucket vazio sem refs)
+--   5) NÃO criar policies substitutas.
+--
+-- IMPACTO ESPERADO:
+--   - Nenhuma escrita/leitura via RLS policies específicas deste bucket após aplicação.
+--   - service_role/owner contexts podem ter comportamento distinto conforme grants/RLS do projeto;
+--     validar em prova controlada autorizada.
+--   - Bucket permanece existente (não é removido); objetos futuros não são objetivo desta fase.
+--
+-- PRÉ-CONDIÇÕES DE APLICAÇÃO (não satisfeitas automaticamente):
+--   [ ] Autorização explícita separada para aplicar migration no Supabase remoto.
+--   [ ] Confirmar ausência de writers/produtores externos ao repo para services-images.
+--   [ ] Janela controlada + responsável + evidência antes/depois.
+--   [ ] Plano de rollback revisado.
+--
+-- VERIFICAÇÃO READ-ONLY SUGERIDA APÓS APLICAÇÃO AUTORIZADA (NÃO EXECUTAR AGORA):
+--   select id,name,public from storage.buckets where id='services-images';
+--   select policyname,roles,cmd,qual,with_check
+--   from pg_policies
+--   where schemaname='storage' and tablename='objects' and policyname like 'services_images%'
+--   order by policyname;
+--   -- Esperado: 0 linhas de policy services_images% (fase 1 sem SELECT).
+--
+-- TESTES (executar somente em ambiente autorizado, após aplicação autorizada):
+--   ST-003a-f: anon e authenticated (com/sem membership, inclusive outro tenant) NÃO podem
+--              INSERT/UPDATE/DELETE em services-images.
+--   ST-004: SELECT/GET público de paths em services-images deve ser NEGADO pela ausência de
+--           policy pública (fase 1 sem SELECT); bucket atualmente vazio (0 objetos).
+--   ST-006: registrar estado do bucket e policies antes/depois.
+--   REG-JS-IMG: portal/serviços js-empregos sem regressão (refs atuais não usam services-images).
+--   REG-MEDIA: fluxos de mídia usam public-media/avatars/private-documents, não services-images.
+--
+-- ROLLBACK (SOMENTE COM AUTORIZAÇÃO EMERGENCIAL DOCUMENTADA):
+--   Recriar as 4 policies conforme
+--   supabase/migrations/20260830001100_storage_services_images.sql
+--   (linhas ~19-114). Não remove/recria bucket. Não apaga objetos.
+--   ATENÇÃO: rollback da policy de leitura reexpõe bucket (vazio hoje); rollback das policies
+--   de escrita reexpõe o defeito P0-B cross-tenant — usar apenas para incidente operacional
+--   comprovado, com plano corretivo imediato.
+-- =============================================================================
+
+-- Sem BEGIN/COMMIT: runner de migrations do Supabase já gerencia transação.
+-- (Evita abortar transação do runner em caso de erro; ver memory/boas práticas locais.)
+
+DROP POLICY IF EXISTS "services_images_authenticated_write" ON storage.objects;
+DROP POLICY IF EXISTS "services_images_authenticated_update" ON storage.objects;
+DROP POLICY IF EXISTS "services_images_authenticated_delete" ON storage.objects;
+DROP POLICY IF EXISTS "services_images_public_read" ON storage.objects;
+
+-- Nenhuma policy substituta criada (fase 1). Buckets/objetos não alterados.

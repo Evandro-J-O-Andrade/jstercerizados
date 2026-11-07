@@ -6,9 +6,8 @@ const recrutamentoCellRoutes: CellRoute[] = RecrutamentoRoutes.map((route) => ({
   path: route.path,
   label: route.label,
   requiredPermissions: route.requiredPermissions,
-  icon: route.icon,
-  children: route.children,
-  implementationStatus: route.implementationStatus,
+  icon: 'icon' in route ? (route as { icon?: string }).icon : undefined,
+  implementationStatus: route.implementationStatus ?? 'implemented',
 }));
 
 export const recrutamentoCellContract: CellContract = {

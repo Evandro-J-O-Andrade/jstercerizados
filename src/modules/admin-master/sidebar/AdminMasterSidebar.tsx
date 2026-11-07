@@ -10,17 +10,18 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Building2,
-  Users,
-  BriefcaseBusiness,
-  ClipboardList,
-  Wrench,
-  Headphones,
   Activity,
+  BriefcaseBusiness,
+  Building2,
+  ClipboardList,
+  Headphones,
+  LayoutDashboard,
   Lock,
   PanelLeftClose,
   PanelLeftOpen,
   ShieldCheck,
+  Users,
+  Wrench,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/utils';
@@ -47,7 +48,13 @@ export function AdminMasterSidebar({
 
   const items: AdminMasterSidebarItem[] = [
     {
-      label: 'Dashboard Admin Master',
+      label: 'Central de Comando',
+      path: '/dashboard/global',
+      icon: <LayoutDashboard className="h-4 w-4" />,
+      permission: 'tenants.read',
+    },
+    {
+      label: 'Admin Master',
       path: '/dashboard/admin-master',
       icon: <ShieldCheck className="h-4 w-4" />,
       permission: 'tenants.read',

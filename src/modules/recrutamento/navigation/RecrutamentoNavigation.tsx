@@ -26,9 +26,8 @@ export function useRecrutamentoNavigation(): RecrutamentoNavItem[] {
       href: '/dashboard/recrutamento/vagas',
       icon: 'Briefcase',
       visible: access.vagas.read,
-      children: [
-        { key: 'vagas-criar', label: 'Nova Vaga', href: '/dashboard/recrutamento/vagas/nova', icon: 'Plus', visible: access.vagas.create },
-      ],
+      // Sem rota `/vagas/nova` declarada no contrato canônico; preservar ação como pendência de rota (não inventar).
+      children: [],
     },
     {
       key: 'candidatos',
@@ -36,9 +35,7 @@ export function useRecrutamentoNavigation(): RecrutamentoNavItem[] {
       href: '/dashboard/recrutamento/candidatos',
       icon: 'Users',
       visible: access.candidatos.read,
-      children: [
-        { key: 'candidatos-criar', label: 'Adicionar Candidato', href: '/dashboard/recrutamento/candidatos/novo', icon: 'Plus', visible: access.candidatos.create },
-      ],
+      children: [],
     },
     {
       key: 'candidaturas',
@@ -53,9 +50,7 @@ export function useRecrutamentoNavigation(): RecrutamentoNavItem[] {
       href: '/dashboard/recrutamento/processos',
       icon: 'GitBranch',
       visible: access.processos.read,
-      children: [
-        { key: 'processos-criar', label: 'Novo Processo', href: '/dashboard/recrutamento/processos/novo', icon: 'Plus', visible: access.processos.create },
-      ],
+      children: [],
     },
     {
       key: 'etapas',
@@ -77,9 +72,7 @@ export function useRecrutamentoNavigation(): RecrutamentoNavItem[] {
       href: '/dashboard/recrutamento/demandas',
       icon: 'FileText',
       visible: access.demandas.read,
-      children: [
-        { key: 'demandas-criar', label: 'Nova Demanda', href: '/dashboard/recrutamento/demandas/nova', icon: 'Plus', visible: access.demandas.create },
-      ],
+      children: [],
     },
     {
       key: 'relatorios',

@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useIntro } from '@/contexts/IntroContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -36,6 +36,7 @@ import { moduleRouteRegistries } from '@/platform/router/module-routes';
 import { MODULE_PERMISSION_MAP } from '@/core/permissions/modulePermissionMap';
 import Almoxarifado from '@/pages/dashboard/Almoxarifado';
 import AdminMasterDashboardPage from '@/modules/admin-master/dashboard/AdminMasterDashboardPage';
+import GlobalCommandPage from '@/pages/dashboard/GlobalCommandPage';
 import PessoasPage from '@/modules/admin-master/pages/PessoasPage';
 import VisaoGeral from '@/pages/dashboard/VisaoGeral';
 import AuthTerms from '@/pages/auth/Termos';
@@ -104,14 +105,13 @@ const CadastroCandidato = lazy(() => import('@/pages/CadastroCandidato'));
 const CadastroEmpresa = lazy(() => import('@/pages/CadastroEmpresa'));
 const RecuperarSenha = lazy(() => import('@/pages/RecuperarSenha'));
 const RedefinirSenha = lazy(() => import('@/pages/RedefinirSenha'));
-const AlterarSenha = lazy(() => import('@/pages/AlterarSenha'));
+import { CandidatoContainer } from '@/modules/candidato/CandidatoContainer';
+import { CandidatoProvider } from '@/modules/candidato/CandidatoContext';
 const Onboarding = lazy(() => import('@/pages/Onboarding'));
 const PrimeiroAcessoTermos = lazy(
   () => import('@/pages/primeiro-acesso/Termos'),
 );
 const PrimeiroAcessoSenha = lazy(() => import('@/pages/primeiro-acesso/Senha'));
-import { CandidatoContainer } from '@/modules/candidato/CandidatoContainer';
-import { CandidatoProvider } from '@/modules/candidato/CandidatoContext';
 import ProcessosSeletivosPage from '@/pages/dashboard/ProcessosSeletivos';
 import EtapasPage from '@/pages/dashboard/Etapas';
 import FuncionariosPage from '@/pages/dashboard/Funcionarios';
@@ -205,7 +205,7 @@ function RoutesAndLayout() {
               path="global"
               element={
                 <ProtectedRoute allowedRoles={['admin_master']}>
-                  <Navigate to="/dashboard/admin-master" replace />
+                  <GlobalCommandPage />
                 </ProtectedRoute>
               }
             />
@@ -514,7 +514,7 @@ function RoutesAndLayout() {
               path="global"
               element={
                 <ProtectedRoute allowedRoles={['admin_master']}>
-                  <Navigate to="/dashboard/admin-master" replace />
+                  <GlobalCommandPage />
                 </ProtectedRoute>
               }
             />
@@ -778,14 +778,6 @@ function RoutesAndLayout() {
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/auth/terms" element={<AuthTerms />} />
           <Route path="/auth/welcome" element={<AuthWelcome />} />
-          <Route
-            path="/alterar-senha"
-            element={
-              <ProtectedRoute>
-                <AlterarSenha />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="/minha-conta"
             element={

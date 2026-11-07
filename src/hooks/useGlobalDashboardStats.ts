@@ -5,8 +5,16 @@ import { hasPermission as userHasPermission } from '@/utils/rbac';
 import type { GlobalDashboardStats } from '@/pages/dashboard/global-dashboard-model';
 import type { DomainEventSummary } from '@/types/domain/security';
 
+/**
+ * Carrega indicadores globais/tenant a partir de fontes reais autorizadas (RLS/RBAC).
+ * Nunca inventa valores: falha isolada por KPI é registrada em kpiErrors e o valor permanece 0
+ * (interpretar como indisponível quando houver erro para aquela chave).
+ */
+export type GlobalDashboardKpiKey = keyof GlobalDashboardStats | 'recentEvents';
+
 export interface GlobalDashboardData extends GlobalDashboardStats {
   recentEvents: DomainEventSummary[];
+  kpiErrors: Partial<Record<GlobalDashboardKpiKey, string>>;
   loading: boolean;
   error: string | null;
 }
@@ -27,6 +35,7 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
   const [data, setData] = useState<GlobalDashboardData>({
     ...emptyStats,
     recentEvents: [],
+    kpiErrors: {},
     loading: true,
     error: null,
   });
@@ -42,6 +51,7 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
             ...previous,
             loading: false,
             error: 'Supabase não está configurado.',
+            kpiErrors: {},
           }));
         }
         return;
@@ -53,6 +63,7 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
           setData({
             ...emptyStats,
             recentEvents: [],
+            kpiErrors: {},
             loading: false,
             error: null,
           });
@@ -66,10 +77,25 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
 
       try {
         const globalScope = isAdminMaster;
-        const countTable = async (table: string, permission: string) => {
+        const kpiErrors: Partial<Record<GlobalDashboardKpiKey, string>> = {};
+
+        const safeCount = async (
+          key: keyof GlobalDashboardStats,
+          permission: string,
+          fn: () => Promise<number>,
+        ): Promise<number> => {
           if (!isAdminMaster && !userHasPermission(permissions, permission))
             return 0;
+          try {
+            return await fn();
+          } catch (e) {
+            kpiErrors[key] =
+              e instanceof Error ? e.message : 'erro ao consultar';
+            return 0;
+          }
+        };
 
+        const countTable = async (table: string) => {
           let query = supabase
             .from(table)
             .select('*', { count: 'exact', head: true });
@@ -82,8 +108,7 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
         };
 
         const countPeople = async () => {
-          if (!userHasPermission(permissions, 'people.read')) return 0;
-          if (globalScope) return countTable('people', 'people.read');
+          if (globalScope) return countTable('people');
           const { count, error } = await supabase
             .from('tenant_memberships')
             .select('person_id', { count: 'exact', head: true })
@@ -103,32 +128,46 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
           serviceOrders,
           supportTickets,
         ] = await Promise.all([
-          globalScope
-            ? countTable('tenants', 'tenants.read')
-            : Promise.resolve(0),
-          countTable('companies', 'companies.read'),
-          countPeople(),
-          countTable('candidates', 'candidates.read'),
-          countTable('jobs', 'jobs.read'),
-          countTable('applications', 'applications.read'),
-          countTable('service_orders', 'service_orders.read'),
-          countTable('support_tickets', 'support_tickets.read'),
+          safeCount('tenants', 'tenants.read', async () =>
+            globalScope ? countTable('tenants') : 0,
+          ),
+          safeCount('companies', 'companies.read', () =>
+            countTable('companies'),
+          ),
+          safeCount('people', 'people.read', countPeople),
+          safeCount('candidates', 'candidates.read', () =>
+            countTable('candidates'),
+          ),
+          safeCount('jobs', 'jobs.read', () => countTable('jobs')),
+          safeCount('applications', 'applications.read', () =>
+            countTable('applications'),
+          ),
+          safeCount('serviceOrders', 'service_orders.read', () =>
+            countTable('service_orders'),
+          ),
+          safeCount('supportTickets', 'support_tickets.read', () =>
+            countTable('support_tickets'),
+          ),
         ]);
 
         let recentEvents: DomainEventSummary[] = [];
         if (userHasPermission(permissions, 'domain_events.read')) {
-          let eventsQuery = supabase
-            .from('domain_events')
-            .select('id, event_type, aggregate_type, created_at, tenant_id')
-            .order('created_at', { ascending: false })
-            .limit(8);
-          if (!globalScope && activeTenantId) {
-            eventsQuery = eventsQuery.eq('tenant_id', activeTenantId);
+          try {
+            let eventsQuery = supabase
+              .from('domain_events')
+              .select('id, event_type, aggregate_type, created_at, tenant_id')
+              .order('created_at', { ascending: false })
+              .limit(10);
+            if (!globalScope && activeTenantId) {
+              eventsQuery = eventsQuery.eq('tenant_id', activeTenantId);
+            }
+            const { data: events, error: eventsError } = await eventsQuery;
+            if (eventsError) throw eventsError;
+            recentEvents = (events ?? []) as DomainEventSummary[];
+          } catch (e) {
+            kpiErrors.recentEvents =
+              e instanceof Error ? e.message : 'erro ao consultar eventos';
           }
-
-          const { data: events, error: eventsError } = await eventsQuery;
-          if (eventsError) throw eventsError;
-          recentEvents = (events ?? []) as DomainEventSummary[];
         }
 
         if (!cancelled) {
@@ -142,6 +181,7 @@ export function useGlobalDashboardStats(): GlobalDashboardData {
             serviceOrders,
             supportTickets,
             recentEvents,
+            kpiErrors,
             loading: false,
             error: null,
           });
