@@ -1,0 +1,9 @@
+Codex, você está participando da engenharia do projeto J&S Empregos (CHECK BOULER 24H) junto comigo e com o ChatGPT. Quero continuidade REAL, não recomeçar nem construir mock.
+
+Leia PRIMEIRO o AGENTS.md existente na raiz e o arquivo CODEX_HANDOFF_JS_EMPREGOS_2026-11-07.md (colocado na pasta docs/check-bouler-24h/). Respeite as regras existentes de identidade, footer, governança, commits e segurança. Depois leia os documentos relevantes indicados no handoff e identifique a implementação atual no workspace.
+
+NESTA PRIMEIRA ETAPA, FAÇA SOMENTE LEITURA. Verifique pasta correta, git status/branch/HEAD/origin/main, diffs locais, CellRegistry/DispatcherMaster/ModuleRouter/Auth/Recrutamento, docs, migrations e testes existentes. Não modifique código ou configurações, não execute migration, SQL mutável, db push/repair/reset, commit, push, deploy, instalação, encerramento de processos nem crie usuários. Não acesse o Supabase remoto sem autorização explícita; caso ainda não tenha MCP conectado, registre isso. Não toque no DispatcherMaster ou na P0-B.
+
+Entregue: (1) o que você leu; (2) o que foi comprovado, parcial, mock, proposto ou pendente; (3) divergências entre worktree, origin/main local e GitHub main; (4) estado do P0 candidato/SMTP/callback, da validação de Recrutamento, formulários mock, RBAC, 26 células e P0-B; (5) próximos gates em ordem; (6) uma próxima tarefa pequena e suas autorizações necessárias.
+
+Quando houver conflito entre o handoff, o AGENTS.md, documentos e código atual, reporte o conflito e não resolva silenciosamente. Ao final confirme que nenhuma alteração foi feita. Não confunda Remoção Alpha ou Angel Cosméticos com J&S.

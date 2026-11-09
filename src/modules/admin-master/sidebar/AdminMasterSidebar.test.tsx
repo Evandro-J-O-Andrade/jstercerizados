@@ -39,7 +39,7 @@ describe('AdminMasterSidebar permission filtering', () => {
       screen.getByRole('link', { name: 'Admin Master' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: 'Central de Comando' }),
+      screen.getByRole('link', { name: 'Central 24H' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Tenants' })).toBeInTheDocument();
     expect(

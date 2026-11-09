@@ -27,9 +27,10 @@ export interface CellProbeResult {
 }
 
 export interface CellHeartbeatSnapshot {
-  /** Fonte real do heartbeat (ex.: processo local, timestamp de registro). Nunca valor fictício. */
+  /** Fonte do sinal: `registry.registered_in_memory` = registro local (não funcional); outra fonte explícita = heartbeat declarado. */
   source: string;
   at: string;
+  /** Boolean do sinal declarado; interpretação funcional depende da fonte (registro em memória ≠ serviço saudável). */
   healthy: boolean;
   detail?: string;
 }
@@ -46,8 +47,9 @@ export interface CellObservabilityContract {
   /** Probes locais declarados para a célula. */
   probes?: CellHealthProbe[];
   /**
-   * Heartbeat somente quando houver fonte real.
-   * Deve ser `undefined` quando não existir fonte confiável.
+   * Heartbeat funcional apenas quando houver fonte real/comprovada.
+   * `undefined` quando não existir fonte confiável.
+   * `registry.registered_in_memory` é evidência de registro local, não heartbeat funcional.
    */
   heartbeat?: () =>
     CellHeartbeatSnapshot | null | Promise<CellHeartbeatSnapshot | null>;

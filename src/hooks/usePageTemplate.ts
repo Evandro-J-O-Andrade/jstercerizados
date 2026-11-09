@@ -12,6 +12,7 @@ const EMPTY: PageTemplateResolution = {
   resolved: null,
   vars: {},
   missing: [],
+  error: null,
 };
 
 export function usePageTemplate(key: string): {
@@ -35,7 +36,14 @@ export function usePageTemplate(key: string): {
         setData(res);
       })
       .catch((err) => {
+        if (!alive) return;
         console.error('[PAGE_TEMPLATE:HOOK] error', err);
+        setData({
+          ...EMPTY,
+          key,
+          error:
+            err instanceof Error ? err.message : 'Erro ao resolver template',
+        });
       })
       .finally(() => {
         if (alive) setLoading(false);

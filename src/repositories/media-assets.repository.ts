@@ -83,6 +83,23 @@ export class MediaAssetsRepository extends SupabaseRepository {
     return (data || []).map(this.mapRow);
   }
 
+  async findAllByEntityType(
+    tenantId: string,
+    entityType: MediaEntityType,
+  ): Promise<MediaAsset[]> {
+    if (!this.supabase) return [];
+
+    const { data, error } = await this.supabase
+      .from('media_assets')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .eq('entity_type', entityType)
+      .order('sort_order', { ascending: true });
+
+    if (error) throw error;
+    return (data || []).map(this.mapRow);
+  }
+
   async findPrimary(
     tenantId: string,
     entityType: MediaEntityType,

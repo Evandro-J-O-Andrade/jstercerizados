@@ -22,9 +22,9 @@ interface AuditLog {
 export default function AuditPage() {
   const { permissions, isAdminMaster } = useAuth();
   const { identity } = useAccount();
+  const logs: AuditLog[] = useMemo(() => [], []);
 
-  const hasPermission = permissions.some((p: any) => p.name === 'owner.audit.read',
-  );
+  const hasPermission = permissions.some((p: any) => p.name === 'owner.audit.read');
 
   if (!hasPermission && !isAdminMaster) {
     return (
@@ -39,8 +39,6 @@ export default function AuditPage() {
       </div>
     );
   }
-
-  const logs: AuditLog[] = useMemo(() => [], []);
 
   return (
     <div className="space-y-6">

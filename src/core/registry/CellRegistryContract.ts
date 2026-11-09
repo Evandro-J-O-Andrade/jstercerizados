@@ -151,11 +151,13 @@ export class CellRegistry {
         heartbeat = null;
       }
     } else if (entry.registeredAt) {
-      // Fonte real local: timestamp de registro em memória desta execução (não telemetria externa/fictícia).
+      // Evidência local de registro em memória desta execução.
+      // NÃO é heartbeat funcional de serviço, NÃO é telemetria remota e NÃO prova disponibilidade.
       heartbeat = {
-        source: 'registry.registeredAt',
+        source: 'registry.registered_in_memory',
         at: entry.registeredAt,
         healthy: true,
+        detail: 'Registro em memória; sem heartbeat funcional/telemetria remota.',
       };
     }
 
@@ -163,16 +165,20 @@ export class CellRegistry {
     const probeHealth =
       probes.length > 0 ? worstHealth(probes.map((p) => p.status)) : 'unknown';
     let health = worstHealth([base, probeHealth]);
-    if (heartbeat && heartbeat.healthy === false) {
-      health = worstHealth([health, 'degraded']);
-      notes.push(`Heartbeat real indica degradação (${heartbeat.source}).`);
-    } else if (heartbeat && heartbeat.healthy === true) {
-      notes.push(`Heartbeat real OK (${heartbeat.source}).`);
-    }
-    if (!entry.observability?.heartbeat)
+    if (heartbeat && entry.observability?.heartbeat) {
+      if (heartbeat.healthy === false) {
+        health = worstHealth([health, 'degraded']);
+        notes.push(`Heartbeat funcional indica degradação (${heartbeat.source}).`);
+      } else {
+        notes.push(`Heartbeat funcional OK (${heartbeat.source}).`);
+      }
+    } else if (heartbeat) {
       notes.push(
-        'Heartbeat local derivado do registro em memória (fonte real local), sem telemetria externa.',
+        'Evidência de registro local em memória (registry.registered_in_memory); heartbeat funcional/telemetria remota: sem instrumentação.',
       );
+    } else {
+      notes.push('Heartbeat funcional/telemetria remota: sem fonte real.');
+    }
 
     const operationalState = deriveOperationalState(entry.cell.enabled, health);
     return {

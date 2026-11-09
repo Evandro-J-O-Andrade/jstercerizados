@@ -22,24 +22,6 @@ interface SecurityItem {
 export default function SecurityPage() {
   const { permissions, isAdminMaster } = useAuth();
   const { identity } = useAccount();
-
-  const hasPermission = permissions.some((p: any) => p.name === 'owner.security.read',
-  );
-
-  if (!hasPermission && !isAdminMaster) {
-    return (
-      <div className="p-6 text-center">
-        <Shield className="mx-auto h-8 w-8 text-destructive mb-2" />
-        <h2 className="text-foreground text-lg font-semibold">
-          Acesso não autorizado
-        </h2>
-        <p className="text-muted-foreground">
-          Você não possui permissão para visualizar segurança.
-        </p>
-      </div>
-    );
-  }
-
   const items: SecurityItem[] = useMemo(
     () => [
       {
@@ -73,6 +55,22 @@ export default function SecurityPage() {
     ],
     [],
   );
+
+  const hasPermission = permissions.some((p: any) => p.name === 'owner.security.read');
+
+  if (!hasPermission && !isAdminMaster) {
+    return (
+      <div className="p-6 text-center">
+        <Shield className="mx-auto h-8 w-8 text-destructive mb-2" />
+        <h2 className="text-foreground text-lg font-semibold">
+          Acesso não autorizado
+        </h2>
+        <p className="text-muted-foreground">
+          Você não possui permissão para visualizar segurança.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

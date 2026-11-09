@@ -1,7 +1,12 @@
 import { lazy } from 'react';
 import type { ModuleRoute } from '@/platform/router/types';
 
-const AvaHome = lazy(() => import('@/modules/ava/pages/AvaPage'));
+/** Entrada operacional alinhada ao dashboard em /dashboard/ava (App). */
+const AvaHome = lazy(() =>
+  import('@/modules/ava/dashboard/AvaDashboardPage').then((m) => ({
+    default: m.AvaDashboardPage,
+  })),
+);
 const AvaTutorial = lazy(() => import('@/modules/ava/pages/AvaTutorialPage'));
 
 export const avaRoutes: ModuleRoute[] = [

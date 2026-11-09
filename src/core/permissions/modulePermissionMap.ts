@@ -1,4 +1,4 @@
-export const MODULE_PERMISSION_MAP = {
+const MODULE_PERMISSION_ENTRIES = {
   dashboard: 'dashboard.read',
   analitico: 'domain_events.read',
   empresas: 'companies.read',
@@ -32,6 +32,9 @@ export const MODULE_PERMISSION_MAP = {
   configuracoes: 'settings.read',
 } as const;
 
-export type ModulePermissionKey = keyof typeof MODULE_PERMISSION_MAP;
+export const MODULE_PERMISSION_MAP: Readonly<Record<string, string>> =
+  MODULE_PERMISSION_ENTRIES;
+
+export type ModulePermissionKey = keyof typeof MODULE_PERMISSION_ENTRIES;
 export type ModulePermissionValue =
-  (typeof MODULE_PERMISSION_MAP)[ModulePermissionKey];
+  (typeof MODULE_PERMISSION_ENTRIES)[ModulePermissionKey];

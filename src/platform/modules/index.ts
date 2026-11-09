@@ -10,14 +10,13 @@ export type {
   ModuleFeature,
   ModuleAction,
   ModuleCategory,
-} from '@/components/legacy/portal/ModuleRegistry';
-export { CATEGORY_META } from '@/components/legacy/portal/ModuleRegistry';
+} from '@/core/contracts/module-contract';
+export { CATEGORY_META } from '@/core/contracts/module-contract';
 export {
   hasModulePermission,
   getAvailableFeatures,
   getAvailableModuleFeatures,
   getModuleActions,
   groupModulesByCategory,
-} from '@/components/legacy/portal/ModuleRegistry';
-export { PORTAL_MODULES } from '@/components/legacy/portal/ModuleRegistry';
-export { MODULE_PERMISSION_MAP } from '@/components/legacy/portal/ModuleRegistry';
+} from '@/core/contracts/module-contract';
+export { MODULE_PERMISSION_MAP } from '@/core/permissions/modulePermissionMap';

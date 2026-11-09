@@ -22,9 +22,9 @@ interface TenantRow {
 export default function TenantsPage() {
   const { permissions, isAdminMaster } = useAuth();
   const { identity } = useAccount();
+  const mockTenants: TenantRow[] = useMemo(() => [], []);
 
-  const hasPermission = permissions.some((p: any) => p.name === 'owner.tenants.read',
-  );
+  const hasPermission = permissions.some((p: any) => p.name === 'owner.tenants.read');
 
   if (!hasPermission && !isAdminMaster) {
     return (
@@ -39,8 +39,6 @@ export default function TenantsPage() {
       </div>
     );
   }
-
-  const mockTenants: TenantRow[] = useMemo(() => [], []);
 
   return (
     <div className="space-y-6">

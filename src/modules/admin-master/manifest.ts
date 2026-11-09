@@ -13,9 +13,9 @@ export const adminMasterCellManifest = {
   scope: 'global',
   profile: 'admin_master',
   description:
-    'Visão administrativa global da plataforma: tenants, empresas, pessoas, usuários, papéis, permissões, sessões, módulos e auditoria.',
-  homeRoute: '/dashboard/global',
-  sidebarLabel: 'Administração Global',
+    'Governança administrativa global: tenants, pessoas, permissões, sessões, módulos e auditoria. Central 24H opera em /dashboard/global.',
+  homeRoute: '/dashboard/admin-master',
+  sidebarLabel: 'Admin Master',
   sidebarIcon: 'ShieldCheck',
   isGlobal: true,
   enabled: true,

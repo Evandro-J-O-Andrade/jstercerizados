@@ -23,9 +23,9 @@ interface AdminRow {
 export default function AdministratorsPage() {
   const { permissions, isAdminMaster } = useAuth();
   const { identity } = useAccount();
+  const admins: AdminRow[] = useMemo(() => [], []);
 
-  const hasPermission = permissions.some((p: any) => p.name === 'owner.administrators.read',
-  );
+  const hasPermission = permissions.some((p: any) => p.name === 'owner.administrators.read');
 
   if (!hasPermission && !isAdminMaster) {
     return (
@@ -40,8 +40,6 @@ export default function AdministratorsPage() {
       </div>
     );
   }
-
-  const admins: AdminRow[] = useMemo(() => [], []);
 
   return (
     <div className="space-y-6">

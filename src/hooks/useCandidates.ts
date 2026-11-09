@@ -41,7 +41,10 @@ export function useCandidates(
     candidates: items,
     isLoading,
     error,
-    refetch: () => candidatesRepository.findAll(tenantId ?? '', filters),
+    refetch: () =>
+      tenantId
+        ? candidatesRepository.findAll(tenantId, filters)
+        : Promise.resolve([] as Candidate[]),
   };
 }
 

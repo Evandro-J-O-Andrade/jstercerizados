@@ -16,11 +16,11 @@ export const adminMasterCellContract: CellContract = {
   name: 'Admin Master Global',
   version: '1.0.0',
   description:
-    'Admin Master Global: administração ROOT da plataforma, tenants globais e configurações de sistema.',
+    'Governança Admin Master: administração ROOT da plataforma, tenants globais e configurações. Central 24H (/dashboard/global) observa células com evidência; Admin Master (/dashboard/admin-master) governa.',
   category: 'administração',
   domain: 'global',
   scope: 'global',
-  lifecycle: { status: 'active', health: 'healthy' },
+  lifecycle: { status: 'active', health: 'unknown' },
   homeRoute: '/dashboard/admin-master',
   routes: adminMasterCellRoutes,
   layout: { skipLayout: false },

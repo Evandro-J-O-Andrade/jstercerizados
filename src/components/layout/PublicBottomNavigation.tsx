@@ -46,7 +46,7 @@ export function PublicBottomNavigation() {
             >
               {isActive && (
                 <motion.div
-                  layoutId="bottomNavIndicator"
+                  layoutId="publicBottomNavIndicator"
                   className="bg-primary/20 absolute -top-1 left-1/2 h-0.5 w-10 -translate-x-1/2 rounded-full"
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 />

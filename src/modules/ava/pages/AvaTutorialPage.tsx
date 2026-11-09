@@ -31,11 +31,11 @@ export function AvaTutorialPage() {
       <div className="flex flex-col items-center justify-center py-16">
         <BookOpen className="text-muted-foreground h-12 w-12" />
         <p className="text-muted-foreground mt-4 text-sm">
-          Tutorial nao encontrado.
+          Tutorial não encontrado.
         </p>
         <button
           type="button"
-          onClick={() => navigate('/ava')}
+          onClick={() => navigate('/dashboard/ava')}
           className="text-primary mt-2 text-sm font-medium hover:underline"
         >
           Voltar para central

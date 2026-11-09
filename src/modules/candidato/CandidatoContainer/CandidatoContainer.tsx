@@ -44,7 +44,10 @@ export function CandidatoContainer({ children }: CandidatoContainerProps) {
           <CandidatoContent>{children}</CandidatoContent>
         </div>
       </div>
-      <CandidatoBottomNavigation items={bottomNavItems} />
+      <CandidatoBottomNavigation
+        items={bottomNavItems}
+        onMore={handleMenuClick}
+      />
     </div>
   );
 }

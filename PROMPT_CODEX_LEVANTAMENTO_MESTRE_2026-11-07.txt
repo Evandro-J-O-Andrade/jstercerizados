@@ -1,0 +1,17 @@
+Codex, este é o levantamento mestre do projeto J&S Empregos LTDA — CHECK BOULER 24H, criado a partir do histórico de requisitos, auditorias, GitHub e Supabase.
+
+LEIA, NESTA ORDEM:
+1. `AGENTS.md` e `.kilo/rules/01-documentacao-rastreabilidade.md` (prevalecem sobre handoffs).
+2. `docs/check-bouler-24h/LEVANTAMENTO_MESTRE_JS_EMPREGOS_CODEX_2026-11-07.md` (colocado pelo proprietário).
+3. ADRs, reconciliação histórica/normativa, relatórios P0/Stage02, auditoria geral e documentação de Auth/SMTP citados no documento.
+4. O código-fonte real e os contratos das 26 células, sem ignorar legados ou duplicações.
+
+OBJETIVO DESTA MISSÃO: SOMENTE LEITURA. Confirme HEAD/branch/origin/worktree, entenda o que o produto deveria ser, o que já existe e as lacunas. Não deixe o trabalho restrito ao Recrutamento ou Auth: considere portal público, candidato, empresas, RH, serviços, administração, Central Global, mídia, financeiro, rotas, CRUD, RBAC/RLS e migrations.
+
+ENTREGUE: (a) matriz PRETENDIDO × OBSERVADO × FALTANTE por eixo/célula, com caminhos e evidências; (b) conflitos reais com o levantamento; (c) P0/P1/P2; (d) um único próximo lote mínimo com arquivos, testes, riscos e autorização necessária; (e) confirmação expressa de ZERO alterações.
+
+NÃO EXECUTE: mudanças de arquivos, SQL mutável, migrations, `db push/up/repair/reset`, envio de e-mails, criação de usuários, alteração de Auth/SMTP, RLS, Storage, DispatcherMaster/P0-B, commit, push, deploy ou encerramento de processos sem autorização específica.
+
+PRESERVE: identidade textual 'J&S Empregos LTDA', footer atual, contratos de Auth, seleção explícita de tenant, dados reais, LGPD; não misturar Remoção Alpha/Angel Cosméticos.
+
+A passagem é uma fotografia de 07/11/2026, NÃO autorização nem substituto para inspeção atual do workspace e do banco.

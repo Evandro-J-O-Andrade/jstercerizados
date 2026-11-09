@@ -57,7 +57,7 @@ describe('GlobalCommandPage observability', () => {
     cellRegistry.clear();
   });
 
-  it('renderiza estado operacional com probes/heartbeat locais', async () => {
+  it('renderiza evidências locais com distinção de registro/heartbeat funcional', async () => {
     cellRegistry.register(okCell);
     render(
       <MemoryRouter>
@@ -65,8 +65,22 @@ describe('GlobalCommandPage observability', () => {
       </MemoryRouter>,
     );
     await waitFor(() => expect(screen.getByText('OK')).toBeInTheDocument());
-    expect(screen.getAllByText(/Probes:/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Heartbeat:/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Probes locais:/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Heartbeat funcional:/i).length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(/registro em memória/i).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getByRole('heading', {
+        name: 'Central de Inteligência Operacional 24H',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Sem instrumentação funcional' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByText(/estado declarado/i).length,
+    ).toBeGreaterThan(0);
   });
 
   it('isola falha de observabilidade de uma célula e mantém outras visíveis', async () => {

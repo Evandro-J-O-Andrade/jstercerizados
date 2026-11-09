@@ -39,7 +39,7 @@ export function AdminTenantSidebar({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { permissions } = useAuth();
+  const { permissions, person } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
 
   const items: AdminTenantSidebarItem[] = [
@@ -184,12 +184,12 @@ export function AdminTenantSidebar({
           aria-label="Abrir menu de conta"
         >
           <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
-            {useAuth().person?.full_name?.charAt(0).toUpperCase() || 'A'}
+            {person?.full_name?.charAt(0).toUpperCase() || 'A'}
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
               <p className="text-foreground truncate text-sm font-medium leading-tight">
-                {useAuth().person?.full_name || 'Proprietário'}
+                {person?.full_name || 'Proprietário'}
               </p>
               <p className="text-muted-foreground truncate text-xs leading-tight">
                 Proprietário

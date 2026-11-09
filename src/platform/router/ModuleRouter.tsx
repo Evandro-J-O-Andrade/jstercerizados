@@ -90,7 +90,13 @@ function renderModuleRoute(
   );
 }
 
-function ModuleFeatureRenderer({ module }: { module: ModuleDefinition }) {
+function ModuleFeatureRenderer({
+  module,
+  hasIndexRoute = false,
+}: {
+  module: ModuleDefinition;
+  hasIndexRoute?: boolean;
+}) {
   const { activePermissions, effectiveScopes } = useAccount();
   const location = useLocation();
   const features = getAvailableFeatures(
@@ -108,6 +114,10 @@ function ModuleFeatureRenderer({ module }: { module: ModuleDefinition }) {
   }
 
   const isModuleRoot = location.pathname === module.route;
+
+  if (isModuleRoot && hasIndexRoute) {
+    return <Outlet />;
+  }
 
   if (isModuleRoot) {
     return (
@@ -200,7 +210,8 @@ function toRouterPath(absoluteRoute: string, base: string): string | null {
  *
  * Páginas versionadas (`VisaoGeral`, `GlobalDashboardPage`, `GestaoPage`,
  * `DashboardRh`) ainda navegam para `/dashboard/vagas`,
- * `/dashboard/candidatos`, etc. Sem estes redirects elas caem no
+ * `/dashboard/recrutamento/candidatos` (e legado), `/dashboard/vagas`, etc. Sem estes
+ * redirects elas caem no
  * `ModulePlaceholder` e o usuário vê "Em breve" numafeature que existe.
  *
  * A lista vem de `feature.legacyRoutes` — fonte única, a mesma que o
@@ -301,12 +312,18 @@ export function ModuleRouter({
             >
               {skipLayout ? (
                 <Suspense fallback={<RouteLoadingFallback />}>
-                  <ModuleFeatureRenderer module={module} />
+                  <ModuleFeatureRenderer
+                    module={module}
+                    hasIndexRoute={registry?.some((route) => route.path === '')}
+                  />
                 </Suspense>
               ) : (
                 <AdminModuleLayout module={module}>
                   <Suspense fallback={<RouteLoadingFallback />}>
-                    <ModuleFeatureRenderer module={module} />
+                    <ModuleFeatureRenderer
+                      module={module}
+                      hasIndexRoute={registry?.some((route) => route.path === '')}
+                    />
                   </Suspense>
                 </AdminModuleLayout>
               )}

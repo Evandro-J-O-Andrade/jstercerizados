@@ -20,6 +20,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ShieldCheck,
+  UserRoundSearch,
   Users,
   Wrench,
 } from 'lucide-react';
@@ -48,7 +49,7 @@ export function AdminMasterSidebar({
 
   const items: AdminMasterSidebarItem[] = [
     {
-      label: 'Central de Comando',
+      label: 'Central 24H',
       path: '/dashboard/global',
       icon: <LayoutDashboard className="h-4 w-4" />,
       permission: 'tenants.read',
@@ -64,6 +65,12 @@ export function AdminMasterSidebar({
       path: '/dashboard/recrutamento',
       icon: <BriefcaseBusiness className="h-4 w-4" />,
       permission: 'recruitment.read',
+    },
+    {
+      label: 'Gestão de Candidatos',
+      path: '/dashboard/recrutamento/candidatos',
+      icon: <UserRoundSearch className="h-4 w-4" />,
+      permission: 'candidates.read',
     },
     {
       label: 'Gestão de Usuários',
@@ -151,7 +158,7 @@ export function AdminMasterSidebar({
           <ShieldCheck className="text-primary h-5 w-5" />
           {!collapsed && (
             <span className="text-foreground truncate text-sm font-semibold">
-              Global
+              Central 24H
             </span>
           )}
         </div>

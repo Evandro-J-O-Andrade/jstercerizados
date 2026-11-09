@@ -180,16 +180,24 @@ export const jobsRepository = {
   /**
    * Get a single job by ID
    */
-  async getById(id: string): Promise<RepositoryResult<Job>> {
+  async getById(
+    id: string,
+    tenantId?: string,
+  ): Promise<RepositoryResult<Job>> {
     try {
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('jobs')
         .select('*')
-        .eq('id', id)
-        .single();
+        .eq('id', id);
+
+      if (tenantId?.trim()) {
+        query = query.eq('tenant_id', tenantId);
+      }
+
+      const { data, error } = await query.single();
 
       if (error) {
         return { data: null, error };

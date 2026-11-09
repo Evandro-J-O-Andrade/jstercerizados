@@ -35,7 +35,7 @@ type SupplierFormData = z.infer<typeof supplierSchema>;
 
 export default function Fornecedores() {
   const [submitted, setSubmitted] = useState(false);
-  const { suppliers, isLoading, error, source, refetch } =
+  const { suppliers, isLoading, error, refetch } =
     usePublicSuppliersAsSupplierVisuals();
 
   const {
@@ -183,14 +183,9 @@ export default function Fornecedores() {
                       />
                     ))}
                   </div>
-                  {source === 'mock' && (
-                    <p className="text-muted-foreground mt-6 text-center text-xs">
-                      Exibindo catálogo de demonstração. Os dados reais
-                      aparecerão automaticamente quando forem publicados.
-                    </p>
-                  )}
                 </>
               )}
+
             </>
           )}
         </Container>

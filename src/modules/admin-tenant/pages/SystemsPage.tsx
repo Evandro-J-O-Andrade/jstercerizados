@@ -22,9 +22,9 @@ interface SystemRow {
 export default function SystemsPage() {
   const { permissions, isAdminMaster } = useAuth();
   const { identity } = useAccount();
+  const systems: SystemRow[] = useMemo(() => [], []);
 
-  const hasPermission = permissions.some((p: any) => p.name === 'owner.systems.read',
-  );
+  const hasPermission = permissions.some((p: any) => p.name === 'owner.systems.read');
 
   if (!hasPermission && !isAdminMaster) {
     return (
@@ -39,8 +39,6 @@ export default function SystemsPage() {
       </div>
     );
   }
-
-  const systems: SystemRow[] = useMemo(() => [], []);
 
   return (
     <div className="space-y-6">

@@ -22,9 +22,9 @@ interface ManagementRow {
 export default function ManagementPage() {
   const { permissions, isAdminMaster } = useAuth();
   const { identity } = useAccount();
+  const managements: ManagementRow[] = useMemo(() => [], []);
 
-  const hasPermission = permissions.some((p: any) => p.name === 'owner.management.read',
-  );
+  const hasPermission = permissions.some((p: any) => p.name === 'owner.management.read');
 
   if (!hasPermission && !isAdminMaster) {
     return (
@@ -39,8 +39,6 @@ export default function ManagementPage() {
       </div>
     );
   }
-
-  const managements: ManagementRow[] = useMemo(() => [], []);
 
   return (
     <div className="space-y-6">

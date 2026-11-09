@@ -1,6 +1,6 @@
 /**
- * cell-to-module-definition.ts — Ponte entre CellRegistry (canônico) e
- * ModuleRouter/ModuleContext (legado).
+ * cell-to-module-definition.ts — Adaptador entre CellRegistry e o contrato
+ * canônico de navegação modular.
  *
  * Converte CellContract (registro canônico de células) em ModuleDefinition
  * (formato esperado pelo roteador legado), permitindo que o ModuleRouter e
@@ -15,7 +15,9 @@ import type {
   ModuleCategory,
   ModuleDefinition,
   ModuleFeature,
-} from '@/components/legacy/portal/ModuleRegistry';
+} from '@/core/contracts/module-contract';
+import { getPermissionKey } from '@/utils/rbac-normalize';
+import type { Permission } from '@/types/auth';
 import { cellRegistry } from '@/core/registry/CellRegistryContract';
 
 /**
@@ -32,25 +34,33 @@ function cellRouteToModuleFeature(
     id: `${moduleId}-${route.path.replace(/[/:]/g, '-') || 'root'}`,
     title: route.label,
     description: route.label,
-    icon: 'briefcase',
+    icon: route.icon ?? 'LayoutDashboard',
     route: featureRoute,
     requiredPermissions: route.requiredPermissions,
     implementationStatus: 'implemented',
   };
 }
 
+function normalizeScope(
+  scope: unknown,
+): 'global' | 'tenant' {
+  return scope === 'global' ? 'global' : 'tenant';
+}
+
 /**
  * Converte um CellContract em ModuleDefinition.
  *
  * Módulos que não são "candidato" recebem o prefixo "/dashboard/" para
- * compatibilidade com o PORTAL_MODULES legado, que usa rotas como
- * "/dashboard/recrutamento", "/dashboard/rh", etc.
+ * consistência com as rotas autenticadas existentes, como
+ * "/dashboard/recrutamento" e "/dashboard/rh".
  */
 export function cellContractToModuleDefinition(
   cell: CellContract,
 ): ModuleDefinition {
   const isCandidate = cell.id === 'candidato';
-  const baseRoute = isCandidate ? '/candidato' : `/dashboard/${cell.id}`;
+  const baseRoute =
+    cell.homeRoute ?? (isCandidate ? '/candidato' : `/dashboard/${cell.id}`);
+  const scope = normalizeScope(cell.scope ?? cell.domain);
 
   const features = cell.routes.map((route) =>
     cellRouteToModuleFeature(route, cell.id, baseRoute),
@@ -60,34 +70,64 @@ export function cellContractToModuleDefinition(
     id: cell.id,
     title: cell.name,
     description: `${cell.name} - Módulo operacional`,
-    icon: 'briefcase',
+    icon: cell.navigation?.icon ?? 'LayoutDashboard',
     route: baseRoute,
     category: 'negocio' as ModuleCategory,
     requiredPermissions: cell.permissions.length > 0 ? cell.permissions : [],
     features,
-    scope: 'tenant',
+    scope,
   };
 }
 
-/**
- * Retorna todos os módulos disponíveis, priorizando o CellRegistry (canônico)
- *
- * Este é o replacement direto para getAvailableModules() do ModuleRegistry
- * legado, garantindo que todas as células registradas no CellRegistry
- * estejam disponíveis para resolução de rotas.
- */
-export function getAvailableModulesFromCellRegistry(
-  effectiveScopes: string | ('global' | 'tenant')[] = 'tenant',
-): ModuleDefinition[] {
-  const scopes = Array.isArray(effectiveScopes)
-    ? effectiveScopes
-    : [effectiveScopes];
+type Scope = 'global' | 'tenant';
 
-  // Módulos do CellRegistry (fonte canônica)
+/** Mantém compatibilidade: alguns consumidores passam scopes; outros (legado/teste) passam permissões + scope. */
+export function getAvailableModulesFromCellRegistry(
+  scopesOrPermissions: Scope | Scope[] | Array<string | Permission | null | undefined> = 'tenant',
+  scope?: Scope,
+): ModuleDefinition[] {
+  let scopes: Scope[];
+  let permissions: Array<string | Permission | null | undefined> | null = null;
+
+  if (scope !== undefined) {
+    scopes = [scope];
+    permissions = Array.isArray(scopesOrPermissions)
+      ? scopesOrPermissions
+      : [scopesOrPermissions];
+  } else if (Array.isArray(scopesOrPermissions)) {
+    const values = scopesOrPermissions;
+    const isScopes = values.length > 0 && values.every((v) => v === 'global' || v === 'tenant');
+    if (isScopes) {
+      scopes = values as Scope[];
+    } else {
+      scopes = ['tenant'];
+      permissions = values;
+    }
+  } else if (scopesOrPermissions === 'global' || scopesOrPermissions === 'tenant') {
+    scopes = [scopesOrPermissions];
+  } else {
+    scopes = ['tenant'];
+    permissions = [scopesOrPermissions];
+  }
+
+  const permissionKeys = permissions
+    ? new Set(
+        permissions
+          .map((permission) => getPermissionKey(permission as never))
+          .filter(Boolean),
+      )
+    : null;
+
   return cellRegistry
     .getEnabled()
     .map((entry) => cellContractToModuleDefinition(entry.cell))
-    .filter((module) => scopes.includes(module.scope));
+    .filter((module) => scopes.includes(module.scope))
+    .filter((module) => {
+      if (!permissionKeys) return true;
+      const required = module.requiredPermissions ?? [];
+      if (required.length === 0) return true;
+      return required.some((permission) => permissionKeys.has(permission));
+    });
 }
 
 /**
@@ -110,8 +150,7 @@ export function getModuleDefinitionById(
  * Prioridade:
  * 1. Match de rota mais específica (mais longa) primeiro - seja de módulo,
  *    feature ou legacyRoute
- * 2. CellRegistry (canônico) tem prioridade sobre PORTAL_MODULES para o
- *    mesmo ID de módulo
+ * 2. CellRegistry é a fonte canônica
  * 3. null (launcher)
  */
 export function resolveModuleFromPathname(pathname: string): {

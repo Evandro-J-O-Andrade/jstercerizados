@@ -23,9 +23,9 @@ interface UnitRow {
 export default function UnitsPage() {
   const { permissions, isAdminMaster } = useAuth();
   const { identity } = useAccount();
+  const units: UnitRow[] = useMemo(() => [], []);
 
-  const hasPermission = permissions.some((p: any) => p.name === 'owner.units.read',
-  );
+  const hasPermission = permissions.some((p: any) => p.name === 'owner.units.read');
 
   if (!hasPermission && !isAdminMaster) {
     return (
@@ -40,8 +40,6 @@ export default function UnitsPage() {
       </div>
     );
   }
-
-  const units: UnitRow[] = useMemo(() => [], []);
 
   return (
     <div className="space-y-6">

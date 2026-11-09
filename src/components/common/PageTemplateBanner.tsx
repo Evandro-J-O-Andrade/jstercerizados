@@ -26,6 +26,22 @@ export function PageTemplateBanner({
     );
   }
 
+  if (data.error) {
+    return (
+      <div
+        role="status"
+        data-template-error="true"
+        data-template-key={templateKey}
+        className={cn(
+          'bg-muted/30 text-muted-foreground rounded-md p-3 text-xs',
+          className,
+        )}
+      >
+        Conteúdo personalizado indisponível.
+      </div>
+    );
+  }
+
   if (!data.found) {
     if (!fallback) return null;
     return (

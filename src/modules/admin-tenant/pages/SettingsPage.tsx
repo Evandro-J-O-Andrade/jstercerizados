@@ -22,24 +22,6 @@ interface SettingItem {
 export default function SettingsPage() {
   const { permissions, isAdminMaster } = useAuth();
   const { identity } = useAccount();
-
-  const hasPermission = permissions.some((p: any) => p.name === 'owner.settings.read',
-  );
-
-  if (!hasPermission && !isAdminMaster) {
-    return (
-      <div className="p-6 text-center">
-        <Shield className="mx-auto h-8 w-8 text-destructive mb-2" />
-        <h2 className="text-foreground text-lg font-semibold">
-          Acesso não autorizado
-        </h2>
-        <p className="text-muted-foreground">
-          Você não possui permissão para visualizar configurações.
-        </p>
-      </div>
-    );
-  }
-
   const settings: SettingItem[] = useMemo(
     () => [
       {
@@ -66,6 +48,22 @@ export default function SettingsPage() {
     ],
     [],
   );
+
+  const hasPermission = permissions.some((p: any) => p.name === 'owner.settings.read');
+
+  if (!hasPermission && !isAdminMaster) {
+    return (
+      <div className="p-6 text-center">
+        <Shield className="mx-auto h-8 w-8 text-destructive mb-2" />
+        <h2 className="text-foreground text-lg font-semibold">
+          Acesso não autorizado
+        </h2>
+        <p className="text-muted-foreground">
+          Você não possui permissão para visualizar configurações.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

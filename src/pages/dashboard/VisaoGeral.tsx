@@ -119,7 +119,8 @@ export default function VisaoGeral() {
         description: 'Cadastrados na plataforma',
         icon: Users,
         tone: 'primary',
-        href: '/dashboard/candidatos',
+          href: '/dashboard/recrutamento/candidatos',
+
         permission: 'candidates.read',
         format: 'number',
       },
@@ -174,7 +175,8 @@ export default function VisaoGeral() {
         },
         {
           label: 'Cadastrar candidato',
-          href: '/dashboard/candidatos',
+        href: '/dashboard/recrutamento/candidatos',
+
           permission: 'candidates.create',
         },
         {
@@ -333,7 +335,8 @@ export default function VisaoGeral() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate('/dashboard/candidatos')}
+                onClick={() => navigate('/dashboard/recrutamento/candidatos')}
+
               >
                 Ver todos
               </Button>

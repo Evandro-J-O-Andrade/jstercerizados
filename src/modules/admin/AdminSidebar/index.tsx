@@ -22,6 +22,7 @@ import { useAccount } from '@/contexts/AccountContext';
 import { usePlatformContext } from '@/platform/platform-context';
 import { cellRegistry } from '@/core/registry/CellRegistryContract';
 import { cn } from '@/utils';
+import { resolveIcon } from '@/utils/navigation-icons';
 
 interface AdminSidebarItem {
   label: string;
@@ -49,7 +50,7 @@ export function AdminSidebar({
 
   const cellEntries = cellRegistry.getEnabled();
   const cellItems: AdminSidebarItem[] = cellEntries
-    .filter((entry: any) => {
+    .filter((entry) => {
       const cell = entry.cell;
       if (!cell?.enabled) return false;
       if (cell.navigation && cell.navigation.sidebar === false) return false;
@@ -59,32 +60,45 @@ export function AdminSidebar({
       }
       return true;
     })
-    .map((entry: any) => {
+    .filter(
+      (entry) =>
+        entry.cell.id !== 'admin-master' &&
+        entry.cell.homeRoute !== '/dashboard/global',
+    )
+    .map((entry): AdminSidebarItem => {
       const cell = entry.cell;
       const home = cell.homeRoute || `/dashboard/${cell.id}`;
+      const CellIcon = resolveIcon(cell.navigation?.icon);
       return {
         label: cell.navigation?.label || cell.name,
         path: home,
-        icon: <LayoutDashboard />,
-        id: cell.id,
+        icon: <CellIcon />,
       };
     })
-    .sort((a: any, b: any) => {
-      const aIsGlobal =
-        a.id === 'admin-master' || a.path === '/dashboard/global';
-      const bIsGlobal =
-        b.id === 'admin-master' || b.path === '/dashboard/global';
-      if (aIsGlobal && !bIsGlobal) return -1;
-      if (!aIsGlobal && bIsGlobal) return 1;
-      return a.label.localeCompare(b.label);
-    })
-    .map(({ id, ...rest }: any) => rest);
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  const adminMasterItems: AdminSidebarItem[] = identity.isAdminMaster
+    ? [
+        {
+          label: 'Central 24H',
+          path: '/dashboard/global',
+          icon: <Activity />,
+        },
+        {
+          label: 'Admin Master',
+          path: '/dashboard/admin-master',
+          icon: <ShieldCheck />,
+        },
+      ]
+    : [];
 
   const items: AdminSidebarItem[] =
-    cellItems.length > 0
-      ? cellItems
+    adminMasterItems.length > 0
+      ? [...adminMasterItems, ...cellItems]
+      : cellItems.length > 0
+        ? cellItems
       : [
-          { label: 'Meu UsuÃ¡rio', path: '/minha-conta', icon: <UserCircle /> },
+          { label: 'Meu Usuário', path: '/minha-conta', icon: <UserCircle /> },
           {
             label: 'Dashboard',
             path: '/dashboard/admin',

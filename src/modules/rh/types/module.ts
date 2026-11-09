@@ -34,7 +34,8 @@ export const rhSubModules = [
     title: 'Candidatos',
     description: 'Banco de talentos e currículos',
     icon: Briefcase,
-    route: '/dashboard/candidatos',
+    route: '/dashboard/recrutamento/candidatos',
+
     requiredPermissions: ['candidates.read'],
   },
   {
@@ -58,7 +59,8 @@ export const rhSubModules = [
     title: 'Habilidades',
     description: 'Gerencie habilidades dos candidatos',
     icon: Award,
-    route: '/dashboard/candidatos/habilidades',
+    route: '/dashboard/recrutamento/habilidades',
+
     requiredPermissions: ['candidates.read'],
   },
   {

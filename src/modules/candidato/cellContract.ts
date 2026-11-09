@@ -21,7 +21,11 @@ export const candidatoCellContract: CellContract = {
   domain: 'tenant',
   scope: 'tenant',
   lifecycle: { status: 'active', health: 'healthy' },
-  homeRoute: '/dashboard/candidato',
+  // Portal self-service do candidato vive em /candidato/* (App.tsx).
+  // /dashboard/candidato (singular) redireciona para gestão canônica em
+  // /dashboard/recrutamento/candidatos; nunca expor /dashboard/candidatos (plural).
+  homeRoute: '/candidato',
+
   routes: candidatoCellRoutes,
   layout: { skipLayout: true },
   navigation: { sidebar: true, label: 'Candidato', icon: 'User' },

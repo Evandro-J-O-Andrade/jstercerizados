@@ -1,0 +1,334 @@
+[
+  {
+    "viewport": "desktop",
+    "route": "/dashboard/recrutamento",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento",
+    "headings": [
+      "Central de Recrutamento & RH"
+    ],
+    "visibleHeaders": 2,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop",
+    "route": "/dashboard/recrutamento/vagas",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas",
+    "headings": [
+      "Vagas"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop",
+    "route": "/dashboard/recrutamento/vagas/novo",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas/novo",
+    "headings": [
+      "Nova vaga"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 2,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop",
+    "route": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7",
+    "headings": [
+      "Auxiliar de Produção"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop",
+    "route": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7/editar",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7/editar",
+    "headings": [
+      "Editar: Auxiliar de Produção"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 2,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "mobile",
+    "route": "/dashboard/recrutamento",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento",
+    "headings": [
+      "Central de Recrutamento & RH"
+    ],
+    "visibleHeaders": 2,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Navegação inferior do sistema"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  {
+    "viewport": "mobile",
+    "route": "/dashboard/recrutamento/vagas",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas",
+    "headings": [
+      "Vagas"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb",
+      "Navegação inferior do sistema"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  {
+    "viewport": "mobile",
+    "route": "/dashboard/recrutamento/vagas/novo",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas/novo",
+    "headings": [
+      "Nova vaga"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 2,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb",
+      "Navegação inferior do sistema"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  {
+    "viewport": "mobile",
+    "route": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7",
+    "headings": [
+      "Auxiliar de Produção"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb",
+      "Navegação inferior do sistema"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  {
+    "viewport": "mobile",
+    "route": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7/editar",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7/editar",
+    "headings": [
+      "Editar: Auxiliar de Produção"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 2,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb",
+      "Navegação inferior do sistema"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  {
+    "viewport": "desktop-light",
+    "route": "/dashboard/recrutamento",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento",
+    "headings": [
+      "Central de Recrutamento & RH"
+    ],
+    "visibleHeaders": 2,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop-light",
+    "route": "/dashboard/recrutamento/vagas",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas",
+    "headings": [
+      "Vagas"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop-light",
+    "route": "/dashboard/recrutamento/vagas/novo",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas/novo",
+    "headings": [
+      "Nova vaga"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 2,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop-light",
+    "route": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7",
+    "headings": [
+      "Auxiliar de Produção"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop-light",
+    "route": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7/editar",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/recrutamento/vagas/b5cc9e49-c9b4-4947-8b6f-21da275ac3d7/editar",
+    "headings": [
+      "Editar: Auxiliar de Produção"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 2,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Módulos",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  }
+]

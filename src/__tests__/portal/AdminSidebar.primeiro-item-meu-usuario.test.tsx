@@ -74,6 +74,10 @@ vi.mock('@/contexts/ThemeContext', () => ({
   }),
 }));
 
+vi.mock('@/platform/platform-context', () => ({
+  usePlatformContext: () => ({ effectiveScopes: ['global', 'tenant'] }),
+}));
+
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
@@ -127,21 +131,34 @@ describe('AdminSidebar - Primeiro item: Meu Usuário', () => {
     };
   });
 
-  it('1. Exibe "Meu Usuário" como primeiro item da sidebar administrativa', () => {
+  it('1. Exibe a Central 24H como primeiro item para Admin Master', () => {
     renderSidebar();
-    expect(screen.getByText('Meu Usuário')).toBeInTheDocument();
+    const nav = screen.getByRole('navigation', { name: 'Módulos' });
+    const links = nav.querySelectorAll('a');
+    expect(links[0]).toHaveTextContent('Central 24H');
+    expect(links[0]).toHaveAttribute('href', '/dashboard/global');
+    expect(links[1]).toHaveTextContent('Admin Master');
+    expect(links[1]).toHaveAttribute('href', '/dashboard/admin-master');
   });
 
-  it('2. "Meu Usuário" aparece dentro do <nav> da sidebar administrativa', () => {
-    renderSidebar();
+  it('2. mantém "Meu Usuário" como primeiro item para perfis de tenant', () => {
+    mockIdentityRef.current = {
+      ...mockIdentityRef.current,
+      roleName: 'tenant_admin',
+      roleScope: 'tenant',
+      isAdminMaster: false,
+    };
+    renderSidebar({ isAdminMaster: false });
     const nav = screen.getByRole('navigation', { name: 'Módulos' });
     const primeiroLink = nav.querySelector('a');
     expect(primeiroLink).toHaveTextContent('Meu Usuário');
   });
 
-  it('3. "Meu Usuário" aparece para admin_master', () => {
+  it('3. mantém acesso à conta no rodapé para admin_master', () => {
     renderSidebar({ isAdminMaster: true });
-    expect(screen.getByText('Meu Usuário')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Maria Souza, Administrador Master/i }),
+    ).toBeInTheDocument();
   });
 
   it('4. "Meu Usuário" aparece para tenant_admin', () => {

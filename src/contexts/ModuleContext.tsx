@@ -1,10 +1,7 @@
 /**
  * ModuleContext.tsx — Contexto de módulo atual baseado na URL.
  *
- * Agora usa o CellRegistry (canônico) como fonte primária para resolução de
- * módulos, com fallback para PORTAL_MODULES (legado). A nulificação
- * propositada em /candidato e /candidato/ foi removida para que o módulo
- * candidato seja resolvido corretamente em sua raiz.
+ * Usa o CellRegistry como fonte canônica para resolução de módulos.
  */
 
 import {
@@ -18,7 +15,7 @@ import { useLocation } from 'react-router-dom';
 import type {
   ModuleDefinition,
   ModuleFeature,
-} from '@/components/legacy/portal/ModuleRegistry';
+} from '@/core/contracts/module-contract';
 import { resolveModuleFromPathname } from '@/core/cells/cell-to-module-definition';
 
 interface ModuleContextType {

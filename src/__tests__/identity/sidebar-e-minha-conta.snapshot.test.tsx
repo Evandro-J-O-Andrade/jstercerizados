@@ -87,6 +87,10 @@ vi.mock('@/contexts/ThemeContext', () => ({
   }),
 }));
 
+vi.mock('@/platform/platform-context', () => ({
+  usePlatformContext: () => ({ effectiveScopes: ['tenant'] }),
+}));
+
 vi.mock('@/repositories/navigation.repository', () => ({
   navigationRepository: {
     listAll: vi.fn().mockResolvedValue({ modules: [], globals: [] }),

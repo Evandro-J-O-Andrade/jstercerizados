@@ -28,21 +28,13 @@ vi.mock('@/components/ui/SEO', () => ({
   SEO: () => null,
 }));
 
-vi.mock('@/lib/error-normalizer', () => ({
-  normalizeError: (input: unknown) => ({
-    userMessage: typeof input === 'string' ? input : String(input),
-    technicalDetail: typeof input === 'string' ? input : String(input),
-    category: 'auth',
-    canRetry: false,
-  }),
-}));
-
 const mockUseAuth = vi.mocked(useAuth);
 
-describe('CadastroCandidato — candidate registration E2E', () => {
+describe('CadastroCandidato — cadastro com Auth simulado', () => {
   const mockRegister = vi.fn();
 
   beforeEach(() => {
+    vi.clearAllMocks();
     mockUseAuth.mockReturnValue({
       register: mockRegister,
       isAuthenticated: false,
@@ -187,6 +179,14 @@ describe('CadastroCandidato — candidate registration E2E', () => {
         screen.getByText(/Cadastro realizado com sucesso/i),
       ).toBeInTheDocument();
     });
+    const notice = screen.getByRole('alert');
+    expect(notice).toHaveTextContent(/Confirmação pendente/i);
+    expect(notice.className).not.toContain('destructive');
+    expect(screen.getByRole('button', { name: /Criar conta/i })).toBeDisabled();
+    expect(screen.getByRole('link', { name: /Ir para o acesso/i })).toHaveAttribute(
+      'href',
+      '/entrar/candidato',
+    );
   });
 
   it('shows error message when register returns error', async () => {
@@ -222,5 +222,6 @@ describe('CadastroCandidato — candidate registration E2E', () => {
     await waitFor(() => {
       expect(screen.getByText(/E-mail já cadastrado/i)).toBeInTheDocument();
     });
+    expect(screen.getByRole('alert').className).toContain('destructive');
   });
 });

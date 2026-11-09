@@ -7,6 +7,8 @@ import {
 } from '@/components/dashboard/dashboard-model';
 import { getAvailableModules } from '@/platform/modules';
 import { normalizePermission } from '@/utils/rbac-normalize';
+import { cellRegistry } from '@/core/registry/CellRegistryContract';
+import { adminMasterCellContract } from '@/modules/admin-master/cellContract';
 
 const jobsMetric: DashboardMetric = {
   id: 'jobs',
@@ -27,7 +29,8 @@ const candidatesMetric: DashboardMetric = {
   description: 'Candidatos ativos',
   icon: Users,
   tone: 'primary',
-  href: '/dashboard/candidatos',
+  href: '/dashboard/recrutamento/candidatos',
+
   permission: 'candidates.read',
   format: 'number',
 };
@@ -79,6 +82,12 @@ describe('dashboard metric model', () => {
   });
 
   it('exposes the global module only with a real permission granted by the database', () => {
+    // Contrato: disponibilidade global vem do CellRegistry (fonte canônica) + permissões reais.
+    // Registro explícito no teste evita dependência de bootstrap da aplicação.
+    if (!cellRegistry.get(adminMasterCellContract.id)) {
+      cellRegistry.register(adminMasterCellContract);
+    }
+
     const globalReadPermission = normalizePermission({
       id: 'permission-tenants-read',
       resource: 'tenants',

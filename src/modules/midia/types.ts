@@ -19,7 +19,8 @@ export type MidiaEntityType =
 
 export type MidiaPurpose = 'logo' | 'hero' | 'card' | 'gallery';
 
-export interface MidiaAsset extends MediaAsset {}
+/** Ativo de mídia da célula; espelha {@link MediaAsset} para manter o contrato local rastreável. */
+export type MidiaAsset = MediaAsset;
 
 /**
  * Contexto de execução da célula de mídia.

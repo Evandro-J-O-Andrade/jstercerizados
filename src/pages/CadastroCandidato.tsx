@@ -34,6 +34,7 @@ type CandidateFormData = z.infer<typeof candidateSchema>;
 export default function CandidateRegister() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [pendingNotice, setPendingNotice] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileHandle>(null);
   const submittedRef = useRef(false);
@@ -48,8 +49,15 @@ export default function CandidateRegister() {
     resolver: zodResolver(candidateSchema),
   });
 
+  /** Exibe mensagem segura: reutiliza texto já normalizado pelo AuthContext quando aplicável. */
+  const toSafeMessage = (err: unknown): string => {
+    if (typeof err === 'string' && err.trim()) return err;
+    return normalizeError(err).userMessage;
+  };
+
   const onSubmit = async (data: CandidateFormData): Promise<void> => {
     setError('');
+    setPendingNotice(false);
     submittedRef.current = false;
 
     try {
@@ -64,22 +72,20 @@ export default function CandidateRegister() {
 
       if (result.error) {
         submittedRef.current = true;
-        const userMessage = normalizeError(result.error).userMessage;
+        const userMessage = toSafeMessage(result.error);
         setError(userMessage);
         if (/captcha/i.test(userMessage)) {
           setTurnstileToken(null);
           turnstileRef.current?.reset();
         }
       } else if (result.status === 'email_pending') {
-        setError(
-          'Cadastro realizado com sucesso. Verifique seu e-mail para confirmar a conta.',
-        );
+        setPendingNotice(true);
       } else {
         navigate('/candidato');
       }
     } catch (err) {
       submittedRef.current = true;
-      setError(normalizeError(err).userMessage);
+      setError(toSafeMessage(err));
     }
   };
 
@@ -138,8 +144,29 @@ export default function CandidateRegister() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {pendingNotice && (
+              <div
+                role="alert"
+                className="border-primary/20 bg-primary/5 rounded-xl border p-4 text-sm"
+              >
+                <p className="text-foreground font-medium">Cadastro realizado com sucesso.</p>
+                <p className="text-muted-foreground mt-1">
+                  <span className="text-foreground font-medium">Confirmação pendente.</span>{' '}
+                  Verifique seu e-mail para confirmar a conta e concluir o acesso.
+                </p>
+                <Link
+                  to="/entrar/candidato"
+                  className="text-primary hover:text-primary/80 mt-2 inline-block font-medium transition-colors"
+                >
+                  Ir para o acesso
+                </Link>
+              </div>
+            )}
             {error && (
-              <div className="bg-destructive/10 text-destructive rounded-xl p-4 text-sm">
+              <div
+                role="alert"
+                className="bg-destructive/10 text-destructive rounded-xl p-4 text-sm"
+              >
                 {error}
               </div>
             )}
@@ -203,6 +230,7 @@ export default function CandidateRegister() {
               size="xl"
               className="w-full"
               loading={isSubmitting}
+              disabled={pendingNotice}
               leftIcon={<UserPlus className="h-5 w-5" />}
             >
               Criar conta

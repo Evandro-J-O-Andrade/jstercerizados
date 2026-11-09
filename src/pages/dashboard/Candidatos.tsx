@@ -27,7 +27,7 @@ const SALARY_TYPE_OPTIONS = [
 ] as const;
 
 export default function Candidatos() {
-  const { currentTenantId, hasAnyPermission, isAdminMaster } = useAuth();
+  const { currentTenantId, hasAnyPermission } = useAuth();
   const { addToast } = useToast();
 
   const canCreate = hasAnyPermission(['candidates.create']);
@@ -60,20 +60,22 @@ export default function Candidatos() {
     let cancelled = false;
 
     async function load() {
-      const tenantId = currentTenantId || (isAdminMaster ? '' : null);
-      if (!tenantId && !isAdminMaster) return;
+      // Fail-closed: gestão de candidatos é tenant-scoped; sem tenant explícito não consulta.
+      if (!currentTenantId) {
+        setCandidates([]);
+        setIsLoading(false);
+        setError(null);
+        return;
+      }
 
       setIsLoading(true);
       setError(null);
 
       try {
-        const data = await candidatesRepository.findAll(
-          isAdminMaster && !currentTenantId ? ('' as any) : currentTenantId!,
-          {
-            status: statusFilter === 'all' ? undefined : statusFilter,
-            search: search || undefined,
-          },
-        );
+        const data = await candidatesRepository.findAll(currentTenantId, {
+          status: statusFilter === 'all' ? undefined : statusFilter,
+          search: search || undefined,
+        });
         if (!cancelled) {
           setCandidates(data);
         }
@@ -90,7 +92,7 @@ export default function Candidatos() {
       }
     }
 
-    load();
+    void load();
 
     return () => {
       cancelled = true;
@@ -127,6 +129,10 @@ export default function Candidatos() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentTenantId) {
+      setError('Selecione um tenant para gerenciar candidatos.');
+      return;
+    }
 
     try {
       const payload: CandidateCreateInput | CandidateUpdateInput = {
@@ -146,7 +152,7 @@ export default function Candidatos() {
       if (selected) {
         const updated = await candidatesRepository.update(
           selected.id,
-          currentTenantId || '',
+          currentTenantId,
           payload as CandidateUpdateInput,
         );
         setCandidates((prev) =>
@@ -155,7 +161,7 @@ export default function Candidatos() {
       } else {
         const created = await candidatesRepository.create({
           ...payload,
-          tenant_id: currentTenantId || '',
+          tenant_id: currentTenantId,
         } as CandidateCreateInput);
         setCandidates((prev) => [created, ...prev]);
       }

@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook } from '@testing-library/react';
 
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
@@ -7,14 +8,17 @@ vi.mock('@/contexts/AuthContext', () => ({
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissionCheck } from '../index';
 
+type AuthMock = ReturnType<typeof useAuth>;
+type Permission = { resource: string; action: string };
+
 const mockUseAuth = vi.mocked(useAuth);
 
-function renderUsePermissionCheck(permissions: any[]) {
+function renderUsePermissionCheck(permissions: Permission[]) {
   mockUseAuth.mockReturnValue({
     permissions,
     isLoading: false,
-  } as any);
-  return usePermissionCheck();
+  } as unknown as AuthMock);
+  return renderHook(() => usePermissionCheck());
 }
 
 describe('usePermissionCheck — fail-closed (Fase D.5)', () => {
@@ -23,115 +27,115 @@ describe('usePermissionCheck — fail-closed (Fase D.5)', () => {
   });
 
   it('nega acesso quando a chave de permissão está vazia', () => {
-    const { checkPermission } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(checkPermission('')).toBe(false);
+    expect(result.current.checkPermission('')).toBe(false);
   });
 
   it('nega acesso quando a chave de permissão é undefined', () => {
-    const { checkPermission } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(checkPermission(undefined as any)).toBe(false);
+    expect(result.current.checkPermission(undefined as unknown as string)).toBe(false);
   });
 
   it('nega acesso quando a lista de permissões está vazia (modo any)', () => {
-    const { checkPermissions } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(checkPermissions([])).toBe(false);
+    expect(result.current.checkPermissions([])).toBe(false);
   });
 
   it('nega acesso quando a lista de permissões é undefined (modo any)', () => {
-    const { checkPermissions } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(checkPermissions(undefined as any)).toBe(false);
+    expect(result.current.checkPermissions(undefined as unknown as string[])).toBe(false);
   });
 
   it('nega acesso quando a lista de permissões está vazia (modo all)', () => {
-    const { checkPermissions } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(checkPermissions([], 'all')).toBe(false);
+    expect(result.current.checkPermissions([], 'all')).toBe(false);
   });
 
   it('nega acesso quando a lista de permissões é undefined (modo all)', () => {
-    const { checkPermissions } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(checkPermissions(undefined as any, 'all')).toBe(false);
+    expect(result.current.checkPermissions(undefined as unknown as string[], 'all')).toBe(false);
   });
 
   it('nega acesso com hasPermission quando a chave está vazia', () => {
-    const { hasPermission } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(hasPermission('')).toBe(false);
+    expect(result.current.hasPermission('')).toBe(false);
   });
 
   it('nega acesso com hasAnyPermission quando a lista está vazia', () => {
-    const { hasAnyPermission } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(hasAnyPermission([])).toBe(false);
+    expect(result.current.hasAnyPermission([])).toBe(false);
   });
 
   it('nega acesso com hasAllPermissions quando a lista está vazia', () => {
-    const { hasAllPermissions } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(hasAllPermissions([])).toBe(false);
+    expect(result.current.hasAllPermissions([])).toBe(false);
   });
 
   it('nega acesso quando a permissão não é concedida ao usuário', () => {
-    const { checkPermission } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(checkPermission('companies.read')).toBe(false);
+    expect(result.current.checkPermission('companies.read')).toBe(false);
   });
 
   it('libera acesso quando a permissão válida é concedida', () => {
-    const { checkPermission } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(checkPermission('jobs.read')).toBe(true);
+    expect(result.current.checkPermission('jobs.read')).toBe(true);
   });
 
   it('libera acesso em modo any quando pelo menos uma permissão é concedida', () => {
-    const { checkPermissions } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(checkPermissions(['companies.read', 'jobs.read'])).toBe(true);
+    expect(result.current.checkPermissions(['companies.read', 'jobs.read'])).toBe(true);
   });
 
   it('nega acesso em modo all quando nem todas as permissões são concedidas', () => {
-    const { checkPermissions } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
     ]);
 
-    expect(checkPermissions(['jobs.read', 'companies.read'], 'all')).toBe(false);
+    expect(result.current.checkPermissions(['jobs.read', 'companies.read'], 'all')).toBe(false);
   });
 
   it('libera acesso em modo all quando todas as permissões são concedidas', () => {
-    const { checkPermissions } = renderUsePermissionCheck([
+    const { result } = renderUsePermissionCheck([
       { resource: 'jobs', action: 'read' },
       { resource: 'companies', action: 'read' },
     ]);
 
-    expect(checkPermissions(['jobs.read', 'companies.read'], 'all')).toBe(true);
+    expect(result.current.checkPermissions(['jobs.read', 'companies.read'], 'all')).toBe(true);
   });
 });

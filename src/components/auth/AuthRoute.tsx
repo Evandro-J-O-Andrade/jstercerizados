@@ -80,6 +80,14 @@ export function AuthRoute({ children }: AuthRouteProps) {
       '/dashboard/roles-permissoes',
       '/dashboard/onboarding',
     ]).has(normalizedPath);
+  // Rota operacional tenant-scoped (recrutamento/candidatos): não tratar como global
+  // para contornar validação de tenant. Admin Master sem tenant não deve ser
+  // devolvido silenciosamente ao /dashboard/admin-master; sem tenant explícito,
+  // o fluxo de seleção de tenant (quando aplicável) ou o estado fail-closed da
+  // célula/repositório é preservado.
+  const isRecruitmentCandidatesRoute =
+    normalizedPath === '/dashboard/recrutamento/candidatos' ||
+    normalizedPath.startsWith('/dashboard/recrutamento/candidatos/');
 
   if (
     isAdminMaster &&
@@ -87,6 +95,21 @@ export function AuthRoute({ children }: AuthRouteProps) {
     normalizedPath.startsWith('/dashboard') &&
     !isGlobalAdminRoute
   ) {
+    if (isRecruitmentCandidatesRoute) {
+      // Não redirecionar silenciosamente para Admin Master; encaminhar para
+      // seleção explícita de tenant quando houver memberships, caso contrário
+      // estado de contexto requerido (rota permanece e a célula fica fail-closed).
+      if (hasMembership) {
+        return (
+          <Navigate
+            to="/selecionar-tenant"
+            replace
+            state={{ from: location }}
+          />
+        );
+      }
+      return <>{children}</>;
+    }
     return <Navigate to="/dashboard/admin-master" replace />;
   }
 

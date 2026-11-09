@@ -18,15 +18,17 @@ describe('CellRegistry observability', () => {
     registry = new CellRegistry();
   });
 
-  it('observa célula registrada com probes locais e heartbeat de fonte real local', async () => {
+  it('observa célula com probes locais e evidência de registro em memória (não heartbeat funcional)', async () => {
     registry.register(healthyCell);
     const obs = await registry.observe('obs/healthy');
     expect(obs).not.toBeNull();
     expect(obs?.cellId).toBe('obs/healthy');
     expect(obs?.probes.length).toBeGreaterThan(0);
-    expect(obs?.heartbeat?.source).toBe('registry.registeredAt');
+    expect(obs?.heartbeat?.source).toBe('registry.registered_in_memory');
     expect(obs?.heartbeat?.healthy).toBe(true);
     expect(obs?.health).toBe('healthy');
+    expect(obs?.notes.join(' ')).toContain('registro local em memória');
+    expect(obs?.notes.join(' ')).not.toContain('Heartbeat real OK');
   });
 
   it('isola falha de probe customizado sem quebrar observeAll', async () => {
@@ -78,10 +80,10 @@ describe('CellRegistry observability', () => {
     expect(obs?.heartbeat?.source).toBe('real.source');
   });
 
-  it('permite setObservability e não lança em heartbeat ausente real externo', async () => {
+  it('permite setObservability e usa evidência de registro local quando heartbeat funcional não existe', async () => {
     registry.register(healthyCell);
     registry.setObservability('obs/healthy', undefined);
     const obs = await registry.observe('obs/healthy');
-    expect(obs?.heartbeat?.source).toBe('registry.registeredAt');
+    expect(obs?.heartbeat?.source).toBe('registry.registered_in_memory');
   });
 });

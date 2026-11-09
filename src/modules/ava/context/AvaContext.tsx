@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from 'react';
 import type { AvaContextValue, AvaModule, Tutorial } from '../types';
 import { tutorialsRepository } from '../repositories/tutorials.repository';
@@ -14,25 +15,54 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const AvaContext = createContext<AvaContextValue | null>(null);
 
+/** Limpa estado derivado de tenant para evitar vazamento entre contextos. */
+function createEmptyTutorialsByModule(): Record<AvaModule, Tutorial[]> {
+  return {} as Record<AvaModule, Tutorial[]>;
+}
+
 export function AvaProvider({ children }: { children: React.ReactNode }) {
   const { currentTenantId } = useAuth();
   const [availableModules, setAvailableModules] = useState<AvaModule[]>([]);
   const [tutorialsByModule, setTutorialsByModule] = useState<
     Record<AvaModule, Tutorial[]>
-  >({} as Record<AvaModule, Tutorial[]>);
+  >(createEmptyTutorialsByModule);
   const [selectedModule, setSelectedModule] = useState<AvaModule | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredTutorials, setFilteredTutorials] = useState<Tutorial[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  /** Evita aplicar resposta assíncrona de um tenant anterior após troca. */
+  const tenantRequestRef = useRef(0);
 
   const loadTutorials = useCallback(async () => {
-    if (!currentTenantId) return;
+    // Fail-closed: sem tenant válido não consulta Supabase e limpa dados antigos.
+    if (!currentTenantId) {
+      tenantRequestRef.current += 1;
+      setAvailableModules([]);
+      setTutorialsByModule(createEmptyTutorialsByModule());
+      setFilteredTutorials([]);
+      setSelectedModule(null);
+      setSearchQuery('');
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
+    const requestId = ++tenantRequestRef.current;
+    const tenantId = currentTenantId;
     setIsLoading(true);
     setError(null);
+    // Limpa dados do tenant anterior antes da nova carga.
+    setAvailableModules([]);
+    setTutorialsByModule(createEmptyTutorialsByModule());
+    setFilteredTutorials([]);
+
     try {
       const videoAssets =
-        await tutorialsRepository.listVideoAssets(currentTenantId);
+        await tutorialsRepository.listVideoAssets(tenantId);
+      if (tenantRequestRef.current !== requestId || currentTenantId !== tenantId) {
+        return;
+      }
 
       const tutorialsMap: Record<AvaModule, Tutorial[]> = {} as Record<
         AvaModule,
@@ -54,23 +84,28 @@ export function AvaProvider({ children }: { children: React.ReactNode }) {
         (m) => (tutorialsMap[m]?.length ?? 0) > 0,
       );
 
+      if (tenantRequestRef.current !== requestId) return;
       setAvailableModules(available);
       setTutorialsByModule(tutorialsMap);
-      const currentSelected = selectedModule;
-      if (currentSelected && !available.includes(currentSelected)) {
-        setSelectedModule(available[0] ?? null);
-      }
+      setSelectedModule((currentSelected) =>
+        currentSelected && !available.includes(currentSelected)
+          ? available[0] ?? null
+          : currentSelected,
+      );
     } catch (err) {
+      if (tenantRequestRef.current !== requestId) return;
       setError(
         err instanceof Error ? err.message : 'Erro ao carregar tutoriais',
       );
     } finally {
-      setIsLoading(false);
+      if (tenantRequestRef.current === requestId) {
+        setIsLoading(false);
+      }
     }
-  }, [currentTenantId, selectedModule]);
+  }, [currentTenantId]);
 
   useEffect(() => {
-    loadTutorials();
+    void loadTutorials();
   }, [loadTutorials]);
 
   useEffect(() => {
@@ -127,6 +162,9 @@ export function AvaProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Contexto React exposto apenas para testes/mocks controlados. */
+export { AvaContext as AvaReactContext };
+
 export function useAva(): AvaContextValue {
   const context = useContext(AvaContext);
   if (!context) {
@@ -134,3 +172,19 @@ export function useAva(): AvaContextValue {
   }
   return context;
 }
+
+/** Estado neutro para testes/uso sem provider (fail-closed, sem consulta). */
+export const AVA_CONTEXT_EMPTY_VALUE: AvaContextValue = {
+  availableModules: [],
+  tutorialsByModule: {} as Record<AvaModule, Tutorial[]>,
+  selectedModule: null,
+  searchQuery: '',
+  filteredTutorials: [],
+  isLoading: false,
+  error: null,
+  selectModule: () => {},
+  setSearchQuery: () => {},
+  getTutorial: () => null,
+  getVideoAsset: async () => null,
+  refresh: async () => {},
+};

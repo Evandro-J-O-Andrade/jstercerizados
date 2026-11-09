@@ -46,6 +46,9 @@ vi.mock('@/contexts/AccountContext', () => ({
 vi.mock('@/contexts/ThemeContext', () => ({
   useTheme: () => ({ resolvedTheme: 'light', toggleTheme: vi.fn() }),
 }));
+vi.mock('@/platform/platform-context', () => ({
+  usePlatformContext: () => ({ effectiveScopes: ['global', 'tenant'] }),
+}));
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,

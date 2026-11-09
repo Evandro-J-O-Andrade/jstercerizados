@@ -135,7 +135,8 @@ export default function DashboardRh() {
         description: `${stats.activeCandidates} ativos`,
         icon: UserPlus,
         tone: 'primary',
-        href: '/dashboard/candidatos',
+        href: '/dashboard/recrutamento/candidatos',
+
         permission: 'candidates.read',
         format: 'number',
       },

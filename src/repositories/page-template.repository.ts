@@ -8,6 +8,8 @@ export interface PageTemplateResolution {
   resolved: string | null;
   vars: Record<string, unknown>;
   missing: string[];
+  /** Erro real da RPC/consulta; sem fallback silencioso para estado "não encontrado". */
+  error?: string | null;
 }
 
 const EMPTY: PageTemplateResolution = {
@@ -17,6 +19,7 @@ const EMPTY: PageTemplateResolution = {
   resolved: null,
   vars: {},
   missing: [],
+  error: null,
 };
 
 export const pageTemplateRepository = {
@@ -36,7 +39,14 @@ export const pageTemplateRepository = {
 
     if (error) {
       console.error('[PAGE_TEMPLATE:REPO] error', error);
-      return { ...EMPTY, key };
+      return {
+        ...EMPTY,
+        key,
+        error:
+          typeof error.message === 'string'
+            ? error.message
+            : 'Erro ao resolver template de página',
+      };
     }
 
     const obj = (data ?? {}) as Record<string, unknown>;
@@ -48,6 +58,7 @@ export const pageTemplateRepository = {
       resolved: (obj.resolved as string | null) ?? null,
       vars: (obj.vars as Record<string, unknown>) ?? {},
       missing: (obj.missing as string[]) ?? [],
+      error: null,
     };
   },
 };

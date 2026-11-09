@@ -14,6 +14,6 @@ export type {
   ModuleFeature,
   ModuleAction,
   ModuleCategory,
-} from '@/components/legacy/portal/ModuleRegistry';
+} from '@/core/contracts/module-contract';
 
 export type { CellContract, CellRoute } from '@/core/types';

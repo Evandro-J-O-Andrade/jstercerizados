@@ -6,11 +6,21 @@ import type {
 } from '@/modules/candidato/types/candidate';
 
 export class CandidatesRepository extends SupabaseRepository {
+  /**
+   * Lista candidatos do tenant. Fail-closed: sem tenant válido não consulta
+   * (evita leitura sem escopo). Para visões globais legítimas, usar contrato
+   * próprio autorizado — não este método tenant-scoped.
+   */
   async findAll(
-    tenantId: string,
+    tenantId: string | null | undefined,
     filters?: { status?: string; search?: string },
   ): Promise<Candidate[]> {
     if (!this.supabase) return [];
+    if (!tenantId || typeof tenantId !== 'string' || !tenantId.trim()) {
+      throw new Error(
+        'tenant_id explícito é obrigatório: listagem de candidatos sem escopo de tenant é proibida',
+      );
+    }
 
     let query = this.supabase
       .from('candidates')
@@ -26,11 +36,8 @@ export class CandidatesRepository extends SupabaseRepository {
         documents:candidate_documents(*)
       `,
       )
+      .eq('tenant_id', tenantId)
       .order('created_at', { ascending: false });
-
-    if (tenantId) {
-      query = query.eq('tenant_id', tenantId);
-    }
 
     if (filters?.status) {
       query = query.eq('status', filters.status);
@@ -43,10 +50,12 @@ export class CandidatesRepository extends SupabaseRepository {
 
     const { data, error } = await query;
     if (error) throw error;
-    return (data || []).map((row: any) => ({
-      ...row,
-      avatar_url: row.metadata?.avatar_url ?? null,
-    })) as Candidate[];
+    return (data || []).map((row: Record<string, unknown>) => ({
+      ...(row as unknown as Candidate),
+      avatar_url:
+        (row.metadata as { avatar_url?: string | null } | null)?.avatar_url ??
+        null,
+    }));
   }
 
   async findById(id: string, tenantId: string): Promise<Candidate | null> {

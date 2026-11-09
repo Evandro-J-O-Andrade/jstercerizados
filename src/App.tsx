@@ -1,5 +1,5 @@
-import { Suspense, lazy, useCallback } from 'react';
-import { Routes, Route } from 'react-router-dom';
+﻿import { Suspense, lazy, useCallback } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useIntro } from '@/contexts/IntroContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -17,7 +17,6 @@ import { FloatingHelpWidgets } from '@/components/layout/FloatingHelpWidgets';
 import NotFound from '@/pages/NotFound';
 import DashboardHome from '@/pages/dashboard/DashboardHome';
 import { EmpresasPage } from '@/pages/dashboard/EmpresasPage';
-import CandidatosPage from '@/pages/dashboard/Candidatos';
 import { ServicosPage } from '@/pages/dashboard/ServicosPage';
 import { SuportePage } from '@/pages/dashboard/SuportePage';
 import TenantsPage from '@/pages/dashboard/TenantsPage';
@@ -54,13 +53,12 @@ import { AdminLayout } from '@/modules/admin/layout/AdminLayout';
 import { OperacoesLayout } from '@/modules/operacoes/layout/OperacoesLayout';
 import { PosLayout } from '@/modules/pos/layout/PosLayout';
 import { MediaLayout } from '@/modules/media/layout/MediaLayout';
-import { RecrutamentoLayout } from '@/modules/recrutamento/layout/RecrutamentoLayout';
 import MinhaConta from '@/pages/MinhaConta';
 import { registerAllCells } from '@/core/cells';
 import { AdminProvider } from '@/modules/admin/AdminContext';
 
-// Registra todas as células operacionais do CHECK BOULER 24H no CellRegistry
-// e no DispatcherMaster na inicialização da aplicação.
+// Registra todas as cÃ©lulas operacionais do CHECK BOULER 24H no CellRegistry
+// e no DispatcherMaster na inicializaÃ§Ã£o da aplicaÃ§Ã£o.
 registerAllCells();
 
 const Home = lazy(() => import('@/pages/Home'));
@@ -136,8 +134,6 @@ import RelatorioServicosPage from '@/pages/dashboard/relatorios/RelatorioServico
 import RelatorioSuportePage from '@/pages/dashboard/relatorios/RelatorioSuportePage';
 import { RHDashboardPage } from '@/modules/rh/dashboard';
 import { AvaProvider } from '@/modules/ava/context/AvaContext';
-import { AvaDashboardPage } from '@/modules/ava/dashboard/AvaDashboardPage';
-import { AvaTutorialPage } from '@/modules/ava/pages/AvaTutorialPage';
 
 function App() {
   const { introComplete, setIntroComplete } = useIntro();
@@ -460,7 +456,7 @@ function RoutesAndLayout() {
                 <PermissionGuard permission={MODULE_PERMISSION_MAP.suporte}>
                   <SuportePage
                     moduleTitle="Suporte"
-                    moduleDescription="Gestão de chamados e solicitações de suporte"
+                    moduleDescription="GestÃ£o de chamados e solicitaÃ§Ãµes de suporte"
                   />
                 </PermissionGuard>
               }
@@ -497,27 +493,12 @@ function RoutesAndLayout() {
                 <PermissionGuard permission={MODULE_PERMISSION_MAP.empresas}>
                   <EmpresasPage
                     moduleTitle="Empresas"
-                    moduleDescription="Cadastro e gestão de empresas clientes"
+                    moduleDescription="Cadastro e gestÃ£o de empresas clientes"
                   />
                 </PermissionGuard>
               }
             />
-            <Route
-              path="candidato"
-              element={
-                <PermissionGuard permission="candidates.read">
-                  <CandidatosPage />
-                </PermissionGuard>
-              }
-            />
-            <Route
-              path="global"
-              element={
-                <ProtectedRoute allowedRoles={['admin_master']}>
-                  <GlobalCommandPage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="candidato" element={<Navigate to="/dashboard/recrutamento/candidatos" replace />} />
             <Route
               path="admin-master"
               element={
@@ -527,12 +508,16 @@ function RoutesAndLayout() {
               }
             />
             <Route
+              path="admin-master/candidatos"
+              element={<Navigate to="/dashboard/recrutamento/candidatos" replace />}
+            />
+            <Route
               path="servicos"
               element={
                 <PermissionGuard permission={MODULE_PERMISSION_MAP.servicos}>
                   <ServicosPage
-                    moduleTitle="Serviços"
-                    moduleDescription="Gestão de ordens de serviço"
+                    moduleTitle="ServiÃ§os"
+                    moduleDescription="GestÃ£o de ordens de serviÃ§o"
                   />
                 </PermissionGuard>
               }
@@ -633,22 +618,15 @@ function RoutesAndLayout() {
               }
             />
             <Route
-              path="ava"
+              path="ava/*"
               element={
                 <AvaProvider>
-                  <PermissionGuard permission={MODULE_PERMISSION_MAP.ava}>
-                    <AvaDashboardPage />
-                  </PermissionGuard>
-                </AvaProvider>
-              }
-            />
-            <Route
-              path="ava/:slug"
-              element={
-                <AvaProvider>
-                  <PermissionGuard permission={MODULE_PERMISSION_MAP.ava}>
-                    <AvaTutorialPage />
-                  </PermissionGuard>
+                  <ModuleRouter
+                    moduleRegistries={moduleRouteRegistries}
+                    moduleIds={['ava']}
+                    moduleRouteBase="/dashboard/ava"
+                    skipLayout
+                  />
                 </AvaProvider>
               }
             />
@@ -749,14 +727,12 @@ function RoutesAndLayout() {
             <Route
               path="recrutamento/*"
               element={
-                <RecrutamentoLayout>
-                  <ModuleRouter
-                    moduleRegistries={moduleRouteRegistries}
-                    moduleIds={['recrutamento']}
-                    moduleRouteBase="/dashboard/recrutamento"
-                    skipLayout
-                  />
-                </RecrutamentoLayout>
+                <ModuleRouter
+                  moduleRegistries={moduleRouteRegistries}
+                  moduleIds={['recrutamento']}
+                  moduleRouteBase="/dashboard/recrutamento"
+                  skipLayout
+                />
               }
             />
             <Route
@@ -834,16 +810,10 @@ function RoutesAndLayout() {
               <AuthRoute>
                 <ProtectedRoute allowedRoles={['admin_master']}>
                   <PermissionGuard permission="candidates.read">
-                    <AdminProvider>
-                      <AdminLayout>
-                        <ModuleRouter
-                          moduleRegistries={moduleRouteRegistries}
-                          moduleIds={['candidato']}
-                          moduleRouteBase="/dashboard/candidato"
-                          skipLayout
-                        />
-                      </AdminLayout>
-                    </AdminProvider>
+                    <Navigate
+                      to="/dashboard/recrutamento/candidatos"
+                      replace
+                    />
                   </PermissionGuard>
                 </ProtectedRoute>
               </AuthRoute>
@@ -927,3 +897,4 @@ function RoutesAndLayout() {
 }
 
 export default App;
+

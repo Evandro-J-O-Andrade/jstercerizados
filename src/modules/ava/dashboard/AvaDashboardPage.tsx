@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Play, BookOpen } from 'lucide-react';
 import { useAva } from '../context/AvaContext';
@@ -12,9 +13,10 @@ import type { AvaModuleInfo, Tutorial, AvaModule } from '../types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/fallback';
-import { useToast } from '@/components/feedback/ToastContext';
 
+/** Dashboard operacional da célula AVA (entrada canônica no App em /dashboard/ava). */
 export function AvaDashboardPage() {
+  const navigate = useNavigate();
   const {
     availableModules,
     tutorialsByModule,
@@ -27,7 +29,6 @@ export function AvaDashboardPage() {
     error,
     refresh,
   } = useAva();
-  const { addToast } = useToast();
   const [moduleInfos, setModuleInfos] = useState<AvaModuleInfo[]>([]);
   const [activeModule, setActiveModule] = useState<AvaModule | null>(null);
 
@@ -54,7 +55,7 @@ export function AvaDashboardPage() {
   };
 
   const handlePlayTutorial = (tutorial: Tutorial) => {
-    addToast({ type: 'info', message: `Abrindo tutorial: ${tutorial.title}` });
+    navigate(`/dashboard/ava/${tutorial.slug}`);
   };
 
   if (isLoading) {

@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({ useAccount: vi.fn() }));
@@ -37,10 +37,52 @@ function LocationDisplay() {
 }
 
 describe('ModuleRouter navigation', () => {
+  it('prioriza a rota index canônica quando o módulo também possui funcionalidades internas', () => {
+    mocks.useAccount.mockReturnValue({
+      activePermissions: [{ name: 'jobs.read' }],
+      effectiveScopes: ['tenant'],
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/dashboard/recrutamento']}>
+        <Routes>
+          <Route
+            path="/dashboard/recrutamento/*"
+            element={
+              <ModuleRouter
+                moduleRegistries={{
+                  recrutamento: [
+                    {
+                      path: '',
+                      label: 'Dashboard de recrutamento',
+                      element: CandidateDashboardPage,
+                      requiredPermissions: [],
+                    },
+                    {
+                      path: 'vagas',
+                      label: 'Vagas',
+                      element: CandidateDashboardPage,
+                      requiredPermissions: [],
+                    },
+                  ],
+                }}
+                moduleIds={['recrutamento']}
+                moduleRouteBase="/dashboard/recrutamento"
+                skipLayout
+              />
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId('candidate-dashboard-content')).toBeInTheDocument();
+  });
+
   it('renders the candidate root dashboard without the generic empty prompt', () => {
     mocks.useAccount.mockReturnValue({
       activePermissions: [{ name: 'candidates.self.read' }],
-      effectiveScopes: 'tenant',
+      effectiveScopes: ['tenant'],
     });
 
     render(
@@ -81,15 +123,16 @@ describe('ModuleRouter navigation', () => {
   it('changes module feature routes without a document reload', async () => {
     mocks.useAccount.mockReturnValue({
       activePermissions: [{ name: 'jobs.read' }, { name: 'candidates.read' }],
-      effectiveScopes: 'tenant',
+      effectiveScopes: ['tenant'],
     });
 
     render(
       <MemoryRouter initialEntries={['/dashboard/recrutamento']}>
         <LocationDisplay />
+        <Link to="/dashboard/recrutamento/vagas">Vagas</Link>
         <Routes>
           <Route
-            path="/dashboard/*"
+            path="/dashboard/recrutamento/*"
             element={
               <ModuleRouter
                 moduleRegistries={{
@@ -103,6 +146,7 @@ describe('ModuleRouter navigation', () => {
                   ],
                 }}
                 moduleIds={['recrutamento']}
+                moduleRouteBase="/dashboard/recrutamento"
               />
             }
           />
@@ -110,7 +154,7 @@ describe('ModuleRouter navigation', () => {
       </MemoryRouter>,
     );
 
-    fireEvent.click(screen.getAllByRole('link', { name: /Vagas/ })[0]);
+    fireEvent.click(screen.getByRole('link', { name: 'Vagas' }));
 
     await waitFor(() => {
       expect(screen.getByTestId('current-location')).toHaveTextContent(
@@ -122,14 +166,14 @@ describe('ModuleRouter navigation', () => {
   it('contains a page render failure inside its module boundary', async () => {
     mocks.useAccount.mockReturnValue({
       activePermissions: [{ name: 'jobs.read' }, { name: 'candidates.read' }],
-      effectiveScopes: 'tenant',
+      effectiveScopes: ['tenant'],
     });
 
     render(
       <MemoryRouter initialEntries={['/dashboard/recrutamento/vagas']}>
         <Routes>
           <Route
-            path="/dashboard/*"
+            path="/dashboard/recrutamento/*"
             element={
               <ModuleRouter
                 moduleRegistries={{
@@ -143,6 +187,7 @@ describe('ModuleRouter navigation', () => {
                   ],
                 }}
                 moduleIds={['recrutamento']}
+                moduleRouteBase="/dashboard/recrutamento"
               />
             }
           />

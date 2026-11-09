@@ -1,10 +1,12 @@
 import { BookOpen, Video } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { AVA_ICON_COMPONENTS, buildAvaModuleInfo } from '../services';
 import { useAva } from '../context/AvaContext';
 import { TutorialSearch } from '../components/TutorialSearch';
 import { TutorialCard } from '../components/TutorialCard';
 
 export function AvaPage() {
+  const navigate = useNavigate();
   const {
     selectedModule,
     searchQuery,
@@ -24,7 +26,7 @@ export function AvaPage() {
           Central de Aprendizado
         </h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          Tutoriais em video e passo a passo para cada modulo do sistema.
+          Tutoriais em vídeo e passo a passo para cada módulo do sistema.
         </p>
       </div>
 
@@ -32,7 +34,7 @@ export function AvaPage() {
         <div className="lg:col-span-1">
           <div className="rounded-lg border p-4">
             <h2 className="text-foreground mb-3 text-sm font-semibold tracking-wide uppercase">
-              Modulos
+              Módulos
             </h2>
             <div className="space-y-1">
               <button
@@ -75,7 +77,7 @@ export function AvaPage() {
             <TutorialSearch
               value={searchQuery}
               onChange={setSearchQuery}
-              placeholder="Busque por modulo, etapa ou palavra-chave..."
+              placeholder="Busque por módulo, etapa ou palavra-chave..."
             />
           </div>
 
@@ -94,7 +96,7 @@ export function AvaPage() {
                   onClick={() => {
                     const t = getTutorial(tutorial.slug);
                     if (t) {
-                      window.location.href = `/ava/${t.slug}`;
+                      navigate(`/dashboard/ava/${t.slug}`);
                     }
                   }}
                 />

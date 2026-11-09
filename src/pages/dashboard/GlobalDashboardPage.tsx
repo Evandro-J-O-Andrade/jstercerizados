@@ -79,7 +79,8 @@ export default function GlobalDashboardPage() {
         description: 'Candidatos no banco de talentos',
         icon: UserPlus,
         tone: 'warning',
-        href: '/dashboard/candidatos',
+        href: '/dashboard/recrutamento/candidatos',
+
         permission: 'candidates.read',
         format: 'number',
       },

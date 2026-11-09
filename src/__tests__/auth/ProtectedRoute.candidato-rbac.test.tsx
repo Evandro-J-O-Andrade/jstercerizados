@@ -113,12 +113,15 @@ describe('ProtectedRoute — candidato RBAC (P0)', () => {
     expect(screen.getByTestId('candidate-dashboard')).toBeInTheDocument();
   });
 
-  it(' candidato puro em /dashboard/candidatos é redirecionado para /candidato', () => {
-    const { container } = renderWithRoute(['/dashboard/candidatos'], {
+  it(' candidato puro em /dashboard/recrutamento/candidatos é redirecionado para /candidato', () => {
+    const { container } = renderWithRoute(
+      ['/dashboard/recrutamento/candidatos'],
+      {
       roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as any],
       isCandidate: true,
       isAdminMaster: false,
-    });
+      },
+    );
 
     expect(container.textContent).not.toContain('Dashboard Admin');
     expect(screen.getByTestId('candidate-dashboard')).toBeInTheDocument();
@@ -220,11 +223,14 @@ describe('ProtectedRoute — candidato RBAC (P1 — redirect contextual)', () =>
   });
 
   it(' TESTE 4: candidato tentando sub-rota administrativa é redirecionado para /candidato', () => {
-    const { container } = renderWithRoute(['/dashboard/candidatos'], {
+    const { container } = renderWithRoute(
+      ['/dashboard/recrutamento/candidatos'],
+      {
       roles: [{ id: 'r1', name: 'candidato', scope: 'tenant' } as any],
       isCandidate: true,
       isAdminMaster: false,
-    });
+      },
+    );
 
     expect(container.textContent).not.toContain('Dashboard Admin');
     expect(screen.getByTestId('candidate-dashboard')).toBeInTheDocument();

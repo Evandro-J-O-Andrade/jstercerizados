@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Shield, LogIn, Eye, EyeOff, Briefcase, Building2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,6 +16,11 @@ import { cn } from '@/utils';
 import { normalizeError } from '@/lib/error-normalizer';
 import { Turnstile } from '@/components/auth/Turnstile';
 import type { TurnstileHandle } from '@/components/auth/Turnstile';
+import {
+  getSafeAuthCallbackError,
+  stripAuthErrorParams,
+  stripAuthErrorParamsFromHash,
+} from '@/lib/auth-callback-error';
 
 const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -57,6 +62,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
   // verificacao real antes de chamar signInWithPassword.
   const submittedRef = useRef(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
+  const callbackErrorConsumedRef = useRef(false);
 
   const {
     login,
@@ -67,6 +73,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
     person,
   } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     register: rhfRegister,
@@ -91,6 +98,12 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
     turnstileRef.current?.reset();
   }, []);
 
+  /** Preserva mensagens já seguras (strings do AuthContext) e normaliza apenas erros brutos. */
+  const toSafeMessage = (err: unknown): string => {
+    if (typeof err === 'string' && err.trim()) return err;
+    return normalizeError(err).userMessage;
+  };
+
   const onInvalid = (formErrors: unknown) => {
     console.error('[AUTH:FORM_INVALID]', formErrors);
   };
@@ -113,7 +126,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       });
       if (result.error) {
         submittedRef.current = true;
-        const userMessage = normalizeError(result.error).userMessage;
+        const userMessage = toSafeMessage(result.error);
         setError(userMessage);
         if (isCaptchaError(userMessage)) {
           resetCaptcha();
@@ -121,7 +134,7 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       }
     } catch (err) {
       submittedRef.current = true;
-      const userMessage = normalizeError(err).userMessage;
+      const userMessage = toSafeMessage(err);
       setError(userMessage);
       if (isCaptchaError(userMessage)) {
         resetCaptcha();
@@ -138,10 +151,10 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
       try {
         const result = await loginWithProvider(provider);
         if (result.error) {
-          setError(normalizeError(result.error).userMessage);
+          setError(toSafeMessage(result.error));
         }
       } catch (err) {
-        setError(normalizeError(err).userMessage);
+        setError(toSafeMessage(err));
       } finally {
         setIsSubmitting(false);
       }
@@ -151,9 +164,25 @@ export default function Login({ requestedContext = null }: LoginProps = {}) {
 
   useEffect(() => {
     if (authError && !error && !submittedRef.current) {
-      setError(normalizeError(authError).userMessage);
+      setError(toSafeMessage(authError));
     }
   }, [authError, error]);
+
+  // Consome erros seguros encaminhados pelo callback (query/hash), sem expor descrições/tokens.
+  useEffect(() => {
+    if (callbackErrorConsumedRef.current) return;
+    const safe = getSafeAuthCallbackError(location.search, location.hash);
+    if (!safe.hasError) return;
+    callbackErrorConsumedRef.current = true;
+    submittedRef.current = true;
+    setError(safe.message);
+    const nextSearch = stripAuthErrorParams(location.search);
+    const nextHash = stripAuthErrorParamsFromHash(location.hash);
+    navigate(
+      { pathname: location.pathname, search: nextSearch, hash: nextHash },
+      { replace: true, state: location.state },
+    );
+  }, [location.search, location.hash, location.pathname, location.state, navigate]);
 
   const flowConfig: Record<AccessFlow, FlowConfig> = {
     admin: {

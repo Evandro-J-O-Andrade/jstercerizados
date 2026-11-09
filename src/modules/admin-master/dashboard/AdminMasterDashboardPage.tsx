@@ -3,31 +3,56 @@ import { Link } from 'react-router-dom';
 import {
   Activity,
   Building2,
-  Cpu,
   Database,
-  Layers,
+  LayoutDashboard,
+  Lock,
   Settings,
   ShieldCheck,
   Users,
   Wrench,
 } from 'lucide-react';
 import {
-  DashboardCard,
   DashboardErrorState,
   DashboardMetricGrid,
   DashboardSection,
   DashboardSkeleton,
 } from '@/components/dashboard';
+import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import {
   filterDashboardMetrics,
   type DashboardMetric,
 } from '@/components/dashboard/dashboard-model';
+import { EmptyState } from '@/components/fallback';
+import { Card } from '@/components/ui/Card';
 import { useAccount } from '@/contexts/AccountContext';
+import { cellRegistry } from '@/core/registry/CellRegistryContract';
 import { useGlobalDashboardStats } from '@/hooks/useGlobalDashboardStats';
 
 export default function AdminMasterDashboardPage() {
   const { activePermissions } = useAccount();
   const stats = useGlobalDashboardStats();
+
+  const registrySummary = useMemo(() => {
+    try {
+      const all = cellRegistry.getAll();
+      return {
+        total: all.length,
+        enabled: all.filter((entry) => entry.cell.enabled).length,
+        available: true,
+        error: null as string | null,
+      };
+    } catch (error) {
+      return {
+        total: 0,
+        enabled: 0,
+        available: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Falha ao ler CellRegistry local.',
+      };
+    }
+  }, []);
 
   const metrics = useMemo<DashboardMetric[]>(
     () => [
@@ -35,9 +60,12 @@ export default function AdminMasterDashboardPage() {
         id: 'tenants',
         label: 'Tenants',
         value: stats.tenants,
-        description: 'Ambientes configurados na plataforma',
+        description:
+          stats.kpiErrors?.tenants != null
+            ? `Fonte indisponível: ${stats.kpiErrors.tenants}`
+            : 'Contagem por fonte autorizada (RBAC/RLS).',
         icon: Building2,
-        tone: 'primary',
+        tone: stats.kpiErrors?.tenants != null ? 'warning' : 'primary',
         href: '/dashboard/tenants',
         permission: 'tenants.read',
         format: 'number',
@@ -46,53 +74,14 @@ export default function AdminMasterDashboardPage() {
         id: 'people',
         label: 'Pessoas',
         value: stats.people,
-        description: 'Usuarios com identidade na plataforma',
+        description:
+          stats.kpiErrors?.people != null
+            ? `Fonte indisponível: ${stats.kpiErrors.people}`
+            : 'Contagem por fonte autorizada (RBAC/RLS).',
         icon: Users,
-        tone: 'primary',
+        tone: stats.kpiErrors?.people != null ? 'warning' : 'primary',
         href: '/dashboard/pessoas',
         permission: 'people.read',
-        format: 'number',
-      },
-      {
-        id: 'users-management',
-        label: 'Gestao de Usuarios',
-        value: 0,
-        description: 'Administrar usuarios e permissoes',
-        icon: ShieldCheck,
-        tone: 'warning',
-        href: '/dashboard/usuarios',
-        permission: 'people.read',
-        format: 'number',
-      },
-      {
-        id: 'modules',
-        label: 'Modulos e Celulas',
-        value: 26,
-        description: 'Celulas registradas no sistema',
-        icon: Layers,
-        tone: 'success',
-        href: '/dashboard/admin-master',
-        permission: 'tenants.read',
-        format: 'number',
-      },
-      {
-        id: 'system',
-        label: 'Sistema',
-        value: stats.loading ? 0 : 1,
-        description: 'Estado geral da plataforma',
-        icon: Cpu,
-        tone: 'success',
-        format: 'number',
-      },
-      {
-        id: 'config',
-        label: 'Configuracoes',
-        value: 1,
-        description: 'Governanca e configuracoes globais',
-        icon: Settings,
-        tone: 'neutral',
-        href: '/dashboard/seguranca',
-        permission: 'security_events.read',
         format: 'number',
       },
     ],
@@ -113,26 +102,50 @@ export default function AdminMasterDashboardPage() {
         <div className="flex items-center gap-2">
           <ShieldCheck className="text-primary h-6 w-6" />
           <h1 className="text-foreground text-2xl font-semibold tracking-tight">
-            Administracao Global - Admin Master
+            Governança Admin Master
           </h1>
         </div>
-        <p className="text-muted-foreground text-sm">
-          Governanca da plataforma, gestao de modulos, celulas, usuarios e
-          configuracoes globais.
+        <p className="text-muted-foreground max-w-3xl text-sm">
+          Governança da plataforma, tenants, pessoas e configurações globais. A
+          saúde operacional das células é observada na Central 24H; esta página
+          não duplica observabilidade nem usa contadores fixos de sistema.
         </p>
       </header>
-      <DashboardMetricGrid>
-        {visibleMetrics.map((metric) => (
-          <DashboardCard key={metric.id} metric={metric} />
-        ))}
-      </DashboardMetricGrid>
+
+      {visibleMetrics.length > 0 ? (
+        <DashboardMetricGrid>
+          {visibleMetrics.map((metric) => (
+            <DashboardCard key={metric.id} metric={metric} />
+          ))}
+        </DashboardMetricGrid>
+      ) : (
+        <EmptyState
+          title="Nenhum indicador autorizado"
+          description="Sem indicadores liberados por RBAC para este contexto."
+        />
+      )}
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <DashboardSection
-          title="Governanca Rapida"
-          description="Acoes administrativas mais frequentes"
+          title="Governança rápida"
+          description="Ações administrativas autorizadas"
           icon={Wrench}
         >
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Link
+              to="/dashboard/global"
+              className="border-border bg-card hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-xl border p-3 text-left transition-colors"
+            >
+              <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-lg">
+                <LayoutDashboard className="h-4 w-4" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Central 24H</p>
+                <p className="text-muted-foreground text-xs">
+                  Observabilidade local e diagnóstico por evidência
+                </p>
+              </div>
+            </Link>
             <Link
               to="/dashboard/usuarios"
               className="border-border bg-card hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-xl border p-3 text-left transition-colors"
@@ -141,9 +154,9 @@ export default function AdminMasterDashboardPage() {
                 <Users className="h-4 w-4" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Gestao de Usuarios</p>
+                <p className="text-sm font-medium">Gestão de usuários</p>
                 <p className="text-muted-foreground text-xs">
-                  Usuarios, papeis e permissoes
+                  Usuários, papéis e permissões
                 </p>
               </div>
             </Link>
@@ -166,10 +179,10 @@ export default function AdminMasterDashboardPage() {
               className="border-border bg-card hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-xl border p-3 text-left transition-colors"
             >
               <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-lg">
-                <ShieldCheck className="h-4 w-4" />
+                <Lock className="h-4 w-4" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Seguranca</p>
+                <p className="text-sm font-medium">Segurança</p>
                 <p className="text-muted-foreground text-xs">
                   Eventos e auditoria
                 </p>
@@ -177,52 +190,62 @@ export default function AdminMasterDashboardPage() {
             </Link>
             <Link
               to="/dashboard/auditoria"
-              className="border-border bg-card hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-xl border p-3 text-left transition-colors"
+              className="border-border bg-card hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-xl border p-3 text-left transition-colors sm:col-span-2"
             >
               <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-lg">
                 <Activity className="h-4 w-4" />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium">Auditoria</p>
-                <p className="text-muted-foreground text-xs">Logs do sistema</p>
+                <p className="text-muted-foreground text-xs">
+                  Logs do sistema e rastreabilidade
+                </p>
               </div>
             </Link>
           </div>
         </DashboardSection>
+
         <DashboardSection
-          title="Arquitetura"
-          description="Modulos e celulas da plataforma"
-          icon={Layers}
+          title="Catálogo e instrumentação"
+          description="Evidência local disponível nesta execução; sem telemetria remota inventada"
+          icon={Settings}
         >
           <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg border p-3">
-              <div className="flex items-center gap-3">
-                <Database className="text-muted-foreground h-4 w-4" />
-                <div>
-                  <p className="text-sm font-medium">CellRegistry</p>
-                  <p className="text-muted-foreground text-xs">
-                    26 celulas registradas
-                  </p>
+            <Card variant="outline" padding="sm">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <Database className="text-muted-foreground mt-0.5 h-4 w-4" />
+                  <div>
+                    <p className="text-sm font-medium">CellRegistry (memória local)</p>
+                    <p className="text-muted-foreground text-xs">
+                      {!registrySummary.available
+                        ? `Indisponível: ${registrySummary.error}`
+                        : `Células no catálogo: ${registrySummary.total} · habilitadas no contrato: ${registrySummary.enabled}. Registro local não comprova saúde funcional/remota.`}
+                    </p>
+                  </div>
                 </div>
+                <span className="bg-muted text-muted-foreground shrink-0 rounded-full px-2 py-1 text-xs">
+                  {!registrySummary.available ? 'erro local' : 'sem telemetria'}
+                </span>
               </div>
-              <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-600">
-                Ativo
-              </span>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border p-3">
-              <div className="flex items-center gap-3">
-                <Cpu className="text-muted-foreground h-4 w-4" />
-                <div>
-                  <p className="text-sm font-medium">Dispatcher Master</p>
-                  <p className="text-muted-foreground text-xs">
-                    Autoridade unica de despacho
-                  </p>
+            </Card>
+            <Card variant="outline" padding="sm">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <ShieldCheck className="text-muted-foreground mt-0.5 h-4 w-4" />
+                  <div>
+                    <p className="text-sm font-medium">Dispatcher Master</p>
+                    <p className="text-muted-foreground text-xs">
+                      Estado operacional remoto/telemetria não instrumentados
+                      nesta página. Não exibir status fixo como comprovado.
+                    </p>
+                  </div>
                 </div>
+                <span className="bg-muted text-muted-foreground shrink-0 rounded-full px-2 py-1 text-xs">
+                  sem instrumentação
+                </span>
               </div>
-              <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs text-emerald-600">
-                Operacional
-              </span>
-            </div>
+            </Card>
           </div>
         </DashboardSection>
       </div>
