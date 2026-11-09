@@ -77,3 +77,6 @@ hero-*-snapshot.yml
 *-AUDIT*.md
 AUDIT_REPORT.md
 PORTAL_AUDIT_P0.md
+
+# ZIP archives (too large for Git)
+*.zip
