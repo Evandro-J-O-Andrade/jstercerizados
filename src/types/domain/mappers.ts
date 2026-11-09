@@ -117,6 +117,9 @@ export function mapEmployee(
     ...row,
     person: extras?.person,
     documents: extras?.documents ?? [],
+    positions: extras?.positions ?? [],
+    contracts: extras?.contracts ?? [],
+    status_history: extras?.status_history ?? [],
   };
 }
 

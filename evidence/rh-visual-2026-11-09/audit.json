@@ -1,0 +1,203 @@
+[
+  {
+    "viewport": "desktop",
+    "route": "/dashboard/rh",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/rh",
+    "headings": [
+      "Recursos Humanos"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Recursos de RH",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop",
+    "route": "/dashboard/rh/colaboradores",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/rh/colaboradores",
+    "headings": [
+      "Gerenciar colaboradores"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Recursos de RH",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop",
+    "route": "/dashboard/rh/colaboradores/novo",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/rh/colaboradores/novo",
+    "headings": [
+      "Novo colaborador"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Recursos de RH",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "mobile",
+    "route": "/dashboard/rh",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/rh",
+    "headings": [
+      "Recursos Humanos"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Recursos de RH",
+      "Breadcrumb",
+      "Navegação inferior do sistema"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  {
+    "viewport": "mobile",
+    "route": "/dashboard/rh/colaboradores",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/rh/colaboradores",
+    "headings": [
+      "Gerenciar colaboradores"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Recursos de RH",
+      "Breadcrumb",
+      "Navegação inferior do sistema"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  {
+    "viewport": "mobile",
+    "route": "/dashboard/rh/colaboradores/novo",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/rh/colaboradores/novo",
+    "headings": [
+      "Novo colaborador"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Recursos de RH",
+      "Breadcrumb",
+      "Navegação inferior do sistema"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  {
+    "viewport": "desktop-light",
+    "route": "/dashboard/rh",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/rh",
+    "headings": [
+      "Recursos Humanos"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Recursos de RH",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop-light",
+    "route": "/dashboard/rh/colaboradores",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/rh/colaboradores",
+    "headings": [
+      "Gerenciar colaboradores"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Recursos de RH",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  },
+  {
+    "viewport": "desktop-light",
+    "route": "/dashboard/rh/colaboradores/novo",
+    "status": 200,
+    "errors": [],
+    "title": "J&S Empregos|Assessoria em RH, Recrutamento, Facilities e Mão de Obra, Terceirização e Facilities",
+    "pathname": "/dashboard/rh/colaboradores/novo",
+    "headings": [
+      "Novo colaborador"
+    ],
+    "visibleHeaders": 1,
+    "visibleAsides": 1,
+    "visibleMains": 1,
+    "visibleFooters": 1,
+    "navLabels": [
+      "Recursos de RH",
+      "Breadcrumb"
+    ],
+    "horizontalOverflow": false,
+    "scrollWidth": 1440,
+    "viewportWidth": 1440
+  }
+]

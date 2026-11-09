@@ -17,6 +17,8 @@ import {
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { ErrorState } from '@/components/fallback/ErrorState';
+import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
 import { EmptyState } from '@/components/fallback/EmptyState';
 import { useRecrutamento } from '@/modules/recrutamento/RecrutamentoContext';
 import type {
@@ -38,37 +40,51 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   withdrawn: 'Desistiu',
 };
 
-const PIPELINE = [
+export const PIPELINE_STAGES = [
   {
+    key: 'inscricao',
     label: 'Inscrição',
     statuses: ['applied'],
-    tone: 'border-blue-200 bg-blue-50/70 dark:border-blue-900 dark:bg-blue-950/20',
+    tone: 'border-sky-500/25 bg-sky-500/10 text-foreground dark:border-sky-400/25 dark:bg-sky-400/10',
+    badge: 'bg-sky-500/15 text-sky-700 dark:text-sky-300',
   },
   {
+    key: 'triagem',
     label: 'Triagem',
     statuses: ['screening'],
-    tone: 'border-indigo-200 bg-indigo-50/70 dark:border-indigo-900 dark:bg-indigo-950/20',
+    tone: 'border-indigo-500/25 bg-indigo-500/10 text-foreground dark:border-indigo-400/25 dark:bg-indigo-400/10',
+    badge: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300',
   },
   {
+    key: 'entrevista',
     label: 'Entrevista',
     statuses: ['interview_scheduled', 'interviewed'],
-    tone: 'border-amber-200 bg-amber-50/70 dark:border-amber-900 dark:bg-amber-950/20',
+    tone: 'border-amber-500/25 bg-amber-500/10 text-foreground dark:border-amber-400/25 dark:bg-amber-400/10',
+    badge: 'bg-amber-500/15 text-amber-800 dark:text-amber-300',
   },
   {
+    key: 'proposta',
     label: 'Proposta',
     statuses: ['offer_sent'],
-    tone: 'border-violet-200 bg-violet-50/70 dark:border-violet-900 dark:bg-violet-950/20',
+    tone: 'border-violet-500/25 bg-violet-500/10 text-foreground dark:border-violet-400/25 dark:bg-violet-400/10',
+    badge: 'bg-violet-500/15 text-violet-700 dark:text-violet-300',
   },
   {
+    key: 'contratacao',
     label: 'Contratação',
     statuses: ['hired'],
-    tone: 'border-emerald-200 bg-emerald-50/70 dark:border-emerald-900 dark:bg-emerald-950/20',
+    tone: 'border-emerald-500/25 bg-emerald-500/10 text-foreground dark:border-emerald-400/25 dark:bg-emerald-400/10',
+    badge: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
   },
-] satisfies Array<{
+] as const satisfies ReadonlyArray<{
+  key: string;
   label: string;
-  statuses: ApplicationStatus[];
+  statuses: readonly ApplicationStatus[];
   tone: string;
+  badge: string;
 }>;
+
+const PIPELINE = PIPELINE_STAGES;
 
 function percent(part: number, total: number) {
   return total > 0 ? Math.round((part / total) * 100) : 0;
@@ -278,18 +294,25 @@ function Pipeline({ applications }: { applications: ApplicationListItem[] }) {
           );
           return (
             <section
-              key={column.label}
+              key={column.key}
+              data-testid={`pipeline-stage-${column.key}`}
+              data-pipeline-stage={column.key}
               className={`min-w-0 rounded-xl border p-3 ${column.tone}`}
             >
               <div className="flex items-center justify-between gap-2">
                 <h3 className="text-foreground text-sm font-semibold">
                   {column.label}
                 </h3>
-                <Badge variant="secondary">{items.length}</Badge>
+                <span
+                  data-testid={`pipeline-count-${column.key}`}
+                  className={`inline-flex min-w-6 items-center justify-center rounded-full px-2 py-0.5 text-xs font-semibold ${column.badge}`}
+                >
+                  {items.length}
+                </span>
               </div>
               <div className="mt-3 space-y-2">
                 {items.length === 0 ? (
-                  <p className="text-muted-foreground rounded-lg border border-dashed p-3 text-center text-xs">
+                  <p className="text-muted-foreground border-border/60 bg-background/35 rounded-lg border border-dashed p-3 text-center text-xs">
                     Sem registros
                   </p>
                 ) : (
@@ -297,9 +320,9 @@ function Pipeline({ applications }: { applications: ApplicationListItem[] }) {
                     <Link
                       key={application.id}
                       to="/dashboard/recrutamento/candidaturas"
-                      className="bg-card border-border block rounded-lg border p-2.5 shadow-sm hover:-translate-y-0.5"
+                      className="bg-card text-card-foreground border-border/70 hover:border-border block rounded-lg border p-2.5 shadow-sm transition-colors"
                     >
-                      <p className="text-foreground truncate text-xs font-semibold">
+                      <p className="truncate text-xs font-semibold">
                         {application.candidate_name || 'Candidato'}
                       </p>
                       <p className="text-muted-foreground mt-1 truncate text-[11px]">
@@ -465,11 +488,7 @@ export default function DashboardRecrutamento() {
     return (
       <div className="space-y-4">
         <DashboardHeader loading={isLoading} onRefresh={() => void refetch()} />
-        <Card className="p-6">
-          <p role="alert" className="text-destructive text-sm">
-            {error}
-          </p>
-        </Card>
+        <Card className="p-2"><ErrorState message={error} onRetry={() => void refetch()} /></Card>
       </div>
     );
   }
@@ -486,16 +505,9 @@ export default function DashboardRecrutamento() {
   }
   if (!dashboardStats) {
     return (
-      <div className="space-y-3">
-        <div className="bg-muted h-28 animate-pulse rounded-2xl" />
-        <div className="grid gap-3 sm:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div
-              key={index}
-              className="bg-muted h-28 animate-pulse rounded-xl"
-            />
-          ))}
-        </div>
+      <div className="space-y-4">
+        <DashboardHeader loading={isLoading} onRefresh={() => void refetch()} />
+        <RouteLoadingFallback />
       </div>
     );
   }

@@ -1,17 +1,46 @@
-import { ModuleWorkspace } from '@/components/legacy/portal/ModuleWorkspace';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { EmptyState } from '@/components/fallback';
+import { EmptyState } from '@/components/fallback/EmptyState';
+import { ModuleWorkspace } from '@/components/modules/ModuleWorkspace';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ArrowLeft, User } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useRecrutamento } from '@/modules/recrutamento/RecrutamentoContext';
+import { classifyUuidRouteParam } from '@/utils/uuid';
 
 export default function RecrutamentoCandidatoDetalhe() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { candidates, isLoading, error, refetchCandidates } = useRecrutamento();
-  const candidate = candidates.find((item) => item.id === id);
+  const param = classifyUuidRouteParam(id);
+  const candidate =
+    param.kind === 'valid' ? candidates.find((item) => item.id === param.value) : undefined;
+
+  if (param.kind !== 'valid') {
+    return (
+      <ModuleWorkspace
+        title="Detalhe do Candidato"
+        description="Visualize e gerencie o perfil do candidato"
+        icon={User}
+        breadcrumbItems={[
+          { label: 'Recrutamento', href: '/dashboard/recrutamento' },
+          { label: 'Candidatos', href: '/dashboard/recrutamento/candidatos' },
+          { label: 'Identificador inválido' },
+        ]}
+      >
+        <Card className="p-6">
+          <p className="text-destructive text-sm" role="alert">
+            {param.kind === 'missing'
+              ? 'Identificador do candidato não informado.'
+              : 'Identificador do candidato inválido.'}
+          </p>
+          <Button asChild className="mt-3" variant="outline" size="sm">
+            <Link to="/dashboard/recrutamento/candidatos">Voltar para candidatos</Link>
+          </Button>
+        </Card>
+      </ModuleWorkspace>
+    );
+  }
 
   return (
     <ModuleWorkspace
@@ -21,7 +50,7 @@ export default function RecrutamentoCandidatoDetalhe() {
       breadcrumbItems={[
         { label: 'Recrutamento' },
         { label: 'Candidatos' },
-        { label: `ID: ${id}` },
+        { label: `ID: ${param.value}` },
       ]}
     >
       {isLoading ? (

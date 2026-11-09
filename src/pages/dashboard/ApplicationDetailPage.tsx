@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { FileText, ArrowLeft } from 'lucide-react';
 import { applicationsRepository } from '@/repositories/applications.repository';
 import { useAuth } from '@/contexts/AuthContext';
+import { classifyUuidRouteParam } from '@/utils/uuid';
 import type { Application } from '@/types/domain/application';
 
 export default function ApplicationDetailPage() {
@@ -15,11 +16,26 @@ export default function ApplicationDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id || !currentTenantId) return;
+    if (!currentTenantId) {
+      setLoading(false);
+      setError('Tenant ativo não identificado.');
+      return;
+    }
+    const param = classifyUuidRouteParam(id);
+    if (param.kind === 'missing') {
+      setLoading(false);
+      setError('Identificador da candidatura não informado.');
+      return;
+    }
+    if (param.kind === 'invalid') {
+      setLoading(false);
+      setError('Identificador da candidatura inválido.');
+      return;
+    }
 
     const fetchApplication = async () => {
       try {
-        const data = await applicationsRepository.findById(id, currentTenantId);
+        const data = await applicationsRepository.findById(param.value, currentTenantId);
         setApplication(data || null);
       } catch (err) {
         setError(

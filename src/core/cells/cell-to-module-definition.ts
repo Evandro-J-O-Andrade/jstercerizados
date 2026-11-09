@@ -23,21 +23,27 @@ import { cellRegistry } from '@/core/registry/CellRegistryContract';
 /**
  * Converte um CellRoute em ModuleFeature (compatível com ModuleRouter).
  */
+function joinRoute(baseRoute: string, path: string): string {
+  if (!path) return baseRoute;
+  if (path.startsWith('/')) return path;
+  return `${baseRoute.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+}
+
 function cellRouteToModuleFeature(
   route: CellRoute,
   moduleId: string,
   baseRoute: string,
 ): ModuleFeature {
-  const featureRoute = route.path ? `${baseRoute}/${route.path}` : baseRoute;
+  const featureRoute = joinRoute(baseRoute, route.path ?? '');
 
   return {
-    id: `${moduleId}-${route.path.replace(/[/:]/g, '-') || 'root'}`,
+    id: `${moduleId}-${(route.path || 'root').replace(/[/:]/g, '-') || 'root'}`,
     title: route.label,
     description: route.label,
     icon: route.icon ?? 'LayoutDashboard',
     route: featureRoute,
     requiredPermissions: route.requiredPermissions,
-    implementationStatus: 'implemented',
+    implementationStatus: route.implementationStatus ?? 'implemented',
   };
 }
 

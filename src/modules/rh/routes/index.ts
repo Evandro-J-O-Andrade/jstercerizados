@@ -2,113 +2,25 @@ import type { ComponentType } from 'react';
 import type { ModuleRoute } from '@/platform/router/types';
 import { lazy } from 'react';
 
-const DashboardRh = lazy(() => import('@/pages/dashboard/DashboardRh'));
-const CandidatosPage = lazy(
-  () => import('@/modules/recrutamento/pages/RecrutamentoCandidatos'),
-);
-const CandidatoDetalhe = lazy(
-  () => import('@/modules/recrutamento/pages/RecrutamentoCandidatoDetalhe'),
-);
-const RecrutamentoVagasPage = lazy(
-  () => import('@/modules/recrutamento/pages/RecrutamentoVagas'),
-);
-const FuncionariosPage = lazy(() => import('@/pages/dashboard/Funcionarios'));
-const FuncionarioDetalhe = lazy(
-  () => import('@/pages/dashboard/FuncionarioDetalhe'),
-);
-const ProcessosSeletivosPage = lazy(
-  () => import('@/pages/dashboard/ProcessosSeletivos'),
-);
-const CandidaturasPage = lazy(
-  () => import('@/modules/recrutamento/pages/RecrutamentoCandidaturas'),
-);
-const JobMatches = lazy(
-  () => import('@/modules/recrutamento/pages/RecrutamentoMatches'),
-);
-const DocumentosRhPage = lazy(() => import('@/pages/dashboard/DocumentosRh'));
-const BancoDeTalentosPage = lazy(
-  () => import('@/modules/recrutamento/pages/RecrutamentoTalentPool'),
-);
-const EtapasPage = lazy(() => import('@/pages/dashboard/Etapas'));
+/**
+ * Rotas RH — domínio proprietário /dashboard/rh.
+ * Não reutiliza páginas operacionais de Recrutamento/Candidato; consultas cruzadas
+ * usam páginas RH próprias e links para rotas proprietárias quando aplicável.
+ */
+const RHDashboardPage = lazy(() => import('@/modules/rh/dashboard/RHDashboardPage').then((m) => ({ default: m.RHDashboardPage })));
+const RHColaboradoresListPage = lazy(() => import('@/modules/rh/pages/RHColaboradoresListPage'));
+const RHColaboradorNovoPage = lazy(() => import('@/modules/rh/pages/RHColaboradorNovoPage'));
+const RHColaboradorDetalhePage = lazy(() => import('@/modules/rh/pages/RHColaboradorDetalhePage'));
+const RHColaboradorEditarPage = lazy(() => import('@/modules/rh/pages/RHColaboradorEditarPage'));
+const RHCandidatosConsultaPage = lazy(() => import('@/modules/rh/pages/RHCandidatosConsultaPage'));
+const RHVagasConsultaPage = lazy(() => import('@/modules/rh/pages/RHVagasConsultaPage'));
 
 export const rhRoutes: ModuleRoute[] = [
-  {
-    path: '',
-    label: 'Dashboard RH',
-    element: DashboardRh as ComponentType,
-    requiredPermissions: ['people.read'],
-  },
-  {
-    path: 'funcionarios',
-    label: 'Funcionários',
-    element: FuncionariosPage as ComponentType,
-    requiredPermissions: ['people.read'],
-  },
-  {
-    path: 'funcionarios/:id',
-    label: 'Detalhe do Funcionário',
-    element: FuncionarioDetalhe as ComponentType,
-    requiredPermissions: ['people.read'],
-  },
-  {
-    path: 'candidatos',
-    label: 'Candidatos',
-    element: CandidatosPage as ComponentType,
-    requiredPermissions: ['candidates.read'],
-  },
-  {
-    path: 'candidatos/:id',
-    label: 'Detalhe do Candidato',
-    element: CandidatoDetalhe as ComponentType,
-    requiredPermissions: ['candidates.read'],
-  },
-  {
-    path: 'vagas',
-    label: 'Vagas',
-    element: RecrutamentoVagasPage as ComponentType,
-    requiredPermissions: ['jobs.read'],
-  },
-  {
-    path: 'matches',
-    label: 'Matches',
-    element: JobMatches as ComponentType,
-    requiredPermissions: ['jobs.read'],
-  },
-  {
-    path: 'processos-seletivos',
-    label: 'Processos Seletivos',
-    element: ProcessosSeletivosPage as ComponentType,
-    requiredPermissions: ['jobs.read'],
-  },
-  {
-    path: 'processos-seletivos/:id',
-    label: 'Detalhe do Processo',
-    element: null as unknown as ComponentType,
-    requiredPermissions: ['jobs.read'],
-    implementationStatus: 'coming_soon',
-  },
-  {
-    path: 'candidaturas',
-    label: 'Candidaturas',
-    element: CandidaturasPage as ComponentType,
-    requiredPermissions: ['applications.read'],
-  },
-  {
-    path: 'documentos-rh',
-    label: 'Documentos',
-    element: DocumentosRhPage as ComponentType,
-    requiredPermissions: ['people.read'],
-  },
-  {
-    path: 'banco-de-talentos',
-    label: 'Banco de Talentos',
-    element: BancoDeTalentosPage as ComponentType,
-    requiredPermissions: ['candidates.read'],
-  },
-  {
-    path: 'etapas',
-    label: 'Etapas',
-    element: EtapasPage as ComponentType,
-    requiredPermissions: ['recruitment.stage.manage'],
-  },
+  { path: '', label: 'Painel RH', icon: 'LayoutDashboard', element: RHDashboardPage as ComponentType, requiredPermissions: ['people.read'], implementationStatus: 'implemented' },
+  { path: 'colaboradores', label: 'Colaboradores', icon: 'Users', element: RHColaboradoresListPage as ComponentType, requiredPermissions: ['people.read'], implementationStatus: 'implemented' },
+  { path: 'colaboradores/novo', label: 'Novo colaborador', icon: 'UserPlus', element: RHColaboradorNovoPage as ComponentType, requiredPermissions: ['people.create'], implementationStatus: 'implemented' },
+  { path: 'colaboradores/:id/editar', label: 'Editar colaborador', icon: 'Pencil', element: RHColaboradorEditarPage as ComponentType, requiredPermissions: ['people.update'], implementationStatus: 'implemented' },
+  { path: 'colaboradores/:id', label: 'Detalhe do colaborador', icon: 'User', element: RHColaboradorDetalhePage as ComponentType, requiredPermissions: ['people.read'], implementationStatus: 'implemented' },
+  { path: 'candidatos', label: 'Consulta de candidatos', icon: 'UserRoundSearch', element: RHCandidatosConsultaPage as ComponentType, requiredPermissions: ['candidates.read'], implementationStatus: 'implemented' },
+  { path: 'vagas', label: 'Consulta de vagas', icon: 'BriefcaseBusiness', element: RHVagasConsultaPage as ComponentType, requiredPermissions: ['jobs.read'], implementationStatus: 'implemented' },
 ];

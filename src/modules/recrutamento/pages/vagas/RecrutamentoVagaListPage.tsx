@@ -18,6 +18,8 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/fallback/EmptyState';
+import { ErrorState } from '@/components/fallback/ErrorState';
+import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
 import { useAuth } from '@/contexts/AuthContext';
 import { jobsRepository } from '@/modules/recrutamento/repositories';
 import { RECRUTAMENTO_PERMISSIONS } from '@/modules/recrutamento/permissions';
@@ -199,17 +201,10 @@ export default function RecrutamentoVagasListPage() {
       ) : null}
 
       {loading ? (
-        <Card className="text-muted-foreground p-6 text-sm">
-          Carregando vagas…
-        </Card>
+        <RouteLoadingFallback />
       ) : error ? (
-        <Card className="space-y-3 p-6">
-          <p className="text-destructive text-sm" role="alert">
-            {error}
-          </p>
-          <Button variant="outline" size="sm" onClick={() => void load()}>
-            Tentar novamente
-          </Button>
+        <Card className="p-2">
+          <ErrorState message={error} onRetry={() => void load()} />
         </Card>
       ) : items.length === 0 ? (
         <Card className="p-2">

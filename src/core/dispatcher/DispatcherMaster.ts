@@ -333,18 +333,21 @@ export class DispatcherMaster {
       return '/auth/welcome';
     }
 
+    // 6. Administrador Master Global — ROOT da plataforma (Central 24H).
+    // Destino canônico de entrada autorizado: /dashboard/global.
+    // /dashboard/admin-master permanece como célula de governança administrativa.
+    // ROOT global não é obrigado a selecionar tenant para acessar a Central Global.
+    if (dispatchContext.isAdminMaster) {
+      return '/dashboard/global';
+    }
+
     if (hasMembership && !dispatchContext.tenantId) {
       return '/selecionar-tenant';
     }
 
-    // 6. Célula do Candidato (Portal dedicado)
+    // 7. Célula do Candidato (Portal dedicado)
     if (isCandidateUser) {
       return '/candidato';
-    }
-
-    // 7. Administrador Master Global — ROOT da plataforma
-    if (dispatchContext.isAdminMaster) {
-      return '/dashboard/admin-master';
     }
 
     // 8. Proprietário / Tenant Admin — ambiente exclusivo do dono

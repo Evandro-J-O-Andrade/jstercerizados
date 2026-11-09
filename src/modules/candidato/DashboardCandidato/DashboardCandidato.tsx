@@ -3,6 +3,7 @@ import { useCandidato } from '@/modules/candidato/CandidatoContext';
 import { ContentBoundary } from '@/components/feedback/ContentBoundary';
 import { LayoutDashboard, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Link } from 'react-router-dom';
 import {
   ProfileSummary,
   ProfileCompletion,
@@ -34,18 +35,18 @@ export default function DashboardCandidato() {
         : 'success';
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-slate-50/60">
-      <div className="border-b border-slate-200 bg-white px-6 py-5">
+    <div className="bg-background flex h-full min-h-0 flex-col">
+      <div className="bg-card/95 border-border border-b px-4 py-5 backdrop-blur sm:px-6">
         <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+            <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl">
               <LayoutDashboard className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight text-slate-900">
+              <h1 className="text-foreground text-xl font-semibold tracking-tight">
                 Central de Carreira
               </h1>
-              <p className="text-sm text-slate-500">
+              <p className="text-muted-foreground text-sm">
                 Olá, {firstName}. Acompanhe sua evolução e oportunidades em um só
                 lugar.
               </p>
@@ -53,13 +54,13 @@ export default function DashboardCandidato() {
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" asChild>
-              <a href="/candidato/buscar-vagas">Buscar vagas</a>
+              <Link to="/candidato/buscar-vagas">Buscar vagas</Link>
             </Button>
             <Button asChild>
-              <a href="/candidato/vagas/recomendadas">
+              <Link to="/candidato/vagas/recomendadas">
                 <Sparkles className="mr-2 h-4 w-4" />
                 Vagas recomendadas
-              </a>
+              </Link>
             </Button>
           </div>
         </div>
@@ -74,12 +75,12 @@ export default function DashboardCandidato() {
         emptyDescription="Complete seu cadastro para acessar sua Central de Carreira."
         className="flex min-h-0 flex-1 flex-col overflow-hidden"
       >
-        <div className="flex min-h-0 flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-[1440px] space-y-6">
+        <div className="flex min-h-0 flex-1 overflow-auto px-3 py-5 sm:px-5 lg:px-6">
+          <div className="mx-auto w-full max-w-[1600px] space-y-5">
             <ProfileSummary />
 
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.7fr_1fr]">
-              <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
+              <div className="space-y-5">
                 <ProfileCompletion />
                 <ExperienceTimeline />
                 <EducationCard />
@@ -87,7 +88,7 @@ export default function DashboardCandidato() {
                 <ApplicationsKanbanPreview />
                 <AlertsSummary />
               </div>
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <RecommendedJobs />
                 <CandidateAgendaMini />
                 <DocumentsSummary />

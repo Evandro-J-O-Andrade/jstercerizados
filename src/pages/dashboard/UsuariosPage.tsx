@@ -970,6 +970,7 @@ export default function UsuariosPage() {
       try {
         if (!convertUser) return;
         await employeesRepository.create({
+          id: convertUser.id,
           tenant_id: currentTenantId || '',
           employee_code: data.employee_code,
           hire_date: data.hire_date,
@@ -986,7 +987,7 @@ export default function UsuariosPage() {
         setConvertLoading(false);
       }
     },
-    [convertUser, loadUsers],
+    [convertUser, currentTenantId, loadUsers],
   );
 
   const handleDelete = useCallback(

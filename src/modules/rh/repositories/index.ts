@@ -1,4 +1,4 @@
-﻿export {
+export {
   CandidatesRepository,
   candidatesRepository,
 } from '@/modules/candidato/repositories/candidates.repository';

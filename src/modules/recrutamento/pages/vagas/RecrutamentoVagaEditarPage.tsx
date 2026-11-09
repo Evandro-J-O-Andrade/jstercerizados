@@ -8,6 +8,7 @@ import { Briefcase } from 'lucide-react';
 import { ModuleWorkspace } from '@/components/modules/ModuleWorkspace';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
 import { useAuth } from '@/contexts/AuthContext';
 import { jobsRepository } from '@/modules/recrutamento/repositories';
 import { VagaForm } from './VagaForm';
@@ -18,6 +19,7 @@ import {
   type VagaFormValues,
 } from './vaga-form.utils';
 import type { Job } from '@/modules/recrutamento/types';
+import { isUuid } from '@/utils/uuid';
 
 export default function RecrutamentoVagaEditarPage() {
   const { id } = useParams<{ id: string }>();
@@ -29,11 +31,13 @@ export default function RecrutamentoVagaEditarPage() {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (!id || !currentTenantId) {
+    if (!id || !isUuid(id) || !currentTenantId) {
       setError(
         !id
           ? 'Identificador da vaga não informado.'
-          : 'Tenant ativo não identificado.',
+          : !isUuid(id)
+            ? 'Identificador da vaga inválido.'
+            : 'Tenant ativo não identificado.',
       );
       setLoading(false);
       return;
@@ -59,7 +63,7 @@ export default function RecrutamentoVagaEditarPage() {
   }, [load]);
 
   const handleSubmit = async (values: VagaFormValues) => {
-    if (!id) return;
+    if (!id || !isUuid(id)) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -81,9 +85,10 @@ export default function RecrutamentoVagaEditarPage() {
     { label: 'Vagas', href: '/dashboard/recrutamento/vagas' },
     {
       label: job?.title || 'Vaga',
-      href: id
-        ? `/dashboard/recrutamento/vagas/${id}`
-        : '/dashboard/recrutamento/vagas',
+      href:
+        id && isUuid(id)
+          ? `/dashboard/recrutamento/vagas/${id}`
+          : '/dashboard/recrutamento/vagas',
     },
     { label: 'Editar' },
   ];
@@ -96,9 +101,7 @@ export default function RecrutamentoVagaEditarPage() {
         icon={Briefcase}
         breadcrumbItems={breadcrumb}
       >
-        <Card className="text-muted-foreground p-6 text-sm">
-          Carregando vaga…
-        </Card>
+        <RouteLoadingFallback />
       </ModuleWorkspace>
     );
   }

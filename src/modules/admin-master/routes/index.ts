@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Rotas da célula admin-master — ROOT global.
  *
  * Todas as rotas desta célula são protegidas e exigem perfil admin_master.
@@ -39,9 +39,21 @@ export const adminMasterRoutes = [
     permission: ADMIN_MASTER_PERMISSIONS.people,
   },
   {
-    path: '/dashboard/recrutamento/candidatos',
+    path: '/dashboard/admin-master/candidatos',
     label: 'Gestão de Candidatos',
-    component: 'RecrutamentoCandidatos',
+    component: 'AdminMasterCandidatosPage',
+    permission: ADMIN_MASTER_PERMISSIONS.candidates,
+  },
+  {
+    path: '/dashboard/admin-master/candidatos/:id',
+    label: 'Detalhe do candidato',
+    component: 'AdminMasterCandidatoDetalhePage',
+    permission: ADMIN_MASTER_PERMISSIONS.candidates,
+  },
+  {
+    path: '/dashboard/admin-master/candidatos/:id/editar',
+    label: 'Editar candidato',
+    component: 'AdminMasterCandidatoEditarPage',
     permission: ADMIN_MASTER_PERMISSIONS.candidates,
   },
   {

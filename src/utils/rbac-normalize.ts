@@ -81,20 +81,29 @@ function extractResourceAction(
   permission: Permission,
 ): { resource: string; action: string } | null {
   const raw = permission as unknown as RawPermission;
-  const name = raw.name ?? raw.resource;
-  if (typeof name === 'string') {
-    const dotIndex = name.indexOf('.');
-    if (dotIndex > 0) {
+  const code = normalizePermissionName(raw.code);
+  if (code) {
+    const dotIndex = code.lastIndexOf('.');
+    if (dotIndex > 0 && dotIndex < code.length - 1) {
       return {
-        resource: name.substring(0, dotIndex),
-        action: name.substring(dotIndex + 1),
+        resource: code.substring(0, dotIndex),
+        action: code.substring(dotIndex + 1),
       };
     }
   }
-  const resource = raw.resource ?? raw.name;
-  const action = raw.action ?? raw.name;
-  if (typeof resource !== 'string' || typeof action !== 'string') return null;
-  return { resource, action };
+
+  if (typeof raw.resource === 'string' && typeof raw.action === 'string') {
+    return { resource: raw.resource, action: raw.action };
+  }
+
+  const name = normalizePermissionName(raw.name);
+  if (!name) return null;
+  const dotIndex = name.lastIndexOf('.');
+  if (dotIndex <= 0 || dotIndex >= name.length - 1) return null;
+  return {
+    resource: name.substring(0, dotIndex),
+    action: name.substring(dotIndex + 1),
+  };
 }
 
 export function getPermissionKey(permission: Permission): string {

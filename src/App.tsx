@@ -37,6 +37,9 @@ import Almoxarifado from '@/pages/dashboard/Almoxarifado';
 import AdminMasterDashboardPage from '@/modules/admin-master/dashboard/AdminMasterDashboardPage';
 import GlobalCommandPage from '@/pages/dashboard/GlobalCommandPage';
 import PessoasPage from '@/modules/admin-master/pages/PessoasPage';
+import AdminMasterCandidatosPage from '@/modules/admin-master/pages/candidatos/AdminMasterCandidatosPage';
+import AdminMasterCandidatoDetalhePage from '@/modules/admin-master/pages/candidatos/AdminMasterCandidatoDetalhePage';
+import AdminMasterCandidatoEditarPage from '@/modules/admin-master/pages/candidatos/AdminMasterCandidatoEditarPage';
 import VisaoGeral from '@/pages/dashboard/VisaoGeral';
 import AuthTerms from '@/pages/auth/Termos';
 import AuthWelcome from '@/pages/auth/BoasVindas';
@@ -507,9 +510,35 @@ function RoutesAndLayout() {
                 </PermissionGuard>
               }
             />
-            <Route
+                        <Route
               path="admin-master/candidatos"
-              element={<Navigate to="/dashboard/recrutamento/candidatos" replace />}
+              element={
+                <ProtectedRoute allowedRoles={['admin_master']}>
+                  <PermissionGuard permission="candidates.read">
+                    <AdminMasterCandidatosPage />
+                  </PermissionGuard>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="admin-master/candidatos/:id/editar"
+              element={
+                <ProtectedRoute allowedRoles={['admin_master']}>
+                  <PermissionGuard permission="candidates.read">
+                    <AdminMasterCandidatoEditarPage />
+                  </PermissionGuard>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="admin-master/candidatos/:id"
+              element={
+                <ProtectedRoute allowedRoles={['admin_master']}>
+                  <PermissionGuard permission="candidates.read">
+                    <AdminMasterCandidatoDetalhePage />
+                  </PermissionGuard>
+                </ProtectedRoute>
+              }
             />
             <Route
               path="servicos"

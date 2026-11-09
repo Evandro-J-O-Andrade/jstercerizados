@@ -91,7 +91,7 @@ describe('CHECK BOULER 24H — DispatcherMaster Flow & State Machine', () => {
     expect(dest).toBe('/candidato');
   });
 
-  it('6. Direciona Administrador Master para /dashboard/global', () => {
+  it('6. Direciona Administrador Master para /dashboard/global (Central 24H)', () => {
     const ctx = createMockContext({
       isAdminMaster: true,
       roleIds: ['role-admin-master'],
@@ -102,6 +102,23 @@ describe('CHECK BOULER 24H — DispatcherMaster Flow & State Machine', () => {
       false, // mustChangePassword
       true,  // hasAcceptedTerms
       true,  // hasMembership
+      { roleNames: ['admin_master'] },
+    );
+    expect(dest).toBe('/dashboard/global');
+  });
+
+  it('6b. ROOT global sem tenant selecionado acessa /dashboard/global (não exige tenant artificial)', () => {
+    const ctx = createMockContext({
+      tenantId: null,
+      isAdminMaster: true,
+      roleIds: ['role-admin-master'],
+    });
+    const dest = dispatcherMaster.resolveDestination(
+      ctx,
+      true,  // welcomeCompleted
+      false, // mustChangePassword
+      true,  // hasAcceptedTerms
+      true,  // hasMembership (pode ter memberships; não deve bloquear Central Global)
       { roleNames: ['admin_master'] },
     );
     expect(dest).toBe('/dashboard/global');

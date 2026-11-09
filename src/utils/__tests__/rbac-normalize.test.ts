@@ -33,6 +33,37 @@ describe('normalizeResourceAction', () => {
 });
 
 describe('getPermissionKey', () => {
+  it.each([
+    'candidates.read',
+    'candidates.profile.read',
+    'candidates.documents.read',
+    'recruitment.stage.manage',
+    'applications.history.read',
+  ])('preserva a chave canônica completa %s', (name) => {
+    const perm = {
+      id: 'permission-id',
+      name,
+      module: 'recruitment',
+      description: null,
+      created_at: '2026-08-22T05:35:13.661Z',
+    } as Permission;
+
+    expect(getPermissionKey(perm)).toBe(name);
+  });
+
+  it('prioriza code quando o banco fornece a chave canônica', () => {
+    const perm = {
+      id: 'permission-id',
+      code: 'candidates.profile.read',
+      name: 'Perfil do candidato',
+      module: 'recruitment',
+      resource: 'candidates.profile',
+      action: 'read',
+      created_at: '2026-08-22T05:35:13.661Z',
+    } as unknown as Permission;
+
+    expect(getPermissionKey(perm)).toBe('candidates.profile.read');
+  });
   it('retorna resource.action para permissão válida', () => {
     const perm: Permission = {
       id: 'c49ddf68-ed63-4cf2-b54d-d2251a815272',
@@ -68,6 +99,22 @@ describe('getPermissionKey', () => {
 });
 
 describe('normalizePermission', () => {
+  it('preserva recursos com pontos ao normalizar uma chave canônica', () => {
+    const result = normalizePermission({
+      id: 'permission-id',
+      code: 'candidates.profile.read',
+      name: 'Perfil do candidato',
+      module: 'recruitment',
+      description: null,
+      created_at: '2026-08-22T05:35:13.661Z',
+    });
+
+    expect(result).toMatchObject({
+      name: 'candidates.profile.read',
+      resource: 'candidates.profile',
+      action: 'read',
+    });
+  });
   it('normaliza registro bruto do Supabase (resource/action)', () => {
     const raw = {
       id: 'c49ddf68-ed63-4cf2-b54d-d2251a815272',

@@ -14,8 +14,8 @@ const rhCellRoutes: CellRoute[] = rhRoutes.map((route) => ({
 export const rhCellContract: CellContract = {
   id: 'rh',
   name: 'RH',
-  version: '1.0.0',
-  description: 'Gestão de pessoas, funcionários, documentos e relatórios de RH.',
+  version: '1.1.0',
+  description: 'Gestão de pessoas/colaboradores (domínio RH). Consultas cruzadas autorizadas sem compartilhar páginas operacionais de Recrutamento/Candidato.',
   category: 'rh',
   domain: 'tenant',
   scope: 'tenant',

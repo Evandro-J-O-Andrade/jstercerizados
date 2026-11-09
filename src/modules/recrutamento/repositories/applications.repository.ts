@@ -6,6 +6,7 @@
  */
 
 import { getSupabaseClient } from '@/lib/supabase';
+import { isUuid } from '@/utils/uuid';
 import type {
   Application,
   ApplicationListItem,
@@ -74,6 +75,10 @@ export const applicationsRepository = {
    */
   async list(filters: ApplicationFilters = {}): Promise<RepositoryListResult<ApplicationListItem>> {
     try {
+      if (filters.job_id && !isUuid(filters.job_id)) return { data: [], error: null, count: 0 };
+      if (filters.candidate_id && !isUuid(filters.candidate_id)) return { data: [], error: null, count: 0 };
+      if (filters.process_id && !isUuid(filters.process_id)) return { data: [], error: null, count: 0 };
+      if (filters.stage_id && !isUuid(filters.stage_id)) return { data: [], error: null, count: 0 };
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 
@@ -163,6 +168,7 @@ export const applicationsRepository = {
    */
   async getById(id: string): Promise<RepositoryResult<Application>> {
     try {
+      if (!isUuid(id)) return { data: null, error: null };
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 
@@ -193,6 +199,7 @@ export const applicationsRepository = {
     stage_history: Array<Record<string, unknown>>;
   }>> {
     try {
+      if (!isUuid(id)) return { data: null, error: null };
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 

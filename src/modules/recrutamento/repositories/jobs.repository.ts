@@ -6,6 +6,7 @@
  */
 
 import { getSupabaseClient } from '@/lib/supabase';
+import { isUuid } from '@/utils/uuid';
 import type {
   Job,
   JobListItem,
@@ -185,6 +186,8 @@ export const jobsRepository = {
     tenantId?: string,
   ): Promise<RepositoryResult<Job>> {
     try {
+      if (!isUuid(id)) return { data: null, error: null };
+      if (tenantId !== undefined && !isUuid(tenantId)) return { data: null, error: null };
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 
@@ -292,6 +295,7 @@ export const jobsRepository = {
    */
   async update(input: UpdateJobInput): Promise<RepositoryResult<Job>> {
     try {
+      if (!isUuid(input.id)) return { data: null, error: null };
       const supabase = getSupabaseClient();
       if (!supabase) throw new Error('Supabase client not available');
 

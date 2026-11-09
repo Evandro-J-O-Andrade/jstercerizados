@@ -1,0 +1,1692 @@
+[
+  {
+    "id": "admin-master",
+    "label": "Admin Master",
+    "group": "Governança",
+    "title": "Governança Global",
+    "subtitle": "Tenants, identidades, acessos e capacidade da plataforma.",
+    "resource": "tenants",
+    "singular": "Tenant",
+    "primaryAction": "Nova organização",
+    "metrics": [
+      {
+        "label": "Tenants ativos",
+        "value": 140,
+        "delta": 12.4
+      },
+      {
+        "label": "Pessoas globais",
+        "value": 697,
+        "delta": 6.3
+      },
+      {
+        "label": "Células registradas",
+        "value": 54,
+        "delta": -2.1
+      },
+      {
+        "label": "Convites pendentes",
+        "value": 611,
+        "delta": 8.6
+      },
+      {
+        "label": "Eventos críticos",
+        "value": 1168,
+        "delta": 3.1
+      },
+      {
+        "label": "Disponibilidade contratual",
+        "value": 525,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Organização",
+      "Identificador",
+      "Plano",
+      "Responsável",
+      "Estado"
+    ],
+    "stages": [
+      "Solicitação",
+      "Validação",
+      "Ativação",
+      "Acompanhamento",
+      "Auditoria"
+    ],
+    "rows": [
+      "J&S Empregos LTDA",
+      "Organização Parceira",
+      "Empresa Demonstração",
+      "Rede Corporativa",
+      "Unidade Operacional"
+    ],
+    "routeProposal": "/dashboard/admin-master",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "admin-tenant",
+    "label": "Admin Tenant",
+    "group": "Governança",
+    "title": "Administração da Organização",
+    "subtitle": "Pessoas, convites, perfis, unidades e configuração de acesso.",
+    "resource": "usuarios",
+    "singular": "Usuário",
+    "primaryAction": "Criar usuário",
+    "metrics": [
+      {
+        "label": "Usuários ativos",
+        "value": 126,
+        "delta": 12.4
+      },
+      {
+        "label": "Convites pendentes",
+        "value": 681,
+        "delta": 6.3
+      },
+      {
+        "label": "Equipes",
+        "value": 36,
+        "delta": -2.1
+      },
+      {
+        "label": "Unidades",
+        "value": 591,
+        "delta": 8.6
+      },
+      {
+        "label": "Papéis atribuídos",
+        "value": 1146,
+        "delta": 3.1
+      },
+      {
+        "label": "Acessos revisados",
+        "value": 501,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Pessoa",
+      "E-mail",
+      "Perfil",
+      "Unidade",
+      "Estado"
+    ],
+    "stages": [
+      "Convidado",
+      "Cadastro",
+      "Aceite",
+      "Ativo",
+      "Revisão"
+    ],
+    "rows": [
+      "Ana Costa",
+      "Carlos Mendes",
+      "Fernanda Lima",
+      "João Oliveira",
+      "Mariana Sousa"
+    ],
+    "routeProposal": "/dashboard/admin-tenant",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "admin",
+    "label": "Administração",
+    "group": "Governança",
+    "title": "Gestão Administrativa",
+    "subtitle": "Cadastros corporativos, permissões e atividades supervisionadas.",
+    "resource": "cadastros",
+    "singular": "Cadastro",
+    "primaryAction": "Novo cadastro",
+    "metrics": [
+      {
+        "label": "Cadastros",
+        "value": 61,
+        "delta": 12.4
+      },
+      {
+        "label": "Pendências",
+        "value": 1121,
+        "delta": 6.3
+      },
+      {
+        "label": "Aprovações",
+        "value": 981,
+        "delta": -2.1
+      },
+      {
+        "label": "Revisões",
+        "value": 841,
+        "delta": 8.6
+      },
+      {
+        "label": "Alterações",
+        "value": 701,
+        "delta": 3.1
+      },
+      {
+        "label": "Conformidade",
+        "value": 561,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Registro",
+      "Referência",
+      "Responsável",
+      "Atualização",
+      "Status"
+    ],
+    "stages": [
+      "Novo",
+      "Em revisão",
+      "Aprovado",
+      "Ativo",
+      "Arquivado"
+    ],
+    "rows": [
+      "Solicitação de acesso",
+      "Cadastro empresarial",
+      "Perfil de usuário",
+      "Vínculo de equipe",
+      "Mudança de papel"
+    ],
+    "routeProposal": "/dashboard/admin",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "core",
+    "label": "CORE",
+    "group": "Plataforma",
+    "title": "Núcleo da Plataforma",
+    "subtitle": "Registro de células, contexto, contratos e observabilidade local.",
+    "resource": "celulas",
+    "singular": "Célula",
+    "primaryAction": "Inspecionar célula",
+    "metrics": [
+      {
+        "label": "Células",
+        "value": 26,
+        "delta": 12.4
+      },
+      {
+        "label": "Contratos válidos",
+        "value": 23,
+        "delta": 6.3
+      },
+      {
+        "label": "Rotas declaradas",
+        "value": 148,
+        "delta": -2.1
+      },
+      {
+        "label": "Probes locais",
+        "value": 4,
+        "delta": 8.6
+      },
+      {
+        "label": "Dependências",
+        "value": 0,
+        "delta": 3.1
+      },
+      {
+        "label": "Alertas",
+        "value": 0,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Célula",
+      "Escopo",
+      "Rotas",
+      "Contrato",
+      "Heartbeat"
+    ],
+    "stages": [
+      "Registrada",
+      "Habilitada",
+      "Contrato válido",
+      "Monitorada",
+      "Revisão"
+    ],
+    "rows": [
+      "CellRegistry",
+      "DispatcherMaster",
+      "AuthContext",
+      "ModuleRouter",
+      "Context Resolver"
+    ],
+    "routeProposal": "/dashboard/global",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "integracoes",
+    "label": "Integrações",
+    "group": "Plataforma",
+    "title": "Integrações e Eventos",
+    "subtitle": "Conectores, webhooks, filas e falhas de integração.",
+    "resource": "conectores",
+    "singular": "Conector",
+    "primaryAction": "Novo conector",
+    "metrics": [
+      {
+        "label": "Conectores",
+        "value": 1018,
+        "delta": 12.4
+      },
+      {
+        "label": "Eventos recebidos",
+        "value": 329,
+        "delta": 6.3
+      },
+      {
+        "label": "Webhooks",
+        "value": 840,
+        "delta": -2.1
+      },
+      {
+        "label": "Entregas",
+        "value": 151,
+        "delta": 8.6
+      },
+      {
+        "label": "Falhas",
+        "value": 662,
+        "delta": 3.1
+      },
+      {
+        "label": "Pendências",
+        "value": 1173,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Conector",
+      "Destino",
+      "Tipo",
+      "Último evento",
+      "Estado"
+    ],
+    "stages": [
+      "Configurado",
+      "Validado",
+      "Ativo",
+      "Entrega",
+      "Monitoramento"
+    ],
+    "rows": [
+      "E-mail SMTP",
+      "Notificações",
+      "WhatsApp",
+      "Webhook externo",
+      "Sistema de RH"
+    ],
+    "routeProposal": "/dashboard/integracoes",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "configuracoes-saas",
+    "label": "Configurações SaaS",
+    "group": "Plataforma",
+    "title": "Configurações da Plataforma",
+    "subtitle": "Políticas operacionais, recursos, planos e publicações permitidas.",
+    "resource": "configuracoes",
+    "singular": "Configuração",
+    "primaryAction": "Nova configuração",
+    "metrics": [
+      {
+        "label": "Regras ativas",
+        "value": 985,
+        "delta": 12.4
+      },
+      {
+        "label": "Flags",
+        "value": 977,
+        "delta": 6.3
+      },
+      {
+        "label": "Planos",
+        "value": 969,
+        "delta": -2.1
+      },
+      {
+        "label": "Versões",
+        "value": 961,
+        "delta": 8.6
+      },
+      {
+        "label": "Pendências",
+        "value": 953,
+        "delta": 3.1
+      },
+      {
+        "label": "Alterações",
+        "value": 945,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Configuração",
+      "Domínio",
+      "Escopo",
+      "Versão",
+      "Situação"
+    ],
+    "stages": [
+      "Rascunho",
+      "Revisão",
+      "Homologado",
+      "Publicado",
+      "Auditado"
+    ],
+    "rows": [
+      "Configuração de publicações",
+      "Política de upload",
+      "Regras de tenant",
+      "Parâmetros de sessão",
+      "Preferências de tema"
+    ],
+    "routeProposal": "/dashboard/configuracoes-saas",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "preferencias",
+    "label": "Preferências",
+    "group": "Plataforma",
+    "title": "Preferências e Experiência",
+    "subtitle": "Configurações pessoais, notificações, acessibilidade e sessões.",
+    "resource": "preferencias",
+    "singular": "Preferência",
+    "primaryAction": "Gerenciar preferências",
+    "metrics": [
+      {
+        "label": "Preferências",
+        "value": 511,
+        "delta": 12.4
+      },
+      {
+        "label": "Alertas ativos",
+        "value": 1121,
+        "delta": 6.3
+      },
+      {
+        "label": "Canais",
+        "value": 531,
+        "delta": -2.1
+      },
+      {
+        "label": "Sessões",
+        "value": 1141,
+        "delta": 8.6
+      },
+      {
+        "label": "Dispositivos",
+        "value": 551,
+        "delta": 3.1
+      },
+      {
+        "label": "Revisões",
+        "value": 1161,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Preferência",
+      "Categoria",
+      "Valor",
+      "Atualização",
+      "Situação"
+    ],
+    "stages": [
+      "Escolhida",
+      "Validada",
+      "Sincronizada",
+      "Ativa",
+      "Revisão"
+    ],
+    "rows": [
+      "Tema e contraste",
+      "Idioma",
+      "Densidade de tabelas",
+      "Notificações",
+      "Acessibilidade"
+    ],
+    "routeProposal": "/dashboard/preferencias",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "candidato",
+    "label": "Candidato",
+    "group": "Talentos",
+    "title": "Meu Portal de Carreira",
+    "subtitle": "Perfil, oportunidades, candidaturas e evolução da sua jornada.",
+    "resource": "candidaturas",
+    "singular": "Candidatura",
+    "primaryAction": "Buscar vagas",
+    "metrics": [
+      {
+        "label": "Candidaturas",
+        "value": 12,
+        "delta": 12.4
+      },
+      {
+        "label": "Em análise",
+        "value": 5,
+        "delta": 6.3
+      },
+      {
+        "label": "Entrevistas",
+        "value": 2,
+        "delta": -2.1
+      },
+      {
+        "label": "Propostas",
+        "value": 1,
+        "delta": 8.6
+      },
+      {
+        "label": "Vagas salvas",
+        "value": 8,
+        "delta": 3.1
+      },
+      {
+        "label": "Perfil completo",
+        "value": 92,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Vaga",
+      "Empresa",
+      "Etapa",
+      "Candidatura",
+      "Situação"
+    ],
+    "stages": [
+      "Candidatou-se",
+      "Triagem",
+      "Entrevista",
+      "Proposta",
+      "Contratação"
+    ],
+    "rows": [
+      "Analista de RH",
+      "Assistente Administrativo",
+      "Analista de Dados",
+      "Controlador de Acesso",
+      "Zelador"
+    ],
+    "routeProposal": "/candidato",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "recrutamento",
+    "label": "Recrutamento",
+    "group": "Talentos",
+    "title": "Recrutamento e Seleção",
+    "subtitle": "Vagas, candidatos, entrevistas, funil e contratações.",
+    "resource": "vagas",
+    "singular": "Vaga",
+    "primaryAction": "Publicar vaga",
+    "metrics": [
+      {
+        "label": "Vagas abertas",
+        "value": 749,
+        "delta": 12.4
+      },
+      {
+        "label": "Candidaturas",
+        "value": 193,
+        "delta": 6.3
+      },
+      {
+        "label": "Em triagem",
+        "value": 837,
+        "delta": -2.1
+      },
+      {
+        "label": "Entrevistas",
+        "value": 281,
+        "delta": 8.6
+      },
+      {
+        "label": "Contratações",
+        "value": 925,
+        "delta": 3.1
+      },
+      {
+        "label": "Tempo médio",
+        "value": 369,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Vaga",
+      "Empresa",
+      "Candidatos",
+      "Publicação",
+      "Situação"
+    ],
+    "stages": [
+      "Inscritos",
+      "Triagem",
+      "Entrevista",
+      "Proposta",
+      "Contratados"
+    ],
+    "rows": [
+      "Auxiliar de Limpeza",
+      "Controlador de Acesso",
+      "Zelador",
+      "Analista Administrativo",
+      "Auxiliar de Produção"
+    ],
+    "routeProposal": "/dashboard/recrutamento",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "rh",
+    "label": "Recursos Humanos",
+    "group": "Talentos",
+    "title": "Gestão de Pessoas",
+    "subtitle": "Quadro funcional, contratos, movimentações e atendimento de RH.",
+    "resource": "colaboradores",
+    "singular": "Colaborador",
+    "primaryAction": "Novo colaborador",
+    "metrics": [
+      {
+        "label": "Colaboradores",
+        "value": 340,
+        "delta": 12.4
+      },
+      {
+        "label": "Admissões",
+        "value": 1097,
+        "delta": 6.3
+      },
+      {
+        "label": "Afastamentos",
+        "value": 654,
+        "delta": -2.1
+      },
+      {
+        "label": "Desligamentos",
+        "value": 211,
+        "delta": 8.6
+      },
+      {
+        "label": "Documentos",
+        "value": 968,
+        "delta": 3.1
+      },
+      {
+        "label": "Pendências",
+        "value": 525,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Colaborador",
+      "Cargo",
+      "Unidade",
+      "Vínculo",
+      "Situação"
+    ],
+    "stages": [
+      "Cadastro",
+      "Documentação",
+      "Admissão",
+      "Ativo",
+      "Avaliação"
+    ],
+    "rows": [
+      "Carla Menezes",
+      "Paulo Oliveira",
+      "Mariana Costa",
+      "Rafael Almeida",
+      "Camila Rodrigues"
+    ],
+    "routeProposal": "/dashboard/rh",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "empresas",
+    "label": "Empresas",
+    "group": "Relacionamento",
+    "title": "Gestão de Empresas",
+    "subtitle": "Clientes, parceiros, fornecedores, contratos e relacionamentos.",
+    "resource": "empresas",
+    "singular": "Empresa",
+    "primaryAction": "Nova empresa",
+    "metrics": [
+      {
+        "label": "Empresas ativas",
+        "value": 62,
+        "delta": 12.4
+      },
+      {
+        "label": "Clientes",
+        "value": 265,
+        "delta": 6.3
+      },
+      {
+        "label": "Parceiros",
+        "value": 468,
+        "delta": -2.1
+      },
+      {
+        "label": "Fornecedores",
+        "value": 671,
+        "delta": 8.6
+      },
+      {
+        "label": "Vagas abertas",
+        "value": 874,
+        "delta": 3.1
+      },
+      {
+        "label": "Contatos",
+        "value": 1077,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Empresa",
+      "Segmento",
+      "Localidade",
+      "Contato",
+      "Situação"
+    ],
+    "stages": [
+      "Prospecção",
+      "Cadastro",
+      "Validação",
+      "Parceria",
+      "Relacionamento"
+    ],
+    "rows": [
+      "Empresa Alpha",
+      "Grupo Horizonte",
+      "Serviços Beta",
+      "Comercial Atlântico",
+      "Grupo Nova Era"
+    ],
+    "routeProposal": "/dashboard/empresas",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "crm",
+    "label": "CRM",
+    "group": "Relacionamento",
+    "title": "CRM Comercial",
+    "subtitle": "Leads, negociações, propostas, follow-ups e conversão.",
+    "resource": "oportunidades",
+    "singular": "Oportunidade",
+    "primaryAction": "Nova oportunidade",
+    "metrics": [
+      {
+        "label": "Leads",
+        "value": 1068,
+        "delta": 12.4
+      },
+      {
+        "label": "Oportunidades",
+        "value": 729,
+        "delta": 6.3
+      },
+      {
+        "label": "Propostas",
+        "value": 390,
+        "delta": -2.1
+      },
+      {
+        "label": "Negociações",
+        "value": 51,
+        "delta": 8.6
+      },
+      {
+        "label": "Ganhos",
+        "value": 912,
+        "delta": 3.1
+      },
+      {
+        "label": "Conversão",
+        "value": 573,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Oportunidade",
+      "Empresa",
+      "Etapa",
+      "Responsável",
+      "Previsão"
+    ],
+    "stages": [
+      "Lead",
+      "Contato",
+      "Qualificação",
+      "Proposta",
+      "Fechamento"
+    ],
+    "rows": [
+      "Contrato de terceirização",
+      "Consultoria RH",
+      "Gestão de facilities",
+      "Seleção especializada",
+      "Projeto corporativo"
+    ],
+    "routeProposal": "/dashboard/crm",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "servicos",
+    "label": "Serviços",
+    "group": "Operação",
+    "title": "Gestão de Serviços",
+    "subtitle": "Catálogo, solicitações, ordens e execuções de serviços.",
+    "resource": "servicos",
+    "singular": "Serviço",
+    "primaryAction": "Novo serviço",
+    "metrics": [
+      {
+        "label": "Serviços publicados",
+        "value": 160,
+        "delta": 12.4
+      },
+      {
+        "label": "Solicitações",
+        "value": 377,
+        "delta": 6.3
+      },
+      {
+        "label": "Ordens abertas",
+        "value": 594,
+        "delta": -2.1
+      },
+      {
+        "label": "Em execução",
+        "value": 811,
+        "delta": 8.6
+      },
+      {
+        "label": "Finalizadas",
+        "value": 1028,
+        "delta": 3.1
+      },
+      {
+        "label": "Avaliações",
+        "value": 45,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Serviço",
+      "Categoria",
+      "Publicação",
+      "Responsável",
+      "Situação"
+    ],
+    "stages": [
+      "Rascunho",
+      "Revisão",
+      "Publicado",
+      "Solicitado",
+      "Executado"
+    ],
+    "rows": [
+      "Limpeza profissional",
+      "Zeladoria",
+      "Controle de acesso",
+      "Recrutamento e seleção",
+      "Mão de obra temporária"
+    ],
+    "routeProposal": "/dashboard/servicos",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "operacoes",
+    "label": "Operações",
+    "group": "Operação",
+    "title": "Central de Operações",
+    "subtitle": "Ordens, execução, checklists, ocorrências e equipes.",
+    "resource": "ordens",
+    "singular": "Ordem",
+    "primaryAction": "Nova ordem",
+    "metrics": [
+      {
+        "label": "Ordens abertas",
+        "value": 741,
+        "delta": 12.4
+      },
+      {
+        "label": "Em execução",
+        "value": 1041,
+        "delta": 6.3
+      },
+      {
+        "label": "Checklists",
+        "value": 141,
+        "delta": -2.1
+      },
+      {
+        "label": "Ocorrências",
+        "value": 441,
+        "delta": 8.6
+      },
+      {
+        "label": "Concluídas",
+        "value": 741,
+        "delta": 3.1
+      },
+      {
+        "label": "SLA",
+        "value": 1041,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Ordem",
+      "Cliente",
+      "Responsável",
+      "Prazo",
+      "Situação"
+    ],
+    "stages": [
+      "Aberta",
+      "Planejamento",
+      "Execução",
+      "Conferência",
+      "Encerrada"
+    ],
+    "rows": [
+      "OS de Zeladoria",
+      "OS de Limpeza",
+      "OS Controle de Acesso",
+      "Visita Técnica",
+      "Checklist de Rotina"
+    ],
+    "routeProposal": "/dashboard/operacoes",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "suporte",
+    "label": "Suporte",
+    "group": "Operação",
+    "title": "Central de Suporte",
+    "subtitle": "Chamados, SLA, atribuições, histórico e resolução.",
+    "resource": "chamados",
+    "singular": "Chamado",
+    "primaryAction": "Abrir chamado",
+    "metrics": [
+      {
+        "label": "Chamados abertos",
+        "value": 716,
+        "delta": 12.4
+      },
+      {
+        "label": "Em atendimento",
+        "value": 841,
+        "delta": 6.3
+      },
+      {
+        "label": "SLA em risco",
+        "value": 966,
+        "delta": -2.1
+      },
+      {
+        "label": "Resolvidos",
+        "value": 1091,
+        "delta": 8.6
+      },
+      {
+        "label": "Escalonados",
+        "value": 16,
+        "delta": 3.1
+      },
+      {
+        "label": "Satisfação",
+        "value": 141,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Chamado",
+      "Categoria",
+      "Prioridade",
+      "Responsável",
+      "Situação"
+    ],
+    "stages": [
+      "Novo",
+      "Triagem",
+      "Atribuído",
+      "Em atendimento",
+      "Resolvido"
+    ],
+    "rows": [
+      "Acesso ao portal",
+      "Erro em candidatura",
+      "Solicitação de usuário",
+      "Integração indisponível",
+      "Atualização de perfil"
+    ],
+    "routeProposal": "/dashboard/suporte",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "estoque",
+    "label": "Estoque",
+    "group": "Operação",
+    "title": "Gestão de Estoque",
+    "subtitle": "Produtos, almoxarifados, inventário e movimentações.",
+    "resource": "produtos",
+    "singular": "Produto",
+    "primaryAction": "Novo produto",
+    "metrics": [
+      {
+        "label": "Itens ativos",
+        "value": 632,
+        "delta": 12.4
+      },
+      {
+        "label": "Estoque baixo",
+        "value": 745,
+        "delta": 6.3
+      },
+      {
+        "label": "Movimentos",
+        "value": 858,
+        "delta": -2.1
+      },
+      {
+        "label": "Entradas",
+        "value": 971,
+        "delta": 8.6
+      },
+      {
+        "label": "Saídas",
+        "value": 1084,
+        "delta": 3.1
+      },
+      {
+        "label": "Inventários",
+        "value": 1197,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Produto",
+      "SKU",
+      "Local",
+      "Saldo",
+      "Situação"
+    ],
+    "stages": [
+      "Cadastro",
+      "Recebimento",
+      "Armazenado",
+      "Movimentado",
+      "Inventariado"
+    ],
+    "rows": [
+      "Uniformes",
+      "Luvas de proteção",
+      "Material de limpeza",
+      "Crachás",
+      "Equipamentos"
+    ],
+    "routeProposal": "/dashboard/estoque",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "ava",
+    "label": "AVA e Aprendizagem",
+    "group": "Pessoas",
+    "title": "Aprendizagem e Desenvolvimento",
+    "subtitle": "Cursos, trilhas, matrículas, provas e certificados.",
+    "resource": "cursos",
+    "singular": "Curso",
+    "primaryAction": "Novo curso",
+    "metrics": [
+      {
+        "label": "Cursos ativos",
+        "value": 998,
+        "delta": 12.4
+      },
+      {
+        "label": "Alunos",
+        "value": 649,
+        "delta": 6.3
+      },
+      {
+        "label": "Em andamento",
+        "value": 300,
+        "delta": -2.1
+      },
+      {
+        "label": "Certificados",
+        "value": 1151,
+        "delta": 8.6
+      },
+      {
+        "label": "Avaliações",
+        "value": 802,
+        "delta": 3.1
+      },
+      {
+        "label": "Conclusões",
+        "value": 453,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Curso",
+      "Categoria",
+      "Inscritos",
+      "Progresso",
+      "Situação"
+    ],
+    "stages": [
+      "Planejado",
+      "Inscrições",
+      "Aulas",
+      "Avaliação",
+      "Certificado"
+    ],
+    "rows": [
+      "Integração de colaboradores",
+      "Segurança no trabalho",
+      "Excel para RH",
+      "Atendimento profissional",
+      "LGPD e privacidade"
+    ],
+    "routeProposal": "/dashboard/ava",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "financeiro",
+    "label": "Financeiro",
+    "group": "Finanças",
+    "title": "Gestão Financeira",
+    "subtitle": "Receitas, despesas, fluxo de caixa e conciliação.",
+    "resource": "lancamentos",
+    "singular": "Lançamento",
+    "primaryAction": "Novo lançamento",
+    "metrics": [
+      {
+        "label": "Receitas previstas",
+        "value": 192,
+        "delta": 12.4
+      },
+      {
+        "label": "Despesas",
+        "value": 585,
+        "delta": 6.3
+      },
+      {
+        "label": "A receber",
+        "value": 978,
+        "delta": -2.1
+      },
+      {
+        "label": "A pagar",
+        "value": 171,
+        "delta": 8.6
+      },
+      {
+        "label": "Saldo projetado",
+        "value": 564,
+        "delta": 3.1
+      },
+      {
+        "label": "Atrasos",
+        "value": 957,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Lançamento",
+      "Centro de custo",
+      "Vencimento",
+      "Valor",
+      "Status"
+    ],
+    "stages": [
+      "Previsto",
+      "Aprovação",
+      "Programado",
+      "Liquidado",
+      "Conciliação"
+    ],
+    "rows": [
+      "Fatura Serviços Alpha",
+      "Pagamento Fornecedor",
+      "Mensalidade Cliente",
+      "Reembolso",
+      "Serviços Adicionais"
+    ],
+    "routeProposal": "/dashboard/financeiro",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "faturamento",
+    "label": "Faturamento",
+    "group": "Finanças",
+    "title": "Faturamento e Cobrança",
+    "subtitle": "Faturas, cobranças, recebimentos e contratos faturáveis.",
+    "resource": "faturas",
+    "singular": "Fatura",
+    "primaryAction": "Nova fatura",
+    "metrics": [
+      {
+        "label": "Faturas emitidas",
+        "value": 1144,
+        "delta": 12.4
+      },
+      {
+        "label": "Em aberto",
+        "value": 473,
+        "delta": 6.3
+      },
+      {
+        "label": "Recebidas",
+        "value": 1002,
+        "delta": -2.1
+      },
+      {
+        "label": "Vencidas",
+        "value": 331,
+        "delta": 8.6
+      },
+      {
+        "label": "Receita prevista",
+        "value": 860,
+        "delta": 3.1
+      },
+      {
+        "label": "Ciclo médio",
+        "value": 189,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Fatura",
+      "Cliente",
+      "Emissão",
+      "Vencimento",
+      "Situação"
+    ],
+    "stages": [
+      "Rascunho",
+      "Emissão",
+      "Enviada",
+      "Recebida",
+      "Conciliada"
+    ],
+    "rows": [
+      "FAT-2026-0101",
+      "FAT-2026-0102",
+      "FAT-2026-0103",
+      "FAT-2026-0104",
+      "FAT-2026-0105"
+    ],
+    "routeProposal": "/dashboard/faturamento",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "contabilidade",
+    "label": "Contabilidade",
+    "group": "Finanças",
+    "title": "Contabilidade e Balancetes",
+    "subtitle": "Lançamentos, contas, competência e fechamento contábil.",
+    "resource": "lancamentos",
+    "singular": "Lançamento",
+    "primaryAction": "Novo lançamento",
+    "metrics": [
+      {
+        "label": "Lançamentos",
+        "value": 1043,
+        "delta": 12.4
+      },
+      {
+        "label": "Conciliações",
+        "value": 529,
+        "delta": 6.3
+      },
+      {
+        "label": "Contas",
+        "value": 15,
+        "delta": -2.1
+      },
+      {
+        "label": "Centros",
+        "value": 701,
+        "delta": 8.6
+      },
+      {
+        "label": "Fechamentos",
+        "value": 187,
+        "delta": 3.1
+      },
+      {
+        "label": "Pendências",
+        "value": 873,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Lançamento",
+      "Conta",
+      "Competência",
+      "Valor",
+      "Situação"
+    ],
+    "stages": [
+      "Importação",
+      "Classificação",
+      "Conciliação",
+      "Revisão",
+      "Fechamento"
+    ],
+    "rows": [
+      "Despesa Operacional",
+      "Receita de Serviços",
+      "Provisão",
+      "Depreciação",
+      "Ajuste Contábil"
+    ],
+    "routeProposal": "/dashboard/contabilidade",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "fiscal",
+    "label": "Fiscal",
+    "group": "Finanças",
+    "title": "Gestão Fiscal",
+    "subtitle": "Documentos fiscais, tributos, obrigações e validação.",
+    "resource": "documentos",
+    "singular": "Documento Fiscal",
+    "primaryAction": "Novo documento",
+    "metrics": [
+      {
+        "label": "Documentos",
+        "value": 796,
+        "delta": 12.4
+      },
+      {
+        "label": "Notas válidas",
+        "value": 761,
+        "delta": 6.3
+      },
+      {
+        "label": "Pendências",
+        "value": 726,
+        "delta": -2.1
+      },
+      {
+        "label": "Impostos",
+        "value": 691,
+        "delta": 8.6
+      },
+      {
+        "label": "Eventos",
+        "value": 656,
+        "delta": 3.1
+      },
+      {
+        "label": "Conferências",
+        "value": 621,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Documento",
+      "Tipo",
+      "Competência",
+      "Valor",
+      "Situação"
+    ],
+    "stages": [
+      "Recebido",
+      "Validado",
+      "Calculado",
+      "Declarado",
+      "Arquivado"
+    ],
+    "rows": [
+      "Nota Serviços 001",
+      "Apuração ISS",
+      "Guia Tributária",
+      "Documento Fornecedor",
+      "Nota Serviços 005"
+    ],
+    "routeProposal": "/dashboard/fiscal",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "contratos",
+    "label": "Contratos",
+    "group": "Finanças",
+    "title": "Gestão de Contratos",
+    "subtitle": "Vigência, renovações, valores, aditivos e assinaturas.",
+    "resource": "contratos",
+    "singular": "Contrato",
+    "primaryAction": "Novo contrato",
+    "metrics": [
+      {
+        "label": "Contratos ativos",
+        "value": 937,
+        "delta": 12.4
+      },
+      {
+        "label": "A vencer",
+        "value": 65,
+        "delta": 6.3
+      },
+      {
+        "label": "Renovações",
+        "value": 393,
+        "delta": -2.1
+      },
+      {
+        "label": "Aditivos",
+        "value": 721,
+        "delta": 8.6
+      },
+      {
+        "label": "Assinaturas",
+        "value": 1049,
+        "delta": 3.1
+      },
+      {
+        "label": "Valores",
+        "value": 177,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Contrato",
+      "Parte",
+      "Vigência",
+      "Valor",
+      "Situação"
+    ],
+    "stages": [
+      "Rascunho",
+      "Revisão",
+      "Assinatura",
+      "Ativo",
+      "Renovação"
+    ],
+    "rows": [
+      "Terceirização de Limpeza",
+      "Serviços de Portaria",
+      "Recrutamento RH",
+      "Contrato de Facilities",
+      "Aditivo de Atendimento"
+    ],
+    "routeProposal": "/dashboard/contratos",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "pos",
+    "label": "Ponto de Venda",
+    "group": "Finanças",
+    "title": "Vendas e Caixa",
+    "subtitle": "Transações, caixas, terminais, fechamento e cancelamentos.",
+    "resource": "vendas",
+    "singular": "Venda",
+    "primaryAction": "Nova venda",
+    "metrics": [
+      {
+        "label": "Vendas",
+        "value": 1180,
+        "delta": 12.4
+      },
+      {
+        "label": "Transações",
+        "value": 857,
+        "delta": 6.3
+      },
+      {
+        "label": "Caixas abertos",
+        "value": 534,
+        "delta": -2.1
+      },
+      {
+        "label": "Ticket médio",
+        "value": 211,
+        "delta": 8.6
+      },
+      {
+        "label": "Cancelamentos",
+        "value": 1088,
+        "delta": 3.1
+      },
+      {
+        "label": "Fechamentos",
+        "value": 765,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Venda",
+      "Terminal",
+      "Horário",
+      "Total",
+      "Situação"
+    ],
+    "stages": [
+      "Aberta",
+      "Pagamento",
+      "Autorizada",
+      "Conciliada",
+      "Fechada"
+    ],
+    "rows": [
+      "Venda POS-0142",
+      "Venda POS-0143",
+      "Venda POS-0144",
+      "Venda POS-0145",
+      "Venda POS-0146"
+    ],
+    "routeProposal": "/dashboard/pos",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "relatorios",
+    "label": "Relatórios e BI",
+    "group": "Inteligência",
+    "title": "Inteligência de Negócio",
+    "subtitle": "Indicadores por célula, relatórios, exportação e agendamentos.",
+    "resource": "relatorios",
+    "singular": "Relatório",
+    "primaryAction": "Novo relatório",
+    "metrics": [
+      {
+        "label": "Relatórios",
+        "value": 458,
+        "delta": 12.4
+      },
+      {
+        "label": "Painéis",
+        "value": 889,
+        "delta": 6.3
+      },
+      {
+        "label": "Exportações",
+        "value": 120,
+        "delta": -2.1
+      },
+      {
+        "label": "Agendados",
+        "value": 551,
+        "delta": 8.6
+      },
+      {
+        "label": "Fontes",
+        "value": 982,
+        "delta": 3.1
+      },
+      {
+        "label": "Alertas",
+        "value": 213,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Relatório",
+      "Fonte",
+      "Periodicidade",
+      "Atualização",
+      "Situação"
+    ],
+    "stages": [
+      "Definição",
+      "Validação",
+      "Geração",
+      "Revisão",
+      "Entrega"
+    ],
+    "rows": [
+      "Funil de Vagas",
+      "Financeiro Mensal",
+      "Desempenho de Serviços",
+      "Quadro de Pessoas",
+      "Conversão de Candidatos"
+    ],
+    "routeProposal": "/dashboard/relatorios",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "ia",
+    "label": "Inteligência Artificial",
+    "group": "Inteligência",
+    "title": "Assistentes e Automações",
+    "subtitle": "Assistentes, filas de atendimento, automações e governança de IA.",
+    "resource": "agentes",
+    "singular": "Agente",
+    "primaryAction": "Novo agente",
+    "metrics": [
+      {
+        "label": "Agentes ativos",
+        "value": 228,
+        "delta": 12.4
+      },
+      {
+        "label": "Conversas",
+        "value": 969,
+        "delta": 6.3
+      },
+      {
+        "label": "Automações",
+        "value": 510,
+        "delta": -2.1
+      },
+      {
+        "label": "Intervenções",
+        "value": 51,
+        "delta": 8.6
+      },
+      {
+        "label": "Revisões",
+        "value": 792,
+        "delta": 3.1
+      },
+      {
+        "label": "Alertas",
+        "value": 333,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Agente",
+      "Canal",
+      "Objetivo",
+      "Última execução",
+      "Situação"
+    ],
+    "stages": [
+      "Rascunho",
+      "Teste",
+      "Aprovado",
+      "Ativo",
+      "Auditoria"
+    ],
+    "rows": [
+      "Assistente de Vagas",
+      "Atendimento de Serviços",
+      "Suporte de Acesso",
+      "Triagem de Perguntas",
+      "Automação de Feedback"
+    ],
+    "routeProposal": "/dashboard/ia",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  },
+  {
+    "id": "media",
+    "label": "Mídia e Documentos",
+    "group": "Conteúdo",
+    "title": "Biblioteca de Mídia",
+    "subtitle": "Assets, associações, versões e arquivos privados.",
+    "resource": "ativos",
+    "singular": "Ativo de Mídia",
+    "primaryAction": "Enviar arquivo",
+    "metrics": [
+      {
+        "label": "Arquivos",
+        "value": 1198,
+        "delta": 12.4
+      },
+      {
+        "label": "Imagens públicas",
+        "value": 1049,
+        "delta": 6.3
+      },
+      {
+        "label": "Documentos privados",
+        "value": 900,
+        "delta": -2.1
+      },
+      {
+        "label": "Em uso",
+        "value": 751,
+        "delta": 8.6
+      },
+      {
+        "label": "Pendentes",
+        "value": 602,
+        "delta": 3.1
+      },
+      {
+        "label": "Versões",
+        "value": 453,
+        "delta": 1.7
+      }
+    ],
+    "headers": [
+      "Arquivo",
+      "Tipo",
+      "Entidade",
+      "Uso",
+      "Visibilidade"
+    ],
+    "stages": [
+      "Upload",
+      "Validação",
+      "Revisão",
+      "Publicado",
+      "Arquivado"
+    ],
+    "rows": [
+      "Banner Institucional",
+      "Imagem de Serviço",
+      "Foto de Perfil",
+      "Currículo PDF",
+      "Documento de Empresa"
+    ],
+    "routeProposal": "/dashboard/media",
+    "status": "REFERÊNCIA_VISUAL_NAO_IMPLEMENTADO"
+  }
+]

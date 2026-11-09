@@ -1,9 +1,9 @@
-/**
- * AdminMasterSidebar — Sidebar da célula admin-master (proprietário/admin do tenant).
+﻿/**
+ * AdminMasterSidebar â€” Sidebar da cÃ©lula admin-master (proprietÃ¡rio/admin do tenant).
  *
- * Primeiro item é sempre o dashboard da própria gestão.
- * Utiliza <Link> do react-router-dom para navegação sem recarregamento.
- * Largura reduzida para não ocupar espaço excessivo do conteúdo.
+ * Primeiro item Ã© sempre o dashboard da prÃ³pria gestÃ£o.
+ * Utiliza <Link> do react-router-dom para navegaÃ§Ã£o sem recarregamento.
+ * Largura reduzida para nÃ£o ocupar espaÃ§o excessivo do conteÃºdo.
  */
 
 import { useState } from 'react';
@@ -67,13 +67,13 @@ export function AdminMasterSidebar({
       permission: 'recruitment.read',
     },
     {
-      label: 'Gestão de Candidatos',
-      path: '/dashboard/recrutamento/candidatos',
+      label: 'GestÃ£o de Candidatos',
+      path: '/dashboard/admin-master/candidatos',
       icon: <UserRoundSearch className="h-4 w-4" />,
       permission: 'candidates.read',
     },
     {
-      label: 'Gestão de Usuários',
+      label: 'GestÃ£o de UsuÃ¡rios',
       path: '/dashboard/usuarios',
       icon: <Users className="h-4 w-4" />,
       permission: 'people.read',
@@ -109,7 +109,7 @@ export function AdminMasterSidebar({
       permission: 'applications.read',
     },
     {
-      label: 'Ordens de Serviço',
+      label: 'Ordens de ServiÃ§o',
       path: '/dashboard/servicos',
       icon: <Wrench className="h-4 w-4" />,
       permission: 'service_orders.read',
@@ -127,7 +127,7 @@ export function AdminMasterSidebar({
       permission: 'audit.read',
     },
     {
-      label: 'Segurança',
+      label: 'SeguranÃ§a',
       path: '/dashboard/seguranca',
       icon: <Lock className="h-4 w-4" />,
       permission: 'security_events.read',
@@ -178,7 +178,7 @@ export function AdminMasterSidebar({
 
       <nav
         className="flex-1 space-y-0.5 overflow-y-auto p-1"
-        aria-label="Navegação administrativa"
+        aria-label="NavegaÃ§Ã£o administrativa"
       >
         {visibleItems.map((item) => {
           const active = isActive(item.path);
@@ -234,3 +234,4 @@ export function AdminMasterSidebar({
     </aside>
   );
 }
+

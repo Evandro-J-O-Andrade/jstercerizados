@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/fallback/EmptyState';
+import { InlineLoader } from '@/components/feedback/InlineLoader';
+import { RouteLoadingFallback } from '@/components/ui/RouteLoadingFallback';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   jobsRepository,
@@ -21,6 +23,7 @@ import { CONTRACT_TYPE_LABELS } from '@/modules/recrutamento/constants/contractT
 import { WORK_MODE_LABELS } from '@/modules/recrutamento/constants/workMode';
 import { SENIORITY_LABELS } from '@/modules/recrutamento/constants/seniority';
 import type { ApplicationListItem, Job } from '@/modules/recrutamento/types';
+import { isUuid } from '@/utils/uuid';
 
 function formatDate(value: string | null | undefined) {
   if (!value) return '—';
@@ -63,11 +66,13 @@ export default function RecrutamentoVagaDetalhePage() {
   ]);
 
   const load = useCallback(async () => {
-    if (!id || !currentTenantId) {
+    if (!id || !isUuid(id) || !currentTenantId) {
       setError(
         !id
           ? 'Identificador da vaga não informado.'
-          : 'Tenant ativo não identificado.',
+          : !isUuid(id)
+            ? 'Identificador da vaga inválido.'
+            : 'Tenant ativo não identificado.',
       );
       setLoading(false);
       return;
@@ -89,7 +94,7 @@ export default function RecrutamentoVagaDetalhePage() {
   }, [id, currentTenantId]);
 
   const loadApplications = useCallback(async () => {
-    if (!id || !currentTenantId || !canReadApplications) return;
+    if (!id || !isUuid(id) || !currentTenantId || !canReadApplications) return;
     setAppsLoading(true);
     setAppsError(null);
     try {
@@ -140,9 +145,7 @@ export default function RecrutamentoVagaDetalhePage() {
           { label: 'Detalhes' },
         ]}
       >
-        <Card className="text-muted-foreground p-6 text-sm">
-          Carregando vaga…
-        </Card>
+        <RouteLoadingFallback />
       </ModuleWorkspace>
     );
   }
@@ -301,9 +304,9 @@ export default function RecrutamentoVagaDetalhePage() {
                 Você não possui permissão para listar candidaturas desta vaga.
               </p>
             ) : appsLoading ? (
-              <p className="text-muted-foreground mt-3 text-sm">
-                Carregando candidaturas…
-              </p>
+              <div className="mt-3">
+                <InlineLoader message="Carregando candidaturas" />
+              </div>
             ) : appsError ? (
               <p className="text-destructive mt-3 text-sm" role="alert">
                 {appsError}

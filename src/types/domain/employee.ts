@@ -21,12 +21,21 @@ export interface Employee {
 }
 
 export interface EmployeeCreateInput {
+  /** Identidade compartilhada: employees.id referencia people.id. */
+  id: string;
   tenant_id: string;
   employee_code: string;
   hire_date: string;
   termination_date?: string | null;
   salary?: number | null;
   status?: string;
+}
+
+export interface EmployeePersonOption {
+  id: string;
+  full_name: string;
+  email: string;
+  status: string;
 }
 
 export interface EmployeeUpdateInput {

@@ -13,7 +13,7 @@ vi.mock('@/platform/permissions', () => ({
   PermissionGuard: ({ children }: { children: ReactNode }) => children,
 }));
 
-vi.mock('@/core/shell/AdminModuleLayout', () => ({
+vi.mock('@/shell/AdminModuleLayout', () => ({
   AdminModuleLayout: ({ children }: { children: ReactNode }) => (
     <div>{children}</div>
   ),

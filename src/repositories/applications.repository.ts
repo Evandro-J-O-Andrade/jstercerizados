@@ -1,4 +1,5 @@
 import { SupabaseRepository } from './supabase.repository';
+import { isUuid } from '@/utils/uuid';
 import type {
   Application,
   ApplicationCreateInput,
@@ -73,6 +74,7 @@ export class ApplicationsRepository extends SupabaseRepository {
 
   async findById(id: string, tenantId: string): Promise<Application | null> {
     if (!this.supabase) return null;
+    if (!isUuid(id) || !isUuid(tenantId)) return null;
     const { data, error } = await this.supabase
       .from('applications')
       .select(

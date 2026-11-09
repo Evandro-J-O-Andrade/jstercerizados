@@ -71,6 +71,10 @@ export function hasModulePermission(
   );
 }
 
+function isConcreteNavRoute(route: string): boolean {
+  return Boolean(route) && !/\/:[^/]+/.test(route) && !route.endsWith('/*') && !route.includes('*');
+}
+
 export function getAvailableFeatures(
   permissions: Permission[],
   module: ModuleDefinition,
@@ -81,7 +85,8 @@ export function getAvailableFeatures(
   return module.features.filter(
     (feature) =>
       hasModulePermission(permissions, feature.requiredPermissions) &&
-      feature.route !== module.route,
+      feature.route !== module.route &&
+      isConcreteNavRoute(feature.route),
   );
 }
 
@@ -92,8 +97,10 @@ export function getAvailableModuleFeatures(
 ): ModuleFeature[] {
   const scopes = Array.isArray(scope) ? scope : [scope];
   if (!module.features || !scopes.includes(module.scope)) return [];
-  return module.features.filter((feature) =>
-    hasModulePermission(permissions, feature.requiredPermissions),
+  return module.features.filter(
+    (feature) =>
+      hasModulePermission(permissions, feature.requiredPermissions) &&
+      isConcreteNavRoute(feature.route),
   );
 }
 
