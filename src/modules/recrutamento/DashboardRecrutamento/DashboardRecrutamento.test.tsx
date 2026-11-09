@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+﻿import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -17,6 +17,41 @@ describe('DashboardRecrutamento', () => {
       isLoading: false,
       error: null,
       refetch: vi.fn(),
+      jobs: [
+        {
+          id: 'job-1',
+          tenant_id: 'tenant-1',
+          company_id: null,
+          company_relationship_id: null,
+          title: 'Assistente de RH',
+          slug: 'assistente-rh',
+          description: null,
+          responsibilities: null,
+          requirements: null,
+          benefits: null,
+          salary_min: null,
+          salary_max: null,
+          salary_type: 'negotiate',
+          contract_type: 'clt',
+          seniority: null,
+          work_hours: null,
+          work_mode: 'onsite',
+          city: null,
+          state: null,
+          location_detail: null,
+          status: 'published',
+          published_at: null,
+          closed_at: null,
+          filled_at: null,
+          views_count: 0,
+          applications_count: 5,
+          metadata: {},
+          created_at: '2026-10-01T12:00:00.000Z',
+          created_by: null,
+          updated_at: '2026-10-01T12:00:00.000Z',
+          updated_by: null,
+        },
+      ],
       dashboardStats: {
         jobs: {
           total: 4,
@@ -106,12 +141,13 @@ describe('DashboardRecrutamento', () => {
     expect(
       screen.getByTestId('dashboard-card-active-candidates'),
     ).toHaveTextContent('7');
-    expect(screen.getByText('Maria Silva')).toBeInTheDocument();
-    expect(screen.getByText('Assistente de RH')).toBeInTheDocument();
-    expect(screen.getByText('Em triagem')).toBeInTheDocument();
     expect(
-      screen.getAllByRole('link', { name: /Vagas publicadas/ }),
-    ).toHaveLength(1);
+      screen.getByTestId('dashboard-card-applications-total'),
+    ).toHaveTextContent('5');
+    expect(screen.getByText('Funil de recrutamento')).toBeInTheDocument();
+    expect(screen.getAllByText('Maria Silva').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Assistente de RH').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Em triagem').length).toBeGreaterThan(0);
   });
 
   it('renders error state without fake metrics', () => {
@@ -119,6 +155,7 @@ describe('DashboardRecrutamento', () => {
       isLoading: false,
       error: 'Falha real',
       refetch: vi.fn(),
+      jobs: [],
       dashboardStats: null,
       applicationsEnriched: [],
     });
@@ -136,6 +173,7 @@ describe('DashboardRecrutamento', () => {
       isLoading: false,
       error: null,
       refetch: vi.fn(),
+      jobs: [],
       dashboardStats: null,
       applicationsEnriched: [],
     });

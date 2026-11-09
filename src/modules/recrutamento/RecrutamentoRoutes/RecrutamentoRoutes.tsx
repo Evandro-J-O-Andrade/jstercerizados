@@ -1,22 +1,51 @@
 import type { ModuleRoute } from '@/platform/router/types';
 import type { ComponentType } from 'react';
 import { lazy } from 'react';
+import { Navigate } from 'react-router-dom';
 import ProcessosSeletivosPage from '@/pages/dashboard/ProcessosSeletivos';
 import EtapasPage from '@/pages/dashboard/Etapas';
 import { RECRUTAMENTO_PERMISSIONS } from '../permissions';
 import { RecrutamentoProvider } from '../RecrutamentoContext';
 
-const RecrutamentoDashboard = lazy(
-  () => import('@/modules/recrutamento/DashboardRecrutamento').then(m => ({ default: m.DashboardRecrutamento })),
+const RecrutamentoDashboard = lazy(() =>
+  import('@/modules/recrutamento/DashboardRecrutamento').then((m) => ({
+    default: m.DashboardRecrutamento,
+  })),
 );
-const RecrutamentoVagas = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoVagas'));
-const RecrutamentoCandidatos = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoCandidatos'));
-const RecrutamentoCandidatoDetalhe = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoCandidatoDetalhe'));
-const RecrutamentoCandidaturas = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoCandidaturas'));
-const RecrutamentoMatches = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoMatches'));
-const RecrutamentoRelatorios = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoRelatorios'));
-const RecrutamentoTalentPool = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoTalentPool'));
-const RecrutamentoDemandas = lazy(() => import('@/modules/recrutamento/pages/RecrutamentoDemandas'));
+const RecrutamentoVagas = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoVagas'),
+);
+const RecrutamentoVagaNova = lazy(
+  () => import('@/modules/recrutamento/pages/vagas/RecrutamentoVagaNovaPage'),
+);
+const RecrutamentoVagaDetalhe = lazy(
+  () =>
+    import('@/modules/recrutamento/pages/vagas/RecrutamentoVagaDetalhePage'),
+);
+const RecrutamentoVagaEditar = lazy(
+  () => import('@/modules/recrutamento/pages/vagas/RecrutamentoVagaEditarPage'),
+);
+const RecrutamentoCandidatos = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoCandidatos'),
+);
+const RecrutamentoCandidatoDetalhe = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoCandidatoDetalhe'),
+);
+const RecrutamentoCandidaturas = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoCandidaturas'),
+);
+const RecrutamentoMatches = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoMatches'),
+);
+const RecrutamentoRelatorios = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoRelatorios'),
+);
+const RecrutamentoTalentPool = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoTalentPool'),
+);
+const RecrutamentoDemandas = lazy(
+  () => import('@/modules/recrutamento/pages/RecrutamentoDemandas'),
+);
 
 /**
  * Envolve cada elemento da célula no `RecrutamentoProvider`.
@@ -41,6 +70,10 @@ function withProvider(Component: ComponentType): ComponentType {
   return Wrapped;
 }
 
+function legacyNovaVagaRedirect() {
+  return <Navigate to="/dashboard/recrutamento/vagas/novo" replace />;
+}
+
 export const RecrutamentoRoutes: ModuleRoute[] = [
   {
     path: '',
@@ -52,6 +85,30 @@ export const RecrutamentoRoutes: ModuleRoute[] = [
     path: 'vagas',
     label: 'Vagas',
     element: withProvider(RecrutamentoVagas),
+    requiredPermissions: [RECRUTAMENTO_PERMISSIONS.vagas],
+  },
+  {
+    path: 'vagas/novo',
+    label: 'Nova vaga',
+    element: withProvider(RecrutamentoVagaNova),
+    requiredPermissions: [RECRUTAMENTO_PERMISSIONS.vagasCriar],
+  },
+  {
+    path: 'vagas/nova',
+    label: 'Nova vaga (compatibilidade)',
+    element: legacyNovaVagaRedirect,
+    requiredPermissions: [RECRUTAMENTO_PERMISSIONS.vagasCriar],
+  },
+  {
+    path: 'vagas/:id/editar',
+    label: 'Editar vaga',
+    element: withProvider(RecrutamentoVagaEditar),
+    requiredPermissions: [RECRUTAMENTO_PERMISSIONS.vagasEditar],
+  },
+  {
+    path: 'vagas/:id',
+    label: 'Detalhes da vaga',
+    element: withProvider(RecrutamentoVagaDetalhe),
     requiredPermissions: [RECRUTAMENTO_PERMISSIONS.vagas],
   },
   {
