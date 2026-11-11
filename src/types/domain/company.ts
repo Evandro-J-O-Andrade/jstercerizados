@@ -46,13 +46,31 @@ export interface CompanySocials {
 export interface CompanyCreateInput {
   name: string;
   trading_name?: string | null;
+  legal_name?: string | null;
   cnpj?: string | null;
   status?: CompanyStatus;
+  industry?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  website?: string | null;
+  size?: string | null;
+  description?: string | null;
+  short_description?: string | null;
+  address?: Record<string, unknown> | null;
 }
 
 export interface CompanyUpdateInput {
   name?: string;
   trading_name?: string | null;
+  legal_name?: string | null;
   cnpj?: string | null;
   status?: CompanyStatus;
+  industry?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  website?: string | null;
+  size?: string | null;
+  description?: string | null;
+  short_description?: string | null;
+  address?: Record<string, unknown> | null;
 }

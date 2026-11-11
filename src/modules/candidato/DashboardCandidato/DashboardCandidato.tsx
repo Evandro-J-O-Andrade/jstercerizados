@@ -47,8 +47,8 @@ export default function DashboardCandidato() {
                 Central de Carreira
               </h1>
               <p className="text-muted-foreground text-sm">
-                Olá, {firstName}. Acompanhe sua evolução e oportunidades em um só
-                lugar.
+                Olá, {firstName}. Acompanhe sua evolução e oportunidades em um
+                só lugar.
               </p>
             </div>
           </div>

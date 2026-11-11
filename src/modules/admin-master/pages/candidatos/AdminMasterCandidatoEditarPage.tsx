@@ -27,7 +27,8 @@ type CandidateStatus = 'active' | 'inactive' | 'archived' | 'blacklisted';
 export default function AdminMasterCandidatoEditarPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const idParam = classifyUuidRouteParam(id);
+  const idParam = useMemo(() => classifyUuidRouteParam(id), [id]);
+  const validId = idParam.kind === 'valid' ? idParam.value : null;
   const service = useMemo<AdminCandidateService>(
     () => createAdminCandidateService(),
     [],
@@ -44,13 +45,13 @@ export default function AdminMasterCandidatoEditarPage() {
   });
 
   const load = useCallback(async () => {
-    if (idParam.kind !== 'valid') {
+    if (!validId) {
       setLoading(false);
       return;
     }
     setLoading(true);
     setError(null);
-    const result = await service.getCandidate(idParam.value);
+    const result = await service.getCandidate(validId);
     if (result.error) {
       setError(result.error);
       setItem(null);
@@ -65,17 +66,17 @@ export default function AdminMasterCandidatoEditarPage() {
       }
     }
     setLoading(false);
-  }, [idParam, service]);
+  }, [validId, service]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
   const onSave = async () => {
-    if (idParam.kind !== 'valid') return;
+    if (!validId) return;
     setSaving(true);
     setSaveError(null);
-    const result = await service.updateCandidate(idParam.value, {
+    const result = await service.updateCandidate(validId, {
       headline: form.headline.trim() || null,
       status: form.status,
       source: form.source.trim() || null,
@@ -85,20 +86,20 @@ export default function AdminMasterCandidatoEditarPage() {
       setSaveError(result.error);
       return;
     }
-    navigate(`/dashboard/admin-master/candidatos/${idParam.value}`);
+    navigate(`/dashboard/admin-master/candidatos/${validId}`);
   };
 
-  if (idParam.kind === 'missing' || idParam.kind === 'invalid') {
+  if (!validId) {
     return (
       <ModuleWorkspace
-        title="Candidato inválido"
+        title="Candidato não localizado"
         icon={UserRoundSearch}
         homeRoute="/dashboard/global"
       >
         <div>
           <EmptyState
-            title="Identificador inválido"
-            description="O identificador do candidato não é válido."
+            title="Não foi possível localizar este cadastro"
+            description="O link do candidato pode estar incompleto ou incorreto."
           />
           <div className="flex justify-center">
             <Button asChild variant="outline">
@@ -123,7 +124,7 @@ export default function AdminMasterCandidatoEditarPage() {
       ]}
       actions={
         <Button asChild variant="outline">
-          <Link to={`/dashboard/admin-master/candidatos/${idParam.value}`}>
+          <Link to={validId ? `/dashboard/admin-master/candidatos/${validId}` : '/dashboard/admin-master/candidatos'}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Cancelar
           </Link>

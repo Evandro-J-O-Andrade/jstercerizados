@@ -1,4 +1,10 @@
-import { type ReactNode } from 'react';
+/**
+ * ModuleLayout é apenas fronteira de conteúdo da célula autenticada.
+ * Sidebar, header, main e footer pertencem EXCLUSIVAMENTE ao AdminShell.
+ * Mantém a assinatura existente para não quebrar wrappers fiscal/financeiro/etc.
+ * Não contém links globais, importações legacy ou um segundo shell.
+ */
+import type { ReactNode } from 'react';
 import { cn } from '@/utils';
 
 interface ModuleLayoutProps {
@@ -7,16 +13,19 @@ interface ModuleLayoutProps {
   icon?: ReactNode;
   homeRoute?: string;
   moduleId?: string;
-  sidebarItems?: ReactNode;
+  sidebarItems?: ReactNode; // legado de API, intencionalmente não renderizado
   className?: string;
   children?: ReactNode;
 }
 
-/**
- * Wrapper neutro para compatibilidade com páginas que ainda usam ModuleLayout.
- * O shell único (AdminShell) já fornece sidebar/header/footer; páginas dentro do body
- * NÃO devem montar sidebar/header/main duplicados. A navegação contextual é do shell.
- */
-export function ModuleLayout({ className, children }: ModuleLayoutProps) {
-  return <div className={cn('min-h-0 min-w-0 flex-1', className)}>{children}</div>;
+export function ModuleLayout({ moduleId, className, children }: ModuleLayoutProps) {
+  return (
+    <section
+      data-testid="module-layout-content"
+      data-module-owner={moduleId}
+      className={cn('flex min-w-0 flex-1 flex-col', className)}
+    >
+      {children}
+    </section>
+  );
 }

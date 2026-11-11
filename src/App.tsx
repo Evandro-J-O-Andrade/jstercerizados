@@ -1,4 +1,4 @@
-﻿import { Suspense, lazy, useCallback } from 'react';
+import { Suspense, lazy, useCallback } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useIntro } from '@/contexts/IntroContext';
@@ -16,7 +16,7 @@ import { ModuleProvider } from '@/contexts/ModuleContext';
 import { FloatingHelpWidgets } from '@/components/layout/FloatingHelpWidgets';
 import NotFound from '@/pages/NotFound';
 import DashboardHome from '@/pages/dashboard/DashboardHome';
-import { EmpresasPage } from '@/pages/dashboard/EmpresasPage';
+import ModuleHubPage from '@/components/navigation/ModuleHubPage';
 import { ServicosPage } from '@/pages/dashboard/ServicosPage';
 import { SuportePage } from '@/pages/dashboard/SuportePage';
 import TenantsPage from '@/pages/dashboard/TenantsPage';
@@ -192,6 +192,7 @@ function RoutesAndLayout() {
             }
           >
             <Route path="" element={<DashboardHome />} />
+            <Route path="modulos" element={<ModuleHubPage />} />
             <Route
               path="analitico"
               element={
@@ -488,17 +489,6 @@ function RoutesAndLayout() {
                     skipLayout
                   />
                 </FinanceiroLayout>
-              }
-            />
-            <Route
-              path="empresas"
-              element={
-                <PermissionGuard permission={MODULE_PERMISSION_MAP.empresas}>
-                  <EmpresasPage
-                    moduleTitle="Empresas"
-                    moduleDescription="Cadastro e gestÃ£o de empresas clientes"
-                  />
-                </PermissionGuard>
               }
             />
             <Route path="candidato" element={<Navigate to="/dashboard/recrutamento/candidatos" replace />} />

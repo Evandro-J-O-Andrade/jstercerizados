@@ -1,9 +1,11 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { dispatcherMaster, type DispatchContext } from '@/core/dispatcher';
 import { generateCorrelationId } from '@/core/execution/ExecutionContract';
+import GlobalDashboardPage from '@/pages/dashboard/GlobalDashboardPage';
 
 export default function DashboardHome() {
+  const location = useLocation();
   const {
     isAdminMaster,
     isCandidate,
@@ -46,6 +48,10 @@ export default function DashboardHome() {
       isCandidate,
     },
   );
+
+  if (!destination || destination === '/dashboard' || destination === location.pathname) {
+    return <GlobalDashboardPage />;
+  }
 
   return <Navigate to={destination} replace />;
 }

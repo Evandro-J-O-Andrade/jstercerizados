@@ -287,7 +287,7 @@ export default function RHColaboradoresListPage() {
             />
           </Card>
         ) : loading ? (
-          <RouteLoadingFallback message="Carregando colaboradores..." />
+          <RouteLoadingFallback />
         ) : error ? (
           <Card className="p-2">
             <ErrorState message={error} onRetry={() => void load()} />
@@ -302,16 +302,13 @@ export default function RHColaboradoresListPage() {
                   : 'Cadastre um colaborador elegível para iniciar a base de RH. Nenhum dado fictício é exibido.'
               }
               icon={Users}
-              action={
-                canCreate && !search && !status ? (
-                  <Button
-                    size="sm"
-                    onClick={() => navigate('/dashboard/rh/colaboradores/novo')}
-                    leftIcon={<Plus className="h-4 w-4" />}
-                  >
-                    Novo colaborador
-                  </Button>
-                ) : undefined
+              actionLabel={
+                canCreate && !search && !status ? 'Novo colaborador' : undefined
+              }
+              onAction={
+                canCreate && !search && !status
+                  ? () => navigate('/dashboard/rh/colaboradores/novo')
+                  : undefined
               }
             />
           </Card>

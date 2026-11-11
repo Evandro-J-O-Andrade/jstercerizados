@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   CalendarDays,
@@ -58,36 +58,36 @@ export default function RHColaboradorDetalhePage() {
   const [error, setError] = useState<string | null>(null);
   const canEdit = hasAnyPermission([RH_PERMISSIONS.peopleUpdate]);
 
-  const param = classifyUuidRouteParam(id);
+  const param = useMemo(() => classifyUuidRouteParam(id), [id]);
+  const validId = param.kind === 'valid' ? param.value : null;
   const load = useCallback(async () => {
     if (!currentTenantId) {
       setError('Tenant ativo não identificado.');
       setLoading(false);
       return;
     }
-    if (param.kind === 'missing') {
-      setError('Identificador do colaborador não informado.');
-      setLoading(false);
-      return;
-    }
-    if (param.kind === 'invalid') {
-      setError('Identificador do colaborador inválido.');
+    if (!validId) {
+      setError(
+        param.kind === 'missing'
+          ? 'Não foi possível identificar o colaborador.'
+          : 'Não foi possível localizar este cadastro. O link pode estar incompleto.',
+      );
       setLoading(false);
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      const data = await employeesRepository.findById(param.value, currentTenantId);
+      const data = await employeesRepository.findById(validId, currentTenantId);
       if (!data) throw new Error('Colaborador não encontrado ou sem acesso autorizado.');
       setItem(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erro ao carregar colaborador.');
+      setError(e instanceof Error ? e.message : 'Não foi possível carregar o colaborador.');
       setItem(null);
     } finally {
       setLoading(false);
     }
-  }, [param, currentTenantId]);
+  }, [validId, param.kind, currentTenantId]);
 
   useEffect(() => {
     void load();

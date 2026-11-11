@@ -20,7 +20,8 @@ import type { AdminCandidateDetail } from '../../repositories/candidates.reposit
 
 export default function AdminMasterCandidatoDetalhePage() {
   const { id } = useParams<{ id: string }>();
-  const idParam = classifyUuidRouteParam(id);
+  const idParam = useMemo(() => classifyUuidRouteParam(id), [id]);
+  const validId = idParam.kind === 'valid' ? idParam.value : null;
   const service = useMemo<AdminCandidateService>(
     () => createAdminCandidateService(),
     [],
@@ -30,13 +31,13 @@ export default function AdminMasterCandidatoDetalhePage() {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (idParam.kind !== 'valid') {
+    if (!validId) {
       setLoading(false);
       return;
     }
     setLoading(true);
     setError(null);
-    const result = await service.getCandidate(idParam.value);
+    const result = await service.getCandidate(validId);
     if (result.error) {
       setError(result.error);
       setItem(null);
@@ -44,7 +45,7 @@ export default function AdminMasterCandidatoDetalhePage() {
       setItem(result.candidate);
     }
     setLoading(false);
-  }, [idParam, service]);
+  }, [validId, service]);
 
   useEffect(() => {
     void load();
@@ -64,8 +65,8 @@ export default function AdminMasterCandidatoDetalhePage() {
       >
         <div>
           <EmptyState
-            title="Identificador inválido"
-            description="O identificador do candidato não é válido."
+            title="Não foi possível localizar este cadastro"
+            description="O link do candidato pode estar incompleto ou incorreto."
           />
           <div className="flex justify-center">
             <Button asChild variant="outline">

@@ -36,13 +36,13 @@ export default function RHColaboradorEditarPage() {
 
   const load = useCallback(async () => {
     if (!id || param.kind === 'missing') {
-      setError('Identificador do colaborador nÃƒÂ£o informado.');
+      setError('Não foi possível identificar o colaborador.');
       setItem(null);
       setLoading(false);
       return;
     }
     if (param.kind === 'invalid' || !validId) {
-      setError('Identificador do colaborador inválido.');
+      setError('Não foi possível localizar este cadastro. O link pode estar incompleto.');
       setItem(null);
       setLoading(false);
       return;
@@ -57,7 +57,7 @@ export default function RHColaboradorEditarPage() {
     setError(null);
     try {
       const data = await employeesRepository.findById(validId, currentTenantId);
-      if (!data) throw new Error('Colaborador nÃƒÂ£o encontrado ou sem acesso autorizado.');
+      if (!data) throw new Error('Colaborador não encontrado ou sem acesso autorizado.');
       setItem(data);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Erro ao carregar colaborador.');
@@ -93,7 +93,7 @@ export default function RHColaboradorEditarPage() {
   return (
     <ModuleWorkspace
       title={item?.person?.full_name ? `Editar: ${item.person.full_name}` : 'Editar colaborador'}
-      description="Atualize os dados funcionais suportados pelo schema atual do domÃƒÂ­nio RH."
+      description="Atualize os dados funcionais suportados pelo schema atual do domínio RH."
       icon={Pencil}
       breadcrumbItems={[
         { label: 'RH', href: '/dashboard/rh' },
@@ -117,7 +117,7 @@ export default function RHColaboradorEditarPage() {
         <RHColaboradorForm
           mode="edit"
           initialValues={toForm(item)}
-          submitLabel="Salvar alteraÃƒÂ§ÃƒÂµes"
+          submitLabel="Salvar alterações"
           submitting={submitting}
           error={error}
           onSubmit={handleSubmit}

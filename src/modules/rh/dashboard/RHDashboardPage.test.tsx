@@ -35,6 +35,9 @@ describe('RHDashboardPage', () => {
       await screen.findByText('A base de colaboradores está vazia'),
     ).toBeInTheDocument();
     expect(screen.getByText('Sem colaboradores')).toBeInTheDocument();
+    expect(
+      screen.getByText('Comece a organizar a gestão de pessoas'),
+    ).toBeInTheDocument();
     expect(mocks.findAll).toHaveBeenCalledWith(
       '11111111-1111-4111-8111-111111111111',
     );
@@ -71,5 +74,6 @@ describe('RHDashboardPage', () => {
     expect(screen.getByText('Documentos')).toBeVisible();
     expect(screen.getAllByText('Ativos').length).toBeGreaterThan(0);
     expect(screen.getAllByText('1').length).toBeGreaterThanOrEqual(3);
+    expect(screen.getAllByText('Pessoa de teste').length).toBeGreaterThan(0);
   });
 });

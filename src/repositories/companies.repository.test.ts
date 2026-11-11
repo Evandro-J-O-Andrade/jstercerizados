@@ -249,7 +249,7 @@ describe('CompaniesRepository', () => {
   });
 
   describe('findById', () => {
-    it('should return a company when found for tenant', async () => {
+    it('should return company scoped to tenant', async () => {
       const mockCompany: Company = {
         id: 'comp-1',
         name: 'Empresa Teste',
@@ -264,15 +264,8 @@ describe('CompaniesRepository', () => {
         data: mockCompany,
         error: null,
       });
-      const relBuilder = createQueryBuilder({
-        data: { company_id: 'comp-1' },
-        error: null,
-      });
 
-      mockSupabase.from = vi.fn((table: string) => {
-        if (table === 'companies') return companyBuilder;
-        return relBuilder;
-      });
+      mockSupabase.from = vi.fn(() => companyBuilder);
 
       const result = await repository.findById('comp-1', 'tenant-1');
       expect(result).toEqual(mockCompany);
@@ -286,26 +279,10 @@ describe('CompaniesRepository', () => {
       const result = await repository.findById('comp-999', 'tenant-1');
       expect(result).toBeNull();
     });
-
-    it('should return null when relationship does not exist', async () => {
-      const companyBuilder = createQueryBuilder({
-        data: { id: 'comp-1', tenant_id: 'tenant-1' },
-        error: null,
-      });
-      const relBuilder = createQueryBuilder({ data: null, error: null });
-
-      mockSupabase.from = vi.fn((table: string) => {
-        if (table === 'companies') return companyBuilder;
-        return relBuilder;
-      });
-
-      const result = await repository.findById('comp-1', 'tenant-1');
-      expect(result).toBeNull();
-    });
   });
 
   describe('create', () => {
-    it('should create a company with tenant_id and relationship', async () => {
+    it('should create company and required tenant relationship (relationship_type_id)', async () => {
       const input: CompanyCreateInput = {
         name: 'Empresa Teste',
         trading_name: 'Teste LTDA',
@@ -323,22 +300,66 @@ describe('CompaniesRepository', () => {
         updated_at: '2026-01-01T00:00:00Z',
       };
 
-      const companyInsertBuilder = createQueryBuilder({
-        data: mockCompany,
-        error: null,
-      });
-      const relInsertBuilder = createQueryBuilder({
-        data: null,
-        error: null,
-      });
+      const companyInsertBuilder = createQueryBuilder({ data: mockCompany, error: null });
+      const relTypeBuilder = createQueryBuilder({ data: { id: 'type-client' }, error: null });
+      const relInsertBuilder = createQueryBuilder({ data: null, error: null });
 
       mockSupabase.from = vi.fn((table: string) => {
         if (table === 'companies') return companyInsertBuilder;
+        if (table === 'company_relationship_types') return relTypeBuilder;
         return relInsertBuilder;
       });
 
       const result = await repository.create(input, 'tenant-1');
       expect(result).toEqual(mockCompany);
+      expect(mockSupabase.from).toHaveBeenCalledWith('company_relationship_types');
+      expect(mockSupabase.from).toHaveBeenCalledWith('company_relationships');
+    });
+
+    it('should throw and rollback company when required relationship insert fails', async () => {
+      const input: CompanyCreateInput = { name: 'Empresa Teste', status: 'active' };
+      const mockCompany = { id: 'comp-new', name: 'Empresa Teste' };
+
+      const companyInsertBuilder = createQueryBuilder({ data: mockCompany, error: null });
+      const relTypeBuilder = createQueryBuilder({ data: { id: 'type-client' }, error: null });
+      const relInsertBuilder = createQueryBuilder({ data: null, error: { message: 'rel failed' } });
+      const rollbackBuilder = createQueryBuilder({ data: null, error: null });
+
+      mockSupabase.from = vi.fn((table: string) => {
+        if (table === 'companies') {
+          // first call insert, second rollback delete
+          if (mockSupabase.from.mock.calls.filter((c: string[]) => c[0] === 'companies').length === 1) {
+            return companyInsertBuilder;
+          }
+          return rollbackBuilder;
+        }
+        if (table === 'company_relationship_types') return relTypeBuilder;
+        return relInsertBuilder;
+      });
+
+      await expect(repository.create(input, 'tenant-1')).rejects.toThrow(/vínculo obrigatório/i);
+    });
+
+    it('should surface relationship error even when rollback fails (no guaranteed atomicity)', async () => {
+      const input: CompanyCreateInput = { name: 'Empresa Teste', status: 'active' };
+      const mockCompany = { id: 'comp-new', name: 'Empresa Teste' };
+
+      const companyInsertBuilder = createQueryBuilder({ data: mockCompany, error: null });
+      const relTypeBuilder = createQueryBuilder({ data: { id: 'type-client' }, error: null });
+      const relInsertBuilder = createQueryBuilder({ data: null, error: { message: 'rel failed' } });
+      const rollbackBuilder = createQueryBuilder({ data: null, error: { message: 'rollback failed' } });
+      let companiesCalls = 0;
+
+      mockSupabase.from = vi.fn((table: string) => {
+        if (table === 'companies') {
+          companiesCalls += 1;
+          return companiesCalls === 1 ? companyInsertBuilder : rollbackBuilder;
+        }
+        if (table === 'company_relationship_types') return relTypeBuilder;
+        return relInsertBuilder;
+      });
+
+      await expect(repository.create(input, 'tenant-1')).rejects.toThrow(/rel failed/i);
     });
 
     it('should throw raw Supabase error when cnpj already exists', async () => {
@@ -382,7 +403,7 @@ describe('CompaniesRepository', () => {
         updated_at: '2026-01-02T00:00:00Z',
       };
 
-      const companyBuilder = createQueryBuilder({
+      const companyFindBuilder = createQueryBuilder({
         data: { id: 'comp-1', tenant_id: 'tenant-1' },
         error: null,
       });
@@ -391,24 +412,27 @@ describe('CompaniesRepository', () => {
         error: null,
       });
 
+      let companiesCalls = 0;
       mockSupabase.from = vi.fn((table: string) => {
-        if (table === 'companies') return companyUpdateBuilder;
-        return companyBuilder;
+        if (table === 'companies') {
+          companiesCalls += 1;
+          return companiesCalls === 1 ? companyFindBuilder : companyUpdateBuilder;
+        }
+        return companyFindBuilder;
       });
 
       const result = await repository.update('comp-1', 'tenant-1', input);
       expect(result).toEqual(mockCompany);
     });
 
-    it('should return null when company not found for tenant', async () => {
+    it('should throw when company not found for tenant', async () => {
       const companyBuilder = createQueryBuilder({ data: null, error: null });
 
       mockSupabase.from = vi.fn(() => companyBuilder);
 
-      const result = await repository.update('comp-999', 'tenant-1', {
-        name: 'Teste',
-      });
-      expect(result).toBeNull();
+      await expect(
+        repository.update('comp-999', 'tenant-1', { name: 'Teste' }),
+      ).rejects.toThrow(/não encontrada/i);
     });
   });
 

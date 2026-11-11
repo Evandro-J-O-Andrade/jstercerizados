@@ -172,48 +172,92 @@ export class CompaniesRepository extends SupabaseRepository {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) return null;
-
-    const { data: relationship, error: relError } = await this.supabase
-      .from('company_relationships')
-      .select('company_id')
-      .eq('company_id', id)
-      .eq('relationship_type', 'client')
-      .eq('status', 'active')
-      .maybeSingle();
-
-    if (relError) throw relError;
-    if (!relationship) return null;
-
-    return data as Company;
+    return (data as Company | null) ?? null;
   }
 
   async create(input: CompanyCreateInput, tenantId: string): Promise<Company> {
     if (!this.supabase) throw new Error('Supabase não configurado');
 
+    const payload: Record<string, unknown> = {
+      tenant_id: tenantId,
+      name: input.name,
+      trading_name: input.trading_name ?? null,
+      legal_name: input.legal_name ?? null,
+      cnpj: input.cnpj ?? null,
+      status: input.status ?? 'active',
+      industry: input.industry ?? null,
+      phone: input.phone ?? null,
+      email: input.email ?? null,
+      website: input.website ?? null,
+      size: input.size ?? null,
+      description: input.description ?? null,
+      short_description: input.short_description ?? null,
+      address: input.address ?? null,
+    };
+
     const { data: company, error: companyError } = await this.supabase
       .from('companies')
-      .insert({
-        tenant_id: tenantId,
-        name: input.name,
-        trading_name: input.trading_name ?? null,
-        cnpj: input.cnpj ?? null,
-        status: input.status ?? 'active',
-      })
+      .insert(payload)
       .select('*')
       .single();
 
     if (companyError) throw companyError;
 
-    const { error: relError } = await this.supabase
-      .from('company_relationships')
-      .insert({
-        company_id: company.id,
-        relationship_type: 'client',
-        status: 'active',
-      });
+    // Vínculo tenant/empresa (obrigatório para consistência multi-tenant).
+    // Contrato esperado (migrations companies): company_relationship_types(code='client')
+    // + company_relationships(tenant_id, relationship_type_id, company_id).
+    // Fallback de shape (relationship_type string) apenas quando contrato de tipos indisponível;
+    // falha de vínculo obrigatório NÃO é silenciada — empresa é revertida para evitar estado parcial.
+    try {
+      const { data: relType, error: relTypeError } = await this.supabase
+        .from('company_relationship_types')
+        .select('id')
+        .eq('code', 'client')
+        .maybeSingle();
 
-    if (relError) throw relError;
+      if (relTypeError) throw relTypeError;
+
+      let relError: { message?: string } | null = null;
+      if (relType?.id) {
+        const res = await this.supabase.from('company_relationships').insert({
+          company_id: company.id,
+          tenant_id: tenantId,
+          relationship_type_id: relType.id,
+          status: 'active',
+        });
+        relError = res.error;
+      } else {
+        const res = await this.supabase.from('company_relationships').insert({
+          company_id: company.id,
+          tenant_id: tenantId,
+          relationship_type: 'client',
+          status: 'active',
+        });
+        relError = res.error;
+      }
+
+      if (relError) throw relError;
+    } catch (relErr) {
+      // Reverter cadastro para evitar empresa órfã/estado inconsistente quando vínculo obrigatório falha.
+      try {
+        await this.supabase
+          .from('companies')
+          .delete()
+          .eq('id', company.id)
+          .eq('tenant_id', tenantId);
+      } catch {
+        // falha no rollback não deve mascarar erro original de vínculo
+      }
+      const reason =
+        relErr instanceof Error
+          ? relErr.message
+          : typeof (relErr as { message?: unknown } | null)?.message === 'string'
+            ? String((relErr as { message: string }).message)
+            : 'Falha ao vincular empresa ao tenant.';
+      throw new Error(
+        `Empresa não foi cadastrada: não foi possível criar o vínculo obrigatório com o tenant. ${reason}`,
+      );
+    }
 
     return company as Company;
   }
@@ -233,19 +277,38 @@ export class CompaniesRepository extends SupabaseRepository {
       .maybeSingle();
 
     if (findError) throw findError;
-    if (!existing) return null as any;
+    if (!existing) {
+      throw new Error('Empresa não encontrada para o tenant selecionado.');
+    }
 
     const payload: Record<string, unknown> = {};
-    if (input.name !== undefined) payload.name = input.name;
-    if (input.trading_name !== undefined)
-      payload.trading_name = input.trading_name;
-    if (input.cnpj !== undefined) payload.cnpj = input.cnpj;
-    if (input.status !== undefined) payload.status = input.status;
+    const assign = <K extends keyof CompanyUpdateInput>(key: K) => {
+      if (input[key] !== undefined) payload[key as string] = input[key];
+    };
+    assign('name');
+    assign('trading_name');
+    assign('legal_name');
+    assign('cnpj');
+    assign('status');
+    assign('industry');
+    assign('phone');
+    assign('email');
+    assign('website');
+    assign('size');
+    assign('description');
+    assign('short_description');
+    assign('address');
+
+    if (Object.keys(payload).length === 0) {
+      const current = await this.findById(id, tenantId);
+      return current as Company;
+    }
 
     const { data, error } = await this.supabase
       .from('companies')
       .update(payload)
       .eq('id', id)
+      .eq('tenant_id', tenantId)
       .select('*')
       .single();
     if (error) throw error;

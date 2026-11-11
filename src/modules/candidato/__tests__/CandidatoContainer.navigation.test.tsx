@@ -29,6 +29,7 @@ describe('CandidatoContainer navigation', () => {
     vi.clearAllMocks();
     mocks.useAuth.mockReturnValue({
       person: { id: 'person-1', full_name: 'Ana Silva' },
+      permissions: ['jobs.read'],
       logout: vi.fn(),
     });
     mocks.useNavigation.mockReturnValue({

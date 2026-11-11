@@ -1,11 +1,13 @@
 import { type ReactNode, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { AccountProvider } from '@/contexts/AccountContext';
 import { ModuleProvider } from '@/contexts/ModuleContext';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
 import { PortalBottomNavigation } from '@/components/layout/PortalBottomNavigation';
 import { COMPANY } from '@/config';
+import { cellRegistry } from '@/core/registry/CellRegistryContract';
+import { resolveNavigationCell, getModuleName } from '@/components/navigation/cell-navigation-model';
 
 interface AdminShellProps {
   moduleTitle?: string;
@@ -14,8 +16,9 @@ interface AdminShellProps {
 
 function AdminShellInner({ moduleTitle, children }: AdminShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const currentModuleTitle = moduleTitle || 'J&S Empregos';
+  const { pathname } = useLocation();
+  const activeCell = resolveNavigationCell(pathname, cellRegistry.getEnabled().map(({ cell }) => cell));
+  const currentModuleTitle = moduleTitle || (activeCell ? getModuleName(activeCell) : 'J&S Empregos');
   const content = children ?? <Outlet />;
 
   return (

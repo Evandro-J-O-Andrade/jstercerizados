@@ -50,15 +50,20 @@ export function CandidatoBottomNavigation({
 }) {
   const { pathname } = useLocation();
   const { permissions } = useAuth();
-  const permissionKeys = new Set(permissions.map(getPermissionKey));
+  const permissionKeys = new Set(
+    (permissions ?? []).map((permission) =>
+      typeof permission === 'string'
+        ? permission
+        : getPermissionKey(permission),
+    ),
+  );
 
   const visibleLinks = candidateQuickLinks
-    .filter(
-      (item) => !item.permission || permissionKeys.has(item.permission),
-    )
+    .filter((item) => !item.permission || permissionKeys.has(item.permission))
     .map((item) => {
       const configured = items?.find(
-        (candidate) => candidate.source === 'module' && candidate.href === item.href,
+        (candidate) =>
+          candidate.source === 'module' && candidate.href === item.href,
       );
       return { ...item, icon: configured?.icon || item.icon };
     });

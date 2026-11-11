@@ -129,7 +129,10 @@ export const RecrutamentoRoutes: ModuleRoute[] = [
     label: 'Detalhe do Candidato',
     icon: 'UserRound',
     element: withProvider(RecrutamentoCandidatoDetalhe),
-    requiredPermissions: [RECRUTAMENTO_PERMISSIONS.candidatosPerfilLer],
+    requiredPermissions: [
+      RECRUTAMENTO_PERMISSIONS.candidatosPerfilLer,
+      RECRUTAMENTO_PERMISSIONS.candidatos,
+    ],
   },
   {
     path: 'processos',

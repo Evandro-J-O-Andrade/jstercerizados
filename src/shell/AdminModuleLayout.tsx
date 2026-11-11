@@ -1,18 +1,26 @@
-﻿import { type ReactNode } from 'react';
-import { cn } from '@/utils';
+/**
+ * Conteúdo do módulo SEM sidebar/shell próprios.
+ * Único sidebar e header pertencem ao AdminShell.
+ * O dashboard ou CRUD da célula é dono de seu cabeçalho operacional.
+ */
+import type { ReactNode } from 'react';
 import type { ModuleDefinition } from '@/platform/modules';
+import { cn } from '@/utils';
 
-interface AdminModuleLayoutProps {
+interface Props {
   module: ModuleDefinition;
   children: ReactNode;
   className?: string;
 }
 
-/**
- * Wrapper neutro para renderização de módulo dentro do shell único (AdminShell).
- * AdminShell/AdminSidebar já fornecem a navegação contextual; páginas dentro do
- * body NÃO devem montar sidebar/header/main duplicados (Fatia 2).
- */
-export function AdminModuleLayout({ children, className }: AdminModuleLayoutProps) {
-  return <div className={cn('min-h-0 min-w-0 flex-1', className)}>{children}</div>;
+export function AdminModuleLayout({ module, children, className }: Props) {
+  return (
+    <section
+      data-testid="module-content-boundary"
+      data-module-owner={module.id}
+      className={cn('flex min-w-0 flex-1 flex-col', className)}
+    >
+      {children}
+    </section>
+  );
 }

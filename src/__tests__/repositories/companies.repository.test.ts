@@ -94,7 +94,7 @@ describe('CompaniesRepository', () => {
   });
 
   describe('create', () => {
-    it('deve criar empresa e relacionamento', async () => {
+    it('deve criar empresa e vínculo (relationship_type_id quando tipo disponível)', async () => {
       const newCompany: Company = {
         id: 'new-id',
         tenant_id: 'tenant-1',
@@ -126,21 +126,81 @@ describe('CompaniesRepository', () => {
         socials: null,
       };
 
+      // 1) insert companies, 2) select company_relationship_types, 3) insert company_relationships
       mockFrom
         .mockReturnValueOnce(createThenable({ data: newCompany, error: null }))
+        .mockReturnValueOnce(createThenable({ data: { id: 'type-1' }, error: null }))
         .mockReturnValueOnce(createThenable({ data: null, error: null }));
 
-      const input: CompanyCreateInput = {
-        name: 'Nova Empresa',
-        status: 'active',
-      };
-
+      const input: CompanyCreateInput = { name: 'Nova Empresa', status: 'active' };
       const result = await repository.create(input, 'tenant-1');
 
       expect(result.id).toBe('new-id');
-      expect(mockFrom).toHaveBeenCalledTimes(2);
+      expect(mockFrom).toHaveBeenCalledTimes(3);
       expect(mockFrom).toHaveBeenNthCalledWith(1, 'companies');
-      expect(mockFrom).toHaveBeenNthCalledWith(2, 'company_relationships');
+      expect(mockFrom).toHaveBeenNthCalledWith(2, 'company_relationship_types');
+      expect(mockFrom).toHaveBeenNthCalledWith(3, 'company_relationships');
+      const relInsert = mockFrom.mock.results[2].value;
+      expect(relInsert.insert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          company_id: 'new-id',
+          tenant_id: 'tenant-1',
+          relationship_type_id: 'type-1',
+          status: 'active',
+        }),
+      );
+    });
+
+    it('deve usar fallback relationship_type quando tipo não encontrado', async () => {
+      const newCompany = { id: 'new-id', name: 'Nova Empresa' } as Company;
+      mockFrom
+        .mockReturnValueOnce(createThenable({ data: newCompany, error: null }))
+        .mockReturnValueOnce(createThenable({ data: null, error: null }))
+        .mockReturnValueOnce(createThenable({ data: null, error: null }));
+
+      await repository.create({ name: 'Nova Empresa' }, 'tenant-1');
+      const relInsert = mockFrom.mock.results[2].value;
+      expect(relInsert.insert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          company_id: 'new-id',
+          tenant_id: 'tenant-1',
+          relationship_type: 'client',
+          status: 'active',
+        }),
+      );
+    });
+
+    it('deve falhar e reverter empresa quando vínculo obrigatório falhar', async () => {
+      const newCompany = { id: 'new-id', name: 'Nova Empresa' } as Company;
+      mockFrom
+        .mockReturnValueOnce(createThenable({ data: newCompany, error: null })) // companies insert
+        .mockReturnValueOnce(createThenable({ data: { id: 'type-1' }, error: null })) // type lookup
+        .mockReturnValueOnce(createThenable({ data: null, error: { message: 'rel insert failed' } })) // rel insert
+        .mockReturnValueOnce(createThenable({ data: null, error: null })); // rollback delete company
+
+      await expect(repository.create({ name: 'Nova Empresa' }, 'tenant-1')).rejects.toThrow(
+        /vínculo obrigatório/i,
+      );
+      expect(mockFrom).toHaveBeenCalledTimes(4);
+      expect(mockFrom).toHaveBeenNthCalledWith(4, 'companies');
+      const rollback = mockFrom.mock.results[3].value;
+      expect(rollback.delete).toHaveBeenCalled();
+      expect(rollback.eq).toHaveBeenCalledWith('id', 'new-id');
+      expect(rollback.eq).toHaveBeenCalledWith('tenant_id', 'tenant-1');
+    });
+
+    it('deve propagar erro real de vínculo mesmo se rollback compensatório falhar', async () => {
+      const newCompany = { id: 'new-id', name: 'Nova Empresa' } as Company;
+      mockFrom
+        .mockReturnValueOnce(createThenable({ data: newCompany, error: null }))
+        .mockReturnValueOnce(createThenable({ data: { id: 'type-1' }, error: null }))
+        .mockReturnValueOnce(createThenable({ data: null, error: { message: 'rel insert failed' } }))
+        .mockReturnValueOnce(createThenable({ data: null, error: { message: 'rollback failed' } }));
+
+      await expect(repository.create({ name: 'Nova Empresa' }, 'tenant-1')).rejects.toThrow(
+        /rel insert failed/i,
+      );
+      // não declara integridade transacional garantida; estado pode ficar parcial se rollback falhar
     });
   });
 

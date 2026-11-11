@@ -1,255 +1,230 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+﻿import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import Empresas from '@/modules/empresas/pages/EmpresasListPage';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: vi.fn(),
+}));
+
+vi.mock('@/repositories/companies.repository', () => ({
+  companiesRepository: {
+    findAll: vi.fn(),
+    findById: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+  },
+}));
+
+import EmpresasListPage from '@/modules/empresas/pages/EmpresasListPage';
+import EmpresaDetailPage from '@/modules/empresas/pages/EmpresaDetailPage';
+import EmpresaFormPage from '@/modules/empresas/pages/EmpresaFormPage';
 import { useAuth } from '@/contexts/AuthContext';
 import { companiesRepository } from '@/repositories/companies.repository';
 
-vi.mock('@/contexts/AuthContext');
-vi.mock('@/repositories/companies.repository');
-
-// IntersectionObserver is not available in jsdom by default — provide a minimal mock
-if (
-  typeof (globalThis as { IntersectionObserver?: unknown })
-    .IntersectionObserver === 'undefined'
-) {
-  (globalThis as { IntersectionObserver: unknown }).IntersectionObserver =
-    class {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
-      takeRecords(): never[] {
-        return [];
-      }
-    };
+if (typeof globalThis.IntersectionObserver === 'undefined') {
+  (globalThis as { IntersectionObserver: unknown }).IntersectionObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return [];
+    }
+  };
 }
 
 const mockUseAuth = vi.mocked(useAuth);
 const mockCompaniesRepository = vi.mocked(companiesRepository);
 
-interface BaseAuth {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  person: Record<string, unknown>;
-  tenantMemberships: never[];
-  currentTenantId: string;
-  tenants: Array<{ id: string; name: string }>;
-  roles: never[];
-  permissions: Array<{ name: string }>;
-  roleAssignments: never[];
-  firstLoginState: null;
-  legalAcceptances: never[];
-  isAdminMaster: boolean;
-  isCandidate: boolean;
-  isEmpresa: boolean;
-  authError: null;
-  user: null;
-  tenantIds: string[];
-  login: ReturnType<typeof vi.fn>;
-  loginWithProvider: ReturnType<typeof vi.fn>;
-  logout: ReturnType<typeof vi.fn>;
-  register: ReturnType<typeof vi.fn>;
-  resetPassword: ReturnType<typeof vi.fn>;
-  updateProfile: ReturnType<typeof vi.fn>;
-  changePassword: ReturnType<typeof vi.fn>;
-  acceptTerms: ReturnType<typeof vi.fn>;
-  switchTenant: ReturnType<typeof vi.fn>;
-  hasPermission: ReturnType<typeof vi.fn>;
-  hasAnyPermission: ReturnType<typeof vi.fn>;
-  hasAllPermissions: ReturnType<typeof vi.fn>;
-}
+const baseCompany = {
+  id: '11111111-1111-4111-8111-111111111111',
+  tenant_id: 'tenant-1',
+  name: 'Empresa Base',
+  trading_name: 'Empresa Base LTDA',
+  cnpj: '12345678000100',
+  status: 'active' as const,
+  created_at: '2024-01-01T00:00:00Z',
+  updated_at: '2024-01-01T00:00:00Z',
+  legal_name: null,
+  document: null,
+  cnpj_root: null,
+  state_registration: null,
+  municipal_registration: null,
+  company_type_id: null,
+  industry: null,
+  phone: null,
+  email: null,
+  website: null,
+  linkedin_url: null,
+  logo_url: null,
+  address: null,
+  size: null,
+  metadata: {},
+  created_by: null,
+  description: null,
+  short_description: null,
+  company_segment: null,
+  socials: null,
+};
 
-const baseAuth: BaseAuth = {
-  isAuthenticated: true,
-  isLoading: false,
-  person: { id: 'p1', full_name: 'Admin' },
-  tenantMemberships: [],
-  currentTenantId: 'tenant-1',
-  tenants: [{ id: 'tenant-1', name: 'J&S' }],
-  roles: [],
-  permissions: [
+function authState(overrides: Record<string, unknown> = {}) {
+  const permissions = (overrides.permissions as Array<{ name: string }>) ?? [
     { name: 'companies.read' },
     { name: 'companies.create' },
     { name: 'companies.update' },
     { name: 'companies.delete' },
-  ],
-  roleAssignments: [],
-  firstLoginState: null,
-  legalAcceptances: [],
-  isAdminMaster: false,
-  isCandidate: false,
-  isEmpresa: false,
-  authError: null,
-  user: null,
-  tenantIds: [],
-  login: vi.fn(),
-  loginWithProvider: vi.fn(),
-  logout: vi.fn(),
-  register: vi.fn(),
-  resetPassword: vi.fn(),
-  updateProfile: vi.fn(),
-  changePassword: vi.fn(),
-  acceptTerms: vi.fn(),
-  switchTenant: vi.fn(),
-  hasPermission: vi.fn(() => true),
-  hasAnyPermission: vi.fn(() => true),
-  hasAllPermissions: vi.fn(() => true),
-};
-
-function renderEmpresas(authState: Partial<BaseAuth> = {}) {
-  const merged = { ...baseAuth, ...authState };
-  mockUseAuth.mockReturnValue(merged as any);
-  return render(
-    <MemoryRouter>
-      <Empresas />
-    </MemoryRouter>,
-  );
+  ];
+  return {
+    isAuthenticated: true,
+    isLoading: false,
+    currentTenantId: 'tenant-1',
+    permissions,
+    hasPermission: vi.fn((perm: string) => permissions.some((p) => p.name === perm)),
+    ...overrides,
+  } as unknown as ReturnType<typeof useAuth>;
 }
 
-describe('Empresas — UI States & Permissions', () => {
+describe('Empresas - fluxos locais verificáveis', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseAuth.mockReturnValue(authState());
   });
 
-  it('deve exibir loading inicial', async () => {
-    mockCompaniesRepository.findAll.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(() => resolve([]), 100);
-        }),
+  it('abre listagem canônica (dados reais via repository) e não exibe página legada/mock', async () => {
+    mockCompaniesRepository.findAll.mockResolvedValue([baseCompany]);
+    render(
+      <MemoryRouter initialEntries={['/dashboard/empresas/lista']}>
+        <Routes>
+          <Route path="/dashboard/empresas/lista" element={<EmpresasListPage />} />
+        </Routes>
+      </MemoryRouter>,
     );
 
-    renderEmpresas();
-
-    expect(screen.getByText('Carregando seu conteúdo...')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Listagem de empresas/i })).toBeInTheDocument();
+    });
+    expect(screen.getAllByText('Empresa Base LTDA').length).toBeGreaterThan(0);
+    expect(mockCompaniesRepository.findAll).toHaveBeenCalledWith('tenant-1');
+    expect(screen.queryByText('Carregando seu conteúdo...')).not.toBeInTheDocument();
   });
 
-  it('deve exibir empty state quando não há empresas', async () => {
+  it('exibe estado vazio quando não há empresas', async () => {
     mockCompaniesRepository.findAll.mockResolvedValue([]);
-
-    renderEmpresas();
-
+    render(
+      <MemoryRouter>
+        <EmpresasListPage />
+      </MemoryRouter>,
+    );
     await waitFor(() => {
       expect(screen.getByText('Nenhuma empresa')).toBeInTheDocument();
     });
   });
 
-  it('deve exibir lista de empresas quando há dados', async () => {
-    mockCompaniesRepository.findAll.mockResolvedValue([
-      {
-        id: '1',
-        tenant_id: 'tenant-1',
-        name: 'Empresa Teste',
-        trading_name: 'Empresa Teste LTDA',
-        cnpj: '12345678000100',
-        status: 'active',
-        created_at: '2024-01-01',
-        updated_at: '2024-01-01',
-        legal_name: null,
-        document: null,
-        cnpj_root: null,
-        state_registration: null,
-        municipal_registration: null,
-        company_type_id: null,
-        industry: null,
-        phone: null,
-        email: null,
-        website: null,
-        linkedin_url: null,
-        logo_url: null,
-        address: null,
-        size: null,
-        metadata: {},
-        created_by: null,
-        description: null,
-        short_description: null,
-        company_segment: null,
-        socials: null,
-      },
-    ]);
-
-    renderEmpresas();
-
-    await waitFor(() => {
-      expect(screen.getByText('Empresa Teste LTDA')).toBeInTheDocument();
-    });
-  });
-
-  it('deve exibir botão Nova empresa quando tem permissão de create', async () => {
+  it('oculta ação de criação sem permissão companies.create', async () => {
     mockCompaniesRepository.findAll.mockResolvedValue([]);
+    mockUseAuth.mockReturnValue(authState({ permissions: [{ name: 'companies.read' }] }));
 
-    renderEmpresas();
-
-    await waitFor(() => {
-      const buttons = screen.getAllByText('Nova empresa');
-      expect(buttons.length).toBeGreaterThanOrEqual(1);
-    });
-  });
-
-  it('não deve exibir botão Nova empresa sem permissão de create', async () => {
-    mockCompaniesRepository.findAll.mockResolvedValue([]);
-
-    renderEmpresas({
-      permissions: [{ name: 'companies.read' }],
-      hasAnyPermission: vi.fn(() => false),
-    });
-
-    await waitFor(() => {
-      expect(screen.queryByText('Nova empresa')).not.toBeInTheDocument();
-    });
-  });
-
-  it('deve exibir erro quando findAll falha', async () => {
-    mockCompaniesRepository.findAll.mockRejectedValue(
-      new Error('Falha na conexão'),
+    render(
+      <MemoryRouter>
+        <EmpresasListPage />
+      </MemoryRouter>,
     );
 
-    renderEmpresas();
-
-    await waitFor(() => {
-      expect(screen.getByText('Falha na conexão')).toBeInTheDocument();
-    });
-  });
-
-  it('deve abrir modal de criação ao clicar em Nova empresa', async () => {
-    mockCompaniesRepository.findAll.mockResolvedValue([]);
-
-    renderEmpresas();
-
     await waitFor(() => {
       expect(screen.getByText('Nenhuma empresa')).toBeInTheDocument();
     });
-
-    const novaButtons = screen.getAllByText('Nova empresa');
-    novaButtons[0].click();
-
-    await waitFor(() => {
-      expect(
-        screen.getByPlaceholderText('Nome da empresa'),
-      ).toBeInTheDocument();
-    });
+    expect(screen.queryByRole('button', { name: /^Nova empresa$/i })).not.toBeInTheDocument();
   });
 
-  it('deve fechar modal ao clicar em Cancelar', async () => {
+  it('valida formulário (nome obrigatório) e chama create com dados suportados', async () => {
+    const user = userEvent.setup();
     mockCompaniesRepository.findAll.mockResolvedValue([]);
+    mockCompaniesRepository.create.mockResolvedValue(baseCompany);
+    render(
+      <MemoryRouter>
+        <EmpresasListPage />
+      </MemoryRouter>,
+    );
 
-    renderEmpresas();
+    await waitFor(() => expect(screen.getByText('Nenhuma empresa')).toBeInTheDocument());
+    const createButtons = screen.getAllByRole('button', { name: /Nova empresa/i });
+    await user.click(createButtons[0]);
+    const submit = await screen.findByRole('button', { name: /^Salvar$/i });
+    const nameInput = await screen.findByPlaceholderText('Nome da empresa');
+    await user.type(nameInput, 'Nova Empresa');
+    await waitFor(() => expect(submit).not.toBeDisabled());
+    await user.click(submit);
+    await waitFor(() => expect(mockCompaniesRepository.create).toHaveBeenCalled());
+    expect(mockCompaniesRepository.create).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Nova Empresa' }),
+      'tenant-1',
+    );
+  });
+
+  it('não consulta repositório quando identificador de rota é inválido (detalhe)', async () => {
+    render(
+      <MemoryRouter initialEntries={['/dashboard/empresas/not-a-uuid']}>
+        <Routes>
+          <Route path="/dashboard/empresas/:id" element={<EmpresaDetailPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
 
     await waitFor(() => {
-      expect(screen.getByText('Nenhuma empresa')).toBeInTheDocument();
+      expect(screen.getByText('Identificador inválido')).toBeInTheDocument();
     });
+    expect(mockCompaniesRepository.findById).not.toHaveBeenCalled();
+  });
 
-    const novaButtons = screen.getAllByText('Nova empresa');
-    novaButtons[0].click();
+  it('não consulta repositório quando identificador de rota é inválido (edição)', async () => {
+    render(
+      <MemoryRouter initialEntries={['/dashboard/empresas/not-a-uuid/editar']}>
+        <Routes>
+          <Route path="/dashboard/empresas/:id/editar" element={<EmpresaFormPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
 
     await waitFor(() => {
-      expect(screen.getByText('Cancelar')).toBeInTheDocument();
+      expect(screen.getByText('Identificador inválido')).toBeInTheDocument();
     });
+    expect(mockCompaniesRepository.findById).not.toHaveBeenCalled();
+  });
 
-    screen.getByText('Cancelar').click();
+  it('oculta ações de editar/excluir sem permissões no detalhe', async () => {
+    mockCompaniesRepository.findById.mockResolvedValue(baseCompany);
+    mockUseAuth.mockReturnValue(authState({ permissions: [{ name: 'companies.read' }] }));
+
+    render(
+      <MemoryRouter initialEntries={['/dashboard/empresas/11111111-1111-4111-8111-111111111111']}>
+        <Routes>
+          <Route path="/dashboard/empresas/:id" element={<EmpresaDetailPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
 
     await waitFor(() => {
-      expect(screen.queryByText('Nome')).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Empresa Base LTDA/i })).toBeInTheDocument();
     });
+    expect(screen.queryByRole('button', { name: /^Editar$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Excluir$/i })).not.toBeInTheDocument();
+  });
+
+  it('exibe ações de editar/excluir com permissões no detalhe', async () => {
+    mockCompaniesRepository.findById.mockResolvedValue(baseCompany);
+
+    render(
+      <MemoryRouter initialEntries={['/dashboard/empresas/11111111-1111-4111-8111-111111111111']}>
+        <Routes>
+          <Route path="/dashboard/empresas/:id" element={<EmpresaDetailPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Editar$/i })).toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: /^Excluir$/i })).toBeInTheDocument();
   });
 });

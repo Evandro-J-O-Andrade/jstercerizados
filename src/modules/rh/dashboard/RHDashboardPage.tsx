@@ -330,71 +330,36 @@ function PanelTitle({
   );
 }
 
-function AdmissionsChart({ stats }: { stats: RhStats }) {
+function AdmissionsBarChart({ stats }: { stats: RhStats }) {
   const values = stats.admissionsByMonth.map((item) => item.value);
   const maximum = Math.max(1, ...values);
-  const points = values
-    .map((value, index) => {
-      const x = values.length === 1 ? 50 : (index / (values.length - 1)) * 100;
-      const y = 82 - (value / maximum) * 62;
-      return `${x},${y}`;
-    })
-    .join(' ');
 
   return (
     <Card padding="none" className="overflow-hidden">
       <PanelTitle
-        title="Evolução de admissões"
-        description="Admissões reais por hire_date nos últimos seis meses"
+        title="Admissões por período"
+        description="Volume real de admissões nos últimos seis meses"
         action={<Activity className="text-primary h-4 w-4" />}
       />
       <div className="px-4 pt-3 pb-4">
-        <div className="relative h-40">
-          <div className="border-border absolute inset-x-0 top-5 border-t border-dashed" />
-          <div className="border-border absolute inset-x-0 top-1/2 border-t border-dashed" />
-          <div className="border-border absolute inset-x-0 bottom-5 border-t border-dashed" />
-          <svg
-            viewBox="0 0 100 90"
-            preserveAspectRatio="none"
-            className="absolute inset-0 h-full w-full overflow-visible"
-            aria-label="Gráfico de admissões"
-          >
-            <polyline
-              points={points}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              vectorEffect="non-scaling-stroke"
-              className="text-primary"
-            />
-            {values.map((value, index) => {
-              const x =
-                values.length === 1 ? 50 : (index / (values.length - 1)) * 100;
-              const y = 82 - (value / maximum) * 62;
-              return (
-                <circle
-                  key={stats.admissionsByMonth[index].key}
-                  cx={x}
-                  cy={y}
-                  r="1.6"
-                  fill="currentColor"
-                  className="text-primary"
+        <div className="flex h-44 items-end gap-2">
+          {stats.admissionsByMonth.map((item) => {
+            const height = (item.value / maximum) * 100;
+            return (
+              <div key={item.key} className="flex flex-1 flex-col items-center gap-2">
+                <span className="text-foreground text-xs font-semibold tabular-nums">
+                  {item.value}
+                </span>
+                <div
+                  className="bg-primary/80 w-full rounded-t-md transition-all"
+                  style={{ height: `${Math.max(4, height)}%` }}
                 />
-              );
-            })}
-          </svg>
-        </div>
-        <div className="grid grid-cols-6 gap-1">
-          {stats.admissionsByMonth.map((item) => (
-            <div key={item.key} className="text-center">
-              <div className="text-foreground text-xs font-semibold tabular-nums">
-                {item.value}
+                <span className="text-muted-foreground text-[10px] uppercase">
+                  {item.label}
+                </span>
               </div>
-              <div className="text-muted-foreground text-[10px] uppercase">
-                {item.label}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </Card>
@@ -473,30 +438,45 @@ function OperationalFlow({ stats }: { stats: RhStats }) {
       value: stats.missingDocuments,
       tone: 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-200',
       icon: FileWarning,
+      employees: stats.employees.filter(
+        (employee) => (employee.documents?.length || 0) === 0,
+      ),
     },
     {
       label: 'Sem contrato',
       value: stats.missingContracts,
       tone: 'border-violet-200 bg-violet-50 text-violet-800 dark:border-violet-900/50 dark:bg-violet-950/30 dark:text-violet-200',
       icon: BriefcaseBusiness,
+      employees: stats.employees.filter(
+        (employee) => (employee.contracts?.length || 0) === 0,
+      ),
     },
     {
       label: 'Ativos',
       value: stats.active,
       tone: 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-200',
       icon: ClipboardCheck,
+      employees: stats.employees.filter(
+        (employee) => employee.status === 'active',
+      ),
     },
     {
       label: 'Afastados',
       value: stats.onLeave,
       tone: 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200',
       icon: CalendarCheck2,
+      employees: stats.employees.filter(
+        (employee) => employee.status === 'on_leave',
+      ),
     },
     {
       label: 'Desligados',
       value: stats.terminated,
       tone: 'border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-200',
       icon: UserMinus,
+      employees: stats.employees.filter(
+        (employee) => employee.status === 'terminated',
+      ),
     },
   ];
 
@@ -511,25 +491,120 @@ function OperationalFlow({ stats }: { stats: RhStats }) {
           </Button>
         }
       />
-      <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-3 overflow-x-auto p-4 sm:grid-cols-2 xl:grid-cols-5">
         {columns.map((column) => {
           const Icon = column.icon;
           return (
-            <Link
+            <section
               key={column.label}
-              to="/dashboard/rh/colaboradores"
-              className={`rounded-xl border p-3 transition-transform hover:-translate-y-0.5 ${column.tone}`}
+              className={`min-w-0 rounded-xl border p-3 ${column.tone}`}
             >
               <div className="flex items-center justify-between gap-3">
-                <Icon className="h-4 w-4" />
+                <span className="flex items-center gap-2 text-xs font-semibold">
+                  <Icon className="h-4 w-4" />
+                  {column.label}
+                </span>
                 <span className="text-lg font-bold tabular-nums">
                   {column.value}
                 </span>
               </div>
-              <p className="mt-5 text-xs font-semibold">{column.label}</p>
-            </Link>
+              <div className="mt-3 space-y-2">
+                {column.employees.slice(0, 3).map((employee) => (
+                  <Link
+                    key={employee.id}
+                    to={`/dashboard/rh/colaboradores/${employee.id}`}
+                    className="border-border/60 bg-card/80 hover:border-primary/40 block rounded-lg border px-2.5 py-2 transition-colors"
+                  >
+                    <span className="text-foreground block truncate text-xs font-medium">
+                      {employeeName(employee)}
+                    </span>
+                    <span className="text-muted-foreground mt-0.5 block truncate text-[10px]">
+                      {employee.employee_code || 'Sem código funcional'}
+                    </span>
+                  </Link>
+                ))}
+                {column.employees.length === 0 ? (
+                  <div className="bg-card/35 rounded-lg border border-dashed border-current/15 px-2.5 py-4 text-center text-[10px] opacity-75">
+                    Nenhum registro nesta etapa
+                  </div>
+                ) : null}
+              </div>
+              <Link
+                to="/dashboard/rh/colaboradores"
+                className="mt-3 block text-center text-[10px] font-semibold hover:underline"
+              >
+                Ver registros
+              </Link>
+            </section>
           );
         })}
+      </div>
+    </Card>
+  );
+}
+
+function EmptyRhOnboarding({ canCreate }: { canCreate: boolean }) {
+  const steps = [
+    {
+      title: 'Cadastre o colaborador',
+      description: 'Selecione uma pessoa e informe os dados funcionais.',
+      icon: UserPlus,
+      href: '/dashboard/rh/colaboradores/novo',
+    },
+    {
+      title: 'Complete o vínculo',
+      description: 'Registre cargo, contrato e situação autorizados.',
+      icon: BriefcaseBusiness,
+      href: '/dashboard/rh/colaboradores',
+    },
+    {
+      title: 'Acompanhe pendências',
+      description: 'Documentos e alertas aparecerão após o cadastro.',
+      icon: ClipboardCheck,
+      href: '/dashboard/rh/colaboradores',
+    },
+  ].filter((_, index) => canCreate || index > 0);
+
+  return (
+    <Card className="border-primary/20 from-primary/10 via-card to-card overflow-hidden bg-gradient-to-r p-4 sm:p-5">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="max-w-lg">
+          <Badge variant="outline" className="text-[10px]">
+            Primeiros passos
+          </Badge>
+          <h2 className="text-foreground mt-2 text-lg font-semibold">
+            Comece a organizar a gestão de pessoas
+          </h2>
+          <p className="text-muted-foreground mt-1 text-xs leading-5">
+            A base de colaboradores está vazia. Siga esta jornada para ativar os
+            indicadores sem usar dados de demonstração.
+          </p>
+        </div>
+        <div className="grid grid-cols-3 gap-2 sm:w-[620px]">
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <Link
+                key={step.title}
+                to={step.href}
+                className="border-border bg-card/85 hover:border-primary/40 rounded-lg border p-2.5 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="bg-primary text-primary-foreground flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold">
+                    {index + 1}
+                  </span>
+                  <Icon className="text-primary h-3.5 w-3.5" />
+                </div>
+                <p className="text-foreground mt-2 text-[11px] font-semibold">
+                  {step.title}
+                </p>
+                <p className="text-muted-foreground mt-0.5 text-[10px] leading-4">
+                  {step.description}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </Card>
   );
@@ -541,6 +616,7 @@ export function RHDashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<RhStats | null>(null);
   const canReadPeople = hasAnyPermission([RH_PERMISSIONS.peopleRead]);
+  const canCreatePeople = hasAnyPermission([RH_PERMISSIONS.peopleCreate]);
 
   const load = useCallback(async () => {
     if (!currentTenantId) {
@@ -648,7 +724,7 @@ export function RHDashboardPage() {
           >
             Atualizar
           </Button>
-          {canReadPeople ? (
+          {canCreatePeople ? (
             <Button
               asChild
               size="sm"
@@ -714,6 +790,9 @@ export function RHDashboardPage() {
 
       {state === 'ready' && stats ? (
         <div className="space-y-4">
+          {stats.total === 0 ? (
+            <EmptyRhOnboarding canCreate={canCreatePeople} />
+          ) : null}
           <section
             aria-label="Indicadores de RH"
             className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6"
@@ -724,7 +803,7 @@ export function RHDashboardPage() {
           </section>
 
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,1fr)]">
-            <AdmissionsChart stats={stats} />
+            <AdmissionsBarChart stats={stats} />
             <StatusDistribution stats={stats} />
           </div>
 
@@ -834,12 +913,14 @@ export function RHDashboardPage() {
                 description="Operações autorizadas da célula"
               />
               <div className="grid grid-cols-2 gap-2 p-4">
-                <Button asChild variant="outline" className="h-20 flex-col">
-                  <Link to="/dashboard/rh/colaboradores/novo">
-                    <UserPlus className="mb-1 h-5 w-5" />
-                    <span className="text-xs">Cadastrar</span>
-                  </Link>
-                </Button>
+                {canCreatePeople ? (
+                  <Button asChild variant="outline" className="h-20 flex-col">
+                    <Link to="/dashboard/rh/colaboradores/novo">
+                      <UserPlus className="mb-1 h-5 w-5" />
+                      <span className="text-xs">Cadastrar</span>
+                    </Link>
+                  </Button>
+                ) : null}
                 <Button asChild variant="outline" className="h-20 flex-col">
                   <Link to="/dashboard/rh/colaboradores">
                     <Users className="mb-1 h-5 w-5" />

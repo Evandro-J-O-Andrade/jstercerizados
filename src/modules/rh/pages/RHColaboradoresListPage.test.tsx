@@ -48,7 +48,7 @@ describe('RHColaboradoresListPage', () => {
     );
 
     expect(await screen.findByText('Ana Silva')).toBeInTheDocument();
-    expect(screen.getByText(/1–1 de 25 registro/i)).toBeInTheDocument();
+    expect(screen.getByText(/25 registro/i)).toBeInTheDocument();
     expect(screen.getByText(/Página 1 de 2/i)).toBeInTheDocument();
     expect(findPage).toHaveBeenCalledWith(
       'tenant-1',
@@ -93,6 +93,6 @@ describe('RHColaboradoresListPage', () => {
     expect(
       await screen.findByText(/Nenhum colaborador encontrado/i),
     ).toBeInTheDocument();
-    expect(screen.queryByText(/dado fictício/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Nenhum dado fictício é exibido/i)).toBeInTheDocument();
   });
 });

@@ -78,7 +78,7 @@ describe('UUID guards for detail routes', () => {
     async (id) => {
       renderRh(id);
       expect(await screen.findByRole('alert')).toHaveTextContent(
-        /identificador.*inválido/i,
+        /não foi possível localizar|link pode estar incompleto/i,
       );
       expect(findEmployeeById).not.toHaveBeenCalled();
     },
@@ -100,7 +100,7 @@ describe('UUID guards for detail routes', () => {
       '/dashboard/rh/colaboradores/:id/editar',
     );
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      /identificador.*inválido/i,
+      /não foi possível localizar|link pode estar incompleto/i,
     );
     expect(findEmployeeById).not.toHaveBeenCalled();
     rh.unmount();
