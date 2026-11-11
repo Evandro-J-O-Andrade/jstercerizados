@@ -368,7 +368,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
 
         let permissionsData: Permission[] = [];
-        if (validatedRoleIds.length > 0) {
+        if (adminMaster) {
+          // admin_master global recebe TODAS as permissões do banco,
+          // não apenas aquelas vinculadas ao seu papel via role_permissions.
+          // Isso garante visibilidade completa do catálogo (26 células) e
+          // autoridade operacional efetiva para o ROOT.
+          const { data: perms, error: permissionsError } = await supabase
+            .from('permissions')
+            .select('*');
+          if (permissionsError) throw permissionsError;
+
+          const normalizedPermissions = (perms || [])
+            .map(normalizePermission)
+            .filter((p): p is Permission => p !== null);
+
+          permissionsData = normalizedPermissions;
+        } else if (validatedRoleIds.length > 0) {
           const { data: rolePerms, error: rolePermissionsError } =
             await supabase
               .from('role_permissions')
@@ -384,14 +399,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             ),
           );
 
-          // admin_master global recebe TODAS as permissões do banco,
-          const allPermissionIds: string[] = permissionIds;
-
-          if (allPermissionIds.length > 0) {
+          if (permissionIds.length > 0) {
             const { data: perms, error: permissionsError } = await supabase
               .from('permissions')
               .select('*')
-              .in('id', allPermissionIds);
+              .in('id', permissionIds);
             if (permissionsError) throw permissionsError;
 
             const normalizedPermissions = (perms || [])
