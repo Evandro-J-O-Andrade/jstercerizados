@@ -2,10 +2,22 @@ import { SupabaseRepository } from './supabase.repository';
 import type {
   Service,
   ServiceCreateInput,
+  ServiceUpdateInput,
   ServiceOrder,
   ServiceOrderCreateInput,
+  ServiceOrderUpdateInput,
   ServiceExecution,
   ServiceExecutionCreateInput,
+  CompanyService,
+  Contract,
+  ServiceOrderItem,
+  ServiceOrderStatusHistory,
+  WorkOrder,
+  WorkOrderAssignment,
+  ServiceAcceptance,
+  ServiceOccurrence,
+  ServiceAttachment,
+  CustomerRating,
 } from '@/types/domain/service';
 
 export type PublicServiceCategory = 'rh' | 'facilities' | 'terceirizacao';
@@ -37,7 +49,7 @@ export interface PublicServiceV1 {
   gallery: PublicServiceGalleryItem[] | null;
   status: string;
   published_at: string | null;
-  display_order: number | null;
+  display_order: number;
   metadata: Record<string, unknown>;
   seo_title: string | null;
   seo_description: string | null;
@@ -70,7 +82,7 @@ export class ServicesRepository extends SupabaseRepository {
   async updateService(
     tenantId: string,
     id: string,
-    input: Partial<ServiceCreateInput>,
+    input: ServiceUpdateInput,
   ): Promise<Service> {
     if (!this.supabase) throw new Error('Supabase não configurado');
     const { data, error } = await this.supabase
@@ -136,7 +148,7 @@ export class ServicesRepository extends SupabaseRepository {
   async updateOrder(
     tenantId: string,
     id: string,
-    input: Partial<ServiceOrderCreateInput>,
+    input: ServiceOrderUpdateInput,
   ): Promise<ServiceOrder> {
     if (!this.supabase) throw new Error('Supabase não configurado');
     const { data, error } = await this.supabase
@@ -209,6 +221,164 @@ export class ServicesRepository extends SupabaseRepository {
       .eq('tenant_id', tenantId)
       .eq('id', id);
     if (error) throw error;
+  }
+
+  async findCompanyServices(tenantId: string): Promise<CompanyService[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('company_services')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as CompanyService[];
+  }
+
+  async findContracts(tenantId: string): Promise<Contract[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('contracts')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as Contract[];
+  }
+
+  async findOrderItems(
+    tenantId: string,
+    serviceOrderId: string,
+  ): Promise<ServiceOrderItem[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('service_order_items')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .eq('service_order_id', serviceOrderId)
+      .order('created_at', { ascending: true });
+    if (error) throw error;
+    return (data || []) as ServiceOrderItem[];
+  }
+
+  async findOrderStatusHistory(
+    tenantId: string,
+    serviceOrderId: string,
+  ): Promise<ServiceOrderStatusHistory[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('service_order_status_history')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .eq('service_order_id', serviceOrderId)
+      .order('changed_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as ServiceOrderStatusHistory[];
+  }
+
+  async findWorkOrders(tenantId: string): Promise<WorkOrder[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('work_orders')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as WorkOrder[];
+  }
+
+  async findWorkOrderAssignments(
+    tenantId: string,
+    workOrderId: string,
+  ): Promise<WorkOrderAssignment[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('work_order_assignments')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .eq('work_order_id', workOrderId)
+      .order('assigned_at', { ascending: true });
+    if (error) throw error;
+    return (data || []) as WorkOrderAssignment[];
+  }
+
+  async findAcceptances(tenantId: string): Promise<ServiceAcceptance[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('service_acceptances')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as ServiceAcceptance[];
+  }
+
+  async findOccurrences(tenantId: string): Promise<ServiceOccurrence[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('service_occurrences')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('reported_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as ServiceOccurrence[];
+  }
+
+  async findOccurrencesByOrder(
+    tenantId: string,
+    serviceOrderId: string,
+  ): Promise<ServiceOccurrence[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('service_occurrences')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .eq('service_order_id', serviceOrderId)
+      .order('reported_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as ServiceOccurrence[];
+  }
+
+  async findAttachments(
+    tenantId: string,
+    entityType: string,
+    entityId: string,
+  ): Promise<ServiceAttachment[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('service_attachments')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .eq('entity_type', entityType)
+      .eq('entity_id', entityId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as ServiceAttachment[];
+  }
+
+  async findRatings(tenantId: string): Promise<CustomerRating[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('customer_ratings')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .order('rated_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as CustomerRating[];
+  }
+
+  async findRatingsByOrder(
+    tenantId: string,
+    serviceOrderId: string,
+  ): Promise<CustomerRating[]> {
+    if (!this.supabase) return [];
+    const { data, error } = await this.supabase
+      .from('customer_ratings')
+      .select('*')
+      .eq('tenant_id', tenantId)
+      .eq('service_order_id', serviceOrderId)
+      .order('rated_at', { ascending: false });
+    if (error) throw error;
+    return (data || []) as CustomerRating[];
   }
 
   /**

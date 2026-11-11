@@ -43,47 +43,84 @@ export interface LeadUpdateInput {
 
 export interface Service {
   id: string;
-  tenant_id: string | null;
+  tenant_id: string;
   slug: string;
-  title: string;
-  description: string;
-  short_description: string;
-  benefits: string[];
-  image: string;
-  gallery: string[] | null;
-  icon: string;
-  category: ServiceCategory;
-  status: ServiceStatus;
+  name: string;
+  category: string | null;
+  short_description: string | null;
+  description: string | null;
+  card_image_url: string | null;
+  hero_image_url: string | null;
+  hero_title: string | null;
+  hero_subtitle: string | null;
+  icon: string | null;
+  benefits: string[] | null;
+  process_steps: unknown;
+  cta_title: string | null;
+  cta_description: string | null;
+  cta_button_text: string | null;
+  cta_button_url: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
+  seo_keywords: string[] | null;
+  status: 'draft' | 'published' | 'archived';
+  published_at: string | null;
+  display_order: number;
+  created_by: string | null;
   created_at: string;
   updated_at: string;
 }
 
 export interface ServiceCreateInput {
-  tenant_id?: string | null;
+  tenant_id: string;
+  name: string;
   slug: string;
-  title: string;
-  description: string;
-  short_description: string;
-  benefits: string[];
-  image: string;
-  gallery?: string[] | null;
-  icon: string;
-  category: ServiceCategory;
-  status?: ServiceStatus;
+  category?: string | null;
+  short_description?: string | null;
+  description?: string | null;
+  card_image_url?: string | null;
+  hero_image_url?: string | null;
+  hero_title?: string | null;
+  hero_subtitle?: string | null;
+  icon?: string | null;
+  benefits?: string[] | null;
+  process_steps?: unknown;
+  cta_title?: string | null;
+  cta_description?: string | null;
+  cta_button_text?: string | null;
+  cta_button_url?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string[] | null;
+  status?: 'draft' | 'published' | 'archived';
+  published_at?: string | null;
+  display_order?: number;
+  created_by?: string | null;
 }
 
 export interface ServiceUpdateInput {
-  tenant_id?: string | null;
+  name?: string;
   slug?: string;
-  title?: string;
-  description?: string;
-  short_description?: string;
-  benefits?: string[];
-  image?: string;
-  gallery?: string[] | null;
-  icon?: string;
-  category?: ServiceCategory;
-  status?: ServiceStatus;
+  category?: string | null;
+  short_description?: string | null;
+  description?: string | null;
+  card_image_url?: string | null;
+  hero_image_url?: string | null;
+  hero_title?: string | null;
+  hero_subtitle?: string | null;
+  icon?: string | null;
+  benefits?: string[] | null;
+  process_steps?: unknown;
+  cta_title?: string | null;
+  cta_description?: string | null;
+  cta_button_text?: string | null;
+  cta_button_url?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string[] | null;
+  status?: 'draft' | 'published' | 'archived';
+  published_at?: string | null;
+  display_order?: number;
 }
 
 export interface Supplier {

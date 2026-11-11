@@ -11,4 +11,7 @@ export const SERVICOS_PERMISSIONS = {
   serviceExecutionsCreate: 'service_executions.create',
   serviceExecutionsUpdate: 'service_executions.update',
   serviceExecutionsDelete: 'service_executions.delete',
+  serviceAcceptancesRead: 'service_acceptances.read',
+  serviceOccurrencesRead: 'service_occurrences.read',
+  customerRatingsRead: 'customer_ratings.read',
 } as const;

@@ -123,7 +123,7 @@ export function ServiceForm({
     if (editingService) {
       reset({
         name: editingService.name,
-        category: editingService.category,
+        category: editingService.category ?? '',
         description: editingService.description ?? null,
         short_description: editingService.short_description ?? null,
         benefits: editingService.benefits ?? [],
