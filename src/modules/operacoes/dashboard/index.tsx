@@ -1,3 +1,3 @@
-import GestaoPage from '@/pages/dashboard/GestaoPage';
+import OperacoesDashboardPage from './OperacoesDashboardPage';
 
-export { GestaoPage as OperacoesDashboardPage };
+export { OperacoesDashboardPage };
