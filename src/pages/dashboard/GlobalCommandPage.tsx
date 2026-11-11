@@ -8,6 +8,7 @@ import {
   Cpu,
   Database,
   Filter,
+  Grid2X2,
   Layers,
   LayoutDashboard,
   RefreshCw,
@@ -44,6 +45,7 @@ import {
 import { useGlobalDashboardStats } from '@/hooks/useGlobalDashboardStats';
 import { cn } from '@/utils';
 import { hasPermission } from '@/utils/rbac';
+import { resolveIcon } from '@/utils/navigation-icons';
 
 /**
  * Central de Inteligência Operacional 24H — CHECK BOULER 24H (J&S Empregos LTDA).
@@ -823,6 +825,80 @@ export default function GlobalCommandPage() {
           </div>
         </DashboardSection>
       ) : null}
+
+      <DashboardSection
+        title="Catálogo de 26 células — CHECK BOULER 24H"
+        description="Todas as células operacionais da plataforma J&S Empregos LTDA. ROOT (admin_master) tem acesso irrestrito a todas as 26 entradas. Outras células aparecem conforme permissões do banco (escopo global ou local)."
+        icon={Grid2X2}
+      >
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {visibleObservations.map((o) => {
+            const Icon = resolveIcon(o.cell.navigation?.icon);
+            const isAdmin = isAdminMaster;
+            const canEnter = isAdmin || Boolean(o.homeRoute);
+            return (
+              <Card
+                key={o.cell.id}
+                variant={canEnter ? 'default' : 'outline'}
+                className={cn(
+                  'group hover:border-primary/50 transition-colors',
+                  canEnter
+                    ? 'bg-primary/5 border-primary/10 hover:bg-primary/10'
+                    : 'bg-muted/30 border-border hover:bg-muted/50',
+                )}
+              >
+                <div className="flex items-start justify-between gap-3 p-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-card border border-border/50">
+                    <Icon
+                      className="h-5 w-5"
+                      style={{ color: canEnter ? '#3b82f6' : '#94a3b8' }}
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-foreground truncate text-sm font-semibold leading-tight">
+                      {o.cell.name}
+                    </p>
+                    <p className="text-muted-foreground text-[10px] truncate leading-none">
+                      {o.cell.id}
+                    </p>
+                    <p className="text-muted-foreground text-[10px] mt-0.5">
+                      {o.cell.scope === 'global' ? 'Escopo global' : 'Escopo tenant'}
+                    </p>
+                  </div>
+                  {canEnter && o.homeRoute ? (
+                    <Link
+                      to={o.homeRoute}
+                      className="text-primary text-xs font-medium hover:underline"
+                    >
+                      Abrir →
+                    </Link>
+                  ) : null}
+                </div>
+                <div className="border-t border-border/50 px-4 py-2 flex items-center justify-between">
+                  <span className="text-[9px] font-medium uppercase tracking-wider">
+                    {o.enabledState}
+                  </span>
+                  <span className={cn(
+                    'text-[9px] font-medium',
+                    o.health === 'healthy'
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : o.health === 'degraded'
+                      ? 'text-amber-600 dark:text-amber-400'
+                      : 'text-muted-foreground',
+                  )}>
+                    {healthLabel(o.health)}
+                  </span>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+        {!isAdminMaster && visibleObservations.length < observations.length && (
+          <p className="mt-3 text-[11px] text-muted-foreground">
+            Algumas células ocultas por falta de permissão (RBAC/escopo). ROOT vê todas as 26.
+          </p>
+        )}
+      </DashboardSection>
     </div>
   );
 }

@@ -1,2 +1,9 @@
-export const CRM_PERMISSIONS = { read: 'companies.read', manage: 'companies.read' } as const;
-export type CrmPermissionKey = (typeof CRM_PERMISSIONS)[keyof typeof CRM_PERMISSIONS];
+export const CRM_PERMISSIONS = {
+  crmRead: 'crm.read',
+  crmCreate: 'crm.create',
+  crmUpdate: 'crm.update',
+  crmDelete: 'crm.delete',
+  crmExport: 'crm.export',
+} as const;
+
+export type CrmPermission = (typeof CRM_PERMISSIONS)[keyof typeof CRM_PERMISSIONS];
