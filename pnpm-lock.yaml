@@ -106,8 +106,8 @@ importers:
         specifier: ^1.62.1
         version: 1.64.0
       '@supabase/server':
-        specifier: ^1.4.1
-        version: 1.9.1(@supabase/supabase-js@2.117.3)(pg@8.23.1)(typescript@5.9.3)
+        specifier: ^1.9.2
+        version: 1.9.2(@supabase/supabase-js@2.117.3)(pg@8.23.1)(typescript@5.9.3)
       '@supabase/ssr':
         specifier: ^0.12.4
         version: 0.12.7(@supabase/supabase-js@2.117.3)
@@ -1155,8 +1155,8 @@ packages:
     resolution: {integrity: sha512-4W4ISbreRygNXbhwqxeqyuRul8RPx+SF+Hp2IT8wctebQEHSVCULfKatiRiEhmasfoXvYm2AHV4XFsOxhoousA==}
     engines: {node: '>=22.0.0'}
 
-  '@supabase/server@1.9.1':
-    resolution: {integrity: sha512-AW/8aZrX5nHP3OwYMamA1hxERuL+RO7yw0h3oUfdXYKIxkdoRVm0ELzzv8wLGCk97aeVjBQ4ixZ2h66jPCfJjA==}
+  '@supabase/server@1.9.2':
+    resolution: {integrity: sha512-zkvU157ivZ268Ffs+2aEaYvavfchZ8IiB/Rt5tW4JTfew2JeX0TN46Do3XD5U8ganGhfAJr3BUsMHswY56+iLA==}
     engines: {node: '>=22'}
     peerDependencies:
       '@nestjs/common': ^10.0.0 || ^11.0.0
@@ -3498,7 +3498,7 @@ snapshots:
       '@supabase/phoenix': 0.4.5
       tslib: 2.8.1
 
-  '@supabase/server@1.9.1(@supabase/supabase-js@2.117.3)(pg@8.23.1)(typescript@5.9.3)':
+  '@supabase/server@1.9.2(@supabase/supabase-js@2.117.3)(pg@8.23.1)(typescript@5.9.3)':
     dependencies:
       '@supabase/middleware': 1.0.0(typescript@5.9.3)
       '@supabase/supabase-js': 2.117.3
