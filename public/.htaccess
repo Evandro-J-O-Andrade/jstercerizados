@@ -1,19 +1,27 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # SPA fallback: redireciona rotas não-arquivo para index.html
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
+  # Serve arquivos e diretÃ³rios existentes (sitemaps XML, robots, HTML prerenderizado, assets)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # NÃ£o reescrever arquivos estÃ¡ticos ausentes para a SPA (evita soft-404/XML mascarado)
+  RewriteCond %{REQUEST_URI} \.(?:xml|txt|json|webmanifest|ico|png|jpe?g|gif|svg|webp|avif|css|js|mjs|map|woff2?|ttf|eot|pdf)$ [NC]
+  RewriteRule ^ - [R=404,L]
+
+  # SPA fallback para rotas de aplicaÃ§Ã£o sem arquivo fÃ­sico
   RewriteRule ^ index.html [L]
 </IfModule>
 
 <IfModule mod_mime.c>
-  # MIME types corretos para JS e módulos
   AddType application/javascript .js
   AddType application/javascript .mjs
   AddType text/css .css
   AddType application/manifest+json .webmanifest
   AddType image/svg+xml .svg
+  AddType application/xml .xml
+  AddType text/plain .txt
 </IfModule>
 
 <IfModule mod_expires.c>
@@ -22,13 +30,18 @@
   ExpiresByType text/css "access plus 1 year"
   ExpiresByType application/manifest+json "access plus 1 year"
   ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType application/xml "access plus 1 hour"
+  ExpiresByType text/plain "access plus 1 hour"
 </IfModule>
 
 <IfModule mod_headers.c>
   <FilesMatch "\.(js|css|svg|webmanifest)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
-  <FilesMatch "\.(html)$">
+  <FilesMatch "\.(xml|txt)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+  <FilesMatch "\.html$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
 </IfModule>

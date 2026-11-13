@@ -1,137 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-
-  <!-- PÁGINAS PRINCIPAIS -->
-  <url>
-    <loc>https://jsempregos.com.br/</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://jsempregos.com.br/"/>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/vagas</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://jsempregos.com.br/vagas"/>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/empresas</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/candidatos</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/servicos</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- PÁGINAS CORPORATIVAS -->
-  <url>
-    <loc>https://jsempregos.com.br/sobre</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/clientes</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/parceiros</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/fornecedores</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/contato</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/trabalhe-conosco</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/processo-seletivo</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/faq</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/suporte</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <!-- BLOG -->
-  <url>
-    <loc>https://jsempregos.com.br/blog</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- PÁGINAS LEGAIS -->
-  <url>
-    <loc>https://jsempregos.com.br/privacidade</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <url>
-    <loc>https://jsempregos.com.br/termos</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <!-- EMPRESAS -->
-  <url>
-    <loc>https://jsempregos.com.br/empresas/divulgar-vaga</loc>
-    <lastmod>2026-09-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
-
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://jsempregos.com.br/sitemap-pages.xml</loc>
+    <lastmod>2026-11-13</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://jsempregos.com.br/sitemap-vagas.xml</loc>
+    <lastmod>2026-10-07</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://jsempregos.com.br/sitemap-servicos.xml</loc>
+    <lastmod>2026-09-02</lastmod>
+  </sitemap>
+</sitemapindex>

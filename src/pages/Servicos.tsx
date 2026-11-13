@@ -3,11 +3,11 @@ import { staggerReveal, revealUp } from '@/animations/scroll';
 import { Section } from '@/components/sections/Section';
 import { ServiceCard } from '@/components/sections/ServiceCard';
 import { SEO } from '@/components/ui/SEO';
+import { SEO_PAGES } from '@/config/seoPages';
 import { Container } from '@/components/common/Container';
 import { ErrorState } from '@/components/fallback/ErrorState';
 import { usePublicServices } from '@/hooks/useServices';
 import { mockServices } from '@/services/mock/services';
-import { COMPANY } from '@/config';
 
 export default function Servicos() {
   const {
@@ -32,20 +32,10 @@ export default function Servicos() {
           { label: 'Home', href: '/' },
           { label: 'Serviços', href: '/servicos' },
         ]}
-        title={`Serviços — ${COMPANY.name}`}
-        description="Assessoria em RH, recrutamento, mão de obra temporária e efetiva, terceirização, facilities, limpeza, jardinagem e portaria."
-        keywords={[
-          'serviços',
-          'assessoria em RH',
-          'recrutamento',
-          'mão de obra temporária',
-          'terceirização',
-          'facilities',
-          'limpeza',
-          'jardinagem',
-          'portaria',
-        ]}
-        type="WebSite"
+        title={SEO_PAGES['/servicos'].title}
+        description={SEO_PAGES['/servicos'].description}
+        keywords={SEO_PAGES['/servicos'].keywords}
+        type="WebPage"
       />
       <Section className="pt-20 md:pt-28">
         <Container>

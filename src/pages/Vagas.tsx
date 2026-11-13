@@ -5,12 +5,12 @@ import { MapPin, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/sections/Section';
 import { SEO } from '@/components/ui/SEO';
+import { SEO_PAGES } from '@/config/seoPages';
 import { Container } from '@/components/common/Container';
 import { ErrorState } from '@/components/fallback/ErrorState';
 import { staggerReveal, revealUp } from '@/animations/scroll';
 import { staggerItem } from '@/animations/fade';
 import { usePublicJobsAsVagas } from '@/hooks/useJobs';
-import { COMPANY } from '@/config';
 import type { Vaga } from '@/types/common';
 
 const CONTRATO_LABELS: Record<string, string> = {
@@ -161,23 +161,14 @@ export default function Vagas() {
   return (
     <div className="min-h-screen">
       <SEO
-        title={`Vagas — ${COMPANY.name}`}
-        description={`Oportunidades de trabalho, vagas de emprego e trabalho de casa (remoto) na ${COMPANY.name}. Encontre sua próxima oportunidade profissional.`}
-        keywords={[
-          'vagas',
-          'emprego',
-          'trabalho',
-          'oportunidades',
-          'recrutamento',
-          'seleção',
-          'RH',
-          'currículo',
-          'trabalho de casa',
-          'remoto',
-          'home office',
-          'trabalho remoto',
+        title={SEO_PAGES['/vagas'].title}
+        description={SEO_PAGES['/vagas'].description}
+        keywords={SEO_PAGES['/vagas'].keywords}
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Vagas', href: '/vagas' },
         ]}
-        type="WebSite"
+        type="WebPage"
       />
       <Section className="pt-20 md:pt-28">
         <Container>

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Section } from '@/components/sections/Section';
@@ -20,8 +20,6 @@ import {
   CalendarDays,
   Hourglass,
 } from 'lucide-react';
-
-const SITE_URL = 'https://jsempregos.com.br';
 
 const CONTRATO_LABELS: Record<string, string> = {
   CLT: 'CLT',
@@ -86,7 +84,7 @@ export default function VagaDetalhe() {
         if (cancelled) return;
 
         if (!error && data?.new_slug) {
-          navigate(`/vagas/${data.new_slug}`);
+          navigate(`/vagas/${data.new_slug}`, { replace: true });
         }
       } catch {
         // Não bloqueia o fluxo se a consulta falhar
@@ -173,8 +171,9 @@ export default function VagaDetalhe() {
           'RH',
           'recrutamento',
           'seleção',
-        ]}
-        type="WebSite"
+        ].filter(Boolean)}
+        type="Article"
+        image={vaga.imagemUrl || vaga.empresaLogo}
         breadcrumbs={[
           { label: 'Home', href: '/' },
           { label: 'Vagas', href: '/vagas' },
@@ -185,16 +184,17 @@ export default function VagaDetalhe() {
           description:
             vaga.descricao ||
             `Oportunidade de ${vaga.titulo} na ${COMPANY.name}.`,
-          datePosted: vaga.data_publicacao,
+          datePosted: vaga.data_publicacao || vaga.dataPublicacao,
           validThrough: vaga.expiresAt ?? undefined,
-          hiringOrgName: vaga.empresa ?? COMPANY.name,
-          hiringOrgUrl: SITE_URL,
-          hiringOrgLogo: vaga.empresaLogo,
+          hiringOrgName: vaga.empresa || undefined,
+          hiringOrgLogo: vaga.empresaLogo || undefined,
           city: vaga.cidade,
           state: vaga.estado,
           employmentType: vaga.tipoContrato
             ? employmentTypeMap[vaga.tipoContrato]
             : undefined,
+          workLocationType:
+            vaga.modalidade === 'REMOTO' ? 'TELECOMMUTE' : undefined,
           salaryMin: vaga.salarioMin,
           salaryMax: vaga.salarioMax,
           salaryUnit: vaga.salarioTipo === 'hora' ? 'HOUR' : 'MONTH',

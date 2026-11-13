@@ -16,10 +16,19 @@ export interface JobPostingSchema {
     logo?: string;
   };
   jobLocation?: {
-    '@type': 'PostalAddress';
-    addressLocality?: string;
-    addressRegion?: string;
-    addressCountry?: string;
+    '@type': 'Place';
+    address: {
+      '@type': 'PostalAddress';
+      addressLocality?: string;
+      addressRegion?: string;
+      addressCountry: 'BR';
+    };
+  } | {
+    '@type': 'Place';
+    address: {
+      '@type': 'PostalAddress';
+      addressCountry: 'BR';
+    };
   };
   employmentType?: string;
   baseSalary?: {
@@ -30,11 +39,13 @@ export interface JobPostingSchema {
     unit?: string;
   };
   validThrough?: string;
-  workLocationType?: string;
+  jobLocationType?: 'TELECOMMUTE';
+  applicantLocationRequirements?: unknown;
   jobBenefits?: string[];
-  requirements?: string;
+  qualifications?: string;
   responsibilities?: string;
   url: string;
+  identifier?: { '@type': 'PropertyValue'; name: string; value: string };
 }
 
 export interface BreadcrumbListSchema {
@@ -55,6 +66,7 @@ export interface WebSiteSchema {
   url: string;
   description?: string;
   inLanguage?: string;
+  alternateName?: string[];
   publisher?: {
     '@type': 'Organization';
     name: string;

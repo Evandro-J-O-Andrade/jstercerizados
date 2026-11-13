@@ -10,7 +10,13 @@ import { IntroProvider } from '@/contexts/IntroContext';
 import App from '@/App';
 import '@/styles/index.css';
 
-createRoot(document.getElementById('root')!).render(
+const container = document.getElementById('root')!;
+// Limpa conteúdo pré-renderizado (SEO/no-JS) antes da montagem para evitar reconciliação incompatível com createRoot.
+if (container.firstElementChild) {
+  container.innerHTML = '';
+}
+
+createRoot(container).render(
   <StrictMode>
     <HelmetProvider>
       <BrowserRouter>

@@ -6,7 +6,11 @@
   "description": "Plataforma SaaS para Gestão de Empresas de Terceirização, Segurança, Zeladoria e Facilities",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build:app": "tsc -b && vite build",
+    "build": "node scripts/seo-orchestrator.mjs --build",
+    "seo:audit": "node scripts/seo-orchestrator.mjs --audit",
+    "seo:generate": "node scripts/seo-orchestrator.mjs --generate",
+    "seo:validate": "node scripts/seo-orchestrator.mjs --validate",
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write .",
@@ -16,7 +20,8 @@
     "test:run": "vitest run",
     "prepare": "husky",
     "provision:admin": "tsx scripts/provision-admin.ts",
-    "provision:client": "tsx scripts/seed-client-users.ts"
+    "provision:client": "tsx scripts/seed-client-users.ts",
+    "seo:healthcheck": "node scripts/seo-prod-healthcheck.mjs --origin https://jsempregos.com.br --all"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

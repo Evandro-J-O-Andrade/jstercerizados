@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -123,15 +123,16 @@ export default function ServicoDetalhe() {
     service.cta?.description ??
     'Solicite uma proposta gratuita e descubra como podemos elevar o padrão dos seus serviços.';
 
+  const metaDescription =
+    service.shortDescription || service.description || `${service.title} - ${COMPANY.name}`;
+  const metaTitle = `${service.title} — ${COMPANY.name}`;
+
   return (
     <div>
       <SEO
-        breadcrumbs={[
-          { label: 'Home', href: '/' },
-          { label: 'Serviços', href: '/servicos' },
-        ]}
-        title={`${service.title} — ${COMPANY.name}`}
-        description={service.shortDescription}
+        title={metaTitle}
+        description={metaDescription}
+        image={heroImage}
         keywords={[
           service.title,
           'serviços',
@@ -139,11 +140,20 @@ export default function ServicoDetalhe() {
           'RH',
           'terceirização',
           'facilities',
-          'limpeza',
-          'jardinagem',
-          'portaria',
         ]}
         type="Service"
+        service={{
+          name: service.title,
+          description: metaDescription,
+          slug: service.slug,
+          image: heroImage,
+          providerName: COMPANY.name,
+        }}
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Serviços', href: '/servicos' },
+          { label: service.title, href: `/servicos/${service.slug}` },
+        ]}
       />
       {/* Premium Hero */}
       <section className="relative flex min-h-[100dvh] items-center overflow-hidden pt-16 lg:pt-20">
@@ -224,8 +234,7 @@ export default function ServicoDetalhe() {
             </Link>
           </motion.div>
 
-          {/* Área principal da Hero.
-              A altura disponível pertence à Hero, não ao conteúdo textual. */}
+          {/* Área principal da Hero. */}
           <div className="grid flex-1 grid-cols-1 items-stretch gap-12 lg:grid-cols-2">
             {/* Texto */}
             <motion.div
@@ -291,7 +300,7 @@ export default function ServicoDetalhe() {
               </motion.div>
             </motion.div>
 
-            {/* Card visual — permanece dentro do grid */}
+            {/* Card visual */}
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}

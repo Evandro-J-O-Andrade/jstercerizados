@@ -1,1 +1,8 @@
-/*	/index.html	200
+# Arquivos públicos/SEO existentes devem ser servidos diretamente; SPA fallback para rotas sem arquivo.
+/sitemap.xml              /sitemap.xml              200
+/sitemap-index.xml        /sitemap-index.xml        200
+/sitemap-pages.xml        /sitemap-pages.xml        200
+/sitemap-vagas.xml        /sitemap-vagas.xml        200
+/sitemap-servicos.xml     /sitemap-servicos.xml     200
+/robots.txt               /robots.txt               200
+/*                        /index.html               200

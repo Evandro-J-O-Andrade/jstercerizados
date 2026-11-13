@@ -1,36 +1,30 @@
 import { COMPANY } from './company';
+import { getStaticSeo } from '@/seo/registry';
+
+const home = getStaticSeo('/');
 
 export const SEO_CONFIG = {
-  title: `${COMPANY.name} — Assessoria em RH, Recrutamento, Mão de Obra, Terceirização e Facilities`,
+  title: home?.title || `${COMPANY.name} — Assessoria em RH, Recrutamento, Mão de Obra e Facilities`,
   description:
-    'J&S Empregos LTDA: 15+ anos de excelência em assessoria em RH, recrutamento e seleção, mão de obra temporária e efetiva, terceirização de serviços e facilities. Atendemos empresas, condomínios, indústrias, hospitais, escolas e comércio em 50 cidades.',
+    home?.description ||
+    'Assessoria em RH, recrutamento e seleção, mão de obra temporária e efetiva, terceirização e facilities. Mais eficiência para sua empresa.',
   keywords: [
     'J&S Empregos',
-    'J&S Terceirizados',
+    'JS Empregos',
+    'JSEmpregos',
     'assessoria em RH',
     'recrutamento e seleção',
     'mão de obra temporária',
     'mão de obra efetiva',
-    'terceirização de mão de obra',
     'terceirização de serviços',
     'facilities',
-    'limpeza profissional',
-    'portaria e recepção',
-    'jardinagem e paisagismo',
-    'zeladoria',
-    'segurança patrimonial',
-    'empresa de RH',
-    'agência de empregos',
     'vagas de emprego',
-    'contratação de profissionais',
-    'departamento pessoal',
-    'treinamento corporativo',
   ],
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
     url: 'https://jsempregos.com.br',
-    siteName: COMPANY.name,
+    siteName: COMPANY.brand || COMPANY.name,
   },
   twitter: {
     card: 'summary_large_image',

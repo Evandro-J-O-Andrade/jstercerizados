@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'src/**'
+      - 'scripts/**'
+      - 'public/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - '.github/workflows/ci-dashboard.yml'
@@ -41,3 +43,24 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: SEO validate
+        run: pnpm seo:validate
+
+      - name: SEO audit
+        run: pnpm seo:audit
+
+      - name: SEO safety tests
+        run: pnpm exec vitest run src/tests/seo/seo-safety.test.ts
+
+      - name: Verify SEO artifacts
+        run: node scripts/verify-seo-artifacts.mjs
+
+      - name: Upload dist artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-seo
+          path: dist/
+          include-hidden-files: true
+          if-no-files-found: error

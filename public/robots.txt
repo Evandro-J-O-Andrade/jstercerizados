@@ -1,14 +1,12 @@
-# 🔒 ROBOTS.TXT — J&S Empregos LTDA
-# Controle de indexação para motores de busca
+# ROBOTS.TXT - J&S Empregos LTDA
+# Controle de indexacao para motores de busca
 
-# Sitemap principal
 Sitemap: https://jsempregos.com.br/sitemap.xml
 
-# Regras para todos os robôs
 User-agent: *
 Allow: /
 
-# Áreas privadas / autenticação
+# Areas privadas / autenticacao
 Disallow: /login
 Disallow: /entrar/
 Disallow: /cadastro/
@@ -18,7 +16,7 @@ Disallow: /auth/
 Disallow: /onboarding
 Disallow: /primeiro-acesso/
 
-# Áreas administrativas / dashboard
+# Areas administrativas / dashboard
 Disallow: /dashboard/
 Disallow: /candidato/
 Disallow: /admin/
@@ -27,12 +25,9 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /supabase/
 
-# Parâmetros de sessão/autenticação
+# Parametros de sessao/autenticacao
 Disallow: /*?session=*
 Disallow: /*?code=*
 Disallow: /*?token=*
 Disallow: /*?error=*
 Disallow: /*?redirect_to=*
-
-# Host canônico
-Host: jsempregos.com.br

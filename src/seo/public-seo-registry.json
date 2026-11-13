@@ -1,0 +1,29 @@
+{
+  "siteUrl": "https://jsempregos.com.br",
+  "tenantSlug": "js-empregos",
+  "brand": {
+    "name": "J&S Empregos LTDA",
+    "shortName": "J&S Empregos",
+    "alternateNames": ["J&S Empregos", "JS Empregos", "JSEmpregos"]
+  },
+  "staticPages": [
+    { "id": "home", "path": "/", "type": "WebSite", "indexable": true, "sitemap": "pages", "changefreq": "daily", "priority": "1.0", "h1": "J&S Empregos — Soluções em RH e Facilities", "title": "J&S Empregos LTDA — Assessoria em RH, Recrutamento, Mão de Obra e Facilities", "description": "Assessoria em RH, recrutamento e seleção, mão de obra temporária e efetiva, terceirização e facilities. Mais eficiência para sua empresa." },
+    { "id": "vagas", "path": "/vagas", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "daily", "priority": "0.9", "h1": "Vagas de Emprego", "title": "Vagas de Emprego | J&S Empregos LTDA", "description": "Confira vagas de emprego publicadas pela J&S Empregos e candidate-se às oportunidades disponíveis." },
+    { "id": "servicos", "path": "/servicos", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "weekly", "priority": "0.9", "h1": "Serviços", "title": "Serviços de RH e Terceirização | J&S Empregos LTDA", "description": "Conheça os serviços de recrutamento, mão de obra temporária e efetiva, terceirização e facilities da J&S Empregos." },
+    { "id": "empresas", "path": "/empresas", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "weekly", "priority": "0.9", "h1": "Soluções para Empresas", "title": "Soluções para Empresas | J&S Empregos LTDA", "description": "Recrutamento, seleção e mão de obra para empresas com agilidade e qualidade." },
+    { "id": "candidatos", "path": "/candidatos", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "weekly", "priority": "0.8", "h1": "Candidatos", "title": "Área do Candidato | J&S Empregos LTDA", "description": "Cadastre seu perfil e encontre oportunidades de emprego com a J&S Empregos." },
+    { "id": "sobre", "path": "/sobre", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "monthly", "priority": "0.8", "h1": "Sobre a J&S Empregos", "title": "Sobre a J&S Empregos | J&S Empregos LTDA", "description": "Conheça a J&S Empregos, sua atuação em RH, recrutamento e terceirização de serviços." },
+    { "id": "clientes", "path": "/clientes", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "monthly", "priority": "0.6", "h1": "Clientes", "title": "Clientes | J&S Empregos LTDA", "description": "Conheça empresas e segmentos atendidos pela J&S Empregos." },
+    { "id": "parceiros", "path": "/parceiros", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "monthly", "priority": "0.5", "h1": "Parceiros", "title": "Parceiros | J&S Empregos LTDA", "description": "Parcerias e colaboração com a J&S Empregos." },
+    { "id": "fornecedores", "path": "/fornecedores", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "monthly", "priority": "0.5", "h1": "Fornecedores", "title": "Fornecedores | J&S Empregos LTDA", "description": "Informações para fornecedores da J&S Empregos." },
+    { "id": "contato", "path": "/contato", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "monthly", "priority": "0.6", "h1": "Contato", "title": "Contato | J&S Empregos LTDA", "description": "Entre em contato com a J&S Empregos para vagas, recrutamento e serviços." },
+    { "id": "trabalhe-conosco", "path": "/trabalhe-conosco", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "weekly", "priority": "0.7", "h1": "Trabalhe Conosco", "title": "Trabalhe Conosco | J&S Empregos LTDA", "description": "Envie seu currículo e participe das oportunidades da J&S Empregos." },
+    { "id": "processo-seletivo", "path": "/processo-seletivo", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "monthly", "priority": "0.6", "h1": "Processo Seletivo", "title": "Processo Seletivo | J&S Empregos LTDA", "description": "Entenda como funciona o processo seletivo da J&S Empregos." },
+    { "id": "faq", "path": "/faq", "type": "FAQPage", "indexable": true, "sitemap": "pages", "changefreq": "monthly", "priority": "0.5", "h1": "Perguntas Frequentes", "title": "Perguntas Frequentes | J&S Empregos LTDA", "description": "Dúvidas frequentes sobre vagas, candidaturas e serviços da J&S Empregos." },
+    { "id": "suporte", "path": "/suporte", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "monthly", "priority": "0.5", "h1": "Suporte", "title": "Suporte | J&S Empregos LTDA", "description": "Atendimento e suporte da J&S Empregos." },
+    { "id": "blog", "path": "/blog", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "weekly", "priority": "0.7", "h1": "Blog", "title": "Blog | J&S Empregos LTDA", "description": "Conteúdos sobre carreira, recrutamento e recursos humanos." },
+    { "id": "privacidade", "path": "/privacidade", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "yearly", "priority": "0.3", "h1": "Política de Privacidade", "title": "Política de Privacidade | J&S Empregos LTDA", "description": "Política de privacidade e tratamento de dados da J&S Empregos." },
+    { "id": "termos", "path": "/termos", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "yearly", "priority": "0.3", "h1": "Termos de Uso", "title": "Termos de Uso | J&S Empregos LTDA", "description": "Termos de uso do portal da J&S Empregos." },
+    { "id": "empresas-divulgar-vaga", "path": "/empresas/divulgar-vaga", "type": "WebPage", "indexable": true, "sitemap": "pages", "changefreq": "monthly", "priority": "0.4", "h1": "Divulgar Vaga", "title": "Divulgar Vaga | J&S Empregos LTDA", "description": "Solicite a divulgação de vagas e apoio em recrutamento com a J&S Empregos." }
+  ]
+}

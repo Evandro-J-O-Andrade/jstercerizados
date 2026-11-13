@@ -5,39 +5,54 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import globals from 'globals';
 
 export default [
-  {
-    ignores: [
-      '.agents/**',
-      '.kilo/**',
-      '.scripts/**',
-      'dist/**',
-      'e2e/**',
-      'node_modules/**',
-      'playwright-report/**',
-      'scripts/**',
-      'test-hero-dimensions.js',
-      'test-results/**',
-      '*.cjs',
-      '*.mjs',
-      'eslint.config.mjs',
-      'prettier.config.js',
-      'postcss.config.js',
-      'server.js',
-      'supabase-extract-core.js',
-    ],
-  },
-  js.configs.recommended,
-  ...tseslint.configs.recommended,
-  reactHooks.configs['recommended-latest'],
-  {
-    files: ['audit/**/*.{js,mjs,cjs,ts}', 'playwright.config.{js,mjs,cjs,ts}'],
-    languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.browser,
+    {
+      ignores: [
+        '.agents/**',
+        '.kilo/**',
+        '.scripts/**',
+        'dist/**',
+        'e2e/**',
+        'node_modules/**',
+        'playwright-report/**',
+        'test-hero-dimensions.js',
+        'test-results/**',
+        '*.cjs',
+        'eslint.config.mjs',
+        'prettier.config.js',
+        'postcss.config.js',
+        'server.js',
+        'supabase-extract-core.js',
+        // Material de referência visual/arquitetural versionado: não é código da aplicação.
+        'dashaboard/**',
+        '03_codigo_react/**',
+        // Artefatos locais do gerador de SEO (não rastreados no Git).
+        'js-seo-dinamico/**',
+        'public/js-seo-dinamico/**',
+      ],
+    },
+    js.configs.recommended,
+    ...tseslint.configs.recommended,
+    reactHooks.configs['recommended-latest'],
+    {
+      files: ['scripts/**/*.{js,mjs,cjs}', 'server.js', 'audit/**/*.{js,mjs,cjs,ts}', 'playwright.config.{js,mjs,cjs,ts}'],
+      languageOptions: {
+        globals: {
+          ...globals.node,
+        },
+      },
+      rules: {
+        'no-console': 'off',
       },
     },
-  },
+    {
+      files: ['audit/**/*.{js,mjs,cjs,ts}', 'playwright.config.{js,mjs,cjs,ts}'],
+      languageOptions: {
+        globals: {
+          ...globals.node,
+          ...globals.browser,
+        },
+      },
+    },
   {
     files: ['**/*.{ts,tsx}'],
     plugins: {
