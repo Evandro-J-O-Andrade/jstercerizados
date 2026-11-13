@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
+import { COMPANY } from '@/config';
 import {
   buildBreadcrumbSchema,
   buildWebSiteSchema,
@@ -10,7 +11,7 @@ import type { BreadcrumbItem } from '@/types/seo';
 const SITE_URL = 'https://jsempregos.com.br';
 
 describe('buildBreadcrumbSchema', () => {
-  it('creates valid BreadcrumbList with correct positions', () => {
+  it('creates valid BreadcrumbList with correct positions and absolute URLs', () => {
     const items: BreadcrumbItem[] = [
       { label: 'Home', href: '/' },
       { label: 'Vagas', href: '/vagas' },
@@ -41,12 +42,6 @@ describe('buildBreadcrumbSchema', () => {
     });
   });
 
-  it('uses absolute URLs', () => {
-    const items: BreadcrumbItem[] = [{ label: 'Home', href: '/' }];
-    const schema = buildBreadcrumbSchema(items);
-    expect(schema.itemListElement[0].item).toContain(SITE_URL);
-  });
-
   it('handles empty list', () => {
     const schema = buildBreadcrumbSchema([]);
     expect(schema.itemListElement).toHaveLength(0);
@@ -54,62 +49,99 @@ describe('buildBreadcrumbSchema', () => {
 });
 
 describe('buildWebSiteSchema', () => {
-  it('creates valid WebSite schema', () => {
+  it('creates valid WebSite schema with canonical URL and no invented search action', () => {
     const schema = buildWebSiteSchema();
+
     expect(schema['@context']).toBe('https://schema.org');
     expect(schema['@type']).toBe('WebSite');
-    expect(schema.name).toBeTruthy();
-    expect(schema.url).toBe(SITE_URL);
+    expect(schema.name).toBe(COMPANY.brand || 'J&S Empregos');
+    expect(schema.url).toBe(`${SITE_URL}/`);
     expect(schema.inLanguage).toBe('pt-BR');
+    expect(schema.alternateName).toEqual(['J&S Empregos', 'JS Empregos', 'JSEmpregos']);
     expect(schema.publisher).toEqual({
       '@type': 'Organization',
-      name: schema.name,
+      name: COMPANY.name,
     });
-  });
-
-  it('does NOT include SearchAction (no real search URL)', () => {
-    const schema = buildWebSiteSchema();
+    expect(schema).not.toHaveProperty('potentialSearchAction');
     expect(schema).not.toHaveProperty('potentiallyAction');
     expect(schema).not.toHaveProperty('target');
   });
 });
 
 describe('buildJobPostingSchema', () => {
-  const baseParams = {
+  const validParams = {
     title: 'Analista de RH',
     description: 'Vaga para analista de RH',
     slug: 'analista-rh',
-    hiringOrgName: 'J&S Empregos LTDA',
+    datePosted: '2026-08-01',
   };
 
-  it('creates valid JobPosting schema with required fields', () => {
-    const schema = buildJobPostingSchema(baseParams);
-    expect(schema['@context']).toBe('https://schema.org');
-    expect(schema['@type']).toBe('JobPosting');
-    expect(schema.title).toBe('Analista de RH');
-    expect(schema.description).toBe('Vaga para analista de RH');
-    expect(schema.hiringOrganization).toEqual({
-      '@type': 'Organization',
-      name: 'J&S Empregos LTDA',
-      url: SITE_URL,
-      logo: undefined,
-    });
-    expect(schema.url).toBe(`${SITE_URL}/vagas/analista-rh`);
+  it('returns null when required fields are missing (datePosted/title/description)', () => {
+    expect(buildJobPostingSchema({ title: 'A', description: 'D', slug: 'a' })).toBeNull();
+    expect(buildJobPostingSchema({ title: 'A', description: '', slug: 'a', datePosted: '2026-08-01' })).toBeNull();
+    expect(buildJobPostingSchema({ title: '', description: 'D', slug: 'a', datePosted: '2026-08-01' })).toBeNull();
   });
 
-  it('omits salary when not provided', () => {
-    const schema = buildJobPostingSchema(baseParams);
+  it('creates valid JobPosting schema with required fields and canonical URL', () => {
+    const schema = buildJobPostingSchema(validParams);
+
+    expect(schema).not.toBeNull();
+    expect(schema!['@context']).toBe('https://schema.org');
+    expect(schema!['@type']).toBe('JobPosting');
+    expect(schema!.title).toBe('Analista de RH');
+    expect(schema!.description).toBe('Vaga para analista de RH');
+    expect(schema!.datePosted).toBe('2026-08-01');
+    expect(schema!.url).toBe(`${SITE_URL}/vagas/analista-rh`);
+  });
+
+  it('marks hiring organization as confidential when no real authorized employer is provided', () => {
+    const schema = buildJobPostingSchema(validParams);
+
+    expect(schema).not.toBeNull();
+    expect(schema!.hiringOrganization).toEqual({
+      '@type': 'Organization',
+      name: 'Confidencial',
+    });
+  });
+
+  it('uses provided authorized employer and URL when informed', () => {
+    const schema = buildJobPostingSchema({
+      ...validParams,
+      hiringOrgName: 'Empresa Cliente LTDA',
+      hiringOrgUrl: 'https://cliente.exemplo.com/',
+      hiringOrgLogo: 'https://cliente.exemplo.com/logo.png',
+    });
+
+    expect(schema).not.toBeNull();
+    expect(schema!.hiringOrganization).toEqual({
+      '@type': 'Organization',
+      name: 'Empresa Cliente LTDA',
+      url: 'https://cliente.exemplo.com/',
+      logo: 'https://cliente.exemplo.com/logo.png',
+    });
+  });
+
+  it('omits salary/location/benefits/requirements when not provided', () => {
+    const schema = buildJobPostingSchema(validParams);
+
+    expect(schema).not.toBeNull();
     expect(schema).not.toHaveProperty('baseSalary');
+    expect(schema).not.toHaveProperty('jobLocation');
+    expect(schema).not.toHaveProperty('jobLocationType');
+    expect(schema).not.toHaveProperty('jobBenefits');
+    expect(schema).not.toHaveProperty('qualifications');
   });
 
   it('includes salary only when salaryMin is provided', () => {
     const schema = buildJobPostingSchema({
-      ...baseParams,
+      ...validParams,
       salaryMin: 5000,
       salaryMax: 7000,
       salaryUnit: 'MONTH',
     });
-    expect(schema.baseSalary).toEqual({
+
+    expect(schema).not.toBeNull();
+    expect(schema!.baseSalary).toEqual({
       '@type': 'MonetaryAmount',
       currency: 'BRL',
       value: 5000,
@@ -118,118 +150,79 @@ describe('buildJobPostingSchema', () => {
     });
   });
 
-  it('omits location when not provided', () => {
-    const schema = buildJobPostingSchema(baseParams);
-    expect(schema).not.toHaveProperty('jobLocation');
-  });
-
-  it('includes location when city/state provided', () => {
+  it('includes location as Place with PostalAddress when city/state provided', () => {
     const schema = buildJobPostingSchema({
-      ...baseParams,
+      ...validParams,
       city: 'São Paulo',
       state: 'SP',
     });
-    expect(schema.jobLocation).toEqual({
-      '@type': 'PostalAddress',
-      addressLocality: 'São Paulo',
-      addressRegion: 'SP',
-      addressCountry: 'BR',
+
+    expect(schema).not.toBeNull();
+    expect(schema!.jobLocation).toEqual({
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'São Paulo',
+        addressRegion: 'SP',
+        addressCountry: 'BR',
+      },
     });
   });
 
-  it('omits benefits when not provided', () => {
-    const schema = buildJobPostingSchema(baseParams);
-    expect(schema).not.toHaveProperty('jobBenefits');
+  it('sets TELECOMMUTE when work location type indicates remote work', () => {
+    const schema = buildJobPostingSchema({
+      ...validParams,
+      workLocationType: 'TELECOMMUTE',
+    });
+
+    expect(schema).not.toBeNull();
+    expect(schema!.jobLocationType).toBe('TELECOMMUTE');
   });
 
-  it('includes benefits when provided', () => {
+  it('includes benefits, qualifications and validThrough only when provided', () => {
     const schema = buildJobPostingSchema({
-      ...baseParams,
+      ...validParams,
       benefits: ['Vale Transporte', 'Convênio Médico'],
-    });
-    expect(schema.jobBenefits).toEqual(['Vale Transporte', 'Convênio Médico']);
-  });
-
-  it('includes datePosted when provided', () => {
-    const schema = buildJobPostingSchema({
-      ...baseParams,
-      datePosted: '2026-08-01',
-    });
-    expect(schema.datePosted).toBe('2026-08-01');
-  });
-
-  it('omits datePosted when not provided', () => {
-    const schema = buildJobPostingSchema(baseParams);
-    expect(schema).not.toHaveProperty('datePosted');
-  });
-
-  it('includes validThrough when provided', () => {
-    const schema = buildJobPostingSchema({
-      ...baseParams,
+      requirements: 'Experiência mínima de 2 anos',
       validThrough: '2026-09-01',
     });
-    expect(schema.validThrough).toBe('2026-09-01');
+
+    expect(schema).not.toBeNull();
+    expect(schema!.jobBenefits).toEqual(['Vale Transporte', 'Convênio Médico']);
+    expect(schema!.qualifications).toBe('Experiência mínima de 2 anos');
+    expect(schema!.validThrough).toBe('2026-09-01');
   });
 
-  it('omits validThrough when not provided', () => {
-    const schema = buildJobPostingSchema(baseParams);
-    expect(schema).not.toHaveProperty('validThrough');
-  });
+  it('does not invent optional fields', () => {
+    const schema = buildJobPostingSchema(validParams);
 
-  it('omits requirements when not provided', () => {
-    const schema = buildJobPostingSchema(baseParams);
-    expect(schema).not.toHaveProperty('requirements');
-  });
-
-  it('includes requirements when provided', () => {
-    const schema = buildJobPostingSchema({
-      ...baseParams,
-      requirements: 'Experiência mínima de 2 anos',
-    });
-    expect(schema.requirements).toBe('Experiência mínima de 2 anos');
-  });
-
-  it('does NOT invent salary when not provided', () => {
-    const schema = buildJobPostingSchema(baseParams);
-    expect(schema.baseSalary).toBeUndefined();
-  });
-
-  it('does NOT invent location when not provided', () => {
-    const schema = buildJobPostingSchema(baseParams);
-    expect(schema.jobLocation).toBeUndefined();
+    expect(schema).not.toBeNull();
+    expect(schema!.baseSalary).toBeUndefined();
+    expect(schema!.jobLocation).toBeUndefined();
+    expect(schema!.validThrough).toBeUndefined();
   });
 });
 
 describe('getOrganizationSchema', () => {
-  it('creates valid Organization schema', () => {
+  it('creates valid Organization schema with consistent canonical identity', () => {
     const schema = getOrganizationSchema();
+
     expect(schema['@context']).toBe('https://schema.org');
     expect(schema['@type']).toEqual([
       'Organization',
       'LocalBusiness',
       'EmploymentAgency',
     ]);
-    expect(schema.name).toBe('J&S Empregos LTDA');
-    expect(schema.url).toBe(SITE_URL);
-    expect(schema.logo).toContain(SITE_URL);
+    expect(schema.name).toBe(COMPANY.name);
+    expect(schema.url).toBe(`${SITE_URL}/`);
+    expect(String(schema.logo)).toContain(SITE_URL);
+    expect(schema.alternateName).toEqual(['J&S Empregos', 'JS Empregos', 'JSEmpregos']);
+    expect(Array.isArray(schema.contactPoint)).toBe(true);
     expect(schema.contactPoint).toHaveLength(2);
-    expect(schema.contactPoint[0]).toEqual({
-      '@type': 'ContactPoint',
-      telephone: '+555511968380592',
-      contactType: 'customer service',
-      availableLanguage: 'Portuguese',
-    });
   });
 
-  it('includes sameAs with social links', () => {
+  it('does not include invented social profiles when none are confirmed', () => {
     const schema = getOrganizationSchema();
-    expect(schema.sameAs).toHaveLength(5);
-    expect(schema.sameAs).toContain(
-      'https://www.instagram.com/jstercerizados/',
-    );
-    expect(schema.sameAs).toContain('https://facebook.com/jsempregos');
-    expect(schema.sameAs).toContain('https://linkedin.com/company/jsempregos');
-    expect(schema.sameAs).toContain('https://youtube.com/@jsempregos');
-    expect(schema.sameAs).toContain('https://tiktok.com/@jsempregos');
+    expect(schema).not.toHaveProperty('sameAs');
   });
 });

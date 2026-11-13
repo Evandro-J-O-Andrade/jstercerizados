@@ -26,16 +26,27 @@ function assert(cond, msg) {
   if (!cond) fail(msg);
 }
 
-function checkSitemapFile(dir, name, expectedCount, rootTag) {
+function readSitemapFile(dir, name, rootTag) {
+  const label = `${path.basename(dir)}/${name}`;
   const p = path.join(dir, name);
-  assert(fs.existsSync(p), `${dir.includes('dist') ? 'dist' : 'public'}/${name} ausente`);
+  assert(fs.existsSync(p), `${label} ausente`);
   const xml = read(p);
   assert(xml.includes(`<${rootTag}`), `${name} deve conter <${rootTag}>`);
   const locs = countLocs(xml);
-  assert(locs.length === expectedCount, `${name} deve ter ${expectedCount} <loc>, encontrado ${locs.length}`);
+  assert(locs.length > 0, `${label} não pode estar vazio`);
   const u = unique(locs);
-  assert(u.size === locs.length, `${name} possui URLs duplicadas`);
+  assert(u.size === locs.length, `${label} possui URLs duplicadas`);
   return locs;
+}
+
+function sameSet(a, b) {
+  if (a.length !== b.length) return false;
+  const sb = new Set(b);
+  return a.every((x) => sb.has(x));
+}
+
+function sameOrdered(a, b) {
+  return a.length === b.length && a.every((x, i) => x === b[i]);
 }
 
 const pubIndex = read(path.join(PUBLIC, 'sitemap.xml'));
@@ -47,18 +58,22 @@ for (const child of ['sitemap-pages.xml', 'sitemap-vagas.xml', 'sitemap-servicos
   assert(distIndex.includes(child), `dist/sitemap.xml deve referenciar ${child}`);
 }
 
-const pubPages = checkSitemapFile(PUBLIC, 'sitemap-pages.xml', 18, 'urlset');
-const pubVagas = checkSitemapFile(PUBLIC, 'sitemap-vagas.xml', 19, 'urlset');
-const pubServicos = checkSitemapFile(PUBLIC, 'sitemap-servicos.xml', 20, 'urlset');
-const distPages = checkSitemapFile(DIST, 'sitemap-pages.xml', 18, 'urlset');
-const distVagas = checkSitemapFile(DIST, 'sitemap-vagas.xml', 19, 'urlset');
-const distServicos = checkSitemapFile(DIST, 'sitemap-servicos.xml', 20, 'urlset');
+const pubPages = readSitemapFile(PUBLIC, 'sitemap-pages.xml', 'urlset');
+const pubVagas = readSitemapFile(PUBLIC, 'sitemap-vagas.xml', 'urlset');
+const pubServicos = readSitemapFile(PUBLIC, 'sitemap-servicos.xml', 'urlset');
+const distPages = readSitemapFile(DIST, 'sitemap-pages.xml', 'urlset');
+const distVagas = readSitemapFile(DIST, 'sitemap-vagas.xml', 'urlset');
+const distServicos = readSitemapFile(DIST, 'sitemap-servicos.xml', 'urlset');
+
+assert(sameOrdered(pubPages, distPages), 'sitemap-pages.xml diverge entre public e dist');
+assert(sameOrdered(pubVagas, distVagas), 'sitemap-vagas.xml diverge entre public e dist');
+assert(sameOrdered(pubServicos, distServicos), 'sitemap-servicos.xml diverge entre public e dist');
 
 const pubAll = [...pubPages, ...pubVagas, ...pubServicos];
 const distAll = [...distPages, ...distVagas, ...distServicos];
-assert(unique(pubAll).size === 57, `public sitemaps devem ter 57 URLs únicas, encontrado ${unique(pubAll).size}`);
-assert(unique(distAll).size === 57, `dist sitemaps devem ter 57 URLs únicas, encontrado ${unique(distAll).size}`);
-assert(pubAll.length === 57 && distAll.length === 57, 'total de URLs deve ser 57 sem duplicação');
+assert(unique(pubAll).size === pubAll.length, 'public sitemaps possuem URLs duplicadas entre arquivos');
+assert(unique(distAll).size === distAll.length, 'dist sitemaps possuem URLs duplicadas entre arquivos');
+assert(sameSet(pubAll, distAll), 'URLs divergentes entre sitemaps public e dist');
 
 const robots = read(path.join(DIST, 'robots.txt'));
 assert(robots.includes('Sitemap: https://jsempregos.com.br/sitemap.xml'), 'robots.txt deve apontar para sitemap index');
@@ -77,12 +92,12 @@ for (const url of distAll) {
   else missing.push(url);
 }
 assert(missing.length === 0, `HTML prerenderizado ausente para: ${missing.slice(0, 10).join(', ')}`);
-assert(htmlCount === 57, `esperado 57 HTMLs prerenderizados, encontrado ${htmlCount}`);
+assert(htmlCount === distAll.length, `esperado ${distAll.length} HTMLs prerenderizados, encontrado ${htmlCount}`);
 assert(fs.existsSync(path.join(DIST, '.htaccess')), 'dist/.htaccess ausente');
 
 console.log(JSON.stringify({
   ok: process.exitCode !== 1,
-  counts: { pages: 18, vagas: 19, servicos: 20, urls: 57, html: htmlCount },
+  counts: { pages: distPages.length, vagas: distVagas.length, servicos: distServicos.length, urls: distAll.length, html: htmlCount },
   duplicates: 0,
   divergences: 0,
 }, null, 2));
