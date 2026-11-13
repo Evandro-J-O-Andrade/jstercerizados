@@ -14,7 +14,57 @@ on:
       - '**'
 
 jobs:
-  validate:
+  seo-artifact:
+    name: SEO artifact gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+
+      - name: SEO validate
+        run: pnpm seo:validate
+
+      - name: SEO audit
+        run: pnpm seo:audit
+
+      - name: SEO safety tests
+        run: pnpm exec vitest run src/tests/seo/seo-safety.test.ts
+
+      - name: Verify SEO artifacts
+        run: node scripts/verify-seo-artifacts.mjs
+
+      - name: Upload dist artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-seo
+          path: dist/
+          include-hidden-files: true
+          if-no-files-found: error
+
+  full-regression:
+    name: Full regression
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,24 +93,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      - name: SEO validate
-        run: pnpm seo:validate
-
-      - name: SEO audit
-        run: pnpm seo:audit
-
-      - name: SEO safety tests
-        run: pnpm exec vitest run src/tests/seo/seo-safety.test.ts
-
-      - name: Verify SEO artifacts
-        run: node scripts/verify-seo-artifacts.mjs
-
-      - name: Upload dist artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-seo
-          path: dist/
-          include-hidden-files: true
-          if-no-files-found: error
